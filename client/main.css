@@ -1,0 +1,545 @@
+
+
+
+
+textarea {
+    border: 0 none white;
+    padding: 0;
+    outline: none;
+    background-color: #D0D0D0;
+    color:black
+
+}
+
+
+html, body {
+  height: 100%;
+  width:100%;
+
+  font-family: "Segoe UI", sans-serif;
+  background: white;
+  color:black;
+
+
+
+}
+
+
+h1 {
+    margin: 0 0 0px 0;
+
+    color: black;
+}
+
+p {
+
+  
+    margin-top: 10px;
+    /* color: rgba(255, 255, 255, 0.4); */
+    color: black;
+}
+
+
+
+/* Add a black background color to the top navigation */
+.topnav {
+    background-color: #202424;
+    overflow: hidden;
+  }
+  
+  /* Style the links inside the navigation bar */
+  .topnav a {
+    float: left;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 17px;
+  }
+  
+  /* Change the color of links on hover */
+  .topnav a:hover {
+    background-color: #ddd;
+    color: black;
+  }
+  
+  /* Add a color to the active/current link */
+  .topnav a.active {
+    background-color: #66ccff;
+    color: white;
+  }
+
+
+
+  .folderPaths {
+
+    width: 90%;
+    padding: 12px 20px;
+    margin: 0% 5%;
+    display: inline-block;
+    border: 1px solid black;
+    border-radius: 4px;
+    box-sizing: border-box;
+    
+    }
+    
+
+    .button{
+
+      color:black
+    }
+
+    .hidden { display:none; }
+
+    .intro{
+      /*  */
+      background: white;
+      /* padding-top: 20px; */
+      height: 1000px;
+      width:100%;
+    }
+    .wheel{
+
+      width: 100px;
+      height: 100px;
+      
+      position: absolute;
+      top:0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+        
+      margin: auto;
+    
+    }
+
+    text{
+
+      color:black
+    }
+
+    .addFolderButton{
+      background-color: white;
+      color: black;
+      padding: 1px 1px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid black;
+      margin: 0px 3px
+  }
+
+
+    .generalWorkerButton{
+        background-color: black;
+        color: white;
+        padding: 1px 1px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        border-radius: 5px;
+        border: 1px solid black;
+        margin: 0px 3px
+    }
+    .transcodeWorkerButton{
+      background-color: #66ccff;
+      color: white;
+      padding: 1px 1px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid black;
+      margin: 0px 3px
+  }
+  .healthcheckWorkerButton{
+    background-color: #ffffff;
+    /* Green */
+
+    color: #4CAF50;
+    padding: 1px 1px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid black;
+    margin: 0px 3px
+}
+
+.cancelAllWorkersButton{
+  background-color: #ffffff;
+  /* Green */
+
+  color: red;
+  padding: 1px 1px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid black;
+  margin: 0px 3px
+}
+
+.grid-itemright {
+
+  text-align: right;
+  margin: 0 1em;
+  padding: 0 0 0 0;
+
+
+}
+
+.cancelWorkerButton{
+  background-color: #ffffff;
+  /* Green */
+
+  color: red;
+  padding: 1px 1px;
+  text-decoration: none;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 0px solid black;
+  width:2em;
+  margin: 0 0 0 0;
+}
+
+
+
+.toggleAllWorkerButton{
+  background-color: #ffffff;
+  /* Green */
+
+  color: black;
+  padding: 0px 0px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid black;
+  margin: 0px 3px
+}
+
+.workerButtoncontainer{
+  margin:0 0 0 0%
+}
+
+.scanButton{
+  background-color: white;
+  color: black;
+  padding: 1px 1px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid black;
+  margin: 0px 3px
+}
+
+.allWorkersContainer{
+  background-color: #ffffff;
+  /* Green */
+
+  color: black;
+  padding: 0px 0px;
+
+  border-radius: 5px;
+
+  width: 100%;
+  min-height:100px;
+
+
+
+  top:0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+    
+  margin: auto;
+  display: 'inline-block';
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.workerItemsGrid{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.workerContainer{
+  display: 'inline-block';
+
+  border-radius: 5px;
+
+
+  
+  margin:0.5em; 
+
+
+}
+.borderStyleGeneral{
+  border: 2px solid black;
+  border-radius: 5px;
+
+}
+.borderStyleTranscode{
+  border: 2px solid #66ccff;
+  border-radius: 5px;
+  
+}
+.borderStyleHealthCheck{
+  border: 2px solid #4CAF50;
+  border-radius: 5px;
+  
+}
+
+.workerContainerItems{
+
+  margin: 0 1em;
+
+
+}
+    .libraryContainer{
+
+      border: 1px solid #48545c;
+      border-radius: 5px;
+      margin:2em;
+    
+    }
+
+    .libraryContainerItems{
+
+     margin:0.5em 0.5em
+    
+    }
+
+    input[type=text], select {
+
+
+    }
+
+    
+    input[type=checkbox], select {
+
+
+    }
+
+    .input-range__slider {
+      appearance: none;
+      background: black;
+      border: 1px solid black;
+      border-radius: 100%;
+      cursor: pointer;
+      display: block;
+      height: 1rem;
+      margin-left: -0.5rem;
+      margin-top: -0.65rem;
+      outline: none;
+      position: absolute;
+      top: 50%;
+      transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+      width: 1rem; }
+      .input-range__slider:active {
+        transform: scale(1.3); }
+      .input-range__slider:focus {
+        box-shadow: 0 0 0 5px rgba(63, 81, 181, 0.2); }
+      .input-range--disabled .input-range__slider {
+        background: #cccccc;
+        border: 1px solid #cccccc;
+        box-shadow: none;
+        transform: none; }
+    
+    .input-range__slider-container {
+      transition: left 0.3s ease-out; }
+    
+    .input-range__label {
+      color: #aaaaaa;
+      font-family: "Helvetica Neue", san-serif;
+      font-size: 0.8rem;
+      transform: translateZ(0);
+      white-space: nowrap; }
+    
+    .input-range__label--min,
+    .input-range__label--max {
+      bottom: -1.4rem;
+      position: absolute; }
+    
+    .input-range__label--min {
+      left: 0; }
+    
+    .input-range__label--max {
+      right: 0; }
+    
+    .input-range__label--value {
+      position: absolute;
+      top: -1.8rem; }
+    
+    .input-range__label-container {
+      left: -50%;
+      position: relative; }
+      .input-range__label--max .input-range__label-container {
+        left: 50%; }
+    
+    .input-range__track {
+      background: #eeeeee;
+      border-radius: 0.3rem;
+      cursor: pointer;
+      display: block;
+      height: 0.3rem;
+      position: relative;
+      transition: left 0.3s ease-out, width 0.3s ease-out; }
+      .input-range--disabled .input-range__track {
+        background: #eeeeee; }
+    
+    .input-range__track--background {
+      left: 0;
+      margin-top: -0.15rem;
+      position: absolute;
+      right: 0;
+      top: 50%; }
+    
+    .input-range__track--active {
+      background: black; }
+    
+    .input-range {
+      height: 1rem;
+      position: relative;
+      width: 100%; }
+    
+    /*# sourceMappingURL=index.css.map */
+
+    .noBreak{
+      display: 'inline-block';
+
+    }
+
+
+    .queuegrid-container {
+      display: grid;
+      grid-template-columns: auto auto auto;
+      padding: 10px;
+    }
+    
+    .queuegrid-item {
+
+      border: 2px solid black;
+      border-radius: 5px;
+
+      margin:1em;
+
+    }
+
+    .tableItem {
+
+     background: #e3e3e3;
+     color:black;
+     margin:2px;
+    }
+
+
+    li{ list-style-type: none; }
+
+    .videoStatsContainer{
+
+      border: 2px solid black;
+      border-radius: 5px;
+
+      margin:2em;
+
+
+    }
+
+    .piegrid-container {
+      display: grid;
+      grid-template-columns: auto auto auto;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .piegrid-item-title {
+      width: 100%;
+      height:100%;
+    }
+    .piegrid-item{
+      width: 100%;
+      height: 300px;
+    }
+
+    .pieaudiogrid-container {
+      display: grid;
+      grid-template-columns: auto auto;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .pieaudiogrid-item-title {
+      width: 100%;
+      height:100%;
+    }
+    .pieaudiogrid-item{
+      width: 100%;
+      height: 300px;
+    }
+
+
+    .pieContainer{
+
+      width: 100%;
+    }
+
+    .invalidFolder{
+
+      color:red;
+    }
+
+    .deleteCodecButton{
+
+      background:white;
+      color:red;
+      border:none;
+
+
+    }
+
+    .scheduleContainer{
+
+      border: 2px solid black;
+      border-radius: 5px;
+
+      margin:1em;
+
+
+    }
+
+    .scheduleContainer-item{
+
+      border: 2px solid black;
+      border-radius: 1px;
+
+      margin:1px;
+
+
+    }
+
+
+    .searchBar{
+
+      width: 50%;
+      padding: 12px 20px;
+      margin: 0% 5%;
+      display: inline-block;
+      border: 1px solid black;
+      border-radius: 4px;
+      box-sizing: border-box;
+
+
+    }
+
