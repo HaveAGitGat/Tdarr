@@ -911,26 +911,30 @@ try{
 
             updateConsole(workerNumber, "Moving file:" + currentDestinationLine + " to " + finalFilePath)
 
-            try {
 
 
-                try{
+            try{
 
-                    fs.unlinkSync(currentSourceLine)
+                errorLogFull += "Attempting to delete original file"
+                updateConsole(workerNumber, "Attempting to delete original file" + currentSourceLine)
+
+                fs.unlinkSync(currentSourceLine)
 
 
-                }catch(err){
+                errorLogFull += "Original file deleted"
+                updateConsole(workerNumber, "Original file deleted" + currentSourceLine)
 
-                    updateConsole(workerNumber, "Error deleting file:" + currentSourceLine)
 
-                }
+                errorLogFull += "Attempting to move new file to original folder"
+                updateConsole(workerNumber, "Attempting to move new file to original folder" + currentSourceLine)
 
-         
-        
                 fsextra.moveSync(currentDestinationLine, finalFilePath, {
                     overwrite: true
                 })
+
+                errorLogFull += "Moving file successful:"
                 updateConsole(workerNumber, "Moving file successful:" + currentDestinationLine + " to " + finalFilePath)
+
 
                 var message = [
                     workerNumber,
@@ -943,42 +947,43 @@ try{
                 process.send(message);
 
                 checkifQueuePause();
-        
-            } catch (err) {
-
-                console.log(err)
 
 
 
 
+            }catch(err){
 
-                updateConsole(workerNumber, "Moving file unsuccessful:" + currentDestinationLine + " to " + finalFilePath)
+                errorLogFull += err
+
+                errorLogFull += "Deleting original file and moving new file unsuccessful"
+
+                updateConsole(workerNumber, "Deleting original file and moving new file unsuccessful:" + currentDestinationLine + " to " + finalFilePath +" err:"+err)
+
 
                 var message = [
                     workerNumber,
-                    "Original not replaced",
+                    "error",
                     currentSourceLine,
+                    settingsDBIndex,
+                    mode,
+                    errorLogFull
         
                 ];
                 process.send(message);
 
+                // var message = [
+                //     workerNumber,
+                //     "Original not replaced",
+                //     currentSourceLine,
+        
+                // ];
+                // process.send(message);
+
 
                 checkifQueuePause();
 
-
-
             }
 
-
-
-
-            
-
-
-           
-
-
-   
 
 
 
