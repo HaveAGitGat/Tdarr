@@ -487,7 +487,7 @@ class Folder extends Component {
               </p>
 
               <p>CLI arguments/preset: </p>
-              <input type="text" name="preset" defaultValue={this.props.libraryItem.preset} onChange={this.handleChange}></input>
+              <input type="text" name="preset" className="folderPaths" defaultValue={this.props.libraryItem.preset} onChange={this.handleChange}></input>
 
 
              

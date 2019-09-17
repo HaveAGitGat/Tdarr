@@ -195,6 +195,14 @@ p {
 
 }
 
+.grid-item {
+
+  margin: 0 1em;
+  padding: 0 0 0 0;
+
+
+}
+
 .cancelWorkerButton{
   background-color: #ffffff;
   /* Green */
@@ -205,8 +213,6 @@ p {
   font-size: 16px;
   border-radius: 5px;
   border: 0px solid black;
-  width:2em;
-  margin: 0 0 0 0;
 }
 
 
@@ -271,7 +277,7 @@ p {
 
 .workerItemsGrid{
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
 }
 
 .workerContainer{

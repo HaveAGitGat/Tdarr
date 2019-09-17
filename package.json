@@ -1,5 +1,5 @@
 {
-  "name": "tdarr001",
+  "name": "Tdarr",
   "private": true,
   "scripts": {
     "start": "meteor run",
