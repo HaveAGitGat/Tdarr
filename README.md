@@ -27,10 +27,13 @@ INSTALLATION - (Windows):
 
 4. Extract zip, open a cmd terminal in the root folder and run the following:
 
-  set MONGO_URL=mongodb://localhost:27017/Tdarr
-  set PORT=8265 
-  set ROOT_URL=http://localhost/
-  node main.js
+  **set MONGO_URL=mongodb://localhost:27017/Tdarr
+  
+  **set PORT=8265**
+  
+  **set ROOT_URL=http://localhost/**
+  
+  **node main.js**
   
 Visit localhost:8265 in a web browser to use the application
   
@@ -44,8 +47,9 @@ INSTALLATION - (macOS):
 
 3. Install HandBrakeCLI using the following 2 commands in a terminal:
 
-    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-    brew install handbrake
+    **/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"**
+    
+    **brew install handbrake**
 
 4. Download the relevant Tdarr-macOS zip from https://github.com/HaveAGitGat/Tdarr/releases
 
@@ -65,15 +69,17 @@ INSTALLATION - (Linux):
 
 3. Install HandBrakeCLI using the following 3 commands in a terminal:
 
-    sudo add-apt-repository ppa:stebbins/handbrake-releases
-    sudo apt-get update
-    sudo apt-get install handbrake-cli handbrake-gtk
+    **sudo add-apt-repository ppa:stebbins/handbrake-releases**
+    
+    **sudo apt-get update**
+    
+    **sudo apt-get install handbrake-cli handbrake-gtk**
 
 4. Download the relevant Tdarr-Linux zip from https://github.com/HaveAGitGat/Tdarr/releases
 
 5. Extract zip, open a terminal in the root folder and run the following:
 
-    MONGO_URL=mongodb://localhost:27017/Tdarr PORT=8265 ROOT_URL=http://localhost/ node main.js
+    **MONGO_URL=mongodb://localhost:27017/Tdarr PORT=8265 ROOT_URL=http://localhost/ node main.js**
 
 Visit localhost:8265 in a web browser to use the application
 
@@ -85,14 +91,14 @@ INSTALLATION - (Docker):
 
 2. Pull the docker image:
 
-  docker pull haveagitgat/tdarr
+  **docker pull haveagitgat/tdarr**
 
 3. Run the container (change /media/mount/Video/ to the location of your media )
 
-docker run -ti -d --rm \
-        --net=host \
-        -v /media/mount/Video/:/home/developer/Media \
-        haveagitgat/tdarr
+**docker run -ti -d --rm \**
+        **--net=host \**
+        **-v /media/mount/Video/:/home/developer/Media \**
+        **haveagitgat/tdarr**
         
         
 Visit localhost:8265 in a web browser to use the application
