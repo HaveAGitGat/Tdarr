@@ -8,6 +8,8 @@ Currently in pre-alpha but looking for feedback/suggestions.
 
 ![Screenshot](https://i.imgur.com/fabZThG.png)
 
+---------------------------------------------------------------------------------------
+
 ![Screenshot](https://i.imgur.com/wfhrjhy.png)
 
 
@@ -32,6 +34,7 @@ INSTALLATION - (Windows):
   
 Visit localhost:8265 in a web browser to use the application
   
+  ---------------------------------------------------------------------------------------
 
 INSTALLATION - (macOS):
 
@@ -52,6 +55,8 @@ INSTALLATION - (macOS):
   
 Visit localhost:8265 in a web browser to use the application
 
+---------------------------------------------------------------------------------------
+
 INSTALLATION - (Linux):
 
 1. Download MongoDB from the server tab (https://www.mongodb.com/download-center/community) and install
@@ -71,6 +76,8 @@ INSTALLATION - (Linux):
     MONGO_URL=mongodb://localhost:27017/Tdarr PORT=8265 ROOT_URL=http://localhost/ node main.js
 
 Visit localhost:8265 in a web browser to use the application
+
+---------------------------------------------------------------------------------------
 
 INSTALLATION - (Docker):
 
