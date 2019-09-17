@@ -9,6 +9,7 @@ import TabStatistics from '../ui/tab_Statistics.jsx';
 import TabLog from '../ui/tab_Log.jsx';
 import TabSettings from '../ui/tab_Settings.jsx';
 import TabTranscoding from '../ui/tab_Transcoding.jsx';
+import TabHelp from '../ui/tab_Help.jsx';
 import ReactDOM from 'react-dom';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group'; // ES6
 import ReactLoading from 'react-loading';
@@ -44,11 +45,13 @@ function Settings(obj) {
 }
 
 function Log() {
-  return <TabLog />;
+  // return <TabLog />;
+
+  return <p>Coming soon</p>
 }
 
 function Help() {
-  return <h2>Help</h2>;
+  return  <TabHelp/>;
 }
 
 
@@ -150,7 +153,7 @@ class Nav extends Component {
            <Route path="/" exact component={Stats} />
           <Route path="/tdarr/" component={Transcoding} />
           <Route path="/settings/" component={Settings} />
-          {/* <Route path="/log/" component={Log} /> */}
+          <Route path="/log/" component={Log} />
           <Route path="/help/" component={Help} /> 
          
         </div>
