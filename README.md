@@ -29,15 +29,15 @@ INSTALLATION - (Docker -- Easiest method):
 
 3. Run the container (change the '8265' on the left to your preferred port and add required volumes)
 
-docker run -ti -d --rm \
+       docker run -ti -d --rm \
 
-        -v /your/video/library/path/:/home/Tdarr/Media \
+         -v /your/video/library/path/:/home/Tdarr/Media \
         
-        -p 8265:8265 \
+         -p 8265:8265 \
         
-        -v TdarrData:/var/lib/mongodb/ \
+         -v TdarrData:/var/lib/mongodb/ \
         
-        haveagitgat/tdarr
+         haveagitgat/tdarr
         
         
 Visit localhost:8265 in a web browser to use the application
