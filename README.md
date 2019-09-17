@@ -6,8 +6,9 @@ Tdarr is a self hosted web-app for automating media library encode management an
 
 Currently in pre-alpha but looking for feedback/suggestions. 
 
-![Screenshot](https://i.imgur.com/pSNJFSj.png)
+![Screenshot](https://i.imgur.com/fabZThG.png)
 
+![Screenshot](https://i.imgur.com/wfhrjhy.png)
 
 
 Requirements (MongoDB + NodeJS 8.x)
