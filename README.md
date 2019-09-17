@@ -29,7 +29,7 @@ INSTALLATION - (Docker -- Easiest method):
 
 3. Run the container (change the '8265' on the left to your preferred port and add required volumes)
 
-docker run -ti --rm \
+docker run -ti -d --rm \
 
         -v /your/video/library/path/:/home/Tdarr/Media \
         
