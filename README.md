@@ -27,7 +27,7 @@ INSTALLATION - (Windows):
 
 4. Extract zip, open a cmd terminal in the root folder and run the following:
 
-  **set MONGO_URL=mongodb://localhost:27017/Tdarr
+  **set MONGO_URL=mongodb://localhost:27017/Tdarr**
   
   **set PORT=8265**
   
@@ -55,7 +55,7 @@ INSTALLATION - (macOS):
 
 5. Extract zip, open a terminal in the root folder and run the following:
 
-    MONGO_URL=mongodb://localhost:27017/Tdarr PORT=8265 ROOT_URL=http://localhost/ node main.js
+    **MONGO_URL=mongodb://localhost:27017/Tdarr PORT=8265 ROOT_URL=http://localhost/ node main.js**
   
 Visit localhost:8265 in a web browser to use the application
 
@@ -95,9 +95,12 @@ INSTALLATION - (Docker):
 
 3. Run the container (change /media/mount/Video/ to the location of your media )
 
-**docker run -ti -d --rm \**
-        **--net=host \**
-        **-v /media/mount/Video/:/home/developer/Media \**
+**docker run -ti -d --rm **\ 
+
+        **--net=host** \ 
+        
+        **-v /media/mount/Video/:/home/developer/Media **\ 
+        
         **haveagitgat/tdarr**
         
         
