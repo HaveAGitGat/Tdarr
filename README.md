@@ -1,4 +1,4 @@
-# Tdarr (pre-alpha) - Audio/Video library encoding statistics + transcode automation using FFmpeg/HandBrake + video health checking (Windows, macOS, Linux & Docker)
+# Tdarr (pre-alpha) -Audio/Video library analytics + transcode automation using FFmpeg/HandBrake + video health checking (Windows, macOS, Linux & Docker)
 
 [![Reddit](https://img.shields.io/badge/Reddit-Tdarr-orange)](https://www.reddit.com/r/Tdarr/)[![Discord](https://img.shields.io/badge/Discord-Chat-green.svg)](https://discord.gg/GF8X8cq) 
 
