@@ -70,7 +70,7 @@ INSTALLATION - (macOS):
 
 2. Download and install NodeJS 8: https://nodejs.org/dist/latest-v8.x/
 
-3. Install HandBrakeCLI using the following 2 commands in a terminal:
+3. Install HandBrakeCLI using the following command in a terminal:
 
        brew install handbrake
 
@@ -99,7 +99,7 @@ INSTALLATION - (Linux):
 3. Install HandBrakeCLI using the following 3 commands in a terminal:
 
          sudo add-apt-repository ppa:stebbins/handbrake-releases
-         sudo apt-get update**
+         sudo apt-get update
          sudo apt-get install handbrake-cli handbrake-gtk
 
 4. Download the relevant Tdarr-Linux zip from https://github.com/HaveAGitGat/Tdarr/releases
