@@ -1,6 +1,6 @@
 # Tdarr (pre-alpha) - Audio/Video library encoding statistics + transcode automation using FFmpeg/HandBrake + video health checking (Windows, macOS, Linux & Docker)
 
-[![Reddit](https://img.shields.io/badge/Reddit-HBBatchBeast-FF5700.svg?style=flat-square)](https://www.reddit.com/r/Tdarr/) 
+[![Reddit](https://img.shields.io/badge/Reddit-Tdarr-orange)](https://www.reddit.com/r/Tdarr/) 
 
 Tdarr is a self hosted web-app for automating media library encode management and making sure your content is in your preferred codecs, whatever they may be. Built with the aim of modularisation, parallelisation and scalability, each library you add has it's own transcode settings, filters and schedule. Workers can be fired up and closed down as necessary, and are split into 3 types - 'general', 'transcode' and 'health check' and worker limits can be managed by the scheduler as well as manually. 
 
