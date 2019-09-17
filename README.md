@@ -68,7 +68,11 @@ Visit localhost:8265 in a web browser to use the application
 
 INSTALLATION - (macOS):
 
-1. Download MongoDB from the server tab (https://www.mongodb.com/download-center/community) and install
+1. Install MongoDB an run as a service as taken from https://docs.mongodb.com/manual/tutorial/install-mongodb-on-os-x/
+
+        brew tap mongodb/brew
+        brew install mongodb-community@4.2
+        brew services start mongodb-community@4.2
 
 2. Download and install NodeJS 8: https://nodejs.org/dist/latest-v8.x/
 
