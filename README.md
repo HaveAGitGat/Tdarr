@@ -97,11 +97,11 @@ INSTALLATION - (Docker):
 
 **docker run -ti -d --rm **\ 
 
-        **--net=host** \ 
+   **--net=host** \ 
         
-        **-v /media/mount/Video/:/home/developer/Media **\ 
+   **-v /media/mount/Video/:/home/developer/Media **\ 
         
-        **haveagitgat/tdarr**
+   **haveagitgat/tdarr**
         
         
 Visit localhost:8265 in a web browser to use the application
