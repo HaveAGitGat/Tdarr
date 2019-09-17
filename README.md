@@ -21,22 +21,18 @@ INSTALLATION - (Docker -- Easiest method):
 
 1. Pull the docker image:
 
-  **docker pull haveagitgat/tdarr**
+       docker pull haveagitgat/tdarr
   
 2. Create a persistent docker volume for Tdarr data - Mapping a host folder most likely won't work as MongoDB requires a filesystem that supports fsync() on directories amongst other things.
 
-  **docker volume create TdarrData**
+       docker volume create TdarrData
 
 3. Run the container (change the '8265' on the left to your preferred port and add required volumes)
 
        docker run -ti -d --rm \
-
-         -v /your/video/library/path/:/home/Tdarr/Media \
-        
          -p 8265:8265 \
-        
+         -v /your/video/library/path/:/home/Tdarr/Media \
          -v TdarrData:/var/lib/mongodb/ \
-        
          haveagitgat/tdarr
         
         
@@ -54,13 +50,10 @@ INSTALLATION - (Windows):
 
 4. Extract zip, open a cmd terminal in the root folder and run the following:
 
-  **set MONGO_URL=mongodb://localhost:27017/Tdarr**
-  
-  **set PORT=8265**
-  
-  **set ROOT_URL=http://localhost/**
-  
-  **node main.js**
+       set MONGO_URL=mongodb://localhost:27017/Tdarr
+       set PORT=8265
+       set ROOT_URL=http://localhost/
+       node main.js
   
 Visit localhost:8265 in a web browser to use the application
   
@@ -70,6 +63,7 @@ INSTALLATION - (macOS):
 
 1. Install MongoDB an run as a service as taken from https://docs.mongodb.com/manual/tutorial/install-mongodb-on-os-x/
 
+        /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
         brew tap mongodb/brew
         brew install mongodb-community@4.2
         brew services start mongodb-community@4.2
@@ -78,15 +72,13 @@ INSTALLATION - (macOS):
 
 3. Install HandBrakeCLI using the following 2 commands in a terminal:
 
-    **/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"**
-    
-    **brew install handbrake**
+       brew install handbrake
 
 4. Download the relevant Tdarr-macOS zip from https://github.com/HaveAGitGat/Tdarr/releases
 
 5. Extract zip, open a terminal in the root folder and run the following:
 
-    **MONGO_URL=mongodb://localhost:27017/Tdarr PORT=8265 ROOT_URL=http://localhost/ node main.js**
+       MONGO_URL=mongodb://localhost:27017/Tdarr PORT=8265 ROOT_URL=http://localhost/ node main.js
   
 Visit localhost:8265 in a web browser to use the application
 
@@ -100,17 +92,15 @@ INSTALLATION - (Linux):
 
 3. Install HandBrakeCLI using the following 3 commands in a terminal:
 
-    **sudo add-apt-repository ppa:stebbins/handbrake-releases**
-    
-    **sudo apt-get update**
-    
-    **sudo apt-get install handbrake-cli handbrake-gtk**
+         sudo add-apt-repository ppa:stebbins/handbrake-releases
+         sudo apt-get update**
+         sudo apt-get install handbrake-cli handbrake-gtk
 
 4. Download the relevant Tdarr-Linux zip from https://github.com/HaveAGitGat/Tdarr/releases
 
 5. Extract zip, open a terminal in the root folder and run the following:
 
-    **MONGO_URL=mongodb://localhost:27017/Tdarr PORT=8265 ROOT_URL=http://localhost/ node main.js**
+        MONGO_URL=mongodb://localhost:27017/Tdarr PORT=8265 ROOT_URL=http://localhost/ node main.js
 
 Visit localhost:8265 in a web browser to use the application
 
