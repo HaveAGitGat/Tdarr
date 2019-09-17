@@ -78,15 +78,21 @@ INSTALLATION - (macOS):
 
 5. Extract zip, open a terminal in the root folder and run the following:
 
-       MONGO_URL=mongodb://localhost:27017/Tdarr PORT=8265 ROOT_URL=http://localhost/ node main.js
-  
+       export MONGO_URL=mongodb://localhost:27017/Tdarr
+       export PORT=8265 
+       export ROOT_URL=http://localhost/
+       node main.js
+
 Visit localhost:8265 in a web browser to use the application
 
 ---------------------------------------------------------------------------------------
 
 INSTALLATION - (Linux):
 
-1. Download MongoDB from the server tab (https://www.mongodb.com/download-center/community) and install
+1.  Install MongoDB an run as a service
+
+        sudo apt install -y mongodb-server 
+        sudo service mongodb start
 
 2. Download and install NodeJS 8: https://nodejs.org/dist/latest-v8.x/
 
