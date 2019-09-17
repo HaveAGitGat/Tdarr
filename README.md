@@ -23,15 +23,15 @@ INSTALLATION - (Docker -- Easiest method):
 
   **docker pull haveagitgat/tdarr**
   
-2. Create persistent docker volume for Tdarr data - Mapping host folder most likely won't work as MongoDB requires a filesystem that supports fsync() on directories amongst other things.
+2. Create a persistent docker volume for Tdarr data - Mapping a host folder most likely won't work as MongoDB requires a filesystem that supports fsync() on directories amongst other things.
 
   **docker volume create TdarrData**
 
-3. Run the container (change the '8265' on the left to your preferred port. )
+3. Run the container (change the '8265' on the left to your preferred port and add required volumes)
 
 docker run -ti --rm \
 
-        -v /media/mount/:/home/Tdarr/Media \
+        -v /your/video/library/path/:/home/Tdarr/Media \
         
         -p 8265:8265 \
         
