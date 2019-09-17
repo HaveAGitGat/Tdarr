@@ -2,7 +2,7 @@
 
 [![Reddit](https://img.shields.io/badge/Reddit-Tdarr-orange)](https://www.reddit.com/r/Tdarr/)[![Discord](https://img.shields.io/badge/Discord-Chat-green.svg)](https://discord.gg/GF8X8cq) 
 
-Tdarr is a self hosted web-app for automating media library encode management and making sure your content is in your preferred codecs, whatever they may be. Built with the aim of modularisation, parallelisation and scalability, each library you add has it's own transcode settings, filters and schedule. Workers can be fired up and closed down as necessary, and are split into 3 types - 'general', 'transcode' and 'health check'. Worker limits can be managed by the scheduler as well as manually. For a desktop application with similar functionality please see HBBatchBeast.
+Tdarr is a self hosted web-app for automating media library encode management and making sure your content is in your preferred codecs, whatever they may be. Built with the aim of modularisation, parallelisation and scalability, each library you add has its own transcode settings, filters and schedule. Workers can be fired up and closed down as necessary, and are split into 3 types - 'general', 'transcode' and 'health check'. Worker limits can be managed by the scheduler as well as manually. For a desktop application with similar functionality please see HBBatchBeast.
 
 Currently in pre-alpha but looking for feedback/suggestions. 
 
