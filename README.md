@@ -89,7 +89,7 @@ Visit localhost:8265 in a web browser to use the application
 
 INSTALLATION - (Linux):
 
-1.  Install MongoDB an run as a service
+1.  Install MongoDB and run as a service
 
         sudo apt install -y mongodb-server 
         sudo service mongodb start
