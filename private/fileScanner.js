@@ -503,7 +503,7 @@ function ffprobeLaunch(filesToScan) {
                 var vidHeight = thisFileObject.video_height
                 var videoResolution = ""
     
-               console.log(vidWidth, vidHeight)
+           //    console.log(vidWidth, vidHeight)
     
                 //Bounds +- 10%
                 // 480p	720	480		648	792		432	528
@@ -566,7 +566,7 @@ function addFileToDB(filePath, FileObject,HealthCheck,TranscodeDecisionMaker) {
 
     //  FileObject = JSON.stringify(FileObject);
 
-    console.log("Adding to DB2:"+filePath)
+    //console.log("Adding to DB2:"+filePath)
     var message = [
         scannerID,
         "addFileToDB",

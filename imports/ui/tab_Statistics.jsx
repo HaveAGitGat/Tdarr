@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
-import { FileDB,StatisticsDB,GlobalSettingsDB } from '../api/tasks.js';
+import { StatisticsDB,GlobalSettingsDB } from '../api/tasks.js';
 import ReactDOM from 'react-dom';
 
 

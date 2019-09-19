@@ -5,7 +5,7 @@ import '../imports/api/tasks.js';
 
 
 
-import { FileDB, SettingsDB, GlobalSettingsDB,StatisticsDB,ClientDB } from '../imports/api/tasks.js';
+import { FileDB, SettingsDB, GlobalSettingsDB, StatisticsDB, ClientDB } from '../imports/api/tasks.js';
 
 
 
@@ -37,7 +37,7 @@ var fileScanners = {}
 // }]
 
 var workerDB = []
-
+var filesToAddToDB = []
 
 //__dirname = getRootDir()
 
@@ -80,9 +80,9 @@ if (!Array.isArray(count) || !count.length) {
     {
       $set: {
         lowCPUPriority: false,
-        generalWorkerLimit:0,
-        transcodeWorkerLimit:0,
-        healthcheckWorkerLimit:0,
+        generalWorkerLimit: 0,
+        transcodeWorkerLimit: 0,
+        healthcheckWorkerLimit: 0,
       }
     }
   );
@@ -116,16 +116,16 @@ if (!Array.isArray(count) || !count.length) {
   StatisticsDB.upsert('statistics',
     {
       $set: {
-        totalFileCount:0,
-        totalTranscodeCount:0,
-        totalHealthCheckCount:0,
-        pie1: [{name:"No data",value:1}],
-        pie2: [{name:"No data",value:1}],
-        pie3: [{name:"No data",value:1}],
-        pie4: [{name:"No data",value:1}],
-        pie5: [{name:"No data",value:1}],
-        pie6: [{name:"No data",value:1}],
-        pie7: [{name:"No data",value:1}],
+        totalFileCount: 0,
+        totalTranscodeCount: 0,
+        totalHealthCheckCount: 0,
+        pie1: [{ name: "No data", value: 1 }],
+        pie2: [{ name: "No data", value: 1 }],
+        pie3: [{ name: "No data", value: 1 }],
+        pie4: [{ name: "No data", value: 1 }],
+        pie5: [{ name: "No data", value: 1 }],
+        pie6: [{ name: "No data", value: 1 }],
+        pie7: [{ name: "No data", value: 1 }],
       }
     }
   );
@@ -135,16 +135,16 @@ if (!Array.isArray(count) || !count.length) {
 }
 
 ClientDB.upsert('client',
-{
-  $set: {
-    table1: [{}],
-    table2: [{}],
-    table3: [{}],
-    table4: [{}],
-    table5: [{}],
-    table6: [{}],
+  {
+    $set: {
+      table1: [{}],
+      table2: [{}],
+      table3: [{}],
+      table4: [{}],
+      table5: [{}],
+      table6: [{}],
+    }
   }
-}
 );
 
 
@@ -159,34 +159,34 @@ Meteor.methods({
 
   'searchDB'(string) {
 
-    var allFiles =FileDB.find({}).fetch()
-    allFiles = allFiles.sort(function(a,b){
+    var allFiles = FileDB.find({}).fetch()
+    allFiles = allFiles.sort(function (a, b) {
       return new Date(b.createdAt) - new Date(a.createdAt);
     });
 
 
-    allFiles = allFiles.filter(row => (row.file).toLowerCase().includes(string.toLowerCase()) );
+    allFiles = allFiles.filter(row => (row.file).toLowerCase().includes(string.toLowerCase()));
     return allFiles
     //FileDB.find({},{ sort: { createdAt: - 1 }}).fetch()
 
 
-   // return (FileDB.find({},{ sort: { createdAt: - 1 }}).fetch()).filter(row => (row.file).toLowerCase().includes(string.toLowerCase()) );
+    // return (FileDB.find({},{ sort: { createdAt: - 1 }}).fetch()).filter(row => (row.file).toLowerCase().includes(string.toLowerCase()) );
 
 
 
   },
 
-  
+
   'resetAllStatus'(mode) {
 
-  //  var allFiles = FileDB.find({},{ sort: { createdAt: - 1 }}).fetch()
+    //  var allFiles = FileDB.find({},{ sort: { createdAt: - 1 }}).fetch()
 
-  var allFiles =FileDB.find({}).fetch()
-  allFiles = allFiles.sort(function(a,b){
-    return new Date(b.createdAt) - new Date(a.createdAt);
-  });
+    var allFiles = FileDB.find({}).fetch()
+    allFiles = allFiles.sort(function (a, b) {
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
 
-    for(var i = 0; i < allFiles.length; i++){
+    for (var i = 0; i < allFiles.length; i++) {
 
       FileDB.upsert(
         allFiles[i].file,
@@ -202,21 +202,21 @@ Meteor.methods({
 
   },
 
-  'verifyFolder'(folderPath,DB_id,folderType) {
+  'verifyFolder'(folderPath, DB_id, folderType) {
 
-    if(fs.existsSync(folderPath)) {
+    if (fs.existsSync(folderPath)) {
 
       SettingsDB.upsert(
-      DB_id,
-      {
-        $set: {
-          [folderType]: true,
+        DB_id,
+        {
+          $set: {
+            [folderType]: true,
+          }
         }
-      }
-    );
+      );
 
 
-    }else{
+    } else {
 
       SettingsDB.upsert(
 
@@ -231,28 +231,28 @@ Meteor.methods({
 
     }
 
-// const { lstatSync, readdirSync } = require('fs')
-// const { join } = require('path')
+    // const { lstatSync, readdirSync } = require('fs')
+    // const { join } = require('path')
 
-// const isDirectory = source => lstatSync(source).isDirectory()
-// const getDirectories = source =>
-//   readdirSync(source).map(name => join(source, name)).filter(isDirectory)
+    // const isDirectory = source => lstatSync(source).isDirectory()
+    // const getDirectories = source =>
+    //   readdirSync(source).map(name => join(source, name)).filter(isDirectory)
 
   },
 
-    'getWorkers'() {
+  'getWorkers'() {
 
 
-      return workerDB
+    return workerDB
 
-    },
+  },
 
-    'upsertWorkers'(w_id,obj) {
-      upsertWorker(w_id, obj)
-    },
+  'upsertWorkers'(w_id, obj) {
+    upsertWorker(w_id, obj)
+  },
 
   //launch worker
-  'launchWorker'(workerType,number) {
+  'launchWorker'(workerType, number) {
 
     console.log("here")
 
@@ -295,7 +295,7 @@ Meteor.methods({
     } catch (err) { }
 
 
-  }, 'scanFiles'(DB_id, arrayOrPath, arrayOrPathSwitch, mode,HealthCheck,TranscodeDecisionMaker) {
+  }, 'scanFiles'(DB_id, arrayOrPath, arrayOrPathSwitch, mode, HealthCheck, TranscodeDecisionMaker) {
 
 
 
@@ -303,14 +303,14 @@ Meteor.methods({
 
       console.log("Commencing file update scan. Deleting non-existent files and adding new files.")
 
-     // var filesInDB = FileDB.find({ DB: DB_id }, { sort: { createdAt: 1 } }).fetch()
+      // var filesInDB = FileDB.find({ DB: DB_id }, { sort: { createdAt: 1 } }).fetch()
 
-     var filesInDB  = FileDB.find({}).fetch()
-     filesInDB = filesInDB.sort(function(a,b){
-       return new Date(b.createdAt) - new Date(a.createdAt);
-     });
-   
-     filesInDB  = filesInDB.filter(row => row.DB == DB_id );
+      var filesInDB = FileDB.find({}).fetch()
+      filesInDB = filesInDB.sort(function (a, b) {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+
+      filesInDB = filesInDB.filter(row => row.DB == DB_id);
 
       filesInDB = filesInDB.map((file, i) => {
         if (!(fs.existsSync(file.file))) {
@@ -414,79 +414,55 @@ Meteor.methods({
       if (message[1] == "addFileToDB") {
 
 
-        console.log("addFileToDB")
+        console.log("Queueing file to be added to DB")
 
 
 
-        // console.log(message[2])
-        // console.log(message[3])
-        // console.log(message[4])
+        // FileDB.upsert(message[2],
+        //   {
+        //     $set: {
+        //       _id: message[2],
+        //       file: message[2],
+        //       DB: message[4],
+        //       HealthCheck: message[5],
+        //       TranscodeDecisionMaker: message[6],
+        //       processingStatus: false,
+        //       createdAt: new Date(),
+        //     }
+        //   }
 
-        FileDB.upsert(message[2],
-          {
-            $set: {
-              _id: message[2],
-              file: message[2],
-              DB: message[4],
-              HealthCheck: message[5],
-              TranscodeDecisionMaker: message[6],
-              processingStatus:false,
-              createdAt: new Date(),
-            }
-          }
+        // );
 
-        );
 
-        //   var obj = JSON.parse('{ "name":"John", "age":30, "city":"New York"}');
-
-        //  var jsonData = JSON.parse(message[3]);
 
         var jsonData = message[3];
 
-       // console.log(message[2])
+        jsonData._id = message[2]
+        jsonData.file = message[2]
+        jsonData.DB = message[4]
+        jsonData.HealthCheck = message[5]
+        jsonData.TranscodeDecisionMaker = message[6]
+        jsonData.processingStatus = false
+        jsonData.createdAt = new Date()
 
-      //   console.log(jsonData)
 
         if (typeof jsonData === 'object' && jsonData !== null) {
-
-        //  console.log("jsonData is object")
-
+          //  console.log("jsonData is object")
         } else {
-
-       //   console.log("jsonData isn't object")
-
-
+          //   console.log("jsonData isn't object")
         }
 
-                  try{
+        filesToAddToDB.push(jsonData)
 
-          FileDB.upsert(message[2],
-            {
-              $set: jsonData
-            }
-          );
-
-        }catch(err){
-
-          console.log("Error adding file property to DB")
-
-        }
-
-
-
-        // Object.keys(jsonData).forEach(function (key) {
-
-        //   try{
+        // try {
 
         //   FileDB.upsert(message[2],
         //     {
-        //       $set: {
-        //         [key]: jsonData[key]
-        //       }
+        //       $set: jsonData
         //     }
         //   );
 
-        // }catch(err){
+        // } catch (err) {
 
         //   console.log("Error adding file property to DB")
 
@@ -494,7 +470,6 @@ Meteor.methods({
 
 
 
-        // });
 
 
 
@@ -510,22 +485,22 @@ Meteor.methods({
             }
           }
         );
-    
 
-    }
 
-    if (message[1] == "finishScan") {
+      }
 
-      SettingsDB.upsert(message[2],
-        {
-          $set: {
-            scanButtons: true,
+      if (message[1] == "finishScan") {
+
+        SettingsDB.upsert(message[2],
+          {
+            $set: {
+              scanButtons: true,
+            }
           }
-        }
-      );
-  
+        );
 
-  }
+
+      }
 
 
       if (message[1] == "consoleMessage") {
@@ -549,24 +524,24 @@ Meteor.methods({
   }
 })
 
-function findWorker(w_id){
+function findWorker(w_id) {
 
 
-  if(w_id){
+  if (w_id) {
 
-      var idx = workerDB.findIndex(row => row._id == w_id);
+    var idx = workerDB.findIndex(row => row._id == w_id);
 
-  if (idx >= 0) {
-     return [workerDB[idx]]
-  }else{
+    if (idx >= 0) {
+      return [workerDB[idx]]
+    } else {
 
-    return []
-  }
+      return []
+    }
 
 
-  }else{
+  } else {
 
-      return workerDB
+    return workerDB
 
   }
 
@@ -579,7 +554,7 @@ function removeWorker(w_id) {
   var idx = workerDB.findIndex(row => row._id == w_id);
 
   if (idx >= 0) {
-      workerDB.splice(idx, 1)
+    workerDB.splice(idx, 1)
   }
 }
 
@@ -590,27 +565,27 @@ function upsertWorker(w_id, obj) {
 
   if (idx >= 0) {
 
-      Object.keys(obj).forEach(function (key) {
+    Object.keys(obj).forEach(function (key) {
 
-          try {
+      try {
 
-              workerDB[idx][key] = obj[key]
-
-
-          } catch (err) {
-
-              console.log("Error adding file property to DB")
-
-          }
+        workerDB[idx][key] = obj[key]
 
 
+      } catch (err) {
 
-      });
+        console.log("Error adding file property to DB")
+
+      }
+
+
+
+    });
 
 
   } else {
-      workerDB.push({ _id: w_id })
-      upsertWorker(w_id, obj)
+    workerDB.push({ _id: w_id })
+    upsertWorker(w_id, obj)
 
   }
 
@@ -723,7 +698,7 @@ function launchWorkerModule(workerType) {
       workers[message[0]] = "idle"
 
 
-    
+
 
       removeWorker(message[0])
 
@@ -798,20 +773,20 @@ function launchWorkerModule(workerType) {
             var files = generalFiles
 
 
-         
+
 
           } else if (workerType == "transcode") {
 
-         
-            
-          
-          var files = transcodeFiles
-          var mode = "transcode"
 
-          }else if(workerType == "healthcheck"){
 
- 
-           var files = healthcheckFiles
+
+            var files = transcodeFiles
+            var mode = "transcode"
+
+          } else if (workerType == "healthcheck") {
+
+
+            var files = healthcheckFiles
             var mode = "healthcheck"
           }
 
@@ -833,18 +808,18 @@ function launchWorkerModule(workerType) {
 
             var firstItem = files[0]
 
-            files.splice(0,1)
+            files.splice(0, 1)
 
             //Settings from fileDB
 
-            if (filesBeingProcessed.includes(firstItem.file+"")) {
+            if (filesBeingProcessed.includes(firstItem.file + "")) {
 
               //put item to back of the queue so doesn't hold up queue
 
-            var messageOut = [
-              "requestNewItem",
+              var messageOut = [
+                "requestNewItem",
 
-            ]
+              ]
               workers[message[0]].send(messageOut);
 
             } else {
@@ -859,21 +834,21 @@ function launchWorkerModule(workerType) {
                 {
                   $set: {
                     _id: firstItem.file,
-                    processingStatus:true
+                    processingStatus: true
 
                   }
                 }
               );
 
-              filesBeingProcessed.push(firstItem.file+"")
+              filesBeingProcessed.push(firstItem.file + "")
 
               if (workerType == "general") {
 
-                if(firstItem.HealthCheck =="Not attempted" && firstItem.fileMedium == "video"){
-      
+                if (firstItem.HealthCheck == "Not attempted" && firstItem.fileMedium == "video") {
+
                   var mode = "healthcheck"
-      
-                }else if(firstItem.TranscodeDecisionMaker =="Not attempted"){
+
+                } else if (firstItem.TranscodeDecisionMaker == "Not attempted") {
                   var mode = "transcode"
                 }
               }
@@ -891,7 +866,7 @@ function launchWorkerModule(workerType) {
 
 
 
-             
+
 
               var fileToProcess = firstItem.file
               var fileID = firstItem._id
@@ -913,7 +888,7 @@ function launchWorkerModule(workerType) {
               var processFile = true
 
               var cliLogAdd = ""
-      
+
 
               if (mode == "healthcheck") {
 
@@ -962,58 +937,58 @@ function launchWorkerModule(workerType) {
                 if (settings[0].decisionMaker.videoFilter == true) {
 
                   if (firstItem.fileMedium !== "video") {
-                    
+
                     console.log("File is not video")
 
-                    cliLogAdd +="File is not video"
+                    cliLogAdd += "File is not video"
 
                     processFile = false;
-                  }else{
+                  } else {
 
-                  video_codec_names_exclude = settings[0].decisionMaker.video_codec_names_exclude
-                  video_codec_names_exclude = video_codec_names_exclude.map(row => {
-                    if (row.checked == true) {
-                      return row.codec
+                    video_codec_names_exclude = settings[0].decisionMaker.video_codec_names_exclude
+                    video_codec_names_exclude = video_codec_names_exclude.map(row => {
+                      if (row.checked == true) {
+                        return row.codec
+                      }
+                    })
+
+
+                    if (video_codec_names_exclude.includes(firstItem.video_codec_name) && typeof firstItem.video_codec_name !== 'undefined') {
+
+                      console.log(video_codec_names_exclude + "   " + firstItem.video_codec_name)
+
+                      console.log("File already in required codec")
+
+                      cliLogAdd += "File already in required codec"
+
+                      processFile = false;
+
                     }
-                  })
 
+                    if (firstItem.file_size >= settings[0].decisionMaker.video_size_range_include.max || firstItem.file_size <= settings[0].decisionMaker.video_size_range_include.min) {
+                      console.log("File not in video size range")
 
-                  if (video_codec_names_exclude.includes(firstItem.video_codec_name) && typeof firstItem.video_codec_name !== 'undefined') {
+                      cliLogAdd += "File not in video size range"
 
-                    console.log(video_codec_names_exclude +"   "+firstItem.video_codec_name)
+                      processFile = false;
+                    }
 
-                    console.log("File already in required codec")
+                    if (firstItem.video_height >= settings[0].decisionMaker.video_height_range_include.max || firstItem.video_height <= settings[0].decisionMaker.video_height_range_include.min) {
+                      console.log("File not in video height range")
 
-                    cliLogAdd += "File already in required codec"
+                      cliLogAdd += "File not in video height range"
 
-                    processFile = false;
+                      processFile = false;
+                    }
+
+                    if (firstItem.video_width >= settings[0].decisionMaker.video_width_range_include.max || firstItem.video_width <= settings[0].decisionMaker.video_width_range_include.min) {
+                      console.log("File not in video width range")
+                      cliLogAdd += "File not in video width range"
+
+                      processFile = false;
+                    }
 
                   }
-
-                  if (firstItem.file_size >= settings[0].decisionMaker.video_size_range_include.max || firstItem.file_size <= settings[0].decisionMaker.video_size_range_include.min) {
-                    console.log("File not in video size range")
-
-                    cliLogAdd += "File not in video size range"
-
-                    processFile = false;
-                  }
-
-                  if (firstItem.video_height >= settings[0].decisionMaker.video_height_range_include.max || firstItem.video_height <= settings[0].decisionMaker.video_height_range_include.min) {
-                    console.log("File not in video height range")
-
-                    cliLogAdd += "File not in video height range"
-
-                    processFile = false;
-                  }
-
-                  if (firstItem.video_width >= settings[0].decisionMaker.video_width_range_include.max || firstItem.video_width <= settings[0].decisionMaker.video_width_range_include.min) {
-                    console.log("File not in video width range")
-                    cliLogAdd += "File not in video width range"
-
-                    processFile = false;
-                  }
-
-                }
 
                 }
 
@@ -1025,36 +1000,36 @@ function launchWorkerModule(workerType) {
                     cliLogAdd += "File is not audio"
 
                     processFile = false;
-                  }else{
+                  } else {
 
-                  audio_codec_names_exclude = settings[0].decisionMaker.audio_codec_names_exclude
-                  audio_codec_names_exclude = audio_codec_names_exclude.map(row => {
-                    if (row.checked == true) {
-                      return row.codec
+                    audio_codec_names_exclude = settings[0].decisionMaker.audio_codec_names_exclude
+                    audio_codec_names_exclude = audio_codec_names_exclude.map(row => {
+                      if (row.checked == true) {
+                        return row.codec
+                      }
+                    })
+
+
+                    if (audio_codec_names_exclude.includes(firstItem.audio_codec_name) && typeof firstItem.audio_codec_name !== 'undefined') {
+
+                      console.log("File already in required codec")
+                      cliLogAdd += "File already in required codec"
+
+                      processFile = false;
+
                     }
-                  })
 
+                    if (firstItem.file_size >= settings[0].decisionMaker.audio_size_range_include.max || firstItem.file_size <= settings[0].decisionMaker.audio_size_range_include.min) {
 
-                  if (audio_codec_names_exclude.includes(firstItem.audio_codec_name)  && typeof firstItem.audio_codec_name !== 'undefined') {
+                      console.log("File not in audio size range")
 
-                    console.log("File already in required codec")
-                    cliLogAdd += "File already in required codec"
+                      cliLogAdd += "File not in audio size range"
 
-                    processFile = false;
+                      processFile = false;
+                    }
+
 
                   }
-
-                  if (firstItem.file_size >= settings[0].decisionMaker.audio_size_range_include.max || firstItem.file_size <= settings[0].decisionMaker.audio_size_range_include.min) {
-                    
-                    console.log("File not in audio size range")
-
-                    cliLogAdd += "File not in audio size range"
-
-                    processFile = false;
-                  }
-
-
-                }
 
                 }
 
@@ -1085,29 +1060,29 @@ function launchWorkerModule(workerType) {
               //File filtered out by transcode decision maker
               if (processFile == false) {
 
-                  FileDB.upsert(fileToProcess,
-                    {
-                      $set: {
-                        _id: fileToProcess,
-                        TranscodeDecisionMaker:"Passed",
-                        processingStatus:false,
-                        cliLog:cliLogAdd,
+                FileDB.upsert(fileToProcess,
+                  {
+                    $set: {
+                      _id: fileToProcess,
+                      TranscodeDecisionMaker: "Passed",
+                      processingStatus: false,
+                      cliLog: cliLogAdd,
 
-                      }
                     }
-                  );
+                  }
+                );
 
 
-                var indexEle = filesBeingProcessed.indexOf(firstItem.file  + "")
+                var indexEle = filesBeingProcessed.indexOf(firstItem.file + "")
                 filesBeingProcessed.splice(indexEle, 1)
                 console.log("after:" + filesBeingProcessed)
 
 
-             
-               var messageOut = [
-                "requestNewItem",
 
-              ]
+                var messageOut = [
+                  "requestNewItem",
+
+                ]
                 workers[message[0]].send(messageOut);
 
 
@@ -1185,7 +1160,7 @@ function launchWorkerModule(workerType) {
 
 
 
-      var indexEle = filesBeingProcessed.indexOf(message[2]  + "")
+      var indexEle = filesBeingProcessed.indexOf(message[2] + "")
       filesBeingProcessed.splice(indexEle, 1)
 
       console.log("filesBeingProcessed:" + filesBeingProcessed)
@@ -1197,19 +1172,19 @@ function launchWorkerModule(workerType) {
           {
             $set: {
               _id: message[2],
-              HealthCheck:"Error",
-              processingStatus:false,
-              cliLog:message[5],
+              HealthCheck: "Error",
+              processingStatus: false,
+              cliLog: message[5],
               createdAt: new Date(),
             }
           }
         );
 
         StatisticsDB.update("statistics",
-        {
-          $inc: { totalHealthCheckCount: 1}
-        }
-      );
+          {
+            $inc: { totalHealthCheckCount: 1 }
+          }
+        );
 
 
       } else if (message[4] == "transcode") {
@@ -1218,20 +1193,20 @@ function launchWorkerModule(workerType) {
           {
             $set: {
               _id: message[2],
-              TranscodeDecisionMaker:"Transcode error",
-              processingStatus:false,
-              cliLog:message[5],
+              TranscodeDecisionMaker: "Transcode error",
+              processingStatus: false,
+              cliLog: message[5],
               createdAt: new Date(),
             }
           }
         );
-      //  ffprobeLaunch([message[2]], OutputDB, message[3])
+        //  ffprobeLaunch([message[2]], OutputDB, message[3])
 
-      StatisticsDB.update("statistics",
-      {
-        $inc: { totalTranscodeCount: 1}
-      }
-    );
+        StatisticsDB.update("statistics",
+          {
+            $inc: { totalTranscodeCount: 1 }
+          }
+        );
 
 
       }
@@ -1249,7 +1224,7 @@ function launchWorkerModule(workerType) {
 
 
 
-      var indexEle = filesBeingProcessed.indexOf(message[2]  + "")
+      var indexEle = filesBeingProcessed.indexOf(message[2] + "")
       filesBeingProcessed.splice(indexEle, 1)
 
       console.log("filesBeingProcessed:" + filesBeingProcessed)
@@ -1262,8 +1237,8 @@ function launchWorkerModule(workerType) {
           {
             $set: {
               _id: message[2],
-              HealthCheck:"Success",
-              processingStatus:false,
+              HealthCheck: "Success",
+              processingStatus: false,
               createdAt: new Date(),
             }
           }
@@ -1272,7 +1247,7 @@ function launchWorkerModule(workerType) {
 
         StatisticsDB.update("statistics",
           {
-            $inc: { totalHealthCheckCount: 1}
+            $inc: { totalHealthCheckCount: 1 }
           }
         );
 
@@ -1281,7 +1256,7 @@ function launchWorkerModule(workerType) {
 
       } else if (message[4] == "transcode") {
 
-       // console.log("HERE")
+        // console.log("HERE")
 
         //console.log(message[2])
 
@@ -1299,18 +1274,18 @@ function launchWorkerModule(workerType) {
         // );
 
 
-      //  ffprobeLaunch([message[2]], OutputDB, message[3])
+        //  ffprobeLaunch([message[2]], OutputDB, message[3])
 
-      FileDB.remove(message[5])
+        FileDB.remove(message[5])
 
-      newFile = [message[2],]
-      Meteor.call('scanFiles', message[3], newFile, 0, 3,"Not attempted","Transcode success", function (error, result) { });
+        newFile = [message[2],]
+        Meteor.call('scanFiles', message[3], newFile, 0, 3, "Not attempted", "Transcode success", function (error, result) { });
 
-      StatisticsDB.update("statistics",
-      {
-        $inc: { totalTranscodeCount: 1}
-      }
-    );
+        StatisticsDB.update("statistics",
+          {
+            $inc: { totalTranscodeCount: 1 }
+          }
+        );
 
 
       }
@@ -1397,30 +1372,30 @@ function launchWorkerModule(workerType) {
 
 
 
-      if(message[5] == "notsuicide"){
+      if (message[5] == "notsuicide") {
 
 
-      upsertWorker(message[0], {
-        _id: message[0],
-        percentage: 100
-      })
+        upsertWorker(message[0], {
+          _id: message[0],
+          percentage: 100
+        })
 
 
-    }else if(message[5] == "suicide"){
+      } else if (message[5] == "suicide") {
 
 
-      removeWorker(message[0])
+        removeWorker(message[0])
 
 
-      workers[message[0]] = "idle";
-  
-
-
-    }
+        workers[message[0]] = "idle";
 
 
 
-      var indexEle = filesBeingProcessed.indexOf(message[2]  + "")
+      }
+
+
+
+      var indexEle = filesBeingProcessed.indexOf(message[2] + "")
       filesBeingProcessed.splice(indexEle, 1)
 
 
@@ -1430,9 +1405,9 @@ function launchWorkerModule(workerType) {
           {
             $set: {
               _id: message[2],
-              HealthCheck:"Cancelled",
-              processingStatus:false,
-              cliLog:"Item was cancelled by user.",
+              HealthCheck: "Cancelled",
+              processingStatus: false,
+              cliLog: "Item was cancelled by user.",
               createdAt: new Date(),
             }
           }
@@ -1445,9 +1420,9 @@ function launchWorkerModule(workerType) {
           {
             $set: {
               _id: message[2],
-              TranscodeDecisionMaker:"Transcode cancelled",
-              processingStatus:false,
-              cliLog:"Item was cancelled by user.",
+              TranscodeDecisionMaker: "Transcode cancelled",
+              processingStatus: false,
+              cliLog: "Item was cancelled by user.",
               createdAt: new Date(),
             }
           }
@@ -1582,7 +1557,7 @@ function createFolderWatch(Folder, DB_id) {
       newFile = newFile.replace(/\\/g, "/");
 
       newFile = [newFile,]
-      Meteor.call('scanFiles', DB_id, newFile, 0, 3,"Not attempted","Not attempted", function (error, result) { });
+      Meteor.call('scanFiles', DB_id, newFile, 0, 3, "Not attempted", "Not attempted", function (error, result) { });
 
 
 
@@ -1608,167 +1583,272 @@ function createFolderWatch(Folder, DB_id) {
 }
 
 
-tableUpdate = setInterval(Meteor.bindEnvironment(tablesUpdate), 4000);
+var dbUpdate = setInterval(Meteor.bindEnvironment(dbUpdatePush), 1000)
 
-var allFilesPulledTable
-var generalFiles 
-var transcodeFiles 
-var healthcheckFiles 
+function dbUpdatePush() {
 
-function tablesUpdate(){
+  for (var i = 0; i < filesToAddToDB.length; i++) {
+
+    if (addFilesToDB == false) {
+
+      break
+
+    } else {
+
+      console.log("Adding file to DB")
+
+      try {
+
+        FileDB.upsert(filesToAddToDB[i]._id,
+          {
+            $set: filesToAddToDB[i]
+          }
+        );
+
+      } catch (err) {
+
+        console.log("Error adding file property to DB")
+
+      }
+
+      filesToAddToDB.splice(i, 1)
+
+      i--
+
+    }
+
+
+  }
+
+
+}
+
+//var tableUpdate = setInterval(Meteor.bindEnvironment(checkIfShouldUpdate), 10000);
+
+// var updateInterval = function() {
+
+//   DBPollPeriod = ((filesToAddToDB.length+allFilesPulledTable.length)/1000)
+//   console.log(DBPollPeriod)
+//   console.log(DBPollPeriod > 10 ? DBPollPeriod : 10)
+
+
+//     checkIfShouldUpdate()
+//     setTimeout(Meteor.bindEnvironment(updateInterval), 20);
+// }
+
+var allFilesPulledTable = []
+var generalFiles
+var transcodeFiles
+var healthcheckFiles
+
+
+var filesToAddToDBLengthNew = 0
+var filesToAddToDBLengthOld = 0
+var DBPollPeriod = 4000
+
+
+var addFilesToDB = true
+
+// function checkIfShouldUpdate() {
+
+//   if (updateTableFlag == true) {
+
+//     updateTableFlag = false
+//     addFilesToDB = false
+//     tablesUpdate()
+
+//   }
+
+// }
+
+tablesUpdate()
+
+function tablesUpdate() {
+
+
+  
+  addFilesToDB = false
+
 
   var startDate = new Date();
 
-  // allFilesPulledTable = FileDB.find({}).fetch()
+  allFilesPulledTable = FileDB.find({}).fetch()
 
-  // allFilesPulledTable = allFilesPulledTable.sort(function(a,b){
-  //   return new Date(b.createdAt) - new Date(a.createdAt);
-  // });
-  allFilesPulledTable = FileDB.find({},{ sort: { createdAt: - 1 }}).fetch()
+  allFilesPulledTable = allFilesPulledTable.sort(function (a, b) {
+    return new Date(b.createdAt) - new Date(a.createdAt);
+  });
+  //allFilesPulledTable = FileDB.find({},{ sort: { createdAt: - 1 }}).fetch()
 
+  //all_reviews = db_handle.find().sort('reviewDate', pymongo.ASCENDING)
+  //db_handle.ensure_index([("reviewDate", pymongo.ASCENDING)])
 
-
-//all_reviews = db_handle.find().sort('reviewDate', pymongo.ASCENDING)
-//db_handle.ensure_index([("reviewDate", pymongo.ASCENDING)])
-
-//all_reviews = db_handle.aggregate([{$sort: {'reviewDate': 1}}], {allowDiskUse: true})
+  //all_reviews = db_handle.aggregate([{$sort: {'reviewDate': 1}}], {allowDiskUse: true})
 
 
 
- var table1data = allFilesPulledTable.filter(row => ( row.TranscodeDecisionMaker == "Not attempted" && row.processingStatus == false ) );
- var table2data = allFilesPulledTable.filter(row => ( (row.TranscodeDecisionMaker == "Transcode success" ||row.TranscodeDecisionMaker == "Passed" ) && row.processingStatus == false ) );
- var table3data = allFilesPulledTable.filter(row => ( (row.TranscodeDecisionMaker == "Transcode error" || row.TranscodeDecisionMaker == "Transcode cancelled" ) && row.processingStatus == false ) );
- var table4data = allFilesPulledTable.filter(row => ( row.HealthCheck == "Not attempted" && row.fileMedium == "video"  && row.processingStatus == false ) );
- var table5data = allFilesPulledTable.filter(row => ( row.HealthCheck == "Success"  && row.processingStatus == false ) );
- var table6data = allFilesPulledTable.filter(row => ( (row.HealthCheck == "Error" || row.HealthCheck == "Cancelled")  && row.processingStatus == false ) );
+  var table1data = allFilesPulledTable.filter(row => (row.TranscodeDecisionMaker == "Not attempted" && row.processingStatus == false));
+  var table2data = allFilesPulledTable.filter(row => ((row.TranscodeDecisionMaker == "Transcode success" || row.TranscodeDecisionMaker == "Passed") && row.processingStatus == false));
+  var table3data = allFilesPulledTable.filter(row => ((row.TranscodeDecisionMaker == "Transcode error" || row.TranscodeDecisionMaker == "Transcode cancelled") && row.processingStatus == false));
+  var table4data = allFilesPulledTable.filter(row => (row.HealthCheck == "Not attempted" && row.fileMedium == "video" && row.processingStatus == false));
+  var table5data = allFilesPulledTable.filter(row => (row.HealthCheck == "Success" && row.processingStatus == false));
+  var table6data = allFilesPulledTable.filter(row => ((row.HealthCheck == "Error" || row.HealthCheck == "Cancelled") && row.processingStatus == false));
 
- generalFiles = (table4data).concat(table1data)
- //console.log("generalFiles:"+generalFiles)
- transcodeFiles  = table1data
- healthcheckFiles = table4data
+  generalFiles = (table4data).concat(table1data)
+  //console.log("generalFiles:"+generalFiles)
+  transcodeFiles = table1data
+  healthcheckFiles = table4data
 
- //
+  //
 
- function getTimeNow() {
+  function getTimeNow() {
 
-  var d = new Date(),
+    var d = new Date(),
       h = (d.getHours() < 10 ? '' : '') + d.getHours(),
       m = (d.getMinutes() < 10 ? '0' : '') + d.getMinutes();
-  var s = (d.getSeconds() < 10 ? '0' : '') + d.getSeconds();
-  var timenow = h
+    var s = (d.getSeconds() < 10 ? '0' : '') + d.getSeconds();
+    var timenow = h
 
-  return timenow
-}
-
- var timeIdx = getTimeNow()
- //console.log(timeIdx)
-
- var settings = SettingsDB.find({}, { sort: { createdAt: 1 } }).fetch()
-
- for(var i = 0; i < settings.length; i++){
-
-
-  if(settings[i].schedule[timeIdx].checked == false){
-
-
-
-    generalFiles = generalFiles.filter(row => row.DB != settings[i]._id );
-    transcodeFiles  = transcodeFiles.filter(row => row.DB != settings[i]._id );
-    healthcheckFiles = healthcheckFiles.filter(row => row.DB != settings[i]._id );
-
-
+    return timenow
   }
- }
 
- //
+  var timeIdx = getTimeNow()
+  //console.log(timeIdx)
 
- var generalWorkers = workerDB.filter(row => row.mode == "general"  ).length;
- var transcodeWorkers = workerDB.filter(row => row.mode == "transcode"  ).length;
- var healthcheckWorkers = workerDB.filter(row => row.mode == "healthcheck"  ).length;
+  var settings = SettingsDB.find({}, { sort: { createdAt: 1 } }).fetch()
 
- //
+  for (var i = 0; i < settings.length; i++) {
 
- var globs =GlobalSettingsDB.find({}, {}).fetch()
 
- var gDiff = globs[0].generalWorkerLimit - generalWorkers
- var tDiff = globs[0].transcodeWorkerLimit - transcodeWorkers
- var hDiff = globs[0].healthcheckWorkerLimit - healthcheckWorkers
-
- if(gDiff >= 1){
-  Meteor.call('launchWorker', "general",gDiff, function (error, result) { });
- }
- if(tDiff >= 1){
-  Meteor.call('launchWorker', "transcode",tDiff, function (error, result) { });
- }
-
- if(hDiff >= 1){
-  Meteor.call('launchWorker', "healthcheck",hDiff, function (error, result) { });
- }
+    if (settings[i].schedule[timeIdx].checked == false) {
 
 
 
+      generalFiles = generalFiles.filter(row => row.DB != settings[i]._id);
+      transcodeFiles = transcodeFiles.filter(row => row.DB != settings[i]._id);
+      healthcheckFiles = healthcheckFiles.filter(row => row.DB != settings[i]._id);
 
 
-StatisticsDB.upsert('statistics',
- {
-     $set: {
-         tdarrScore:((table2data.length*100.00)/(table1data.length+table2data.length+table3data.length)).toPrecision(4),
-         healthCheckScore:((table5data.length*100.00)/(table4data.length+table5data.length+table6data.length)).toPrecision(4),
-       }
- }
-);
+    }
+  }
 
+  //
 
-table1data = table1data.slice(0,20)
-table2data = table2data.slice(0,20)
-table3data = table3data.slice(0,20)
-table4data = table4data.slice(0,20)
-table5data = table5data.slice(0,20)
-table6data = table6data.slice(0,20)
+  var generalWorkers = workerDB.filter(row => row.mode == "general").length;
+  var transcodeWorkers = workerDB.filter(row => row.mode == "transcode").length;
+  var healthcheckWorkers = workerDB.filter(row => row.mode == "healthcheck").length;
+
+  //
+
+  var globs = GlobalSettingsDB.find({}, {}).fetch()
+
+  var gDiff = globs[0].generalWorkerLimit - generalWorkers
+  var tDiff = globs[0].transcodeWorkerLimit - transcodeWorkers
+  var hDiff = globs[0].healthcheckWorkerLimit - healthcheckWorkers
+
+  if (gDiff >= 1) {
+    Meteor.call('launchWorker', "general", gDiff, function (error, result) { });
+  }
+  if (tDiff >= 1) {
+    Meteor.call('launchWorker', "transcode", tDiff, function (error, result) { });
+  }
+
+  if (hDiff >= 1) {
+    Meteor.call('launchWorker', "healthcheck", hDiff, function (error, result) { });
+  }
 
 
 
 
 
-
-
- var endDate = new Date();
- var seconds2 = (endDate.getTime() - startDate.getTime()) / 1000;
-
- var time = seconds2
-
- //console.log("time taken: "+time)
-
-//console.log("data done")
-
-
-
-    ClientDB.upsert("client",
-  {
+  StatisticsDB.upsert('statistics',
+    {
       $set: {
-          table1:table1data,
-          table2:table2data,
-          table3:table3data,
-          table4:table4data,
-          table5:table5data,
-          table6:table6data,
-        }
-  }
-);
+        tdarrScore: ((table2data.length * 100.00) / (table1data.length + table2data.length + table3data.length)).toPrecision(4),
+        healthCheckScore: ((table5data.length * 100.00) / (table4data.length + table5data.length + table6data.length)).toPrecision(4),
+      }
+    }
+  );
+
+
+  table1data = table1data.slice(0, 20)
+  table2data = table2data.slice(0, 20)
+  table3data = table3data.slice(0, 20)
+  table4data = table4data.slice(0, 20)
+  table5data = table5data.slice(0, 20)
+  table6data = table6data.slice(0, 20)
+
+
+
+
+
+
+
+  var endDate = new Date();
+  var seconds2 = (endDate.getTime() - startDate.getTime()) / 1000;
+
+  var time = seconds2
+
+  console.log("time taken: " + time)
+
+  //console.log("data done")
+
+
+
+  ClientDB.upsert("client",
+    {
+      $set: {
+        table1: table1data,
+        table2: table2data,
+        table3: table3data,
+        table4: table4data,
+        table5: table5data,
+        table6: table6data,
+      }
+    }
+  );
+
+
+  //   ClientDB.upsert("client",
+  //   {
+  //       $set: {
+  //           table1:table1data,
+  //         }
+  //   }
+  // );
+
+
+
+
+  statisticsUpdate();
+
+
+
+ 
+ 
+
+ // filesToAddToDBLengthNew = 0
+// filesToAddToDBLengthOld = 0
+filesToAddToDBLengthNew = filesToAddToDB.length
+
+  if (filesToAddToDBLengthNew > filesToAddToDBLengthOld) {
 
   
-//   ClientDB.upsert("client",
-//   {
-//       $set: {
-//           table1:table1data,
-//         }
-//   }
-// );
+    DBPollPeriod += 1000
+
+  } else {
+
+    if (DBPollPeriod > 1000) {
+      DBPollPeriod -=1000
+    }
+  }
+  console.log("DBPollPeriod:"+DBPollPeriod)
+  setTimeout(Meteor.bindEnvironment(tablesUpdate), DBPollPeriod > 1000 ? DBPollPeriod : 1000);
+
+  filesToAddToDBLengthOld = filesToAddToDB.length
 
 
+  addFilesToDB = true
 
-
-statisticsUpdate();
 
 }
 
@@ -1777,80 +1857,80 @@ statisticsUpdate();
 
 var allFilesPulled
 
-function statisticsUpdate(){
+function statisticsUpdate() {
 
 
 
   StatisticsDB.upsert("statistics",
-                            {
-                                $set: {
-                                    totalFileCount: allFilesPulledTable.length
-                                }
-                            }
-                        );
+    {
+      $set: {
+        totalFileCount: allFilesPulledTable.length
+      }
+    }
+  );
 
 
 
-  updatePieStats("TranscodeDecisionMaker",'','pie1')
-  updatePieStats('HealthCheck','','pie2')
-  updatePieStats('video_codec_name','video','pie3')
-  updatePieStats('container','video','pie4')
-  updatePieStats('video_resolution','video','pie5')
-  updatePieStats('audio_codec_name','audio','pie6')
-  updatePieStats('container','audio','pie7')
+  updatePieStats("TranscodeDecisionMaker", '', 'pie1')
+  updatePieStats('HealthCheck', '', 'pie2')
+  updatePieStats('video_codec_name', 'video', 'pie3')
+  updatePieStats('container', 'video', 'pie4')
+  updatePieStats('video_resolution', 'video', 'pie5')
+  updatePieStats('audio_codec_name', 'audio', 'pie6')
+  updatePieStats('container', 'audio', 'pie7')
 
 }
 
 
-function updatePieStats(property,fileMedium,pie) {
-
-  
+function updatePieStats(property, fileMedium, pie) {
 
 
 
-    const data = [];
-
-    var allFilesWithProp =  allFilesPulledTable
 
 
-    if(fileMedium == "video" || fileMedium == "audio"){
+  const data = [];
 
-      allFilesWithProp = allFilesWithProp.filter(row => ( !!row[property] && row.fileMedium == fileMedium ) );
+  var allFilesWithProp = allFilesPulledTable
 
-    }else{
 
-      allFilesWithProp = allFilesWithProp.filter(row => ( !!row[property]) );
-      
+  if (fileMedium == "video" || fileMedium == "audio") {
+
+    allFilesWithProp = allFilesWithProp.filter(row => (!!row[property] && row.fileMedium == fileMedium));
+
+  } else {
+
+    allFilesWithProp = allFilesWithProp.filter(row => (!!row[property]));
+
+  }
+
+
+  var uniquePropArr = []
+
+
+  for (var i = 0; i < allFilesWithProp.length; i++) {
+
+    if (!(uniquePropArr.includes(allFilesWithProp[i][property]))) {
+      uniquePropArr.push(allFilesWithProp[i][property])
     }
 
 
-    var uniquePropArr = []
+  }
+
+  for (var i = 0; i < uniquePropArr.length; i++) {
+
+    data.push({ name: uniquePropArr[i], value: allFilesWithProp.filter(row => row[property] == uniquePropArr[i]).length })
 
 
-    for(var i = 0; i < allFilesWithProp.length; i++){
+  }
 
-      if( !(uniquePropArr.includes(allFilesWithProp[i][property]))){
-        uniquePropArr.push(allFilesWithProp[i][property])
+
+  StatisticsDB.upsert("statistics",
+    {
+      $set: {
+        [pie]: data
       }
-
-
     }
-
-    for(var i = 0; i < uniquePropArr.length; i++){
-
-      data.push({name:uniquePropArr[i], value: allFilesWithProp.filter(row => row[property] == uniquePropArr[i]).length })
-
-
-    }
-
-
-    StatisticsDB.upsert("statistics",
-                            {
-                                $set: {
-                                    [pie]: data
-                                }
-                            }
-                        );
+  );
 }
 
 
