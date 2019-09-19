@@ -1642,7 +1642,7 @@ function tablesUpdate(){
  var table5data = allFilesPulledTable.filter(row => ( row.HealthCheck == "Success"  && row.processingStatus == false ) );
  var table6data = allFilesPulledTable.filter(row => ( (row.HealthCheck == "Error" || row.HealthCheck == "Cancelled")  && row.processingStatus == false ) );
 
- generalFiles = (table1data).concat(table4data)
+ generalFiles = (table4data).concat(table1data)
  //console.log("generalFiles:"+generalFiles)
  transcodeFiles  = table1data
  healthcheckFiles = table4data
