@@ -448,9 +448,11 @@ class Folder extends Component {
             <input type="text" className="folderPaths" name="folder" defaultValue={this.props.libraryItem.folder} onChange={this.handleChange}></input>
 
             <div className={this.props.libraryItem.folderValid ? 'hidden' : ''}>
-
              <span className="invalidFolder" ><center> Invalid folder </center></span>
+             </div>
 
+             <div id="folderList">
+               
              </div>
 
            

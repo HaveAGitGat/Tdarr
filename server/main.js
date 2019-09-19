@@ -159,9 +159,18 @@ Meteor.methods({
 
   'searchDB'(string) {
 
+    var allFiles =FileDB.find({}).fetch()
+    allFiles = allFiles.sort(function(a,b){
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
 
 
-    return (FileDB.find({},{ sort: { createdAt: - 1 }}).fetch()).filter(row => (row.file).toLowerCase().includes(string.toLowerCase()) );
+    allFiles = allFiles.filter(row => (row.file).toLowerCase().includes(string.toLowerCase()) );
+    return allFiles
+    //FileDB.find({},{ sort: { createdAt: - 1 }}).fetch()
+
+
+   // return (FileDB.find({},{ sort: { createdAt: - 1 }}).fetch()).filter(row => (row.file).toLowerCase().includes(string.toLowerCase()) );
 
 
 
@@ -170,7 +179,12 @@ Meteor.methods({
   
   'resetAllStatus'(mode) {
 
-    var allFiles = FileDB.find({},{ sort: { createdAt: - 1 }}).fetch()
+  //  var allFiles = FileDB.find({},{ sort: { createdAt: - 1 }}).fetch()
+
+  var allFiles =FileDB.find({}).fetch()
+  allFiles = allFiles.sort(function(a,b){
+    return new Date(b.createdAt) - new Date(a.createdAt);
+  });
 
     for(var i = 0; i < allFiles.length; i++){
 
@@ -216,6 +230,13 @@ Meteor.methods({
 
 
     }
+
+// const { lstatSync, readdirSync } = require('fs')
+// const { join } = require('path')
+
+// const isDirectory = source => lstatSync(source).isDirectory()
+// const getDirectories = source =>
+//   readdirSync(source).map(name => join(source, name)).filter(isDirectory)
 
   },
 
@@ -282,7 +303,15 @@ Meteor.methods({
 
       console.log("Commencing file update scan. Deleting non-existent files and adding new files.")
 
-      var filesInDB = FileDB.find({ DB: DB_id }, { sort: { createdAt: 1 } }).fetch()
+     // var filesInDB = FileDB.find({ DB: DB_id }, { sort: { createdAt: 1 } }).fetch()
+
+     var filesInDB  = FileDB.find({}).fetch()
+     filesInDB = filesInDB.sort(function(a,b){
+       return new Date(b.createdAt) - new Date(a.createdAt);
+     });
+   
+     filesInDB  = filesInDB.filter(row => row.DB == DB_id );
+
       filesInDB = filesInDB.map((file, i) => {
         if (!(fs.existsSync(file.file))) {
           //delete files in DBs if not exist anymore (cleanse)
@@ -765,13 +794,6 @@ function launchWorkerModule(workerType) {
 
           if (workerType == "general") {
 
-            //var files = FileDB.find({ $or: [{ TranscodeDecisionMaker: "Not attempted" }, { HealthCheck: "Not attempted" }] }, { sort: { createdAt: -1 } }).fetch()
-
-            // var files1 = FileDB.find({$and: [{TranscodeDecisionMaker: "Not attempted" },{processingStatus:false}]}, { sort: { createdAt: -1 } }).fetch()
-
-            // var files2 = FileDB.find({$and: [{ HealthCheck: "Not attempted" },{processingStatus:false},{fileMedium:"video"}]}, { sort: { createdAt: -1 } }).fetch()
-
-            // var files = files1.concat(files2)
 
             var files = generalFiles
 
@@ -780,7 +802,7 @@ function launchWorkerModule(workerType) {
 
           } else if (workerType == "transcode") {
 
-          //  var files = FileDB.find({$and: [{ TranscodeDecisionMaker: "Not attempted" },{processingStatus:false}]}, { sort: { createdAt: -1 } }).fetch()
+         
             
           
           var files = transcodeFiles
@@ -788,10 +810,7 @@ function launchWorkerModule(workerType) {
 
           }else if(workerType == "healthcheck"){
 
-           // var files = FileDB.find({$and: [{ HealthCheck: "Not attempted" },{processingStatus:false},{fileMedium:"video"}]}, { sort: { createdAt: -1 } }).fetch()
-
-           // FileDB
-          
+ 
            var files = healthcheckFiles
             var mode = "healthcheck"
           }
@@ -1600,10 +1619,19 @@ function tablesUpdate(){
 
   var startDate = new Date();
 
+  // allFilesPulledTable = FileDB.find({}).fetch()
+
+  // allFilesPulledTable = allFilesPulledTable.sort(function(a,b){
+  //   return new Date(b.createdAt) - new Date(a.createdAt);
+  // });
   allFilesPulledTable = FileDB.find({},{ sort: { createdAt: - 1 }}).fetch()
 
 
 
+//all_reviews = db_handle.find().sort('reviewDate', pymongo.ASCENDING)
+//db_handle.ensure_index([("reviewDate", pymongo.ASCENDING)])
+
+//all_reviews = db_handle.aggregate([{$sort: {'reviewDate': 1}}], {allowDiskUse: true})
 
 
 
