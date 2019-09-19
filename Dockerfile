@@ -1,5 +1,9 @@
 FROM alpine:3.10
 
+ENV MONGO_URL=mongodb://mongodb:27017/Tdarr
+ENV PORT=8265
+ENV ROOT_URL=http://localhost/
+
 RUN \
   apk add --no-cache \
 	nodejs \
