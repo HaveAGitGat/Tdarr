@@ -16,5 +16,6 @@ RUN \
   mkdir -p /app && unzip Tdarr.zip -d /app && \
   rm Tdarr.zip
 
+EXPOSE 8265
 WORKDIR /app/Tdarr/bundle
 CMD ["node", "main.js"]

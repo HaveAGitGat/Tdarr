@@ -27,5 +27,5 @@ COPY --from=build /opt/bundle/bundle /app/tdarr
 RUN cd /app/tdarr/programs/server/ && npm install
 
 WORKDIR /app/tdarr
-
+EXPOSE 8265
 CMD ["node", "main.js"]
