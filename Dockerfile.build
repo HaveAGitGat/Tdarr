@@ -1,0 +1,27 @@
+FROM geoffreybooth/meteor-base:1.8.1 AS build
+
+COPY ./ $APP_SOURCE_FOLDER/
+
+RUN bash $SCRIPTS_FOLDER/build-app-npm-dependencies.sh
+
+RUN bash $SCRIPTS_FOLDER/build-meteor-bundle.sh
+
+
+FROM alpine:3.10
+
+RUN \
+  apk add --no-cache\
+	nodejs \
+	nodejs-npm && \
+  apk add --no-cache --repository="http://dl-cdn.alpinelinux.org/alpine/edge/testing" \
+    ffmpeg \
+    handbrake \
+    handbrake-gtk
+
+COPY --from=build /opt/bundle/bundle /app/tdarr
+
+RUN cd /app/tdarr/programs/server/ && npm install
+
+WORKDIR /app/tdarr
+
+CMD ["node", "main.js"]
