@@ -24,14 +24,20 @@ function deActive() {
 
 }
 
+function Transcoding() {
+  return  <TabTranscoding />;
+}
+
+function Search() {
+  return  <p>Search!</p>;
+}
+
 function Stats() {
   //ReactDOM.findDOMNode(this.refs.System).setState({ active: false });
   return <TabStatistics />;
 }
 
-function Transcoding() {
-  return  <TabTranscoding />;
-}
+
 
 function Settings(obj) {
 
@@ -69,6 +75,7 @@ class Nav extends Component {
     this.state = {
       tabs: [
         {tab: { active: false, path: "/tdarr/", text: "Tdarr" }},
+        { tab: {active: false, path: "/search", text: "Search"} },
         { tab: {active: false, path: "/", text: "Stats"} },
         { tab: { active: false, path: "/settings/", text: "Libraries" } },
         { tab: { active: false, path: "/log/", text: "Log" } },
@@ -150,8 +157,12 @@ class Nav extends Component {
           </div>
 
            {/* <p><ShowTheLocationWithRouter/></p> */}
+
+           <Route path="/tdarr/" component={Transcoding} />
+
            <Route path="/" exact component={Stats} />
-          <Route path="/tdarr/" component={Transcoding} />
+           <Route path="/search" exact component={Search} />
+         
           <Route path="/settings/" component={Settings} />
           <Route path="/log/" component={Log} />
           <Route path="/help/" component={Help} /> 

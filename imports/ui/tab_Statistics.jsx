@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
-import { StatisticsDB,GlobalSettingsDB } from '../api/tasks.js';
+import { FileDB,StatisticsDB,GlobalSettingsDB } from '../api/tasks.js';
 import ReactDOM from 'react-dom';
 
 
@@ -62,9 +62,6 @@ class App extends Component {
       var data = statistics[0][pie]
 
     }
-
-    
-
 
 
     const COLORS = ['#000000','#7d7d7d','#bdbdbd'];

@@ -91,6 +91,8 @@ if (!Array.isArray(count) || !count.length) {
 
 }
 
+
+
 //initialise GUI properties
 
 var settingsInit = SettingsDB.find({}, {}).fetch()
@@ -119,13 +121,6 @@ if (!Array.isArray(count) || !count.length) {
         totalFileCount: 0,
         totalTranscodeCount: 0,
         totalHealthCheckCount: 0,
-        pie1: [{ name: "No data", value: 1 }],
-        pie2: [{ name: "No data", value: 1 }],
-        pie3: [{ name: "No data", value: 1 }],
-        pie4: [{ name: "No data", value: 1 }],
-        pie5: [{ name: "No data", value: 1 }],
-        pie6: [{ name: "No data", value: 1 }],
-        pie7: [{ name: "No data", value: 1 }],
       }
     }
   );
@@ -133,6 +128,25 @@ if (!Array.isArray(count) || !count.length) {
 
 
 }
+
+StatisticsDB.upsert("statistics",
+          {
+            DBPollPeriod: "4s",
+            DBFetchTime: "1s",
+            DBLoadStatus: "Stable",
+            DBQueue: 0,
+            pie1: [{ name: "No data", value: 1 }],
+            pie2: [{ name: "No data", value: 1 }],
+            pie3: [{ name: "No data", value: 1 }],
+            pie4: [{ name: "No data", value: 1 }],
+            pie5: [{ name: "No data", value: 1 }],
+            pie6: [{ name: "No data", value: 1 }],
+            pie7: [{ name: "No data", value: 1 }],
+          }
+        );
+
+
+
 
 ClientDB.upsert('client',
   {
@@ -1644,6 +1658,8 @@ var healthcheckFiles
 
 var filesToAddToDBLengthNew = 0
 var filesToAddToDBLengthOld = 0
+var newFetchtime = 0
+var oldFetchtime = 0
 var DBPollPeriod = 4000
 
 
@@ -1786,9 +1802,9 @@ function tablesUpdate() {
   var endDate = new Date();
   var seconds2 = (endDate.getTime() - startDate.getTime()) / 1000;
 
-  var time = seconds2
+  newFetchtime = Math.round( seconds2 * 10 ) / 10;
 
-  console.log("time taken: " + time)
+  console.log("time taken: " + newFetchtime)
 
   //console.log("data done")
 
@@ -1830,21 +1846,56 @@ function tablesUpdate() {
 // filesToAddToDBLengthOld = 0
 filesToAddToDBLengthNew = filesToAddToDB.length
 
-  if (filesToAddToDBLengthNew > filesToAddToDBLengthOld) {
+var DBLoadStatus
 
+  if (filesToAddToDBLengthNew > filesToAddToDBLengthOld || newFetchtime > oldFetchtime) {
+
+    DBLoadStatus = "Increasing"
   
-    DBPollPeriod += 1000
+//    DBPollPeriod += 1000
 
   } else {
 
-    if (DBPollPeriod > 1000) {
-      DBPollPeriod -=1000
+    if(filesToAddToDBLengthNew == filesToAddToDBLengthOld && newFetchtime == oldFetchtime){
+
+      DBLoadStatus = "Decreasing"
+
+      
+    
+
+    }else{
+
+      DBLoadStatus = "Stable"
+
     }
+
+    // if (DBPollPeriod > 1000) {
+    //   DBPollPeriod -=1000
+    // }
   }
+
+  DBPollPeriod = 1000 + filesToAddToDB.length
+
   console.log("DBPollPeriod:"+DBPollPeriod)
+  
   setTimeout(Meteor.bindEnvironment(tablesUpdate), DBPollPeriod > 1000 ? DBPollPeriod : 1000);
 
+
+  oldFetchtime = newFetchtime
   filesToAddToDBLengthOld = filesToAddToDB.length
+
+
+        StatisticsDB.upsert("statistics",
+        {
+          $set: {
+            DBPollPeriod: DBPollPeriod > 1000 ? (DBPollPeriod/1000) +"s" : "1s",
+            DBFetchTime:(newFetchtime ).toFixed(1)+"s",
+            DBTotalTime:((DBPollPeriod/1000) +newFetchtime ).toFixed(1)+"s",
+            DBLoadStatus: DBLoadStatus,
+            DBQueue: filesToAddToDB.length
+          }
+        }
+      );
 
 
   addFilesToDB = true

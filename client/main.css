@@ -549,3 +549,69 @@ p {
 
     }
 
+    .dbStatusContainer table{
+
+      border-collapse: collapse;
+      font-size: 0.7em
+    }
+
+    .dbStatusContainer tr{
+
+      border: solid 1px black;
+    }
+
+    .dbStatusContainer td{
+
+      border-right: solid 1px black; 
+      border-left: solid 1px black;
+    }
+
+    
+/* 
+    table.dbStatusContainer {  }
+tr.dbStatusContainer {  }
+td.dbStatusContainer {
+  border-right: solid 1px #f00; 
+  border-left: solid 1px #f00;
+} */
+
+
+
+table.itemTable th {
+  background-color: white;
+  color: black;
+}
+
+table.itemTable td {
+
+  color: black;
+  /* font-family: "Courier New" */
+}
+
+table.itemTable tr {
+  /* display: table;
+width: auto;
+table-layout: fixed;  */
+}
+
+
+table.itemTable tr:nth-child(even) {
+  background-color: white;
+}
+
+table.itemTable tr:nth-child(odd) {
+  background-color: white;
+}
+
+
+table.itemTable tr:hover {
+  background-color: rgb(202, 202, 202);
+}
+
+table.itemTable {
+  border-radius: 5px;
+  width: 100%;
+  table-layout: auto;
+  white-space: normal;
+
+}

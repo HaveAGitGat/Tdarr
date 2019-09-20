@@ -7,14 +7,17 @@ import ToggleButton from 'react-toggle-button'
 
 import { render } from 'react-dom';
 
+import { Button } from 'react-bootstrap';
 
 
-import { FileDB, GlobalSettingsDB, ClientDB } from '../api/tasks.js';
+import { StatisticsDB, FileDB, GlobalSettingsDB, ClientDB } from '../api/tasks.js';
 
 import Workers from '../ui/tab_Transcoding_Worker.jsx';
 import ReactTable from "react-table";
 
 import Slider from 'react-input-slider';
+
+import ItemButton from './item_Button.jsx'
 
 
 
@@ -88,10 +91,6 @@ class App extends Component {
 
       }
       } />
-
-
-
-
     ));
   }
 
@@ -128,6 +127,49 @@ class App extends Component {
 
 
   }
+
+  renderStat(stat) {
+
+
+    var statistics = this.props.statistics
+
+
+    if (statistics.length == 0) {
+
+
+      var statDat = "Loading..."
+
+    } else {
+      var statDat = statistics[0][stat]
+
+    }
+
+
+    return statDat
+
+  }
+
+
+  renderLowCPUButton() {
+
+    return this.props.globalSettings.map((item, i) => (
+
+      <ToggleButton value={item.lowCPUPriority} onToggle={() => {
+
+        GlobalSettingsDB.upsert('globalsettings',
+          {
+            $set: {
+              lowCPUPriority: !item.lowCPUPriority,
+            }
+          }
+
+        );
+
+      }
+      } />
+    ));
+  }
+
 
 
   componentDidMount() {
@@ -212,31 +254,74 @@ class App extends Component {
 
       return data.map((row, i) => (
 
-        <div className="tableItem">
-          <li key={row._id}>{i + 1}  {row.file} {this.renderBumpButton(row.file)} </li>
-        </div>
+        // <div className="tableItem">
+        //   <li key={row._id}>{i + 1}  {row.file} {this.renderBumpButton(row.file)} </li>
+
+
+
+        // </div>
+
+
+        <tr>
+          <td>{i + 1} </td> <td> {row.file}  </td> <td> {this.renderBumpButton(row.file)} </td>
+        </tr>
+
+
+
+
+
 
       ));
     }
 
     if (type == "success") {
 
+      if(mode =="TranscodeDecisionMaker"){
+
       return data.map((row, i) => (
 
-        <div className="tableItem">
-          <li key={row._id}>{i + 1}  {row.file}  {this.renderRedoButton(row.file, mode)} {this.renderInfoButton(row.cliLog)} </li>
-        </div>
+        // <div className="tableItem">
+        //   <li key={row._id}>{i + 1}  {row.file}  {this.renderRedoButton(row.file, mode)} {this.renderInfoButton(row.cliLog)} </li>
+        // </div>
+
+        <tr>
+        <td>{i + 1} </td> <td> {row.file}  </td> <td> {row.TranscodeDecisionMaker} </td><td> {this.renderRedoButton(row.file, mode)} </td><td> {this.renderInfoButton(row.cliLog)} </td>
+      </tr>
+
 
       ));
-    }
+
+    }else{
+
+    return data.map((row, i) => (
+
+      // <div className="tableItem">
+      //   <li key={row._id}>{i + 1}  {row.file}  {this.renderRedoButton(row.file, mode)} {this.renderInfoButton(row.cliLog)} </li>
+      // </div>
+
+      <tr>
+      <td>{i + 1} </td> <td> {row.file}  </td> <td> {this.renderRedoButton(row.file, mode)} </td><td> {this.renderInfoButton(row.cliLog)} </td>
+    </tr>
+
+
+
+    ));
+  
+}
+  }
 
     if (type == "error") {
 
       return data.map((row, i) => (
 
-        <div className="tableItem">
-          <li key={row._id}>{i + 1}  {row.file}{this.renderRedoButton(row.file, mode)}{this.renderIgnoreButton(row.file, mode)} {this.renderInfoButton(row.cliLog)}  </li>
-        </div>
+        // <div className="tableItem">
+        //   <li key={row._id}>{i + 1}  {row.file}{this.renderRedoButton(row.file, mode)}{this.renderIgnoreButton(row.file, mode)} {this.renderInfoButton(row.cliLog)}  </li>
+        // </div>
+
+        <tr>
+        <td>{i + 1} </td> <td> {row.file}  </td> <td> {this.renderRedoButton(row.file, mode)} </td><td> {this.renderIgnoreButton(row.file, mode)} </td><td> {this.renderInfoButton(row.cliLog)} </td>
+      </tr>
+
 
       ));
     }
@@ -248,24 +333,29 @@ class App extends Component {
 
   renderBumpButton(file) {
 
-    return <input type="button" onClick={() => {
-
-      FileDB.upsert(file,
-        {
-          $set: {
-            createdAt: new Date(),
-          }
-        });
 
 
-    }} value={"↑"}></input>
+ var test = this.props.clientDB
+    // return <Button variant="dark" onClick={() => {
 
+    //   FileDB.upsert(file,
+    //     {
+    //       $set: {
+    //         createdAt: new Date(),
+    //       }
+    //     });
+
+
+    // }}>↑</Button>
+
+    
+    return <ItemButton file={file}/>
 
   }
 
   renderRedoButton(file, mode) {
 
-    return <input type="button" onClick={() => {
+    return <Button variant="dark"onClick={() => {
 
       FileDB.upsert(file,
         {
@@ -277,14 +367,14 @@ class App extends Component {
         });
 
 
-    }} value={"↻"}></input>
+    }}>↻</Button>
 
 
   }
 
   renderIgnoreButton(file, mode) {
 
-    return <input type="button" onClick={() => {
+    return <Button variant="dark" onClick={() => {
 
       FileDB.upsert(file,
         {
@@ -296,23 +386,23 @@ class App extends Component {
         });
 
 
-    }} value={"Ignore"}></input>
+    }}>Ignore</Button>
 
 
   }
 
   renderInfoButton(cliLog) {
 
-    return <input type="button" onClick={() => {
+    return <Button variant="dark" onClick={() => {
 
       alert(cliLog)
 
 
-    }} value={"i"}></input>
+    }}>i</Button>
 
   }
 
-  searchDB =(event) => {
+  searchDB = (event) => {
 
     event.preventDefault();
 
@@ -361,9 +451,30 @@ class App extends Component {
       <span >
         {/* <h1>Td</h1> */}
 
+
+        <div className="dbStatusContainer">
+          <table>
+            <tr>
+
+              <td> <p>DB -</p></td>
+              <td>{'\u00A0'}<b>Poll period</b>:{this.renderStat('DBPollPeriod')}</td>
+              <td>{'\u00A0'}<b>Fetch time</b>: {this.renderStat('DBFetchTime')}</td>
+              <td>{'\u00A0'}<b>Total</b>: {this.renderStat('DBTotalTime')}</td>
+              <td>{'\u00A0'}<b>Backlog</b>: {this.renderStat('DBQueue')}</td>
+              <td>{'\u00A0'}<b>Load</b>: {this.renderStat('DBLoadStatus')}</td>
+
+            </tr>
+
+
+
+          </table>
+        </div>
+
+
         <p></p>
 
         <div className="container">
+
 
           <center>
             <table>
@@ -457,11 +568,11 @@ class App extends Component {
 
         <form onSubmit={this.searchDB}  >
           <input type="text" className="searchBar" ref="searchString" placeholder="Search for files to bump them up in the queue etc..." style={ButtonStyle} ></input>
-       
-          <input type="button" onClick={this.searchDB} value={"Search"} style={ButtonStyle}></input>
-          <input type="button" onClick={ () => {
 
-        render('', document.getElementById('searchResults'));
+          <input type="button" onClick={this.searchDB} value={"Search"} style={ButtonStyle}></input>
+          <input type="button" onClick={() => {
+
+            render('', document.getElementById('searchResults'));
           }} value={"Clear"} style={ButtonStyle}></input>
         </form>
 
@@ -482,8 +593,15 @@ class App extends Component {
 
             <center><p><b>Transcode queue</b></p></center>
 
+            <table class="itemTable">   <tbody>
+              <tr>
+                <th> No.</th>
+                <th> File</th>
+                <th> Bump</th>
 
-            {this.renderTable('table1', 'queue')}
+              </tr>
+              {this.renderTable('table1', 'queue')}
+               </tbody></table>
 
 
 
@@ -495,9 +613,19 @@ class App extends Component {
             <center><p><b>Transcode: Completed or passed</b></p></center>
 
 
+            <table class="itemTable"><tbody>
+              <tr>
+                <th> No.</th>
+                <th> File</th>
+                <th> Status</th>
+                <th> Re-queue</th>
+                <th> Info</th>
+
+
+              </tr>
             {this.renderTable('table2', 'success', 'TranscodeDecisionMaker')}
 
-
+   </tbody></table>
 
           </div>
 
@@ -506,10 +634,22 @@ class App extends Component {
             <center><p><b>Transcode: Error</b></p></center>
 
 
+            <table class="itemTable">   <tbody>
+              <tr>
+                <th> No.</th>
+                <th> File</th>
+                <th> Status</th>
+                <th> Ignore</th>
+                <th> Info</th>
+
+
+              </tr>
+
 
             {this.renderTable('table3', 'error', 'TranscodeDecisionMaker')}
 
 
+               </tbody></table>
 
           </div>
 
@@ -518,9 +658,16 @@ class App extends Component {
             <center><p><b>Health check queue</b></p></center>
 
 
-            {this.renderTable('table4', 'queue')}
+            <table class="itemTable">   <tbody>
+              <tr>
+                <th> No.</th>
+                <th> File</th>
+                <th> Bump</th>
 
+              </tr>
+              {this.renderTable('table4', 'queue')}
 
+               </tbody></table>
 
           </div>
 
@@ -529,22 +676,44 @@ class App extends Component {
 
             <center><p><b>Health check: Healthy</b></p></center>
 
+            
+
+            <table class="itemTable">   <tbody>
+              <tr>
+                <th> No.</th>
+                <th> File</th>
+                <th> Re-queue</th>
+                <th> Info</th>
+              </tr>
+
+
 
             {this.renderTable('table5', 'success', 'HealthCheck')}
 
 
-
+               </tbody></table>
           </div>
 
           <div className="queuegrid-item">
 
+
+          <table class="itemTable">   <tbody>
+          <tr>
+                <th> No.</th>
+                <th> File</th>
+                <th> Status</th>
+                <th> Ignore</th>
+                <th> Info</th>
+
+
+              </tr>
 
             <center><p><b>Health check: Error</b></p></center>
 
 
             {this.renderTable('table6', 'error', 'HealthCheck')}
 
-
+               </tbody></table>
 
           </div>
 
@@ -559,6 +728,7 @@ export default withTracker(() => {
 
   Meteor.subscribe('GlobalSettingsDB');
   Meteor.subscribe('ClientDB');
+  Meteor.subscribe('StatisticsDB');
 
 
   return {
@@ -567,6 +737,7 @@ export default withTracker(() => {
     globalSettings: GlobalSettingsDB.find({}, {}).fetch(),
 
     clientDB: ClientDB.find({}).fetch(),
+    statistics: StatisticsDB.find({}).fetch(),
 
 
   };
