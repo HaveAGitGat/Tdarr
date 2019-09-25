@@ -32,6 +32,7 @@ INSTALLATION - (Docker -- Easiest method):
        docker run -ti -d --rm \
          -p 8265:8265 \
          -v /your/video/library/path/:/home/Tdarr/Media \
+         -v /where/to/store/plugins/:/home/Tdarr/Documents/Tdarr \
          -v TdarrData:/var/lib/mongodb/ \
          haveagitgat/tdarr
         
