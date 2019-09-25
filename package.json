@@ -15,12 +15,17 @@
     "child_process": "^1.0.2",
     "chokidar": "^3.0.2",
     "classnames": "^2.2.6",
+    "dateformat": "^3.0.3",
+    "exiftool-vendored": "^8.22.0",
     "ffprobe": "^1.1.0",
     "ffprobe-static": "^3.0.0",
     "fs-extra": "^8.1.0",
+    "git-clone": "^0.1.0",
     "material-tabs": "0.0.8",
     "meteor-node-stubs": "^0.4.1",
     "mongodb": "^3.3.2",
+    "nodegit": "^0.26.1",
+    "os-utils": "0.0.14",
     "react": "^16.5.0",
     "react-addons-css-transition-group": "^15.6.2",
     "react-bootstrap": "^1.0.0-beta.12",
@@ -33,9 +38,11 @@
     "react-spinners": "^0.6.1",
     "react-table": "^6.10.0",
     "react-toggle-button": "^2.2.0",
+    "reactjs-popup": "^1.5.0",
     "recharts": "^1.7.1",
     "shelljs": "^0.8.3",
-    "shortid": "^2.2.14"
+    "shortid": "^2.2.14",
+    "simple-git": "^1.126.0"
   },
   "meteor": {
     "mainModule": {
