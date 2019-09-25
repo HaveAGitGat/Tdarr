@@ -26,9 +26,11 @@ export default class App extends Component {
 
 
 
-        <div className="container">
-
+      <div className="containerGeneral">
+      <header>
           <h1>Help</h1>
+      </header>
+
 
 
           <p>Reddit:https://www.reddit.com/r/Tdarr/</p>
