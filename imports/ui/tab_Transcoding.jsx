@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import { Meteor } from 'meteor/meteor';
 
 import ToggleButton from 'react-toggle-button'
+import Modal from "reactjs-popup";
 
 import { render } from 'react-dom';
 
@@ -19,6 +20,8 @@ import Slider from 'react-input-slider';
 
 import ItemButton from './item_Button.jsx'
 
+import ClipLoader from 'react-spinners/ClipLoader';
+
 
 
 
@@ -27,13 +30,16 @@ var ButtonStyle = {
 }
 
 
+
+
+
 // App component - represents the whole app
 class App extends Component {
 
   constructor(props) {
     super(props);
 
-    this.state = { value: true, lowCPU: true, x: 1, }
+    this.state = { value: true, lowCPU: true, x: 1, workerButtonsLoad: true, }
 
     this.toggleWorkers = this.toggleWorkers.bind(this);
 
@@ -46,9 +52,37 @@ class App extends Component {
   }
 
 
-  addWorker(workerType) {
+  addWorker = (workerType) => {
 
-    Meteor.call('launchWorker', workerType, 1, function (error, result) { });
+      console.log(this.state.workerButtonsLoad)
+
+
+      this.setState({
+        workerButtonsLoad: false,
+      })
+
+      console.log(this.state.workerButtonsLoad)
+
+      setTimeout(this.reset, 1000);
+  
+
+    Meteor.call('launchWorker', workerType, 1,  (error, result) => { 
+
+
+
+    });
+
+  }
+
+  reset = () => {
+
+    this.setState({
+      workerButtonsLoad: true,
+    })
+
+
+    console.log(this.state.workerButtonsLoad)
+
   }
 
   toggleWorkers = () => {
@@ -74,31 +108,13 @@ class App extends Component {
     });
   }
 
-  renderLowCPUButton() {
 
-    return this.props.globalSettings.map((item, i) => (
-
-      <ToggleButton value={item.lowCPUPriority} onToggle={() => {
-
-        GlobalSettingsDB.upsert('globalsettings',
-          {
-            $set: {
-              lowCPUPriority: !item.lowCPUPriority,
-            }
-          }
-
-        );
-
-      }
-      } />
-    ));
-  }
 
   renderSlider(slider) {
 
     return this.props.globalSettings.map((item, i) => (
 
-      <span>
+      <span className="sliderWidth">
         {item[slider]}
         <Slider
           axis="x"
@@ -137,10 +153,18 @@ class App extends Component {
     if (statistics.length == 0) {
 
 
-      var statDat = "Loading..."
+      var statDat = <ClipLoader
+
+        sizeUnit={"px"}
+        size={10}
+        color={'#000000'}
+        loading={true}
+      />
 
     } else {
       var statDat = statistics[0][stat]
+
+
 
     }
 
@@ -172,9 +196,21 @@ class App extends Component {
 
 
 
+
   componentDidMount() {
 
     this.interval = setInterval(() => this.renderWorkers(), 500);
+
+    render(<ClipLoader
+
+      sizeUnit={"px"}
+      size={25}
+      color={'#000000'}
+      loading={true}
+    />
+
+
+      , document.getElementById('workerButtons'));
 
 
   }
@@ -197,20 +233,103 @@ class App extends Component {
 
       ));
 
-      render(workers, document.getElementById('allWorkersContainerID'));
+      try {
 
+        render(workers, document.getElementById('allWorkersContainerID'));
+      } catch (err) { }
 
       var generalWorkers = result.filter(row => row.mode == "general");
       var transcodeWorkers = result.filter(row => row.mode == "transcode");
       var healthcheckWorkers = result.filter(row => row.mode == "healthcheck");
 
-      var workerButtons = <div><input type="button" className="generalWorkerButton" onClick={() => (this.addWorker("general"))} value={"(" + generalWorkers.length + ") General worker +"}></input>
-        <input type="button" className="transcodeWorkerButton" onClick={() => this.addWorker("transcode")} value={"(" + transcodeWorkers.length + ") Transcode worker +"}></input>
-        <input type="button" className="healthcheckWorkerButton" onClick={() => this.addWorker("healthcheck")} value={"(" + healthcheckWorkers.length + ") Health check worker +"}></input>
-      </div>
 
-      render(workerButtons, document.getElementById('workerButtons'));
 
+if(!!this.state.workerButtonsLoad){
+
+  var workerButtons = <div>
+
+  <div className={!!this.state.workerButtonsLoad ? '' : 'hidden'} style={ButtonStyle}>
+    
+  
+            <input type="button" className="generalWorkerButton" onClick={() => (this.addWorker("general"))} value={"(" + generalWorkers.length + ") General worker +"}></input>
+            <input type="button" className="transcodeWorkerButton" onClick={() => this.addWorker("transcode")} value={"(" + transcodeWorkers.length + ") Transcode worker +"}></input>
+            <input type="button" className="healthcheckWorkerButton" onClick={() => this.addWorker("healthcheck")} value={"(" + healthcheckWorkers.length + ") Health check worker +"}></input>
+  
+            </div>
+        </div>
+
+
+
+
+}else{
+
+  var workerButtons = <div>
+  
+          <div className={!this.state.workerButtonsLoad ? '' : 'hidden'} style={ButtonStyle}>
+  
+          <div className="buttonClipPlaceholder" style={ButtonStyle}>
+          <center>
+            <ClipLoader
+  
+              sizeUnit={"px"}
+              size={25}
+              color={'#000000'}
+              loading={true}
+            />
+            </center>
+  
+  </div>
+  
+  <div className="buttonClipPlaceholder" style={ButtonStyle}>
+  
+  <center>
+  
+            <ClipLoader
+  
+              sizeUnit={"px"}
+              size={25}
+              color={'#000000'}
+              loading={true}
+            />
+            </center>
+  
+  </div>
+  
+  <div className="buttonClipPlaceholder" style={ButtonStyle}>
+  
+  <center>
+            <ClipLoader
+  
+              sizeUnit={"px"}
+              size={25}
+              color={'#000000'}
+              loading={true}
+            />
+            </center>
+  
+  
+            </div>
+  </div>
+  
+        </div>
+
+
+
+}
+
+
+
+
+
+
+
+
+      try {
+        render(workerButtons, document.getElementById('workerButtons'));
+
+      } catch (err) { }
+
+    
 
     });
 
@@ -238,9 +357,17 @@ class App extends Component {
 
       return data.map((row, i) => (
 
-        <div className="tableItem">
-          <li key={row._id}>{row.file}</li>
-        </div>
+
+        <tr>
+          <td><ClipLoader
+
+            sizeUnit={"px"}
+            size={25}
+            color={'#000000'}
+            loading={true}
+          /></td>
+        </tr>
+
 
       ));
 
@@ -262,8 +389,8 @@ class App extends Component {
         // </div>
 
 
-        <tr>
-          <td>{i + 1} </td> <td> {row.file}  </td> <td> {this.renderBumpButton(row.file)} </td>
+        <tr key={row._id}>
+          <td>{i + 1}</td><td>{row.file}</td><td>{this.renderBumpButton(row.file)}</td>
         </tr>
 
 
@@ -276,39 +403,39 @@ class App extends Component {
 
     if (type == "success") {
 
-      if(mode =="TranscodeDecisionMaker"){
+      if (mode == "TranscodeDecisionMaker") {
 
-      return data.map((row, i) => (
+        return data.map((row, i) => (
 
-        // <div className="tableItem">
-        //   <li key={row._id}>{i + 1}  {row.file}  {this.renderRedoButton(row.file, mode)} {this.renderInfoButton(row.cliLog)} </li>
-        // </div>
+          // <div className="tableItem">
+          //   <li key={row._id}>{i + 1}  {row.file}  {this.renderRedoButton(row.file, mode)} {this.renderInfoButton(row.cliLog)} </li>
+          // </div>
 
-        <tr>
-        <td>{i + 1} </td> <td> {row.file}  </td> <td> {row.TranscodeDecisionMaker} </td><td> {this.renderRedoButton(row.file, mode)} </td><td> {this.renderInfoButton(row.cliLog)} </td>
-      </tr>
-
-
-      ));
-
-    }else{
-
-    return data.map((row, i) => (
-
-      // <div className="tableItem">
-      //   <li key={row._id}>{i + 1}  {row.file}  {this.renderRedoButton(row.file, mode)} {this.renderInfoButton(row.cliLog)} </li>
-      // </div>
-
-      <tr>
-      <td>{i + 1} </td> <td> {row.file}  </td> <td> {this.renderRedoButton(row.file, mode)} </td><td> {this.renderInfoButton(row.cliLog)} </td>
-    </tr>
+          <tr key={row._id}>
+            <td>{i + 1}</td><td>{row.file}</td><td>{row.TranscodeDecisionMaker}</td><td>{this.renderRedoButton(row.file, mode)}</td><td>{this.renderInfoButton(row.cliLog)}</td>
+          </tr>
 
 
+        ));
 
-    ));
-  
-}
-  }
+      } else {
+
+        return data.map((row, i) => (
+
+          // <div className="tableItem">
+          //   <li key={row._id}>{i + 1}  {row.file}  {this.renderRedoButton(row.file, mode)} {this.renderInfoButton(row.cliLog)} </li>
+          // </div>
+
+          <tr key={row._id}>
+            <td>{i + 1}</td><td>{row.file}</td><td>{this.renderRedoButton(row.file, mode)}</td><td>{this.renderInfoButton(row.cliLog)}</td>
+          </tr>
+
+
+
+        ));
+
+      }
+    }
 
     if (type == "error") {
 
@@ -318,9 +445,9 @@ class App extends Component {
         //   <li key={row._id}>{i + 1}  {row.file}{this.renderRedoButton(row.file, mode)}{this.renderIgnoreButton(row.file, mode)} {this.renderInfoButton(row.cliLog)}  </li>
         // </div>
 
-        <tr>
-        <td>{i + 1} </td> <td> {row.file}  </td> <td> {this.renderRedoButton(row.file, mode)} </td><td> {this.renderIgnoreButton(row.file, mode)} </td><td> {this.renderInfoButton(row.cliLog)} </td>
-      </tr>
+        <tr key={row._id}>
+          <td>{i + 1}</td><td>{row.file}</td><td>{this.renderRedoButton(row.file, mode)}</td><td>{this.renderIgnoreButton(row.file, mode)}</td><td>{this.renderInfoButton(row.cliLog)}</td>
+        </tr>
 
 
       ));
@@ -332,111 +459,57 @@ class App extends Component {
 
 
   renderBumpButton(file) {
+    var obj = {
+      createdAt: new Date()
+    }
 
 
-
- var test = this.props.clientDB
-    // return <Button variant="dark" onClick={() => {
-
-    //   FileDB.upsert(file,
-    //     {
-    //       $set: {
-    //         createdAt: new Date(),
-    //       }
-    //     });
-
-
-    // }}>↑</Button>
-
-    
-    return <ItemButton file={file}/>
+    return <ItemButton file={file} obj={obj} symbol={'↑'} />
 
   }
 
   renderRedoButton(file, mode) {
 
-    return <Button variant="dark"onClick={() => {
 
-      FileDB.upsert(file,
-        {
-          $set: {
-            [mode]: "Not attempted",
-            processingStatus: false,
-            createdAt: new Date(),
-          }
-        });
+    var obj = {
+      [mode]: "Not attempted",
+      processingStatus: false,
+      createdAt: new Date(),
+    }
 
 
-    }}>↻</Button>
-
-
+    return <ItemButton file={file} obj={obj} symbol={'↻'} />
   }
 
   renderIgnoreButton(file, mode) {
 
-    return <Button variant="dark" onClick={() => {
-
-      FileDB.upsert(file,
-        {
-          $set: {
-            [mode]: "Ignored",
-            processingStatus: false,
-            createdAt: new Date(),
-          }
-        });
-
-
-    }}>Ignore</Button>
+    var obj = {
+      [mode]: "Ignored",
+      processingStatus: false,
+      createdAt: new Date(),
+    }
+    return <ItemButton file={file} obj={obj} symbol={'Ignore'} />
 
 
   }
 
   renderInfoButton(cliLog) {
 
-    return <Button variant="dark" onClick={() => {
-
-      alert(cliLog)
-
-
-    }}>i</Button>
-
-  }
-
-  searchDB = (event) => {
-
-    event.preventDefault();
-
-
-    Meteor.call('searchDB', ReactDOM.findDOMNode(this.refs.searchString).value.trim(), (error, result) => {
-
-      //console.log(result)
-
-      if (result.length == 0) {
-
-        render("No results", document.getElementById('searchResults'));
-      } else {
-
-
-        var results = result.map((row, i) => (
-
-
-          <li key={row.key}>{row.file} {this.renderBumpButton(row.file)} Transcode:{this.renderRedoButton(row.file, 'TranscodeDecisionMaker')}Health check:{this.renderRedoButton(row.file, 'HealthCheck')}Info:{this.renderInfoButton(row.cliLog)}</li>
-
-
-        ));
-
-        render(results, document.getElementById('searchResults'));
-
-      }
-
-    })
-
-
-
-
-
+    return <Modal
+      trigger={<Button variant="dark" >i</Button>}
+      modal
+      closeOnDocumentClick
+    >
+       <div className="frame">
+    <div className="scroll"> 
+   {cliLog}
+      
+    </div>
+  </div>
+    </Modal>
 
   }
+
 
 
 
@@ -454,21 +527,25 @@ class App extends Component {
 
         <div className="dbStatusContainer">
           <table>
-            <tr>
+            <tbody>
+              <tr>
 
-              <td> <p>DB -</p></td>
-              <td>{'\u00A0'}<b>Poll period</b>:{this.renderStat('DBPollPeriod')}</td>
-              <td>{'\u00A0'}<b>Fetch time</b>: {this.renderStat('DBFetchTime')}</td>
-              <td>{'\u00A0'}<b>Total</b>: {this.renderStat('DBTotalTime')}</td>
-              <td>{'\u00A0'}<b>Backlog</b>: {this.renderStat('DBQueue')}</td>
-              <td>{'\u00A0'}<b>Load</b>: {this.renderStat('DBLoadStatus')}</td>
+                <td> <p>DB -</p></td>
+                <td>{'\u00A0'}<b>Poll period</b>:{this.renderStat('DBPollPeriod')}</td>
+                <td>{'\u00A0'}<b>Fetch time</b>: {this.renderStat('DBFetchTime')}</td>
+                <td>{'\u00A0'}<b>Total</b>: {this.renderStat('DBTotalTime')}</td>
+                <td>{'\u00A0'}<b>Backlog</b>: {this.renderStat('DBQueue')}</td>
+                <td>{'\u00A0'}<b>Load</b>: {this.renderStat('DBLoadStatus')}</td>
 
-            </tr>
+              </tr>
 
 
-
+            </tbody>
           </table>
         </div>
+
+
+
 
 
         <p></p>
@@ -476,27 +553,30 @@ class App extends Component {
         <div className="container">
 
 
+
+
           <center>
             <table>
-              <tr>
-                <th>Scheduled worker limits</th>
-              </tr>
-              <tr>
-                <td>General:</td>
-                <td>{this.renderSlider('generalWorkerLimit')}</td>
-              </tr>
-              <tr>
-                <td>Transcode:</td>
-                <td>{this.renderSlider('transcodeWorkerLimit')}</td>
+              <tbody>
+                <tr>
+                  <th>Scheduled worker limits</th>
+                </tr>
+                <tr>
+                  <td>General:</td>
+                  <td>{this.renderSlider('generalWorkerLimit')}</td>
+                </tr>
+                <tr>
+                  <td>Transcode:</td>
+                  <td>{this.renderSlider('transcodeWorkerLimit')}</td>
 
-              </tr>
-              <tr>
-                <td>Health check:</td>
-                <td>{this.renderSlider('healthcheckWorkerLimit')}</td>
+                </tr>
+                <tr>
+                  <td>Health check:</td>
+                  <td>{this.renderSlider('healthcheckWorkerLimit')}</td>
 
-              </tr>
+                </tr>
 
-
+              </tbody>
             </table>
           </center>
 
@@ -566,20 +646,6 @@ class App extends Component {
 
         </div>
 
-        <form onSubmit={this.searchDB}  >
-          <input type="text" className="searchBar" ref="searchString" placeholder="Search for files to bump them up in the queue etc..." style={ButtonStyle} ></input>
-
-          <input type="button" onClick={this.searchDB} value={"Search"} style={ButtonStyle}></input>
-          <input type="button" onClick={() => {
-
-            render('', document.getElementById('searchResults'));
-          }} value={"Clear"} style={ButtonStyle}></input>
-        </form>
-
-
-
-
-        <div id="searchResults" ref="searchResults"></div>
 
 
 
@@ -593,15 +659,15 @@ class App extends Component {
 
             <center><p><b>Transcode queue</b></p></center>
 
-            <table class="itemTable">   <tbody>
+            <table className="itemTable">   <tbody>
               <tr>
-                <th> No.</th>
-                <th> File</th>
-                <th> Bump</th>
+                <th>No.</th>
+                <th>File</th>
+                <th>Bump</th>
 
               </tr>
               {this.renderTable('table1', 'queue')}
-               </tbody></table>
+            </tbody></table>
 
 
 
@@ -613,19 +679,19 @@ class App extends Component {
             <center><p><b>Transcode: Completed or passed</b></p></center>
 
 
-            <table class="itemTable"><tbody>
+            <table className="itemTable"><tbody>
               <tr>
-                <th> No.</th>
-                <th> File</th>
-                <th> Status</th>
-                <th> Re-queue</th>
-                <th> Info</th>
+                <th>No.</th>
+                <th>File</th>
+                <th>Status</th>
+                <th>Re-queue</th>
+                <th>Info</th>
 
 
               </tr>
-            {this.renderTable('table2', 'success', 'TranscodeDecisionMaker')}
+              {this.renderTable('table2', 'success', 'TranscodeDecisionMaker')}
 
-   </tbody></table>
+            </tbody></table>
 
           </div>
 
@@ -634,22 +700,22 @@ class App extends Component {
             <center><p><b>Transcode: Error</b></p></center>
 
 
-            <table class="itemTable">   <tbody>
+            <table className="itemTable">   <tbody>
               <tr>
-                <th> No.</th>
-                <th> File</th>
-                <th> Status</th>
-                <th> Ignore</th>
-                <th> Info</th>
+                <th>No.</th>
+                <th>File</th>
+                <th>Status</th>
+                <th>Ignore</th>
+                <th>Info</th>
 
 
               </tr>
 
 
-            {this.renderTable('table3', 'error', 'TranscodeDecisionMaker')}
+              {this.renderTable('table3', 'error', 'TranscodeDecisionMaker')}
 
 
-               </tbody></table>
+            </tbody></table>
 
           </div>
 
@@ -658,16 +724,16 @@ class App extends Component {
             <center><p><b>Health check queue</b></p></center>
 
 
-            <table class="itemTable">   <tbody>
+            <table className="itemTable">   <tbody>
               <tr>
-                <th> No.</th>
-                <th> File</th>
-                <th> Bump</th>
+                <th>No.</th>
+                <th>File</th>
+                <th>Bump</th>
 
               </tr>
               {this.renderTable('table4', 'queue')}
 
-               </tbody></table>
+            </tbody></table>
 
           </div>
 
@@ -676,44 +742,44 @@ class App extends Component {
 
             <center><p><b>Health check: Healthy</b></p></center>
 
-            
 
-            <table class="itemTable">   <tbody>
+
+            <table className="itemTable">   <tbody>
               <tr>
-                <th> No.</th>
-                <th> File</th>
-                <th> Re-queue</th>
-                <th> Info</th>
+                <th>No.</th>
+                <th>File</th>
+                <th>Re-queue</th>
+                <th>Info</th>
               </tr>
 
 
 
-            {this.renderTable('table5', 'success', 'HealthCheck')}
+              {this.renderTable('table5', 'success', 'HealthCheck')}
 
 
-               </tbody></table>
+            </tbody></table>
           </div>
 
           <div className="queuegrid-item">
 
 
-          <table class="itemTable">   <tbody>
-          <tr>
-                <th> No.</th>
-                <th> File</th>
-                <th> Status</th>
-                <th> Ignore</th>
-                <th> Info</th>
+            <table className="itemTable">   <tbody>
+              <tr>
+                <th>No.</th>
+                <th>File</th>
+                <th>Status</th>
+                <th>Ignore</th>
+                <th>Info</th>
 
 
               </tr>
 
-            <center><p><b>Health check: Error</b></p></center>
+              <center><p><b>Health check: Error</b></p></center>
 
 
-            {this.renderTable('table6', 'error', 'HealthCheck')}
+              {this.renderTable('table6', 'error', 'HealthCheck')}
 
-               </tbody></table>
+            </tbody></table>
 
           </div>
 
