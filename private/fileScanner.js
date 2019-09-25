@@ -12,6 +12,7 @@ function updateConsole(scannerID, text) {
 }
 
 process.on('uncaughtException', function (err) {
+
     console.error(err.stack);
 
     updateConsole(scannerID, ":" + err.stack)
@@ -27,10 +28,6 @@ process.on('uncaughtException', function (err) {
         process.send(message);
 
     }
-
-
-
-
 
     process.exit();
 });
@@ -56,15 +53,52 @@ var arrayOrPath = process.argv[4]
 var arrayOrPathSwitch = process.argv[5]
 var allowedContainers = process.argv[6]
 allowedContainers = allowedContainers.split(',');
-var filesInDB = process.argv[7]
+var mode = process.argv[7]
 
 var HealthCheck = process.argv[8]
 var TranscodeDecisionMaker = process.argv[9]
 
+const exiftool = require(rootModules+"exiftool-vendored").exiftool
+
+
+var home = require("os").homedir();
+var homePath = home
 
 
 
-updateConsole(scannerID, ":File scanner " + scannerID + " online.")
+if(mode == 0){
+
+    var filesInDB = fs.readFileSync(homePath + "/Documents/Tdarr/Data/"+scannerID+".txt", 'utf8')
+    
+    fs.unlinkSync(homePath + "/Documents/Tdarr/Data/"+scannerID+".txt")
+
+}else if(mode == 3){
+
+
+    arrayOrPath = fs.readFileSync(homePath + "/Documents/Tdarr/Data/"+scannerID+".txt", 'utf8')
+
+    fs.unlinkSync(homePath + "/Documents/Tdarr/Data/"+scannerID+".txt")
+
+    arrayOrPath = arrayOrPath.split('\\n\\r')
+
+    var filesInDB = []
+  
+
+}else{
+
+    var filesInDB = []
+
+}
+
+
+updateConsole(scannerID, "File scanner " + scannerID + " online.")
+
+updateConsole(scannerID, `File scanner + ${scannerID} + vars received:
+
+${process.argv}
+
+`
+)
 
 //console.log("arrayOrPath" + arrayOrPath)
 //console.log(arrayOrPathSwitch)
@@ -74,13 +108,17 @@ if (arrayOrPathSwitch == 0) {
 
     // process array
 
-    arrayOrPath = arrayOrPath.split(',');
+   // arrayOrPath = arrayOrPath.split(',');
 
     for(var i = 0; i < arrayOrPath.length; i++){
 
 
 
         if(checkContainer(arrayOrPath[i]) != true){
+
+            updateConsole(scannerID, `File scanner " + ${scannerID} + ":File ${arrayOrPath[i]} does not meet container requirements.`)
+
+            
 
             arrayOrPath.splice(i,1)
             i--;
@@ -91,6 +129,8 @@ if (arrayOrPathSwitch == 0) {
 
     }
 
+
+    updateConsole(scannerID, `File scanner " + ${scannerID} + ":Launching FFprobe on these files: ${arrayOrPath}`)
 
     ffprobeLaunch(arrayOrPath)
 
@@ -175,28 +215,19 @@ if (arrayOrPathSwitch == 1) {
 
                             }
 
-                    
-
-
 
                             // ffprobeLaunch([fullPath])
 
                             filesToScan.push(fullPath)
 
-                          console.log(`File ${fullPath} has been added.`)
+                        //  console.log(`File ${fullPath} has been added.`)
 
                         } else {
                           //  console.log(`File ${fullPath} is not supported.`)
 
                         }
 
-
                     }
-
-
-
-
-
 
                 }  //end current file, go to next
 
@@ -278,6 +309,8 @@ process.on('exit', (code) => {
 function ffprobeLaunch(filesToScan) {
 
 
+updateConsole(scannerID, `File scanner " + ${scannerID} + ":ffprobeLaunch received these files:${filesToScan} `)
+
 
     var ffprobe = require(rootModules+'ffprobe'),
         ffprobeStatic = require(rootModules+'ffprobe-static');
@@ -308,7 +341,7 @@ function ffprobeLaunch(filesToScan) {
             // Meteor.call('logthis', "Extracting data from this file:" + filepath, function (error, result) { });
 
 
-
+            updateConsole(scannerID, `File scanner " + ${scannerID} + ":Launching FFprobe on this file: ${filepath}`)
 
             ffprobe(filepath, { path: ffprobeStaticPath }, function (err, jsonData) {
                 //if (err) return done(err);
@@ -317,13 +350,49 @@ function ffprobeLaunch(filesToScan) {
 
                 if (err) {
 
+                    updateConsole(scannerID, `File scanner " + ${scannerID} + ":FFprobe extract error on this file:${filepath}`)
+
                     extractDataError(filepath, err)
+
+                    i++;
+                    if (i < filesToScan.length) {
+                        loopArray(filesToScan, i);
+                    } else {
+                        exiftool.end()
+                    }
+
 
                 }
 
                 if(jsonData){
 
-                    extractData(filepath, jsonData)
+                    updateConsole(scannerID, `File scanner " + ${scannerID} + ":FFprobe extract success on this file:${filepath}. Launching exiftool`)
+
+                    exiftool
+                    .read(filepath)
+                    .then((tags /*: Tags */) => {
+                       // console.log(
+                       //     `Title: ${tags.Title}`
+                        //)
+                        updateConsole(scannerID, `File scanner " + ${scannerID} + "exiftool finished on this file:${filepath}.`)
+
+                        extractData(filepath, jsonData,tags)
+
+
+                        i++;
+                        if (i < filesToScan.length) {
+                            loopArray(filesToScan, i);
+                        } else {
+                            exiftool.end()
+                        }
+    
+        
+                    }
+                    )
+
+
+
+                   
 
                 }
 
@@ -336,16 +405,7 @@ function ffprobeLaunch(filesToScan) {
              //   console.log("Finished:" + filepath)
 
 
-                i++;
-
-                if (i < filesToScan.length) {
-                    loopArray(filesToScan, i);
-                } else {
-
-
-
-                }
-
+        
 
 
             });
@@ -359,7 +419,7 @@ function ffprobeLaunch(filesToScan) {
 
     if (!Array.isArray(filesToScan) || !filesToScan.length) {
 
-
+            exiftool.end()
 
     } else {
 
@@ -398,74 +458,40 @@ function ffprobeLaunch(filesToScan) {
 
         thisFileObject.cliLog = "FFprobe was unable to extract data from this file."
 
+        updateConsole(scannerID, `File scanner " + ${scannerID} + ":FFprobe was unable to extract data from this file:${filepath}.`)
+
         addFileToDB(filepath, thisFileObject,"Error","Transcode error")
 
     }
 
 
 
-    function extractData(filepath, jsonData) {
+    function extractData(filepath, jsonData,tags) {
 
         var thisFileObject = {}
+
+        
+        thisFileObject.meta = tags
+
+
+        updateConsole(scannerID, `File scanner " + ${scannerID} + ":Beginning extractData on:${filepath}.`)
+
+
 
         var path = require('path');
         var container = ((path.extname(filepath)).split(".")).join("")
         thisFileObject.container = container.toLowerCase();
 
         thisFileObject.ffProbeRead = "success"
+        thisFileObject.ffProbeData = jsonData
 
+        updateConsole(scannerID, `File scanner " + ${scannerID} + ":Tagging ffprobe data:${filepath}.`)
 
-        try {
-            var medium = ""
-            for (var j = 0; j < jsonData.streams.length; j++) {
-
-                if (jsonData.streams[j].codec_type == "video") {
-                    medium = "video_"
-                } else if (jsonData.streams[j].codec_type == "audio") {
-                    medium = "audio_"
-                } else {
-                    medium = "other_"
-                }
-
-
-                Object.keys(jsonData.streams[j]).forEach(function (key) {
-                    // JSONBomb += key+": '"+jsonData.streams[j][key]+"' \n"
-
-
-                    var thisKey = medium + key + ""
-
-                    thisFileObject[thisKey] = jsonData.streams[j][key]
-
-                    // DocumentsDB.upsert(filepath,
-
-
-                    //     {
-                    //         $set: {
-                    //             [thisKey]: jsonData.streams[j][key]
-                    //         }
-                    //     }
-                    // );
+        var jsonString = JSON.stringify(jsonData)
 
 
 
-                });
-            }
-
-        } catch (err) {}
-
-
-
-
-            // DocumentsDB.upsert(filepath,
-
-
-            //     {
-            //         $set: {
-            //             video_resolution: videoResolution
-            //         }
-            //     }
-            // );
-
+            updateConsole(scannerID, `File scanner " + ${scannerID} + ":Tagging size data:${filepath}.`)
 
             try {
                 var singleFileSize = fs.statSync(filepath)
@@ -489,18 +515,25 @@ function ffprobeLaunch(filesToScan) {
                 // );
 
 
-            } catch (err) { }
+            } catch (err) {
+
+                updateConsole(scannerID, `File scanner " + ${scannerID} + ":Tagging size data failed:${filepath}.`)
+             }
  
 
-        if (!!("video_codec_name" in thisFileObject)) {
+        //if (!!("video_codec_name" in thisFileObject)) {
+
+            if(jsonString.includes('"codec_type":"video"')){
+
+            updateConsole(scannerID, `File scanner " + ${scannerID} + ":Tagging video res:${filepath}.`)
 
             try {
 
                 // var vidWidth = jsonData.streams[0]["width"]
                 // var vidHeight = jsonData.streams[0]["height"]
 
-                var vidWidth = thisFileObject.video_width
-                var vidHeight = thisFileObject.video_height
+                var vidWidth = thisFileObject.ffProbeData.streams[0]["width"]
+                var vidHeight = thisFileObject.ffProbeData.streams[0]["height"]
                 var videoResolution = ""
     
            //    console.log(vidWidth, vidHeight)
@@ -538,23 +571,28 @@ function ffprobeLaunch(filesToScan) {
     
                 thisFileObject.video_resolution = videoResolution
     
-            } catch (err) {}
+            } catch (err) {
+
+                updateConsole(scannerID, `File scanner " + ${scannerID} + ":Tagging video res failed:${filepath}.`)
+            }
             
             thisFileObject.fileMedium = "video"
+            thisFileObject.video_codec_name = thisFileObject.ffProbeData.streams[0]["codec_name"]
 
 
             
 
-          }else if(!!("audio_codec_name" in thisFileObject)){
+          }else if(jsonString.includes('"codec_type":"audio"')){
 
             thisFileObject.fileMedium = "audio"
+            thisFileObject.audio_codec_name = thisFileObject.ffProbeData.streams[0]["codec_name"]
           }else{
 
             thisFileObject.fileMedium = "other"
           }
 
 
-        //console.log(thisFileObject)
+
 
         addFileToDB(filepath, thisFileObject,HealthCheck,TranscodeDecisionMaker)
 
@@ -563,6 +601,8 @@ function ffprobeLaunch(filesToScan) {
 
 
 function addFileToDB(filePath, FileObject,HealthCheck,TranscodeDecisionMaker) {
+
+    updateConsole(scannerID, `File scanner " + ${scannerID} + ":Sending add file to DB:${filePath}.`)
 
     //  FileObject = JSON.stringify(FileObject);
 
