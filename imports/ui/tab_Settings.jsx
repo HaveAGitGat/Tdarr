@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
 import ReactDOM from 'react-dom';
-
+import { render } from 'react-dom';
 
 
 import { SettingsDB } from '../api/tasks.js';
 
 import Folder from '../ui/tab_Settings_Folder.jsx';
+import ClipLoader from 'react-spinners/ClipLoader';
 
 
 
@@ -20,7 +21,10 @@ class App extends Component {
     super(props);
     this.clearFiles = this.clearFiles.bind(this);
 
-    this.state = { listItems: [1, 2] };
+    this.state = { listItems: [1, 2],
+      ready: false
+    
+    };
   }
 
   clearFiles() {
@@ -49,13 +53,17 @@ class App extends Component {
       scanButtons:true,
       scanFound:0,
       expanded:true,
+      pluginID:'',
+      pluginValid:false,
+      pluginCommunity:true,
       handbrake:true,
       ffmpeg:false,
       handbrakescan:true,
       ffmpegscan:false,
       preset:'-Z "Very Fast 1080p30"',
       decisionMaker:{
-        videoFilter:true,
+        pluginFilter:true,
+        videoFilter:false,
         video_codec_names_exclude:[
           {codec:"hevc",
           checked:true
@@ -167,19 +175,52 @@ class App extends Component {
 
 
 
+  componentDidMount = () => {
+
+    render(<ClipLoader
+
+      sizeUnit={"px"}
+      size={25}
+      color={'#000000'}
+      loading={true}
+  />, document.getElementById('status'));
+
+
+    Meteor.subscribe('SettingsDB', function(){
+
+
+      var res = SettingsDB.find({}).fetch()
+
+      if(res.length == 0){
+  
+  
+        render(<p>No libraries</p>, document.getElementById('status'));
+        
+  
+    
+      }else{
+      render('', document.getElementById('status'));
+      }
+
+
+   });
+
+
+  }
+
+
+
+
 
 
 
   renderLibraries() {
 
-    function color(i) {
-        if (i % 2 == 0) {
-          return "green"
-        } else {
-          return "red"
-        }
-  
-      }
+
+      if(this.props.libraries.length == 0){
+
+
+      }else{
   
       return this.props.libraries.map((item, i) => (
 
@@ -192,6 +233,7 @@ class App extends Component {
       
         ));
 
+      }
 
   }
 
@@ -199,17 +241,17 @@ class App extends Component {
     return (
 
 
-      <div className="container">
-        <header>
+      <div className="containerGeneral">
+      <header>
           <h1>Libraries</h1>
-        </header>
+      </header>
         <input type="button" className="addFolderButton" onClick={this.addFolder} value="Library +"/>
         <input type="button" className="cancelAllWorkersButton" onClick={this.clearFiles} value="Delete all libraries"/>
         <p></p>
         <p></p>
 
   
-
+      <div id="status"></div>
 
         <ul>
           {this.renderLibraries()}
