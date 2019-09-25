@@ -71,6 +71,7 @@ var preset
 var handBrakeMode
 var FFmpegMode 
 var frameCount
+var reQueueAfter
 
 
 var currentSourceLine
@@ -222,6 +223,7 @@ process.on('message', (m) => {
         FFmpegMode = m[8]
         frameCount = m[9]
         settingsDBIndex = m[10]
+        reQueueAfter= m[11]
 
         console.log("mode"+mode)
         
@@ -444,7 +446,7 @@ process.on('message', (m) => {
                         output.splice(output.length-1,1)
                         output = output.join("")
                  
-                        updateConsole(workerNumber, ":" + output)
+                       // updateConsole(workerNumber, " : " + output)
                    
                         var message = [
                             workerNumber,
@@ -466,16 +468,25 @@ process.on('message', (m) => {
                             if (n >= 6) {
         
                                 var output = str.substring(6, n)
-        
-                                try {
-                                    output = ((output / frameCount) * 100).toFixed(2) + "%"
-                                } catch (err) { }
-        
-        
+
+
+                                if(frameCount != "undefined"){
+
+                                output = ((output / frameCount) * 100).toFixed(2) + "%"
                                 output = output.split("")
                                 output.splice(output.length-1,1)
                                 output = output.join("")
-                                updateConsole(workerNumber, ":" + output)
+
+
+                                }else{
+                                    output = output
+
+                                }
+        
+                        
+        
+    
+                             //  updateConsole(workerNumber, " : " + output)
                                 var message = [
                                     workerNumber,
                                     "percentage",
@@ -533,7 +544,7 @@ process.on('message', (m) => {
                         output.splice(output.length-1,1)
                         output = output.join("")
 
-                        updateConsole(workerNumber, ":" + output)
+                      //  updateConsole(workerNumber, " : " + output)
                         var message = [
                             workerNumber,
                             "percentage",
@@ -556,15 +567,22 @@ process.on('message', (m) => {
         
                                 var output = str.substring(6, n)
         
-                                try {
-                                    output = ((output / frameCount) * 100).toFixed(2) + "%"
-                                } catch (err) { }
+                                if(frameCount != "undefined"){
 
-                                output = output.split("")
-                                output.splice(output.length-1,1)
-                                output = output.join("")
+                                    output = ((output / frameCount) * 100).toFixed(2) + "%"
+                                    output = output.split("")
+                                    output.splice(output.length-1,1)
+                                    output = output.join("")
+    
+    
+                                    }else{
+                                        output = output
+    
+                                    }
+
+                                
         
-                                updateConsole(workerNumber, ":" + output)
+                               // updateConsole(workerNumber, " : " + output)
                                 var message = [
                                     workerNumber,
                                     "percentage",
@@ -887,8 +905,17 @@ function checkifQueuePause() {
 try{
         var sourcefileSizeInGbytes = (((fs.statSync(currentSourceLine)).size) / 1000000000.0);
         var destfileSizeInGbytes = (((fs.statSync(currentDestinationLine)).size) / 1000000000.0);
+        var sizeDiffGB = sourcefileSizeInGbytes - destfileSizeInGbytes
 
-    }catch(err){}
+    }catch(err){
+
+        var sizeDiffGB = 0;
+
+
+    }
+
+
+
         // var message = [
         //     workerNumber,
         //     "fileSizes",
@@ -937,6 +964,8 @@ try{
                     settingsDBIndex,
                     mode,
                     currentSourceLine,
+                    reQueueAfter,
+                    sizeDiffGB,
                 ];
                 process.send(message);
 
