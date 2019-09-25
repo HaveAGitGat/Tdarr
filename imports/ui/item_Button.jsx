@@ -16,9 +16,9 @@ export default class App extends Component {
      
       }
 
-      triggerAddTripState = () => {
+      triggerLoadState = () => {
 
-        console.log("Here")
+        
         this.setState({
           ...this.state,
           isShowState: false,
@@ -41,24 +41,28 @@ export default class App extends Component {
 
 
     render() {
+
+      // var temp ={
+      //   createdAt: new Date()
+
+      // }
+
+
       return (
 
         <div>
         {this.state.isShowState &&  <Button variant="dark" onClick={() => {
 
-          console.log("here1")
-
-         this.triggerAddTripState();
+      
+         this.triggerLoadState();
 
   FileDB.upsert(this.props.file,
     {
-      $set: {
-        createdAt: new Date(),
-      }
+      $set: this.props.obj
     });
 
 
-}}>↑</Button>}
+}}>{this.props.symbol}</Button>}
 
 {this.state.isLoadState &&   <ClipLoader
       
