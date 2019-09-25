@@ -549,6 +549,22 @@ p {
 
     }
 
+    .versionInfo{
+
+      font-size: 0.7em;
+      float:right;
+      color:white;
+
+
+    }
+
+    .buttonClipPlaceholder{
+
+      width:12em;
+
+
+    }
+
     .dbStatusContainer table{
 
       border-collapse: collapse;
@@ -559,6 +575,8 @@ p {
 
       border: solid 1px black;
     }
+
+
 
     .dbStatusContainer td{
 
@@ -613,5 +631,82 @@ table.itemTable {
   width: 100%;
   table-layout: auto;
   white-space: normal;
+
+}
+
+table.pluginTable th {
+  background-color: white;
+  color: black;
+  border: 1px solid grey;
+}
+
+table.pluginTable td {
+
+  border: 1px solid grey;
+  color: black;
+  /* font-family: "Courier New" */
+}
+
+table.pluginTable tr {
+  /* display: table;
+width: auto;
+table-layout: fixed;  */
+}
+
+
+table.pluginTable tr:nth-child(even) {
+  background-color: white;
+}
+
+table.pluginTable tr:nth-child(odd) {
+  background-color: white;
+}
+
+
+table.pluginTable tr:hover {
+  background-color: rgb(202, 202, 202);
+}
+
+table.pluginTable {
+  border-radius: 5px;
+  width: 100%;
+  table-layout: auto;
+  white-space: normal;
+
+}
+
+.containerGeneral{
+
+
+  position:absolute;
+  width: 100%;
+  height:100%;
+}
+
+.memGraph{
+
+  width: 100%;
+  height: 50%;
+}
+
+.sliderWidth{
+  width: 50%;
+}
+
+.frame{
+
+  height: 500px;
+  overflow-y: auto;
+}
+
+.folderResults{
+
+  padding-left: 5%;
+
+
+}
+
+.folderResults p{
+  color:gray;
 
 }
