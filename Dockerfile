@@ -1,8 +1,9 @@
 FROM alpine:3.10
 
-ENV MONGO_URL=mongodb://mongodb:27017/Tdarr
+ENV MONGO_URL=mongodb://mongodb:27017/tdarr
 ENV PORT=8265
-ENV ROOT_URL=http://localhost/
+ENV ROOT_URL=http://0.0.0.0/
+ENV NODE_ARGS="--max-old-space-size=4096"
 
 RUN \
   apk add --no-cache \
@@ -18,4 +19,4 @@ RUN \
 
 EXPOSE 8265
 WORKDIR /app/Tdarr/bundle
-CMD ["node", "main.js"]
+CMD ["node", "$NODE_ARGS","main.js"]
