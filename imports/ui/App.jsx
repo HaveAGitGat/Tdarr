@@ -4,12 +4,20 @@ import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import {withRouter} from 'react-router-dom';
 
+
+import TabTranscoding from '../ui/tab_Transcoding.jsx';
+import TabSearch from '../ui/tab_Search.jsx';
 import TabStatistics from '../ui/tab_Statistics.jsx';
 
-import TabLog from '../ui/tab_Log.jsx';
+
 import TabSettings from '../ui/tab_Settings.jsx';
-import TabTranscoding from '../ui/tab_Transcoding.jsx';
+
+import TabPlugins from '../ui/tab_Plugins.jsx';
+import TabLog from '../ui/tab_Log.jsx';
 import TabHelp from '../ui/tab_Help.jsx';
+import TabDev from '../ui/tab_Dev.jsx';
+
+
 import ReactDOM from 'react-dom';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group'; // ES6
 import ReactLoading from 'react-loading';
@@ -24,14 +32,20 @@ function deActive() {
 
 }
 
+function Transcoding() {
+  return  <TabTranscoding />;
+}
+
+function Search() {
+  return   <TabSearch />;
+}
+
 function Stats() {
   //ReactDOM.findDOMNode(this.refs.System).setState({ active: false });
   return <TabStatistics />;
 }
 
-function Transcoding() {
-  return  <TabTranscoding />;
-}
+
 
 function Settings(obj) {
 
@@ -44,14 +58,23 @@ function Settings(obj) {
   return  <TabSettings/>;
 }
 
-function Log() {
-  // return <TabLog />;
 
-  return <p>Coming soon</p>
+function Plugins() {
+  return <TabPlugins/>;
+
+}
+
+function Logs() {
+   return <TabLog />;
+
 }
 
 function Help() {
   return  <TabHelp/>;
+}
+
+function Dev() {
+  return  <TabDev/>;
 }
 
 
@@ -68,11 +91,15 @@ class Nav extends Component {
     super(props)
     this.state = {
       tabs: [
-        {tab: { active: false, path: "/tdarr/", text: "Tdarr" }},
-        { tab: {active: false, path: "/", text: "Stats"} },
+        { tab: { active: false, path: "/tdarr/", text: "Tdarr" }},
+        { tab: {active: false, path: "/search", text: "Search"} },
+        { tab: {active: false, path: "/stats", text: "Stats"} },
         { tab: { active: false, path: "/settings/", text: "Libraries" } },
-        { tab: { active: false, path: "/log/", text: "Log" } },
+        { tab: { active: false, path: "/plugins/", text: "Plugins" } },
+        { tab: { active: false, path: "/logs/", text: "Logs" } },
         { tab: { active: false, path: "/help/", text: "Help" } },
+
+        { tab: {active: false, path: "/", text: "Dev"} },
       ],
 
      
@@ -95,7 +122,6 @@ class Nav extends Component {
 
     let tabs = this.state.tabs
 
-    console.log("loc:"+this.props.location)
 
 
 
@@ -147,13 +173,25 @@ class Nav extends Component {
             }
               )
             }
+
+ <div className="versionInfo">
+          Pre-Alpha 0.04
+          </div>
           </div>
 
            {/* <p><ShowTheLocationWithRouter/></p> */}
-           <Route path="/" exact component={Stats} />
-          <Route path="/tdarr/" component={Transcoding} />
+
+           <Route path="/tdarr/" component={Transcoding} />
+
+           <Route path="/stats/" exact component={Stats} />
+           <Route path="/search/" exact component={Search} />
+
+            <Route path="/" exact component={Dev} />
+
+
           <Route path="/settings/" component={Settings} />
-          <Route path="/log/" component={Log} />
+          <Route path="/plugins/" component={Plugins} />
+          <Route path="/logs/" component={Logs} />
           <Route path="/help/" component={Help} /> 
          
         </div>

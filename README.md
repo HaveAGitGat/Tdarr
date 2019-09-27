@@ -1,8 +1,16 @@
+<p align="center">
+  <img src="https://i.imgur.com/M0ikBYL.png"/>
+</p>
+
+
 # Tdarr (pre-alpha) -Audio/Video library analytics + transcode automation using FFmpeg/HandBrake + video health checking (Windows, macOS, Linux & Docker)
 
 [![Reddit](https://img.shields.io/badge/Reddit-Tdarr-orange)](https://www.reddit.com/r/Tdarr/)[![Discord](https://img.shields.io/badge/Discord-Chat-green.svg)](https://discord.gg/GF8X8cq) 
 
 Tdarr is a self hosted web-app for automating media library transcode management and making sure your content is in your preferred codecs and works well in the 'arr' family of apps. Built with the aim of modularisation, parallelisation and scalability, each library you add has its own transcode settings, filters and schedule. Workers can be fired up and closed down as necessary, and are split into 3 types - 'general', 'transcode' and 'health check'. Worker limits can be managed by the scheduler as well as manually. For a desktop application with similar functionality please see [HBBatchBeast](https://github.com/HaveAGitGat/HBBatchBeast).
+
+Use Tdarr Plugins for infinite control on how your files are processed.:
+https://github.com/HaveAGitGat/Tdarr_Plugins
 
 Currently in pre-alpha but looking for feedback/suggestions. 
 
@@ -32,6 +40,7 @@ INSTALLATION - (Docker -- Easiest method):
        docker run -ti -d --rm \
          -p 8265:8265 \
          -v /your/video/library/path/:/home/Tdarr/Media \
+         -v /where/to/store/plugins/:/home/Tdarr/Documents/Tdarr \
          -v TdarrData:/var/lib/mongodb/ \
          haveagitgat/tdarr
         

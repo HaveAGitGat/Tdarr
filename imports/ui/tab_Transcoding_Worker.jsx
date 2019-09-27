@@ -116,8 +116,11 @@ export default class Worker extends Component {
 
         <ProgressBar now={this.props.worker.percentage}  label={this.props.worker.percentage+"%"} variant="custom" />
 
+<div className={this.props.worker.percentage > 100 ? '' : 'hidden'}>
 
-   
+        No total frame count. Frame: {this.props.worker.percentage/100 }
+
+        </div>
         </div>
         </div>
       </div>

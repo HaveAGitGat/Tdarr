@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Meteor } from 'meteor/meteor';
 import ToggleButton from 'react-toggle-button'
 
-
+import { render } from 'react-dom';
 
 import { SettingsDB } from '../api/tasks.js';
 
@@ -63,18 +63,60 @@ class Folder extends Component {
       Meteor.call('toggleFolderWatch', event.target.value, this.props.libraryItem._id, false, function (error, result) { })
 
 
-      Meteor.call('verifyFolder', event.target.value, this.props.libraryItem._id,"folderValid", function (error, result) {})
+      Meteor.call('verifyFolder', event.target.value, this.props.libraryItem._id,"folderValid", function (error, result) {
 
+        if (result.length == 0) {
 
+          render('', document.getElementById('folderResults'));
+         
+        } else {
+  
+  
+          var results = result.map((row, i) => (
+  
+           <p>{row}</p>
+  
+          ));
+  
+          render(results, document.getElementById('folderResults'));
+  
+        }
+
+      })
 
     }
 
     if (event.target.name == "cache") {
 
-      Meteor.call('verifyFolder', event.target.value, this.props.libraryItem._id,"cacheValid", function (error, result) {})
+      Meteor.call('verifyFolder', event.target.value, this.props.libraryItem._id,"cacheValid", function (error, result) {
+        if (result.length == 0) {
+
+          render('', document.getElementById('cacheResults'));
+         
+        } else {
+  
+  
+          var results = result.map((row, i) => (
+  
+           <p>{row}</p>
+  
+          ));
+  
+          render(results, document.getElementById('cacheResults'));
+  
+        }
+
+
+
+      })
 
     }
 
+    if (event.target.name == "pluginID") {
+
+      Meteor.call('verifyPlugin', event.target.value, this.props.libraryItem._id, this.props.libraryItem.pluginCommunity, function (error, result) {})
+
+    }
 
 
     //this.setState({folder: event.target.value});
@@ -158,6 +200,36 @@ class Folder extends Component {
         {
           $set: {
             handbrakescan: false,
+          }
+        }
+      );
+
+
+    }
+
+    if (event.target.name == "community" && event.target.checked == true) {
+
+      SettingsDB.upsert(
+
+        this.props.libraryItem._id,
+        {
+          $set: {
+            "pluginCommunity": true,
+          }
+        }
+      );
+
+
+    }
+
+    if (event.target.name == "local" && event.target.checked == true) {
+
+      SettingsDB.upsert(
+
+        this.props.libraryItem._id,
+        {
+          $set: {
+            "pluginCommunity": false,
           }
         }
       );
@@ -447,12 +519,16 @@ class Folder extends Component {
 
             <input type="text" className="folderPaths" name="folder" defaultValue={this.props.libraryItem.folder} onChange={this.handleChange}></input>
 
+            
+            
             <div className={this.props.libraryItem.folderValid ? 'hidden' : ''}>
              <span className="invalidFolder" ><center> Invalid folder </center></span>
              </div>
 
+             <div id="folderResults" className="folderResults"></div>
+
              <div id="folderList">
-               
+
              </div>
 
            
@@ -471,38 +547,13 @@ class Folder extends Component {
 
 </div>
 
+<div id="cacheResults" className="folderResults"></div>
 
-              <p>Output file container: </p>
 
-              <input type="text" name="container" className="folderPaths" defaultValue={this.props.libraryItem.container} onChange={this.handleChange}></input>
 
-              <p> Container types to scan for:</p>
+              <p>Container types to scan for:</p>
 
               <input type="text" className="folderPaths" name="containerFilter" defaultValue={this.props.libraryItem.containerFilter} onChange={this.handleChange}></input>
-
-
-
-              <p>HandBrake:
-        <input type="checkbox" name="handbrake" checked={!!this.props.libraryItem.handbrake} onChange={this.handleChangeChkBx} />
-                FFmpeg:
-        <input type="checkbox" name="ffmpeg" checked={!!this.props.libraryItem.ffmpeg} onChange={this.handleChangeChkBx} />
-              </p>
-
-              <p>CLI arguments/preset: </p>
-              <input type="text" name="preset" className="folderPaths" defaultValue={this.props.libraryItem.preset} onChange={this.handleChange}></input>
-
-
-             
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -510,26 +561,163 @@ class Folder extends Component {
               <p>Transcode Decision Maker</p>
 
 
+              Plugin: <div style={libButtonStyle}><ToggleButton
+
+                value={!!this.props.libraryItem.decisionMaker.pluginFilter}
+                onToggle={() => {
+
+                  if(!this.props.libraryItem.decisionMaker.pluginFilter == true){
+
+
+                    SettingsDB.upsert(
+                      this.props.libraryItem._id,
+                      {
+                        $set: {
+                          "decisionMaker.pluginFilter": !this.props.libraryItem.decisionMaker.pluginFilter,
+                          "decisionMaker.videoFilter": !!this.props.libraryItem.decisionMaker.pluginFilter,
+                          "decisionMaker.audioFilter": !!this.props.libraryItem.decisionMaker.pluginFilter,
+                        }
+                      }
+                    );
+
+
+                  }else{
+
+                    SettingsDB.upsert(
+                      this.props.libraryItem._id,
+                      {
+                        $set: {
+                          "decisionMaker.pluginFilter": !this.props.libraryItem.decisionMaker.pluginFilter,
+                        }
+                      }
+                    );
+
+
+                  }
+
+ 
+                }
+
+                }
+              /></div>
+
               Video library: <div style={libButtonStyle}><ToggleButton
 
                 value={!!this.props.libraryItem.decisionMaker.videoFilter}
                 onToggle={() => {
+
+                  if(!this.props.libraryItem.decisionMaker.videoFilter == true){
 
                   SettingsDB.upsert(
                     this.props.libraryItem._id,
                     {
                       $set: {
                         "decisionMaker.videoFilter": !this.props.libraryItem.decisionMaker.videoFilter,
-                        "decisionMaker.audioFilter": this.props.libraryItem.decisionMaker.videoFilter,
+                        "decisionMaker.pluginFilter": !!this.props.libraryItem.decisionMaker.videoFilter,
+                        "decisionMaker.audioFilter": !!this.props.libraryItem.decisionMaker.videoFilter,
                       }
                     }
                   );
+
+                  }else{
+                    SettingsDB.upsert(
+                      this.props.libraryItem._id,
+                      {
+                        $set: {
+                          "decisionMaker.videoFilter": !this.props.libraryItem.decisionMaker.videoFilter,
+                        }
+                      }
+                    );
+
+
+                  }
                 }
 
                 }
               /></div>
 
-<div className={!!this.props.libraryItem.decisionMaker.videoFilter ? '' : 'hidden'}>
+
+Audio library:
+<div style={libButtonStyle}> <ToggleButton
+
+  value={!!this.props.libraryItem.decisionMaker.audioFilter}
+  onToggle={() => {
+
+    if(!this.props.libraryItem.decisionMaker.audioFilter == true){
+
+    SettingsDB.upsert(
+
+      this.props.libraryItem._id,
+      {
+        $set: {
+          "decisionMaker.audioFilter": !this.props.libraryItem.decisionMaker.audioFilter,
+          "decisionMaker.pluginFilter": !!this.props.libraryItem.decisionMaker.audioFilter,
+          "decisionMaker.videoFilter": !!this.props.libraryItem.decisionMaker.audioFilter,
+        }
+      }
+    );
+
+    }else{
+
+      SettingsDB.upsert(
+
+        this.props.libraryItem._id,
+        {
+          $set: {
+            "decisionMaker.audioFilter": !this.props.libraryItem.decisionMaker.audioFilter,
+          }
+        }
+      );
+
+      
+
+    }
+  }
+
+  }
+/></div>
+
+<div className={!!this.props.libraryItem.decisionMaker.pluginFilter ? '' : 'hidden'}>
+<p>Community:
+<input type="checkbox" name="community" checked={!!this.props.libraryItem.pluginCommunity} onChange={this.handleChangeChkBx} />
+  Local:
+<input type="checkbox" name="local" checked={!this.props.libraryItem.pluginCommunity} onChange={this.handleChangeChkBx} />
+</p>
+<p>Plugin ID:</p>
+<input type="text" className="folderPaths" name="pluginID" defaultValue={this.props.libraryItem.pluginID} onChange={this.handleChange}></input>
+
+<div className={this.props.libraryItem.pluginValid ? 'hidden' : ''}>
+ <span className="invalidFolder" ><center> Invalid plugin </center></span>
+ </div>
+
+
+ </div>
+
+<div className={!!this.props.libraryItem.decisionMaker.pluginFilter ? 'hidden' : !!this.props.libraryItem.decisionMaker.videoFilter ? '' : !!this.props.libraryItem.decisionMaker.audioFilter ? '' : 'hidden'}>
+
+<p>Output file container: </p>
+
+<input type="text" name="container" className="folderPaths" defaultValue={this.props.libraryItem.container} onChange={this.handleChange}></input>
+
+
+
+<p>HandBrake:
+<input type="checkbox" name="handbrake" checked={!!this.props.libraryItem.handbrake} onChange={this.handleChangeChkBx} />
+  FFmpeg:
+<input type="checkbox" name="ffmpeg" checked={!!this.props.libraryItem.ffmpeg} onChange={this.handleChangeChkBx} />
+</p>
+
+<p>CLI arguments/preset: </p>
+<input type="text" name="preset" className="folderPaths" defaultValue={this.props.libraryItem.preset} onChange={this.handleChange}></input>
+
+
+
+
+
+
+</div>
+
+<div className={!!this.props.libraryItem.decisionMaker.audioFilter ? 'hidden' : ''}>
 
 <p>Health check type:</p>
 <p>Quick:
@@ -537,6 +725,10 @@ class Folder extends Component {
                 Thorough:
         <input type="checkbox" name="ffmpegscan" checked={!!this.props.libraryItem.ffmpegscan} onChange={this.handleChangeChkBx} />
               </p>
+
+</div>
+              <div className={!!this.props.libraryItem.decisionMaker.videoFilter ? '' : 'hidden'}>
+
 
 
               <p>Don't transcode videos already in these codecs:</p>
@@ -630,27 +822,7 @@ class Folder extends Component {
 
 
 
-              <p>Audio library:</p>
 
-              <div style={libButtonStyle}> <ToggleButton
-
-                value={!!this.props.libraryItem.decisionMaker.audioFilter}
-                onToggle={() => {
-
-                  SettingsDB.upsert(
-
-                    this.props.libraryItem._id,
-                    {
-                      $set: {
-                        "decisionMaker.audioFilter": !this.props.libraryItem.decisionMaker.audioFilter,
-                        "decisionMaker.videoFilter": this.props.libraryItem.decisionMaker.audioFilter,
-                      }
-                    }
-                  );
-                }
-
-                }
-              /></div>
 
 <div className={!!this.props.libraryItem.decisionMaker.audioFilter ? '' : 'hidden'}>
               <p>Don't transcode audio already in these codecs:</p>
@@ -660,6 +832,7 @@ class Folder extends Component {
                   type="text"
                   ref="addAudioCodecExcludeText"
                   placeholder="Add new audio codecs...(use Enter↵)"
+                  className="folderPaths"
                 />
               </form>
 
@@ -708,7 +881,6 @@ class Folder extends Component {
           </div>
 
         </div>
-
       </span>
     );
   }

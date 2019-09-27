@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
-import { StatisticsDB,GlobalSettingsDB } from '../api/tasks.js';
+import { FileDB,StatisticsDB,GlobalSettingsDB } from '../api/tasks.js';
 import ReactDOM from 'react-dom';
+import ClipLoader from 'react-spinners/ClipLoader';
 
 
 import { PieChart, Pie, Sector, Cell, Tooltip, Label,ResponsiveContainer} from 'recharts';
@@ -32,10 +33,24 @@ class App extends Component {
     if(statistics.length == 0){
 
 
-      var statDat = "Loading..."
+      var statDat = <ClipLoader
+
+      sizeUnit={"px"}
+      size={15}
+      color={'#000000'}
+      loading={true}
+  />
 
     }else {
       var statDat = statistics[0][stat]
+
+      if(stat == "sizeDiff"){
+try{
+        statDat = parseFloat(statDat.toPrecision(4))
+
+}catch(err){}
+        
+      }
 
     }
 
@@ -62,9 +77,6 @@ class App extends Component {
       var data = statistics[0][pie]
 
     }
-
-    
-
 
 
     const COLORS = ['#000000','#7d7d7d','#bdbdbd'];
@@ -110,11 +122,15 @@ class App extends Component {
     return (
 
 
-      <div>
+      <div className="containerGeneral">
+      <header>
+          <h1>Stats</h1>
+      </header>
 
        <center><p><b>Total files in DB</b>: {this.renderStat('totalFileCount')}</p></center> 
 
        <center><p><b>Total number of transcodes</b>: {this.renderStat('totalTranscodeCount')}</p></center> 
+       <center><p><b>Before/after size difference</b>: {this.renderStat('sizeDiff')} GB</p></center> 
 
        <center><p><b>Total number of health checks</b>: {this.renderStat('totalHealthCheckCount')}</p></center> 
 
