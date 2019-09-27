@@ -19,4 +19,4 @@ RUN \
 
 EXPOSE 8265
 WORKDIR /app/Tdarr/bundle
-CMD ["node", "$NODE_ARGS","main.js"]
+CMD ["node","main.js", "NODE_ARGS"]

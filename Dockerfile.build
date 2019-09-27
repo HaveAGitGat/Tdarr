@@ -29,4 +29,4 @@ RUN cd /app/tdarr/programs/server/ && npm install
 
 WORKDIR /app/tdarr
 EXPOSE 8265
-CMD ["node", "$NODE_ARGS","main.js"]
+CMD ["node","main.js", "NODE_ARGS"]
