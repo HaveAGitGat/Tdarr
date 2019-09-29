@@ -225,8 +225,13 @@ process.on('message', (m) => {
         settingsDBIndex = m[10]
         reQueueAfter= m[11]
 
-        console.log("mode"+mode)
+      
         
+        if(container.charAt(0) != '.'){
+
+            container = '.'+container
+
+        }
 
 
         updateConsole(workerNumber, "File received:"+ fileToProcess )
@@ -835,6 +840,18 @@ function checkifQueuePause() {
   
   
   function getOutputPath(inputFilePath, outputFileContainer, inputPathStem, outputPathStem) {
+
+    while(inputPathStem.charAt(inputPathStem.length - 1) == '/'){
+        inputPathStem = inputPathStem.split("")
+        inputPathStem.splice(inputPathStem.length - 1,1)
+        inputPathStem = inputPathStem.join("")
+    }
+
+    while(outputPathStem.charAt(outputPathStem.length - 1) == '/'){
+        outputPathStem = outputPathStem.split("")
+        outputPathStem.splice(outputPathStem.length - 1,1)
+        outputPathStem = outputPathStem.join("")
+    }
   
   
     inputPathStemSplit = inputPathStem.split(','); // comma removed step 1:  /path/to/folder
@@ -939,22 +956,57 @@ try{
                 errorLogFull += "Attempting to delete original file"
                 updateConsole(workerNumber, "Attempting to delete original file" + currentSourceLine)
 
-                fs.unlinkSync(currentSourceLine)
+               
 
 
-                errorLogFull += "Original file deleted"
-                updateConsole(workerNumber, "Original file deleted" + currentSourceLine)
+  
 
 
                 errorLogFull += "Attempting to move new file to original folder"
                 updateConsole(workerNumber, "Attempting to move new file to original folder" + currentSourceLine)
 
-                fsextra.moveSync(currentDestinationLine, finalFilePath, {
+                var finalFilePathCopy = finalFilePath
+
+            
+                
+                
+
+                finalFilePathCopy = finalFilePathCopy.split(".")
+
+
+                finalFilePathCopy[finalFilePathCopy.length-2] = finalFilePathCopy[finalFilePathCopy.length-2]+"-TdarrNew"
+
+                finalFilePathCopy = finalFilePathCopy.join(".")
+
+
+                fsextra.moveSync(currentDestinationLine, finalFilePathCopy, {
                     overwrite: true
                 })
 
                 errorLogFull += "Moving file successful:"
-                updateConsole(workerNumber, "Moving file successful:" + currentDestinationLine + " to " + finalFilePath)
+                updateConsole(workerNumber, "Moving file successful:" + currentDestinationLine + " to " + finalFilePathCopy)
+
+
+
+                fs.unlinkSync(currentSourceLine)
+                errorLogFull += "Original file deleted"
+                updateConsole(workerNumber, "Original file deleted" + currentSourceLine)
+
+
+                errorLogFull += "Renaming new file:"
+                updateConsole(workerNumber, "Renaming new file:" + finalFilePathCopy + " to " + finalFilePath)
+
+                fsextra.moveSync(finalFilePathCopy, finalFilePath, {
+                    overwrite: true
+                })
+
+                errorLogFull += "Renaming new file success:"
+                updateConsole(workerNumber, "Renaming new file success:" + finalFilePathCopy + " to " + finalFilePath)
+
+
+                
+
+                
 
 
                 var message = [
