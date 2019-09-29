@@ -9,8 +9,19 @@
 
 Tdarr is a self hosted web-app for automating media library transcode management; making sure your content is in your preferred codecs and works well in the 'arr' family of apps. Built with the aim of modularisation, parallelisation and scalability, each library you add has its own transcode settings, filters and schedule. Workers can be fired up and closed down as necessary, and are split into 3 types - 'general', 'transcode' and 'health check'. Worker limits can be managed by the scheduler as well as manually. For a desktop application with similar functionality please see [HBBatchBeast](https://github.com/HaveAGitGat/HBBatchBeast).
 
-Use Tdarr Plugins for infinite control on how your files are processed.:
+
+- Use Tdarr Plugins for infinite control on how your files are processed:
 https://github.com/HaveAGitGat/Tdarr_Plugins
+- Audio and video library management
+- Scheduler
+- Folder watcher
+- Worker stall detector
+- Load balancing between libraries/drives
+- Use HandBrake or FFmpeg
+- Tested on a 180,000 file dummy library with 60 workers
+- Search for files based on hundreds of properties
+- Expanding stats page
+
 
 Currently in pre-alpha but looking for feedback/suggestions. 
 
