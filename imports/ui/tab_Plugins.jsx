@@ -4,6 +4,10 @@ import ReactDOM from 'react-dom';
 import { render } from 'react-dom';
 import ReactTable from "react-table";
 
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { Button } from 'react-bootstrap';
+import Modal from "reactjs-popup";
+
 import ClipLoader from 'react-spinners/ClipLoader';
 import { GlobalSettingsDB } from '../api/tasks.js';
 
@@ -23,7 +27,7 @@ class App extends Component {
 
   }
 
-  componentDidMount(){
+  componentDidMount() {
 
     this.searchPlugins()
 
@@ -33,17 +37,28 @@ class App extends Component {
   updatePlugins = () => {
 
     GlobalSettingsDB.upsert('globalsettings',
-    {
-      $set: {
-        pluginSearchLoading:true,
+      {
+        $set: {
+          pluginSearchLoading: true,
+        }
       }
-    }
     );
-  
 
 
-    Meteor.call('updatePlugins', ReactDOM.findDOMNode(this.refs.searchString).value.trim(), (error, result) => {})
-  
+
+    Meteor.call('updatePlugins', ReactDOM.findDOMNode(this.refs.searchString).value.trim(), (error, result) => {
+
+
+
+      //this.searchPlugins()
+
+
+      setTimeout(this.searchPlugins, 5000);
+
+    })
+
+
+
   }
 
   renderSearchButtons() {
@@ -66,15 +81,36 @@ class App extends Component {
 
       } else {
 
-        return <div style={ButtonStyle}>
+        return <div>
 
-<input type="button" className="addFolderButton" onClick={this.searchPlugins} value={"Search"} style={ButtonStyle}></input>
-          <input type="button" className="addFolderButton" onClick={() => {
+          <Button variant="outline-dark" className="addFolderButton" onClick={this.searchPlugins} style={ButtonStyle}>Search</Button>
+          <Button variant="outline-dark" className="addFolderButton" onClick={() => {
 
             render('', document.getElementById('searchResults'));
-          }} value={"Clear"} style={ButtonStyle}></input>
-             <input type="button" className="addFolderButton" onClick={this.updatePlugins} value={"Update community plugins"} style={ButtonStyle}></input>
+          }}  style={ButtonStyle}>Clear</Button>
+          <Button variant="outline-dark" className="addFolderButton" onClick={this.updatePlugins} style={ButtonStyle}>Update community plugins</Button>
+          <Modal
+          trigger={<Button variant="outline-dark" >i</Button>}
+          modal
+          closeOnDocumentClick
+        >
+          <div className="frame">
+            <div className="scroll">
 
+            
+        <p></p>
+        <p>Copy a community plugin id into the 'Plugin ID:' section of one of your libraries. Make sure the 'Community' checkbox is selected.</p>
+        <p></p>
+        <p></p>
+
+        <p>For information on creating community and local plugins, have a look at:https://github.com/HaveAGitGat/Tdarr_Plugins</p>
+
+
+            
+
+            </div>
+          </div>
+        </Modal>
         </div>
 
 
@@ -87,83 +123,89 @@ class App extends Component {
 
   searchPlugins = (event) => {
 
-    if(event){
-    event.preventDefault();
-  }
-
-  GlobalSettingsDB.upsert('globalsettings',
-  {
-    $set: {
-      pluginSearchLoading:true,
+    if (event) {
+      event.preventDefault();
     }
-  }
-  );
+
+
+
+    GlobalSettingsDB.upsert('globalsettings',
+      {
+        $set: {
+          pluginSearchLoading: true,
+        }
+      }
+    );
 
     Meteor.call('searchPlugins', ReactDOM.findDOMNode(this.refs.searchString).value.trim(), (error, result) => {
 
-      //console.log(result)
+  
 
       if (result.length == 0) {
 
-        render("No results", document.getElementById('searchResults'));
+        render(<center>No results</center>, document.getElementById('searchResults'));
       } else {
 
 
         var data = result
 
 
-            
+
+
         const columns = [{
-            Header: 'id',
-            accessor: 'id',
-            width: 200,
-      
+          Header: 'id',
+          accessor: 'id',
+          id: 'id',
+          width: 70,
+          accessor: d => <CopyToClipboard text={d.id}>
+            <Button variant="outline-dark" >Copy id</Button>
+          </CopyToClipboard>
 
 
         }, {
 
-            Header: 'Name',
-            accessor: 'Name',
-            width: 200,
- 
+          Header: 'Name',
+          accessor: 'Name',
+          width: 200,
+
         }, {
 
           Header: 'Type',
           accessor: 'Type',
           width: 100,
 
-      }, {
+        }, {
 
-        Header: 'Description',
-        accessor: 'Description',
-        style: { 'white-space': 'unset' },
-         getProps: (state, rowInfo, column) => {
-             return {
-                 style: {
-                     background: rowInfo && rowInfo.row.Description.includes("BUG") ? 'red' : null,
-                 },
-             }
-         }
+          Header: 'Description',
+          accessor: 'Description',
+          style: { 'white-space': 'unset' },
+          getProps: (state, rowInfo, column) => {
+            return {
+              style: {
+                background: rowInfo && rowInfo.row.Description.includes("BUG") ? 'red' : null,
+              },
+            }
+          }
 
-    }, {
+        }, {
 
-      Header: 'Version',
-      accessor: 'Version',
-      width: 100,
+          Header: 'Version',
+          accessor: 'Version',
+          width: 100,
 
-  }, {
+        }, {
 
-    Header: 'Stars',
-    accessor: 'Stars',
-    width: 100,
+          Header: 'Stars',
+          accessor: 'Stars',
+          width: 100,
 
-}, {
+        }, {
 
-  Header: 'Link',
-  accessor: 'Link',
-  width: 100,
+          Header: 'Link',
+          accessor: 'Link',
+          width: 100,
 
-}
+        }
 
 
 
@@ -172,22 +214,19 @@ class App extends Component {
 
         ]
 
-
-
-
         render(<div>
-            <ReactTable
-                data={data}
-                columns={columns}
-                defaultPageSize={10}
-                pageSizeOptions={[10, 100, 1000]}
-            />
+          <ReactTable
+            data={data}
+            columns={columns}
+            defaultPageSize={10}
+            pageSizeOptions={[10, 100, 1000]}
+          />
         </div>, document.getElementById('searchResults'));
 
 
 
 
-        }
+      }
 
     })
 
@@ -206,44 +245,55 @@ class App extends Component {
   render() {
     return (
       <div className="containerGeneral">
-      <header>
+
+<center>
+        <header>
           <h1>Community Plugins</h1>
-      </header>
+        </header>
+
+</center>
+
+
+
+       
+        <p></p>
+
       
-        <p></p>
-        <p>Copy a community plugin id into the 'Plugin ID:' section of one of your libraries. Make sure the 'Community' checkbox is selected.</p>
-        <p></p>
-        <p></p>
-
-        <p>For information on creating community and local plugins, have a look at:https://github.com/HaveAGitGat/Tdarr_Plugins</p>
-     
-        <p></p>
-
-
 
         <form onSubmit={this.searchPlugins}  >
-          <input type="text" className="searchBar" ref="searchString" placeholder="Search for plugins by any property. E.g.  h264,mp4" style={ButtonStyle} ></input>
+        <center>
 
+
+          <input type="text" className="searchBar" ref="searchString" placeholder="Search for plugins by any property. E.g.  h264,mp4"></input>
+
+          </center>
+
+          <p></p>
+        
+          <center>
           {this.renderSearchButtons()}
+          </center>
 
         </form>
 
 
 
+
+
         <p></p>
         <p></p>
 
-  
-
-<div id="searchResults">
 
 
-</div>
+        <div id="searchResults">
+
+
+        </div>
 
 
 
-  
-</div>
+
+      </div>
     );
   }
 }
