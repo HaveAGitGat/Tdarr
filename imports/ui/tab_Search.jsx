@@ -46,13 +46,36 @@ class App extends Component {
 
       } else {
 
-        return <div style={ButtonStyle}>
+        return <div >
 
-          <input type="button" className="addFolderButton" onClick={this.searchDB} value={"Search"} style={ButtonStyle}></input>
-          <input type="button" className="addFolderButton" onClick={() => {
+          <Button variant="outline-dark" onClick={this.searchDB}  style={ButtonStyle}>Search</Button>
+          <Button variant="outline-dark" onClick={() => {
 
             render('', document.getElementById('searchResults'));
-          }} value={"Clear"} style={ButtonStyle}></input>
+          }}  style={ButtonStyle}>Clear</Button>
+           <Modal
+          trigger={<Button variant="outline-dark" >i</Button>}
+          modal
+          closeOnDocumentClick
+        >
+          <div className="frame">
+            <div className="scroll">
+
+            
+             <p>Search for files based on hundreds of properties</p>
+              
+                <p>Codec suggestions: h264,hevc,mpeg4,mpeg2video,vp9,vp8,theora,aac,ac3,dts</p>
+                <p>Other suggestions: subtitle,mp4,mkv,shrek,stereo,1080p</p>
+
+             <p>Search for files with multiple properties by separating search terms with a comma. E.g.:</p>
+
+            <p>shrek,aac,h264,subtitle</p>
+
+            
+
+            </div>
+          </div>
+        </Modal>
 
         </div>
 
@@ -65,7 +88,7 @@ class App extends Component {
 
   searchDB = (event) => {
 
-    if(event){
+    if (event) {
       event.preventDefault();
     }
 
@@ -86,7 +109,7 @@ class App extends Component {
 
       if (result.length == 0) {
 
-        render("No results", document.getElementById('searchResults'));
+        render(<center>No results</center>, document.getElementById('searchResults'));
       } else {
 
 
@@ -168,7 +191,7 @@ class App extends Component {
 
   renderInfoButton(row) {
 
-  
+
 
     var result = []
 
@@ -201,16 +224,16 @@ class App extends Component {
     ));
 
     return <Modal
-      trigger={<Button variant="dark" >i</Button>}
+      trigger={<Button variant="outline-dark" >i</Button>}
       modal
       closeOnDocumentClick
     >
-       <div className="frame">
-    <div className="scroll"> 
-   {result}
-      
-    </div>
-  </div>
+      <div className="frame">
+        <div className="scroll">
+          {result}
+
+        </div>
+      </div>
     </Modal>
 
 
@@ -222,16 +245,32 @@ class App extends Component {
   render() {
     return (
       <div className="containerGeneral">
+
+        <center>
         <header>
-          <h1>Search</h1>
+          <h1>Search </h1>       
         </header>
+        </center>
 
         <p></p>
+
+       
         <p></p>
         <form onSubmit={this.searchDB}  >
+
+        <center>
+
           <input type="text" className="searchBar" ref="searchString" placeholder="Search for files by any property. E.g. h264,aac,test.mp4,mkv" style={ButtonStyle} ></input>
 
+          </center>
+
+          <center>
+      
+          <p></p>
+
           {this.renderSearchButtons()}
+
+          </center>
 
 
         </form>
