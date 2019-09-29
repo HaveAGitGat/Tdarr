@@ -25,11 +25,11 @@ https://github.com/HaveAGitGat/Tdarr_Plugins
 
 Currently in pre-alpha but looking for feedback/suggestions. 
 
-![Screenshot](https://i.imgur.com/fabZThG.png)
+![Screenshot](https://i.imgur.com/8iqpGQk.png)
 
 ---------------------------------------------------------------------------------------
 
-![Screenshot](https://i.imgur.com/wfhrjhy.png)
+![Screenshot](https://i.imgur.com/DIcTee2.png)
 
 
 Requirements (MongoDB + NodeJS 8.x)
