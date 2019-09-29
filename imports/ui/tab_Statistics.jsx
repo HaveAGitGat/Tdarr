@@ -123,14 +123,16 @@ try{
 
 
       <div className="containerGeneral">
+          <center>
       <header>
           <h1>Stats</h1>
       </header>
+      </center>
 
        <center><p><b>Total files in DB</b>: {this.renderStat('totalFileCount')}</p></center> 
 
        <center><p><b>Total number of transcodes</b>: {this.renderStat('totalTranscodeCount')}</p></center> 
-       <center><p><b>Before/after size difference</b>: {this.renderStat('sizeDiff')} GB</p></center> 
+       <center><p><b>Space saved</b>: {this.renderStat('sizeDiff')} GB</p></center> 
 
        <center><p><b>Total number of health checks</b>: {this.renderStat('totalHealthCheckCount')}</p></center> 
 
