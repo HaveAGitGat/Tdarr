@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Checkbox from '@material-ui/core/Checkbox';
 
 
 export default class VideoCodec extends Component {
@@ -25,7 +26,7 @@ export default class VideoCodec extends Component {
 
 
         <span className="scheduleContainer-item">
-         <input type="checkbox" checked={!!this.props.item.checked} onChange={this.toggleChecked} />
+         <Checkbox checked={!!this.props.item.checked} onChange={this.toggleChecked} />
         {this.props.item._id}
         </span>
         
