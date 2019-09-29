@@ -19,7 +19,7 @@ process.on('uncaughtException', function (err) {
     process.exit();
 });
 
-console.log("process.cwd():"+process.cwd())
+
 
 var path = require("path");
 var fs = require('fs');
