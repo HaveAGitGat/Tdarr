@@ -124,36 +124,35 @@ Visit localhost:8265 in a web browser to use the application
 
 -------------------------------------------------------------------------------------------------------------
 
+Additional points:
 
--Tdarr can handle both audio and video libraries. I can add the option for image libraries if need be.
+- Tdarr can handle both audio and video libraries. I can add the option for image libraries if need be.
 
--Use it for transcoding, remuxing, health checking or just to see library codec data. Different types of workers mean if you don't want to do transcoding or health checking then just set Tdarr up to not use any of those workers.
+- Use it for transcoding, remuxing, health checking or just to see library codec data. Different types of workers mean if you don't want to do transcoding or health checking then just set Tdarr up to not use any of those workers.
 
--Files are passed through a transcode decision-maker based on file property data. Currently, you can filter by codec, size and resolution (height and width). Many more options are in the pipeline to match HBBatchBeast while providing a better UI.
+- Files are passed through a transcode decision-maker based on file property data. Currently, you can filter by codec, size and resolution (height and width). Many more options are in the pipeline to match HBBatchBeast while providing a better UI.
 
 - As file property data is used instead of say, a list of files which have been processed, this means that at any time you can delete your Tdarr installation and data completely then reinstall and all files already in the correct codec etc will be 'passed' by the transcode decision-maker.
 
--Transcoding and health checking won't occur on the same file at the same time to prevent errors. Fetching files from the database can take some time, so there is additional logic to make sure workers don't process the same tasks. Also, all newly transcoded files will automatically be put into the health check queue to make sure they are valid.
+- Transcoding and health checking won't occur on the same file at the same time to prevent errors. Fetching files from the database can take some time, so there is additional logic to make sure workers don't process the same tasks. Also, all newly transcoded files will automatically be put into the health check queue to make sure they are valid.
 
--I've put a lot of work into making the program as asynchronous as possible. This means you can scan multiple libraries at the same as running multiple transcode + health check workers. This is crucial for 100TB+ libraries due to the amount of time it can take to process them.
+- I've put a lot of work into making the program as asynchronous as possible. This means you can scan multiple libraries at the same as running multiple transcode + health check workers. This is crucial for 100TB+ libraries due to the amount of time it can take to process them.
 
--There is no single transcode/health check queue generated and then processed. Items are pulled from the database in real-time. This prevents queue errors when for example you move files in/out/around your libraries.
+- There is no single transcode/health check queue generated and then processed. Items are pulled from the database in real-time. This prevents queue errors when for example you move files in/out/around your libraries.
 
--Only videos are health checked.
+- Only videos are health checked.
 
--If you toggle a worker to 'Off', it will finish its current item before exiting.
+- If you toggle a worker to 'Off', it will finish its current item before exiting.
 
--There is a worker status watcher which automatically cancels items after 5 minutes of no transcode progression.
+- There is a worker status watcher which automatically cancels items after 5 minutes of no transcode progression.
 
--I'm currently working on implementing logic so workers load-balance between libraries which will allow high bandwidth processing (Gigabit+) when doing health checks using multiple workers on a powerful server.
+- Lots of graphs and stats additions are in the pipeline.
 
--Lots of graphs and stats additions are in the pipeline.
+- There will be integration with Sonarr/Radarr to automatically replace corrupt video files.
 
--There will be integration with Sonarr/Radarr to automatically replace corrupt video files.
+- General workers prioritise health check items before transcode items.
 
--General workers prioritise health check items before transcode items.
-
--All newly scanned items are moved to the top of the queue as people generally want to prioritise their new media. You can use the search bar to move any item to the top of the queue or re-queue it for a transcode/health check.
+- All newly scanned items are moved to the top of the queue as people generally want to prioritise their new media. You can use the search bar to move any item to the top of the queue or re-queue it for a transcode/health check.
 
 - Default port is 8265 (say it enough and it may start to sound like h265).
 
