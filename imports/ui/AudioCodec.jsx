@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Checkbox from '@material-ui/core/Checkbox';
 
 export default class AudioCodec extends Component {
 
@@ -30,21 +31,26 @@ export default class AudioCodec extends Component {
 
     render() {
       return (
-        <li key={this.props.key} >
-          <input type="checkbox" checked={!!this.props.audiocodec.checked} onChange={this.toggleChecked} />
 
+
+        <tr>
+        <td>
+
+          <Checkbox checked={!!this.props.audiocodec.checked} onChange={this.toggleChecked} />
+          </td>
+
+          <td>
         {this.props.audiocodec.codec}
-       
-         <div  style={noBreak}>
+        </td>
 
-        
+        <td>
          <button className="deleteCodecButton" onClick={this.deleteThisCodec.bind(this)}>
           &times;
         </button>
-    
-        </div>
+        </td>
+
         
-        </li>
+        </tr>
       );
     }
   }
