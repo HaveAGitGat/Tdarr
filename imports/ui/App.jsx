@@ -5,6 +5,8 @@ import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import {withRouter} from 'react-router-dom';
 
 
+
+
 import TabTranscoding from '../ui/tab_Transcoding.jsx';
 import TabSearch from '../ui/tab_Search.jsx';
 import TabStatistics from '../ui/tab_Statistics.jsx';
@@ -24,13 +26,8 @@ import ReactLoading from 'react-loading';
 
 
 
-function deActive() {
-
-  // ReactDOM.findDOMNode(this.refs.textInput).setState({ active: false });
 
 
-
-}
 
 function Transcoding() {
   return  <TabTranscoding />;
@@ -151,11 +148,12 @@ class Nav extends Component {
       
 
       <Router>
+        {}
 
+        <link rel="icon" sizes="16x16 32x32" href="/favicon.png?v=2"/>
       
      {/* <div className={"wheel"} refs="wheel" style={divStyle}> */}
-        {/* <ReactLoading type={"spin"} color={"#66ccff"} height={'100%'} width={'100%'} /> */}
-        {/* </div> */}
+        {}
 
 
 
@@ -175,7 +173,7 @@ class Nav extends Component {
             }
 
  <div className="versionInfo">
-          Pre-Alpha 0.04
+         Tdarr Alpha 1.00
           </div>
           </div>
 
