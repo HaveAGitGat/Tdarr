@@ -38,25 +38,38 @@ Requirements (MongoDB + NodeJS 8.x)
 
 INSTALLATION - (Docker -- Easiest method):
 
-1. Pull the docker image:
+1. Pull and run the MongoDB Docker container:
+
+        docker pull mongo
+        
+        docker run -p 27017-27019:27017-27019 \
+          -v data:/data/db \
+          mongo:latest
+
+2. Pull the Tdarr Docker image:
 
        docker pull haveagitgat/tdarr
   
-2. Create a persistent docker volume for Tdarr data - Mapping a host folder most likely won't work as MongoDB requires a filesystem that supports fsync() on directories amongst other things.
-
-       docker volume create TdarrData
-
 3. Run the container (change the '8265' on the left to your preferred port and add required volumes)
 
-       docker run -ti -d --rm \
-         -p 8265:8265 \
-         -v /your/video/library/path/:/home/Tdarr/Media \
-         -v /where/to/store/plugins/:/home/Tdarr/Documents/Tdarr \
-         -v TdarrData:/var/lib/mongodb/ \
+       docker run -ti --rm \
+        --net=host \
+        -v /media/mount/:/home/Tdarr/Media \
+        -v /home/z/Documents/Tdarr:/home/Tdarr/Documents/Tdarr \
+        -p 8265:8265 \
+        -e "MONGO_URL=mongodb://localhost:27017/Tdarr" \
          haveagitgat/tdarr
         
         
 Visit localhost:8265 in a web browser to use the application
+
+
+For unRAID please see the following screenshots for the MongoDB and Tdarr container configs:
+
+
+![Screenshot](https://i.imgur.com/qnP9YhI.png)
+
+![Screenshot]https://i.imgur.com/7WFU0AJ.png)
 
 ---------------------------------------------------------------------------------------
 
