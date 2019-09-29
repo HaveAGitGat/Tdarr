@@ -4,6 +4,8 @@ import ReactDOM from 'react-dom';
 import { Button } from 'react-bootstrap';
 import ClipLoader from 'react-spinners/ClipLoader';
 
+
+
 import {FileDB} from '../api/tasks.js';
 
 
@@ -51,7 +53,7 @@ export default class App extends Component {
       return (
 
         <div>
-        {this.state.isShowState &&  <Button variant="dark" onClick={() => {
+        {this.state.isShowState &&  <Button variant="outline-dark" onClick={() => {
 
       
          this.triggerLoadState();
