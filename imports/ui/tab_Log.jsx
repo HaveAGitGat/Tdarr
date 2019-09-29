@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
 
 import ToggleButton from 'react-toggle-button'
+import { Button } from 'react-bootstrap';
 
 
 import ReactTable from "react-table";
@@ -373,9 +374,9 @@ try{
 
                 return <div>
 
-                    <input type="button" onClick={() => this.renderLogDB()} value={"Load"} className="addFolderButton"></input>
-                    <input type="button" onClick={() => this.renderRaw()} value={"RAW"} className="addFolderButton"></input>
-                    <input type="button" onClick={() => this.clearLogDB()} value={"Delete"} className="addFolderButton"></input>
+                    <Button variant="outline-dark" onClick={() => this.renderLogDB()}  >Load</Button>
+                    <Button variant="outline-dark" onClick={() => this.renderRaw()}  >RAW</Button>
+                    <Button variant="outline-dark" onClick={() => this.clearLogDB()}  >Delete</Button>
 
                 </div>
 
@@ -396,26 +397,32 @@ try{
 
 
             <div className="containerGeneral">
+
+<center>
                 <header>
                     <h1>Logs</h1>
                 </header>
+                 </center>
 
                 <p></p>
                 <p></p>
 
-
+                <center>
                <div  style={ButtonStyle}>
                Verbose logs (large size, debug only):
 
 {this.renderVerboseLogsButton()}
 
                </div>
+                </center>
    
                 <p></p>
                 <p></p>
 
 
+                <center>
                 {this.renderLogButtons()}
+                </center>
 
 
 
