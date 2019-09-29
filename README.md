@@ -54,7 +54,7 @@ INSTALLATION - (Docker/unRAID -- Easiest method):
 
        docker run -ti --rm \
         --net=host \
-        -v /media/mount/:/home/Tdarr/Media \
+        -v /media/mount/:/media \
         -v /home/z/Documents/Tdarr:/home/Tdarr/Documents/Tdarr \
         -p 8265:8265 \
         -e "MONGO_URL=mongodb://localhost:27017/Tdarr" \
