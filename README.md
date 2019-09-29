@@ -36,7 +36,7 @@ Requirements (MongoDB + NodeJS 8.x)
 
 ---------------------------------------------------------------------------------------
 
-INSTALLATION - (Docker -- Easiest method):
+INSTALLATION - (Docker/unRAID -- Easiest method):
 
 1. Pull and run the MongoDB Docker container:
 
@@ -69,7 +69,7 @@ For unRAID please see the following screenshots for the MongoDB and Tdarr contai
 
 ![Screenshot](https://i.imgur.com/qnP9YhI.png)
 
-![Screenshot]https://i.imgur.com/7WFU0AJ.png)
+![Screenshot](https://i.imgur.com/7WFU0AJ.png)
 
 ---------------------------------------------------------------------------------------
 
