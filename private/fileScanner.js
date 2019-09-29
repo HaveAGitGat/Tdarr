@@ -33,6 +33,22 @@ process.on('uncaughtException', function (err) {
 });
 
 
+
+
+var scannerID = process.argv[2]
+var DB_id = process.argv[3]
+var arrayOrPath = process.argv[4]
+var arrayOrPathSwitch = process.argv[5]
+var allowedContainers = process.argv[6]
+allowedContainers = allowedContainers.split(',');
+var mode = process.argv[7]
+var HealthCheck = process.argv[8]
+var TranscodeDecisionMaker = process.argv[9]
+
+updateConsole(scannerID, "File scanner " + scannerID + " online.")
+
+
+
 var path = require("path");
 var fs = require('fs');
 
@@ -47,16 +63,6 @@ if (fs.existsSync(path.join(process.cwd() + "/npm"))) {
 }
 
 
-var scannerID = process.argv[2]
-var DB_id = process.argv[3]
-var arrayOrPath = process.argv[4]
-var arrayOrPathSwitch = process.argv[5]
-var allowedContainers = process.argv[6]
-allowedContainers = allowedContainers.split(',');
-var mode = process.argv[7]
-
-var HealthCheck = process.argv[8]
-var TranscodeDecisionMaker = process.argv[9]
 
 const exiftool = require(rootModules+"exiftool-vendored").exiftool
 
@@ -72,14 +78,16 @@ if(mode == 0){
     
     fs.unlinkSync(homePath + "/Documents/Tdarr/Data/"+scannerID+".txt")
 
+    filesInDB = filesInDB.split('\r\n')
+
 }else if(mode == 3){
 
 
     arrayOrPath = fs.readFileSync(homePath + "/Documents/Tdarr/Data/"+scannerID+".txt", 'utf8')
 
     fs.unlinkSync(homePath + "/Documents/Tdarr/Data/"+scannerID+".txt")
+    arrayOrPath = arrayOrPath.split('\r\n')
 
-    arrayOrPath = arrayOrPath.split('\\n\\r')
 
     var filesInDB = []
   
@@ -91,7 +99,7 @@ if(mode == 0){
 }
 
 
-updateConsole(scannerID, "File scanner " + scannerID + " online.")
+
 
 updateConsole(scannerID, `File scanner + ${scannerID} + vars received:
 
@@ -184,6 +192,12 @@ if (arrayOrPathSwitch == 1) {
                     fullPath = fullPath.replace(/\\/g, "/");
 
                     if (filesInDB.includes(fullPath)) {
+
+                        var idx = filesInDB.indexOf(fullPath)
+
+                        filesInDB.splice(idx,1)
+
+                    
 
 
                        // console.log("File already in DB " + fullPath)
@@ -456,7 +470,7 @@ updateConsole(scannerID, `File scanner " + ${scannerID} + ":ffprobeLaunch receiv
 
         // console.log(thisFileObject)
 
-        thisFileObject.cliLog = "FFprobe was unable to extract data from this file."
+        thisFileObject.cliLog = "FFprobe was unable to extract data from this file. It is highly likely that the file is corrupt."
 
         updateConsole(scannerID, `File scanner " + ${scannerID} + ":FFprobe was unable to extract data from this file:${filepath}.`)
 
@@ -592,6 +606,10 @@ updateConsole(scannerID, `File scanner " + ${scannerID} + ":ffprobeLaunch receiv
           }
 
 
+          thisFileObject.cliLog = "No info"
+
+
+       // console.log(JSON.stringify(thisFileObject))
 
 
         addFileToDB(filepath, thisFileObject,HealthCheck,TranscodeDecisionMaker)
