@@ -24,10 +24,10 @@ Meteor.methods({
 
     },
 
-  
+
     'consolelog'(message) {
 
-        console.log("1")
+
         console.log(message)
 
 
@@ -41,6 +41,63 @@ Meteor.methods({
 
 
     },
+
+
+
+    'addPluginInclude'(DB_id, ele) {
+
+
+
+
+        SettingsDB.update({
+            '_id': DB_id,
+
+
+        }, {
+            $addToSet: {
+                "pluginIDs": {
+                    _id: ele,
+                    checked: false,
+                }
+            }
+        })
+
+
+
+    },
+
+    'updatePluginInclude'(DB_id, ele, status) {
+
+
+
+
+        SettingsDB.update({
+            "_id": DB_id,
+            "pluginIDs._id": ele
+        }, {
+            $set: { "pluginIDs.$.checked": status }
+        },
+            false,
+            true
+
+        );
+    },
+    'removePluginInclude'(DB_id, ele) {
+
+        SettingsDB.update(
+            { "_id": DB_id },
+            { $pull: { 'pluginIDs': { _id: ele } } }
+        );
+
+    },
+
+
+
+
+
+
+
+
     'addVideoCodecExclude'(DB_id, ele) {
 
 
@@ -49,14 +106,14 @@ Meteor.methods({
 
 
         }, {
-                $addToSet: {
-                    "decisionMaker.video_codec_names_exclude": {
-                        _id:shortid.generate(),
-                        codec: ele,
-                        checked: false,
-                    }
+            $addToSet: {
+                "decisionMaker.video_codec_names_exclude": {
+                    _id: shortid.generate(),
+                    codec: ele,
+                    checked: false,
                 }
-            })
+            }
+        })
 
 
 
@@ -71,8 +128,8 @@ Meteor.methods({
             "_id": DB_id,
             "decisionMaker.video_codec_names_exclude.codec": ele
         }, {
-                $set: { "decisionMaker.video_codec_names_exclude.$.checked": status }
-            },
+            $set: { "decisionMaker.video_codec_names_exclude.$.checked": status }
+        },
             false,
             true
 
@@ -94,14 +151,14 @@ Meteor.methods({
 
 
         }, {
-                $addToSet: {
-                    "decisionMaker.audio_codec_names_exclude": {
-                        _id:shortid.generate(),
-                        codec: ele,
-                        checked: false,
-                    }
+            $addToSet: {
+                "decisionMaker.audio_codec_names_exclude": {
+                    _id: shortid.generate(),
+                    codec: ele,
+                    checked: false,
                 }
-            })
+            }
+        })
 
 
 
@@ -114,8 +171,8 @@ Meteor.methods({
             "_id": DB_id,
             "decisionMaker.audio_codec_names_exclude.codec": ele
         }, {
-                $set: { "decisionMaker.audio_codec_names_exclude.$.checked": status }
-            },
+            $set: { "decisionMaker.audio_codec_names_exclude.$.checked": status }
+        },
             false,
             true
 
@@ -128,20 +185,43 @@ Meteor.methods({
             { $pull: { 'decisionMaker.audio_codec_names_exclude': { codec: ele } } }
         );
 
-    },'updateScheduleBlock'(DB_id, ele, status) {
+    }, 'updateScheduleBlock'(DB_id, ele, status) {
 
 
         SettingsDB.update({
             "_id": DB_id,
             "schedule._id": ele
         }, {
-                $set: { "schedule.$.checked": status }
-            },
+            $set: { "schedule.$.checked": status }
+        },
             false,
             true
 
         );
-    },
+    }, 'toggleSchedule'(DB_id, status) {
+
+        
+        var chxBoxes = SettingsDB.find({_id: DB_id}, {}).fetch()
+        chxBoxes = chxBoxes[0].schedule
+
+        
+
+        for (var i = 0; i < chxBoxes.length; i++) {
+
+            SettingsDB.update({
+                "_id": DB_id,
+                "schedule._id": chxBoxes[i]._id
+            }, {
+                $set: { "schedule.$.checked": status }
+            },
+                false,
+                true
+
+            );
+
+        }
+    }
+
 });
 
 
