@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import { Meteor } from 'meteor/meteor';
-
+import { Button } from 'react-bootstrap';
 
 
 
@@ -21,17 +21,19 @@ export default class App extends Component {
   clearDB = () =>{
 
 
-    Meteor.call('clearDB', (error, result) => {
+    if (confirm('Are you sure you want to delete the Tdarr database? Your files will not be affected.')) {
+
+      Meteor.call('clearDB', (error, result) => {
+
+      
+
+        alert('Cleared! Please restart Tdarr.')
+  
+  
+      });
 
 
-      alert('Cleared! Please restart Tdarr.')
-
-
-    });
-
-
-
-
+    }
   }
 
 
@@ -46,19 +48,51 @@ export default class App extends Component {
 
 
       <div className="containerGeneral">
+
+<center>
+
+<p align="center">
+  <img src="https://i.imgur.com/M0ikBYL.png"/>
+</p>
+
       <header>
-          <h1>Welcome to Tdarr Pre-Alpha</h1>
+          <h1>Welcome to Tdarr Alpha</h1>
       </header>
 
+</center>
 
-      <p>Tdarr is very much still in development. There's chance something may 
+
+<center>     
+  
+  
+  <p>Make sure to use the <Button variant="outline-dark">i</Button> buttons on each tab to learn more about how Tdarr operates.</p>
+  <p>Tdarr is very much still in development. There's chance something may 
         go wrong between version updates due to changing the way features work and how data is stored/manipulated.</p>
 
 
-        <p>If things aren't working as expected, it may be necessary to clear the database using the following button. Please restart Tdarr after doing so.</p>
 
+
+        <p>If things aren't working as expected, it may be necessary to clear the database using the following button. Your files will not be affected. Please restart Tdarr after doing so.</p>
+
+        </center>
+        <center>
       
-    <input type="button" onClick={() => this.clearDB()} value={"Clear database"} className="addFolderButton"></input>
+    <Button variant="outline-danger"  onClick={() => this.clearDB()} >Clear database</Button>
+
+    <p></p>
+    <p></p>
+    <p></p>
+    <p>Credits:</p>
+
+    <p></p>
+    <p>@Roxedus for a slimline container.</p>
+    <p></p>
+    <p>@GilbN and @Drawmonster for support and debugging.</p>
+
+    </center>
+
+
+
 
 
 
