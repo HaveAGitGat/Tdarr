@@ -9,6 +9,7 @@ import Modal from "reactjs-popup";
 import { render } from 'react-dom';
 
 import { Button } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.css';
 
 
 import { StatisticsDB, FileDB, GlobalSettingsDB, ClientDB } from '../api/tasks.js';
@@ -54,14 +55,14 @@ class App extends Component {
 
   addWorker = (workerType) => {
 
-      console.log(this.state.workerButtonsLoad)
+    
 
 
       this.setState({
         workerButtonsLoad: false,
       })
 
-      console.log(this.state.workerButtonsLoad)
+     
 
       setTimeout(this.reset, 1000);
   
@@ -80,8 +81,6 @@ class App extends Component {
       workerButtonsLoad: true,
     })
 
-
-    console.log(this.state.workerButtonsLoad)
 
   }
 
@@ -110,12 +109,31 @@ class App extends Component {
 
 
 
-  renderSlider(slider) {
+  renderSlider(slider,sliderColour,sliderColour2) {
+
+    if(slider == 'generalWorkerLimit'){
+
+      var title = 'General'
+
+    }else if(slider == 'transcodeWorkerLimit'){
+
+      var title = 'Transcode'
+
+
+    }else if(slider == 'healthcheckWorkerLimit'){
+
+      var title = 'Health check'
+
+    }
+    
 
     return this.props.globalSettings.map((item, i) => (
 
       <span className="sliderWidth">
-        {item[slider]}
+
+
+        <center> {title}({item[slider]})</center>
+      
         <Slider
           axis="x"
           xstep={1}
@@ -136,6 +154,26 @@ class App extends Component {
 
 
           }}
+
+          styles={{
+            track: {
+              width:'100%',
+              opacity: 1,
+              backgroundColor: sliderColour2,
+            },
+            active: {
+              opacity: 1,
+              backgroundColor: sliderColour,
+             
+            },
+            thumb: {
+              width: 25,
+              height: 25
+            },
+            disabled: {
+              opacity: 0.5
+            }
+          }}
         />
       </span>
 
@@ -153,13 +191,13 @@ class App extends Component {
     if (statistics.length == 0) {
 
 
-      var statDat = <ClipLoader
+      var statDat = <center><ClipLoader
 
         sizeUnit={"px"}
         size={10}
         color={'#000000'}
         loading={true}
-      />
+      /></center>
 
     } else {
       var statDat = statistics[0][stat]
@@ -201,16 +239,16 @@ class App extends Component {
 
     this.interval = setInterval(() => this.renderWorkers(), 500);
 
-    render(<ClipLoader
+    // render(<ClipLoader
 
-      sizeUnit={"px"}
-      size={25}
-      color={'#000000'}
-      loading={true}
-    />
+    //   sizeUnit={"px"}
+    //   size={25}
+    //   color={'#000000'}
+    //   loading={true}
+    // />
 
 
-      , document.getElementById('workerButtons'));
+    //   , document.getElementById('workerButtons'));
 
 
   }
@@ -325,7 +363,7 @@ if(!!this.state.workerButtonsLoad){
 
 
       try {
-        render(workerButtons, document.getElementById('workerButtons'));
+        // render(workerButtons, document.getElementById('workerButtons'));
 
       } catch (err) { }
 
@@ -358,8 +396,8 @@ if(!!this.state.workerButtonsLoad){
       return data.map((row, i) => (
 
 
-        <tr>
-          <td><ClipLoader
+        <tr align="center">
+          <td ><ClipLoader
 
             sizeUnit={"px"}
             size={25}
@@ -496,7 +534,7 @@ if(!!this.state.workerButtonsLoad){
   renderInfoButton(cliLog) {
 
     return <Modal
-      trigger={<Button variant="dark" >i</Button>}
+      trigger={<Button variant="outline-dark" >i</Button>}
       modal
       closeOnDocumentClick
     >
@@ -523,6 +561,7 @@ if(!!this.state.workerButtonsLoad){
 
       <span >
         {/* <h1>Td</h1> */}
+
 
 
         <div className="dbStatusContainer">
@@ -554,35 +593,48 @@ if(!!this.state.workerButtonsLoad){
 
 
 
+<center><Modal
+      trigger={<Button variant="outline-dark" >i</Button>}
+      modal
+      closeOnDocumentClick
+    >
+       <div className="frame">
+    <div className="scroll"> 
+ 
+    <p>Use the sliders to tell Tdarr to start up and maintain the specified number of workers. </p>
+    <p>To reduce the number of workers, lower the slider and then toggle 'Off' the required number of workers in progress.</p>
+    <p>Workers which are toggled 'Off' will finish their current item before closing down.</p>
+    <p>If you cancel an item, the worker will move onto the next item in the queue.</p>
 
-          <center>
-            <table>
-              <tbody>
-                <tr>
-                  <th>Scheduled worker limits</th>
-                </tr>
-                <tr>
-                  <td>General:</td>
-                  <td>{this.renderSlider('generalWorkerLimit')}</td>
-                </tr>
-                <tr>
-                  <td>Transcode:</td>
-                  <td>{this.renderSlider('transcodeWorkerLimit')}</td>
+    <p></p>
+    <p>Workers process newest items first and cycle between your libraries.</p>
 
-                </tr>
-                <tr>
-                  <td>Health check:</td>
-                  <td>{this.renderSlider('healthcheckWorkerLimit')}</td>
+    <p>General workers process both transcode and health check items. They prioritise health check </p>
+    <p></p>
+    <p></p>
+    <p></p>
 
-                </tr>
+    <p>Important: Workers will not process items unless they are within the scheduled times set in the library settings.</p>
 
-              </tbody>
-            </table>
-          </center>
+      
+    </div>
+  </div>
+    </Modal></center>
 
+        <center>Workers:</center>
+
+
+{this.renderSlider('generalWorkerLimit','black','#808080')}
+
+
+{this.renderSlider('transcodeWorkerLimit','#66ccff','#B3E6FF')}
+
+{this.renderSlider('healthcheckWorkerLimit','#4CAF50','#A6D7A8')}
 
 
           <p></p>
+
+          <center>
 
           <div style={ButtonStyle} className="workerButtoncontainer">
 
@@ -592,7 +644,7 @@ if(!!this.state.workerButtonsLoad){
 
 
             <div style={ButtonStyle}>
-              <span className="toggleAllWorkerButton">Toggle all workers
+              <span >Toggle all workers
      <div style={ButtonStyle}>
                   <ToggleButton
                     value={this.state.value}
@@ -602,8 +654,9 @@ if(!!this.state.workerButtonsLoad){
                 </div>
               </span>
             </div>
+            {'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}
 
-            <input type="button" className="cancelAllWorkersButton" onClick={() => {
+            <Button variant="outline-danger" onClick={() => {
 
               if (confirm('Are you sure you want to cancel all workers?')) {
 
@@ -622,10 +675,12 @@ if(!!this.state.workerButtonsLoad){
 
               }
             }
-            } value="Cancel all workers"></input>
+            } >Cancel all workers</Button>
+
+{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}
 
             <div style={ButtonStyle}>
-              <span className="toggleAllWorkerButton">Low CPU priority:<div style={ButtonStyle}>
+              <span >Low CPU priority:<div style={ButtonStyle}>
 
                 {this.renderLowCPUButton()}
 
@@ -635,6 +690,7 @@ if(!!this.state.workerButtonsLoad){
             </div>
 
           </div>
+          </center>
 
 
           <p></p>
