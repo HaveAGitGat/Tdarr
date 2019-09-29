@@ -33,7 +33,6 @@ h1 {
 
 p {
 
-  
     margin-top: 10px;
     /* color: rgba(255, 255, 255, 0.4); */
     color: black;
@@ -315,7 +314,7 @@ p {
 }
     .libraryContainer{
 
-      border: 1px solid #48545c;
+      border: 1px solid black;
       border-radius: 5px;
       margin:2em;
     
@@ -443,6 +442,19 @@ p {
 
     }
 
+    .checkItem-container {
+      display: grid;
+      grid-template-columns: auto auto auto;
+      padding: 10px;
+    }
+    
+    .checkItem-item {
+
+      margin:1em;
+
+    }
+
+
     .tableItem {
 
      background: #e3e3e3;
@@ -527,7 +539,7 @@ p {
 
     .scheduleContainer-item{
 
-      border: 2px solid black;
+      border: 0px solid black;
       border-radius: 1px;
 
       margin:1px;
@@ -690,7 +702,7 @@ table.pluginTable {
 }
 
 .sliderWidth{
-  width: 50%;
+  width: 100%;
 }
 
 .frame{
@@ -708,5 +720,47 @@ table.pluginTable {
 
 .folderResults p{
   color:gray;
+
+}
+
+
+table.sliderTable th {
+  background-color: white;
+  color: black;
+  border: 1px solid white;
+}
+
+table.sliderTable td {
+
+  border: 1px solid white;
+  color: black;
+  /* font-family: "Courier New" */
+}
+
+table.sliderTable tr {
+  /* display: table;
+width: auto;
+table-layout: fixed;  */
+}
+
+
+table.sliderTable tr:nth-child(even) {
+  background-color: white;
+}
+
+table.sliderTable tr:nth-child(odd) {
+  background-color: white;
+}
+
+
+table.sliderTable tr:hover {
+  background-color: rgb(202, 202, 202);
+}
+
+table.sliderTable {
+  border-radius: 5px;
+  width: 100%;
+  table-layout: auto;
+  white-space: normal;
 
 }
