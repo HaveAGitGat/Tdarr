@@ -81,10 +81,8 @@ class Folder extends Component {
 
     Meteor.call('verifyFolder', folderPath, this.props.libraryItem._id, type+"Valid", (error, result) => {
 
-      console.log(result)
 
-
-     
+      try{
 
       if (result.length == 0) {
 
@@ -119,7 +117,6 @@ class Folder extends Component {
           , document.getElementById(type + 'Results'));
 
       } else {
-
 
 
         var results = result.map((row, i) => {
@@ -189,7 +186,7 @@ class Folder extends Component {
           , document.getElementById(refType + 'Results'));
 
       }
-   
+    }catch(err){}
 
     })
 
@@ -221,7 +218,7 @@ class Folder extends Component {
 
       this.toggleFolderWatch(event.target.value)
 
-      this.verifyFolder(event.target.value, 'folder',this.props.libraryItem._id +'f')
+      this.verifyFolder(event.target.value, 'folder')
 
 
 
@@ -231,7 +228,7 @@ class Folder extends Component {
 
     if (event.target.name == "cache") {
 
-      this.verifyFolder(event.target.value, 'cache',this.props.libraryItem._id +'c')
+      this.verifyFolder(event.target.value, 'cache')
 
       // Meteor.call('verifyFolder', event.target.value, this.props.libraryItem._id, "cacheValid", function (error, result) {
       //   if (result.length == 0) {

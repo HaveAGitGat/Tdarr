@@ -44,7 +44,6 @@ allowedContainers = allowedContainers.split(',');
 var mode = process.argv[7]
 var HealthCheck = process.argv[8]
 var TranscodeDecisionMaker = process.argv[9]
-var homePath = process.argv[10]
 
 updateConsole(scannerID, "File scanner " + scannerID + " online.")
 
@@ -69,7 +68,7 @@ const exiftool = require(rootModules+"exiftool-vendored").exiftool
 
 
 var home = require("os").homedir();
-//var homePath = home
+var homePath = home
 
 
 
@@ -176,17 +175,21 @@ if (arrayOrPathSwitch == 1) {
                         traverseDir(fullPath);
                     } catch (err) {
                        // console.log(err)
-                       updateConsole(scannerID, `File scanner " + ${scannerID} + ":${err.stack}`)
                     }
                 } else {
 
 
 
+
+                    // SettingsDB.upsert(DB,
+                    //     {
+                    //         $set: {
+                    //             transcodeScanFound: "Files found:" + foundCounter,
+                    //         }
+                    //     }
+                    // );
+
                     fullPath = fullPath.replace(/\\/g, "/");
-
-
-                    updateConsole(scannerID, `File scanner " + ${scannerID} + ":Found: ${fullPath}`)
-
 
                     if (filesInDB.includes(fullPath)) {
 
@@ -197,14 +200,20 @@ if (arrayOrPathSwitch == 1) {
                     
 
 
+                       // console.log("File already in DB " + fullPath)
 
 
                     } else {
 
                         if (checkContainer(fullPath) == true) {
 
+                            // console.log("New  file!:" + fullPath)
+                            
+
+
 
                             foundCounter++
+
 
                             if( foundCounter % 100 == 0){
 
@@ -221,19 +230,23 @@ if (arrayOrPathSwitch == 1) {
                             }
 
 
-                            
+                            // ffprobeLaunch([fullPath])
+
                             filesToScan.push(fullPath)
 
-                      
+                        //  console.log(`File ${fullPath} has been added.`)
 
                         } else {
+                          //  console.log(`File ${fullPath} is not supported.`)
 
                         }
+
                     }
+
                 }  //end current file, go to next
+
             } catch (err) {
                // console.log(err)
-               updateConsole(scannerID, `File scanner " + ${scannerID} + ":${err.stack}`)
             }
         });
 
@@ -266,8 +279,6 @@ if (arrayOrPathSwitch == 1) {
 
 
 function checkContainer(newFile) {
-
-    try{
     var path = require('path');
     var fileType = ((path.extname(newFile)).split(".")).join("")
 
@@ -279,12 +290,6 @@ function checkContainer(newFile) {
         if (fileType.toLowerCase() == allowedContainers[j].toLowerCase()) {
             return true
         }
-    }
-
-}catch(err){
-
-    updateConsole(scannerID, `File scanner " + ${scannerID} + ":${err.stack}`)
-
     }
     return false
 }

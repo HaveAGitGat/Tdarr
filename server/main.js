@@ -72,74 +72,46 @@ function getRootDir() {
 
 
 var home = require("os").homedir();
+var homePath = home
 
-console.log("process.env.DATA:"+process.env.DATA)
-
-if (process.env.NODE_ENV == 'production') {
-
-
-  try{
-    var homePath = process.env.DATA
-
-  }catch(errr){
-
-    var homePath = home + '/Documents'
-  }
-
-  // if(process.env.DATA == 'undefined'){
-  //   var homePath = home + '/Documents'
-  // }else{
-  //   var homePath = process.env.DATA
-  // }
-}else{
-  var homePath = home + '/Documents'
-}
-
-
-
-
-
-if (!fs.existsSync(homePath + "")) {
-  fs.mkdirSync(homePath + "");
+if (!fs.existsSync(homePath + "/Documents")) {
+  fs.mkdirSync(homePath + "/Documents");
 
 }
 
-if (!fs.existsSync(homePath + "/Tdarr")) {
-  fs.mkdirSync(homePath + "/Tdarr");
+if (!fs.existsSync(homePath + "/Documents/Tdarr")) {
+  fs.mkdirSync(homePath + "/Documents/Tdarr");
 
 }
 
 
-if (!fs.existsSync(homePath + "/Tdarr/Plugins")) {
-  fs.mkdirSync(homePath + "/Tdarr/Plugins");
+if (!fs.existsSync(homePath + "/Documents/Tdarr/Plugins")) {
+  fs.mkdirSync(homePath + "/Documents/Tdarr/Plugins");
 
 }
 
 
 
-if (!fs.existsSync(homePath + "/Tdarr/Data")) {
-  fs.mkdirSync(homePath + "/Tdarr/Data");
+if (!fs.existsSync(homePath + "/Documents/Tdarr/Data")) {
+  fs.mkdirSync(homePath + "/Documents/Tdarr/Data");
 
 }
 
 
 
-if (!fs.existsSync(homePath + "/Tdarr/Plugins/Community")) {
-  fs.mkdirSync(homePath + "/Tdarr/Plugins/Community");
+if (!fs.existsSync(homePath + "/Documents/Tdarr/Plugins/Community")) {
+  fs.mkdirSync(homePath + "/Documents/Tdarr/Plugins/Community");
 
 }
 
-if (!fs.existsSync(homePath + "/Tdarr/Plugins/Local")) {
-  fs.mkdirSync(homePath + "/Tdarr/Plugins/Local");
+if (!fs.existsSync(homePath + "/Documents/Tdarr/Plugins/Local")) {
+  fs.mkdirSync(homePath + "/Documents/Tdarr/Plugins/Local");
 
 }
 
 
-//Test
 
-console.log("homePath:"+homePath)
 
-fs.writeFileSync(homePath + "/Tdarr/Data/test.txt", "Hello", 'utf8');
 
 
 
@@ -341,11 +313,11 @@ Meteor.methods({
       var plugins = []
 
 
-      fs.readdirSync(homePath + '/Tdarr/Plugins/Community').forEach(file => {
-        // console.log(homePath + '/Tdarr/Plugins/Community/'+file);
-        //  var temp = require(homePath + '/Tdarr/Plugins/Community/' + file);
+      fs.readdirSync(homePath + '/Documents/Tdarr/Plugins/Community').forEach(file => {
+        // console.log(homePath + '/Documents/Tdarr/Plugins/Community/'+file);
+        //  var temp = require(homePath + '/Documents/Tdarr/Plugins/Community/' + file);
 
-        var hwSource = fs.readFileSync(homePath + '/Tdarr/Plugins/Community/' + file, 'utf8');
+        var hwSource = fs.readFileSync(homePath + '/Documents/Tdarr/Plugins/Community/' + file, 'utf8');
         var hwFunc = new Function('module', hwSource);
         var hwModule = { exports: {} };
         hwFunc(hwModule)
@@ -417,11 +389,11 @@ Meteor.methods({
 
     if (community == true) {
 
-      var path = homePath + '/Tdarr/Plugins/Community/' + pluginID + '.js'
+      var path = homePath + '/Documents/Tdarr/Plugins/Community/' + pluginID + '.js'
 
     } else {
 
-      var path = homePath + '/Tdarr/Plugins/Local/' + pluginID + '.js'
+      var path = homePath + '/Documents/Tdarr/Plugins/Local/' + pluginID + '.js'
 
 
     }
@@ -461,24 +433,24 @@ Meteor.methods({
 
 
     try {
-      fsextra.removeSync(homePath + '/Tdarr/Plugins/temp')
+      fsextra.removeSync(homePath + '/Documents/Tdarr/Plugins/temp')
     } catch (err) { }
 
     var clone = require('git-clone');
 
     console.log('Cloning plugins')
 
-    clone("https://github.com/HaveAGitGat/Tdarr_Plugins/", homePath + '/Tdarr/Plugins/temp/', Meteor.bindEnvironment(function (err, result) {
+    clone("https://github.com/HaveAGitGat/Tdarr_Plugins/", homePath + '/Documents/Tdarr/Plugins/temp/', Meteor.bindEnvironment(function (err, result) {
 
 
 
       try {
-        fsextra.copySync(homePath + '/Tdarr/Plugins/temp/Community', homePath + "/Tdarr/Plugins/Community", { overwrite: true })
+        fsextra.copySync(homePath + '/Documents/Tdarr/Plugins/temp/Community', homePath + "/Documents/Tdarr/Plugins/Community", { overwrite: true })
       } catch (err) { }
 
 
       try {
-        fsextra.removeSync(homePath + '/Tdarr/Plugins/temp')
+        fsextra.removeSync(homePath + '/Documents/Tdarr/Plugins/temp')
       } catch (err) { }
 
 
@@ -753,7 +725,7 @@ Meteor.methods({
       filesInDB2 = filesInDB.map(row => row._id + '\r\n')
       filesInDB2= filesInDB2.join("")
 
-     // fs.writeFileSync(homePath + "/Tdarr/Data/test.txt", filesInDB2, 'utf8');
+     // fs.writeFileSync(homePath + "/Documents/Tdarr/Data/test.txt", filesInDB2, 'utf8');
 
       filesInDB = filesInDB.map((file, i) => {
         if (!(fs.existsSync(file.file))) {
@@ -769,7 +741,7 @@ Meteor.methods({
       filesInDB = filesInDB.map(row => row + '\r\n')
       filesInDB = filesInDB.join("")
 
-      fs.writeFileSync(homePath + "/Tdarr/Data/" + scannerID + ".txt", filesInDB, 'utf8');
+      fs.writeFileSync(homePath + "/Documents/Tdarr/Data/" + scannerID + ".txt", filesInDB, 'utf8');
 
       filesInDB = []
 
@@ -790,7 +762,7 @@ Meteor.methods({
       arrayOrPath = arrayOrPath.map(row => row + '\r\n')
       arrayOrPath = arrayOrPath.join("")
 
-      fs.writeFileSync(homePath + "/Tdarr/Data/" + scannerID + ".txt", arrayOrPath, 'utf8');
+      fs.writeFileSync(homePath + "/Documents/Tdarr/Data/" + scannerID + ".txt", arrayOrPath, 'utf8');
 
       arrayOrPath = []
 
@@ -831,7 +803,6 @@ Meteor.methods({
       mode,
       HealthCheck,
       TranscodeDecisionMaker,
-      homePath,
     ]
 
     fileScanners[scannerID] = childProcess.fork(scannerPath, child_argv);
@@ -961,18 +932,11 @@ function scheduledPluginUpdate() {
 
   console.log('Updating plugins')
 
-  try{
-
   Meteor.call('updatePlugins', function (error, result) {
 
 
-   
+    setTimeout(Meteor.bindEnvironment(scheduledPluginUpdate), 3600000);
   });
-
-
-}catch(err){}
-
-  setTimeout(Meteor.bindEnvironment(scheduledPluginUpdate), 3600000);
 
 }
 
@@ -1441,9 +1405,9 @@ function launchWorkerModule(workerType) {
                     var plugin = ''
   
                     if (settings[0].pluginCommunity == true) {
-                      // var plugin = require(homePath + '/Tdarr/Plugins/Community/' + pluginID + '.js');
+                      // var plugin = require(homePath + '/Documents/Tdarr/Plugins/Community/' + pluginID + '.js');
   
-                      var hwSource = fs.readFileSync(homePath + '/Tdarr/Plugins/Community/' + pluginID + '.js', 'utf8');
+                      var hwSource = fs.readFileSync(homePath + '/Documents/Tdarr/Plugins/Community/' + pluginID + '.js', 'utf8');
                       var hwFunc = new Function('module', hwSource);
                       var hwModule = { exports: {} };
                       hwFunc(hwModule)
@@ -1451,8 +1415,8 @@ function launchWorkerModule(workerType) {
   
   
                     } else {
-                      // var plugin = require(homePath + '/Tdarr/Plugins/Local/' + pluginID + '.js');
-                      var hwSource = fs.readFileSync(homePath + '/Tdarr/Plugins/Local/' + pluginID + '.js', 'utf8');
+                      // var plugin = require(homePath + '/Documents/Tdarr/Plugins/Local/' + pluginID + '.js');
+                      var hwSource = fs.readFileSync(homePath + '/Documents/Tdarr/Plugins/Local/' + pluginID + '.js', 'utf8');
                       var hwFunc = new Function('module', hwSource);
                       var hwModule = { exports: {} };
                       hwFunc(hwModule)
@@ -2316,7 +2280,6 @@ dbUpdatePush();
 
 function dbUpdatePush() {
 
-  try{
 
   for (var i = 0; i < filesToAddToDB.length; i++) {
 
@@ -2395,9 +2358,6 @@ function dbUpdatePush() {
   }
 
 
-}catch(err){}
-
-
   setTimeout(Meteor.bindEnvironment(dbUpdatePush), 1000);
 }
 
@@ -2436,8 +2396,6 @@ var doTablesUpdate = true
 tablesUpdate()
 
 function tablesUpdate() {
-
-  try{
 
   if (doTablesUpdate == false) {
 
@@ -2492,7 +2450,7 @@ function tablesUpdate() {
 
     allFilesPulledTable = newArr.slice()
     newArr = []
-//
+
 
     var table1data = allFilesPulledTable.filter(row => (row.TranscodeDecisionMaker == "Not attempted" && row.processingStatus == false));
     var table2data = allFilesPulledTable.filter(row => ((row.TranscodeDecisionMaker == "Transcode success" || row.TranscodeDecisionMaker == "Passed") && row.processingStatus == false));
@@ -2674,15 +2632,7 @@ function tablesUpdate() {
 
   }
 
-  
-setTimeout(Meteor.bindEnvironment(tablesUpdate), DBPollPeriod > 1000 ? DBPollPeriod : 1000); 
-
-}catch(err){
-
-  setTimeout(Meteor.bindEnvironment(tablesUpdate), 10000 );
-
-}
-
+  setTimeout(Meteor.bindEnvironment(tablesUpdate), DBPollPeriod > 1000 ? DBPollPeriod : 1000);
 
   setTimeout(Meteor.bindEnvironment(() => { addFilesToDB = true }), 1000);
 
@@ -2783,7 +2733,6 @@ setProcessPriority()
 
 function setProcessPriority() {
 
-  try{
 
   if (process.platform == 'win32') {
 
@@ -2825,8 +2774,6 @@ function setProcessPriority() {
 
   }
 
-}catch(err){}
-
   setTimeout(Meteor.bindEnvironment(setProcessPriority), 1000);
 
 }
@@ -2842,8 +2789,6 @@ workerUpdateCheck();
 function workerUpdateCheck() {
 
   //
-
-  try{
 
   var generalWorkers = workerDB.filter(row => row.mode == "general").length;
   var transcodeWorkers = workerDB.filter(row => row.mode == "transcode").length;
@@ -2915,8 +2860,6 @@ function workerUpdateCheck() {
     } catch (err) { }
   }
 
-
-}catch(err){}
 
   setTimeout(Meteor.bindEnvironment(workerUpdateCheck), 1000);
 }
