@@ -49,7 +49,7 @@ class App extends Component {
       cache:"Path to your transcode cache. Input a base folder and the folder browser below will show subfolders to navigate.",
       cacheValid:true,
       container:".mkv",
-      containerFilter:"mkv,mp4,mov,m4v,mpg,mpeg,avi,flv,webm,wmv,vob,evo,iso,",
+      containerFilter:"mkv,mp4,mov,m4v,mpg,mpeg,avi,flv,webm,wmv,vob,evo,iso",
       createdAt: new Date(),
       folderWatching:false,
       scanButtons:true,
