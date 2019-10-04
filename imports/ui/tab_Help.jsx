@@ -39,8 +39,14 @@ export default class App extends Component {
         <center>
 
 
+        <p>Join us!</p>
  
+        <div className="iconContainer">
+            <a href={"https://discord.gg/GF8X8cq"}><img src={"/images/icons/D.svg"} alt='icon' height="60" width="60" /></a>
+          </div>
 
+          <br></br>
+          <br></br>
 
           <div className="iconContainer">
             <a href={"https://github.com/HaveAGitGat/Tdarr"}><img src={"/images/icons/G.png"} alt='icon' height="50" width="50" /></a>
@@ -58,10 +64,6 @@ export default class App extends Component {
           <br></br>
 
 
-
-          <div className="iconContainer">
-            <a href={"https://discord.gg/GF8X8cq"}><img src={"/images/icons/D.svg"} alt='icon' height="60" width="60" /></a>
-          </div>
 
 
         </center>

@@ -437,7 +437,7 @@ class App extends Component {
             <tbody>
               <tr>
 
-                <td> <p>DB -</p></td>
+                <td> <p>DB</p></td>
                 <td>{'\u00A0'}<b>Poll period</b>:{this.renderStat('DBPollPeriod')}</td>
                 <td>{'\u00A0'}<b>Fetch time</b>: {this.renderStat('DBFetchTime')}</td>
                 <td>{'\u00A0'}<b>Total</b>: {this.renderStat('DBTotalTime')}</td>
@@ -451,6 +451,21 @@ class App extends Component {
           </table>
         </div>
 
+
+{/* 
+        <div className="textSizeContainer">
+
+        <select>
+    <option>Size</option>
+
+    <option  onClick={() => console.log("here1")}>Test1</option>
+
+
+
+    <option  onClick={() => console.log("here2")}>Test2</option>
+    </select>
+
+        </div> */}
 
 
 

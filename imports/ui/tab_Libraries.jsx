@@ -172,7 +172,7 @@ class App extends Component {
         checked:true
         },
 
-        
+
         {_id:"Mon:00-01",
         checked:true
         },
@@ -712,7 +712,7 @@ class App extends Component {
             <p>Tdarr is designed to automatically manage transcoding and health checking of your media libraries. If you've used HBBatchBeast, a lot of the settings will look familiar.</p>
 
 
-<p>When you're first getting started, add a new library on the 'Libraries' tab and specify a source folder, select the container types you'd like to scan for and then click then click 'Scan (Fresh)'. This will do a fresh scan of the library and extract meta-data from files which fit your specified container settings. The data will then be saved in the database.</p>
+<p>When you're first getting started, add a new library on the 'Libraries' tab and specify a source folder, select the container types you'd like to scan for and then click then click 'Scan (Fresh)' on the Options dropdown. This will do a fresh scan of the library and extract property data from files which fit your specified container settings. The data will then be saved in the database.</p>
 
 <p>Provide a base folder path and the folder browser will show subfolders which you can navigate to using the buttons.</p>
 

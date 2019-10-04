@@ -36,7 +36,7 @@ p {
     margin-top: 10px;
     /* color: rgba(255, 255, 255, 0.4); */
     color: black;
-    size:1em;
+    font-size: small;
 }
 
 
@@ -54,7 +54,7 @@ p {
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
-    font-size: 17px;
+    font-size: large;
   }
   
   /* Change the color of links on hover */
@@ -89,7 +89,7 @@ p {
       display: inline-block;
       background: transparent;
       border: none;
-      font-size: 2em;
+      font-size: large;
       font-weight: bold;
       text-align: center; 
       border: 0;
@@ -140,7 +140,7 @@ p {
       text-align: center;
       text-decoration: none;
       display: inline-block;
-      font-size: 16px;
+      font-size: small;
       border-radius: 5px;
       border: 1px solid black;
       margin: 0px 3px
@@ -154,7 +154,7 @@ p {
         text-align: center;
         text-decoration: none;
         display: inline-block;
-        font-size: 16px;
+        font-size: small;
         border-radius: 5px;
         border: 1px solid black;
         margin: 0px 3px
@@ -166,7 +166,7 @@ p {
       text-align: center;
       text-decoration: none;
       display: inline-block;
-      font-size: 16px;
+      font-size: small;
       border-radius: 5px;
       border: 1px solid black;
       margin: 0px 3px
@@ -180,7 +180,7 @@ p {
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 16px;
+    font-size: small;
     border-radius: 5px;
     border: 1px solid black;
     margin: 0px 3px
@@ -195,7 +195,7 @@ p {
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  font-size: 16px;
+  font-size: small;
   border-radius: 5px;
   border: 1px solid black;
   margin: 0px 3px
@@ -225,7 +225,7 @@ p {
   color: red;
   padding: 1px 1px;
   text-decoration: none;
-  font-size: 16px;
+  font-size: small;
   border-radius: 5px;
   border: 0px solid black;
 }
@@ -241,7 +241,7 @@ p {
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  font-size: 16px;
+  font-size: small;
   border-radius: 5px;
   border: 1px solid black;
   margin: 0px 3px
@@ -258,7 +258,7 @@ p {
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  font-size: 16px;
+  font-size: small;
   border-radius: 5px;
   border: 1px solid black;
   margin: 0px 3px
@@ -612,6 +612,12 @@ p {
       border-right: solid 1px black; 
       border-left: solid 1px black;
     }
+
+    .textSizeContainer{
+
+      float:right;
+    }
+
 
     
 /* 

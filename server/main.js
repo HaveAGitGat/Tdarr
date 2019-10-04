@@ -541,6 +541,8 @@ Meteor.methods({
 
   'verifyFolder'(folderPath, DB_id, folderType) {
 
+try{
+
 
     folderPath = folderPath.replace(/\\/g, "/");
 
@@ -570,10 +572,6 @@ Meteor.methods({
       )
 
 
-
-      // if (folders.length >= 5) {
-      //   folders = folders.slice(0, 5)
-      // }
 
       return folders
 
@@ -609,10 +607,8 @@ Meteor.methods({
       )
 
 
-      // if (folders.length >= 5) {
-      //   folders = folders.slice(0, 5)
-      // }
       return folders
+
 
 
     }
@@ -628,7 +624,7 @@ Meteor.methods({
 
 
 
-
+  }catch(err){}
 
   },
 
@@ -2539,12 +2535,6 @@ function tablesUpdate() {
 
       timeIdx = parseInt(timeIdx) + (d * 24)
 
-      //+(0*24)
-
-      console.log(timeIdx)
-
-
-      //console.log("Here"+Date.getDay())
 
       for (var i = 0; i < settings.length; i++) {
 
