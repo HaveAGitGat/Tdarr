@@ -12,7 +12,7 @@ import TabSearch from '../ui/tab_Search.jsx';
 import TabStatistics from '../ui/tab_Statistics.jsx';
 
 
-import TabSettings from '../ui/tab_Settings.jsx';
+import TabLibraries from './tab_Libraries.jsx';
 
 import TabPlugins from '../ui/tab_Plugins.jsx';
 import TabLog from '../ui/tab_Log.jsx';
@@ -52,7 +52,7 @@ function Settings(obj) {
 
 
 
-  return  <TabSettings/>;
+  return  <TabLibraries/>;
 }
 
 
@@ -173,7 +173,7 @@ class Nav extends Component {
             }
 
  <div className="versionInfo">
-         Tdarr Alpha 1.00
+         Tdarr Alpha 1.002
           </div>
           </div>
 
