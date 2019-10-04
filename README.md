@@ -15,7 +15,7 @@ Tdarr is a self hosted web-app for automating media library transcode management
 - Use Tdarr Plugins for infinite control on how your files are processed:
 https://github.com/HaveAGitGat/Tdarr_Plugins
 - Audio and video library management
-- Scheduler
+- 7 day, 24 hour scheduler
 - Folder watcher
 - Worker stall detector
 - Load balancing between libraries/drives
@@ -26,10 +26,6 @@ https://github.com/HaveAGitGat/Tdarr_Plugins
 
 
 Currently in Alpha but looking for feedback/suggestions. 
-
-
-
-
 
 
 ![Screenshot](https://i.imgur.com/8iqpGQk.png)
