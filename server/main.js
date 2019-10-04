@@ -73,25 +73,34 @@ function getRootDir() {
 
 var home = require("os").homedir();
 
-console.log("process.env.DATA:"+process.env.DATA)
+console.log("process.env.DATA:" + process.env.DATA)
 
 if (process.env.NODE_ENV == 'production') {
 
 
-  try{
+  if (process.env.DATA) {
     var homePath = process.env.DATA
 
-  }catch(errr){
 
+  } else {
     var homePath = home + '/Documents'
+
   }
+
+  // try{
+  //   var homePath = process.env.DATA
+
+  // }catch(errr){
+
+  //   var homePath = home + '/Documents'
+  // }
 
   // if(process.env.DATA == 'undefined'){
   //   var homePath = home + '/Documents'
   // }else{
   //   var homePath = process.env.DATA
   // }
-}else{
+} else {
   var homePath = home + '/Documents'
 }
 
@@ -136,10 +145,8 @@ if (!fs.existsSync(homePath + "/Tdarr/Plugins/Local")) {
 
 
 //Test
-
-console.log("homePath:"+homePath)
-
-fs.writeFileSync(homePath + "/Tdarr/Data/test.txt", "Hello", 'utf8');
+//console.log("homePath:"+homePath)
+//fs.writeFileSync(homePath + "/Tdarr/Data/test.txt", "Hello", 'utf8');
 
 
 
@@ -168,7 +175,7 @@ if (!Array.isArray(count) || !count.length) {
         healthcheckWorkerLimit: 0,
 
         verboseLogs: false,
-      } 
+      }
     }
   );
 
@@ -283,9 +290,9 @@ Meteor.methods({
 
     console.log(string)
 
-   // var allFiles = FileDB.find({}).fetch()
+    // var allFiles = FileDB.find({}).fetch()
 
-   var allFiles = allFilesPulledTable
+    var allFiles = allFilesPulledTable
 
     string = string.split(',')
 
@@ -508,25 +515,28 @@ Meteor.methods({
 
     //  var allFiles = FileDB.find({},{ sort: { createdAt: - 1 }}).fetch()
 
-   // var allFiles = FileDB.find({}).fetch()
+    // var allFiles = FileDB.find({}).fetch()
 
-   var allFiles =  allFilesPulledTable
+    var allFiles = allFilesPulledTable
+
+
 
 
     for (var i = 0; i < allFiles.length; i++) {
 
-      FileDB.upsert(
-        allFiles[i].file,
-        {
-          $set: {
-            [mode]: "Not attempted",
+      try {
+
+        FileDB.upsert(
+          allFiles[i].file,
+          {
+            $set: {
+              [mode]: "Not attempted",
+            }
           }
-        }
-      );
+        );
+
+      } catch (err) { }
     }
-
-
-
   },
 
   'verifyFolder'(folderPath, DB_id, folderType) {
@@ -549,13 +559,13 @@ Meteor.methods({
 
       var folders = getDirectories(folderPath)
 
-     folders = folders.map( (row) => {
+      folders = folders.map((row) => {
 
-       return {
+        return {
 
-        fullPath:path.join(folderPath+'/'+row),
-        folder:row
-       }
+          fullPath: path.join(folderPath + '/' + row),
+          folder: row
+        }
       }
       )
 
@@ -588,15 +598,15 @@ Meteor.methods({
 
       var folders = getDirectories(folderPath)
 
-      folder = folders.map( (row) => {
+      folder = folders.map((row) => {
 
         return {
- 
-         fullPath:path.join(folderPath+'/'+row),
-         folder:row
+
+          fullPath: path.join(folderPath + '/' + row),
+          folder: row
         }
-       }
-       )
+      }
+      )
 
 
       // if (folders.length >= 5) {
@@ -743,17 +753,17 @@ Meteor.methods({
 
 
 
-     // var filesInDB = FileDB.find({}).fetch()
+      // var filesInDB = FileDB.find({}).fetch()
 
-      var filesInDB =  allFilesPulledTable
-    
+      var filesInDB = allFilesPulledTable
+
       filesInDB = filesInDB.filter(row => row.DB == DB_id);
 
 
       filesInDB2 = filesInDB.map(row => row._id + '\r\n')
-      filesInDB2= filesInDB2.join("")
+      filesInDB2 = filesInDB2.join("")
 
-     // fs.writeFileSync(homePath + "/Tdarr/Data/test.txt", filesInDB2, 'utf8');
+      // fs.writeFileSync(homePath + "/Tdarr/Data/test.txt", filesInDB2, 'utf8');
 
       filesInDB = filesInDB.map((file, i) => {
         if (!(fs.existsSync(file.file))) {
@@ -961,16 +971,16 @@ function scheduledPluginUpdate() {
 
   console.log('Updating plugins')
 
-  try{
+  try {
 
-  Meteor.call('updatePlugins', function (error, result) {
-
-
-   
-  });
+    Meteor.call('updatePlugins', function (error, result) {
 
 
-}catch(err){}
+
+    });
+
+
+  } catch (err) { }
 
   setTimeout(Meteor.bindEnvironment(scheduledPluginUpdate), 3600000);
 
@@ -1414,10 +1424,10 @@ function launchWorkerModule(workerType) {
 
                   var pluginsSelected = settings[0].pluginIDs
 
-                  pluginsSelected =  pluginsSelected.filter(row => (row.checked));
+                  pluginsSelected = pluginsSelected.filter(row => (row.checked));
 
 
-                  if(pluginsSelected == 0){
+                  if (pluginsSelected == 0) {
 
                     processFile = false
                     preset = ''
@@ -1425,66 +1435,61 @@ function launchWorkerModule(workerType) {
                     handBrakeMode = ''
                     FFmpegMode = ''
                     reQueueAfter = ''
-                    cliLogAdd = 'No plugins selected!'
+                    cliLogAdd += 'No plugins selected!'
 
 
 
-                  }else{
+                  } else {
 
 
-                  for(var i = 0; i < pluginsSelected.length ; i++){
+                    for (var i = 0; i < pluginsSelected.length; i++) {
 
-                    //var pluginID = settings[0].pluginID
-                    var pluginID = pluginsSelected[i]._id
+                      //var pluginID = settings[0].pluginID
+                      var pluginID = pluginsSelected[i]._id
 
 
-                    var plugin = ''
-  
-                    if (settings[0].pluginCommunity == true) {
-                      // var plugin = require(homePath + '/Tdarr/Plugins/Community/' + pluginID + '.js');
-  
-                      var hwSource = fs.readFileSync(homePath + '/Tdarr/Plugins/Community/' + pluginID + '.js', 'utf8');
-                      var hwFunc = new Function('module', hwSource);
-                      var hwModule = { exports: {} };
-                      hwFunc(hwModule)
-                      var plugin = hwModule.exports;
-  
-  
-                    } else {
-                      // var plugin = require(homePath + '/Tdarr/Plugins/Local/' + pluginID + '.js');
-                      var hwSource = fs.readFileSync(homePath + '/Tdarr/Plugins/Local/' + pluginID + '.js', 'utf8');
-                      var hwFunc = new Function('module', hwSource);
-                      var hwModule = { exports: {} };
-                      hwFunc(hwModule)
-                      var plugin = hwModule.exports;
-                    }
-  
-  
-  
-  
+                      var plugin = ''
+
+                      if (settings[0].pluginCommunity == true) {
+                        // var plugin = require(homePath + '/Tdarr/Plugins/Community/' + pluginID + '.js');
+
+                        var hwSource = fs.readFileSync(homePath + '/Tdarr/Plugins/Community/' + pluginID + '.js', 'utf8');
+                        var hwFunc = new Function('module', hwSource);
+                        var hwModule = { exports: {} };
+                        hwFunc(hwModule)
+                        var plugin = hwModule.exports;
+
+
+                      } else {
+                        // var plugin = require(homePath + '/Tdarr/Plugins/Local/' + pluginID + '.js');
+                        var hwSource = fs.readFileSync(homePath + '/Tdarr/Plugins/Local/' + pluginID + '.js', 'utf8');
+                        var hwFunc = new Function('module', hwSource);
+                        var hwModule = { exports: {} };
+                        hwFunc(hwModule)
+                        var plugin = hwModule.exports;
+                      }
 
 
 
+                      var response = plugin.plugin(firstItem);
 
-                    console.dir(response)
-  
-                    var response = plugin.plugin(firstItem);
+                      console.dir(response)
 
-                    processFile = response.processFile
-                    preset = response.preset
-                    container = response.container
-                    handBrakeMode = response.handBrakeMode
-                    FFmpegMode = response.FFmpegMode
-                    reQueueAfter = response.reQueueAfter
-                    cliLogAdd += response.infoLog
+                      processFile = response.processFile
+                      preset = response.preset
+                      container = response.container
+                      handBrakeMode = response.handBrakeMode
+                      FFmpegMode = response.FFmpegMode
+                      reQueueAfter = response.reQueueAfter
+                      cliLogAdd += response.infoLog
 
-                    if(processFile == true){
+                      if (processFile == true) {
 
-                      break
+                        break
 
+                      }
                     }
                   }
-                }
 
 
 
@@ -1649,6 +1654,7 @@ function launchWorkerModule(workerType) {
                       TranscodeDecisionMaker: "Passed",
                       processingStatus: false,
                       cliLog: cliLogAdd,
+                      createdAt: new Date(),
 
                     }
                   }
@@ -1685,7 +1691,8 @@ function launchWorkerModule(workerType) {
                   mode: workerType,
                   modeType: mode,
                   idle: false,
-                  percentage: 0
+                  percentage: 0,
+                  cliLogAdd: cliLogAdd
                 })
 
 
@@ -1711,9 +1718,6 @@ function launchWorkerModule(workerType) {
 
     }
 
-    // if (mode != "healthCheck") {
-
-    // }
 
     if (message[1] == "percentage") {
 
@@ -1722,7 +1726,7 @@ function launchWorkerModule(workerType) {
         percentage: message[2],
       })
 
-      // console.log(`Server: ${message[2]}`)
+
 
     }
 
@@ -1837,25 +1841,7 @@ function launchWorkerModule(workerType) {
 
       } else if (message[4] == "transcode") {
 
-        // console.log("HERE")
 
-        //console.log(message[2])
-
-        // FileDB.upsert(message[2],
-        //   {
-        //     $set: {
-        //       _id: message[2],
-        //       file: message[2],
-        //       DB: message[3],
-        //       mode: message[4],
-
-        //       createdAt: new Date(),
-        //     }
-        //   }
-        // );
-
-
-        //  ffprobeLaunch([message[2]], OutputDB, message[3])
 
         FileDB.remove(message[5])
 
@@ -2316,86 +2302,86 @@ dbUpdatePush();
 
 function dbUpdatePush() {
 
-  try{
+  try {
 
-  for (var i = 0; i < filesToAddToDB.length; i++) {
+    for (var i = 0; i < filesToAddToDB.length; i++) {
 
-    if (addFilesToDB == false) {
+      if (addFilesToDB == false) {
 
-      break
+        break
 
-    } else {
-
-
-
-      try {
-
-
-        updateConsole(`Adding file to DB: ${filesToAddToDB[i]._id}`, true)
-
-
-        FileDB.upsert(filesToAddToDB[i]._id,
-          {
-            $set: filesToAddToDB[i]
-          }
-        );
-
-
-      } catch (err) {
+      } else {
 
 
 
-      }
-
-      filesToAddToDB.splice(i, 1)
-
-      i--
-
-    }
-
-  }
+        try {
 
 
-
-  for (var i = 0; i < logsToAddToDB.length; i++) {
-
-    if (addFilesToDB == false) {
-
-      break
-
-    } else {
-
-      try {
+          updateConsole(`Adding file to DB: ${filesToAddToDB[i]._id}`, true)
 
 
-        //  updateConsole(`Adding log to DB: ${logsToAddToDB[i].text}`,true)
+          FileDB.upsert(filesToAddToDB[i]._id,
+            {
+              $set: filesToAddToDB[i]
+            }
+          );
 
-        LogDB.upsert(logsToAddToDB[i]._id,
-          {
-            $set: logsToAddToDB[i]
-          }
 
-        );
+        } catch (err) {
 
 
 
-      } catch (err) {
+        }
 
+        filesToAddToDB.splice(i, 1)
 
+        i--
 
       }
-
-      logsToAddToDB.splice(i, 1)
-
-      i--
 
     }
 
 
-  }
+
+    for (var i = 0; i < logsToAddToDB.length; i++) {
+
+      if (addFilesToDB == false) {
+
+        break
+
+      } else {
+
+        try {
 
 
-}catch(err){}
+          //  updateConsole(`Adding log to DB: ${logsToAddToDB[i].text}`,true)
+
+          LogDB.upsert(logsToAddToDB[i]._id,
+            {
+              $set: logsToAddToDB[i]
+            }
+
+          );
+
+
+
+        } catch (err) {
+
+
+
+        }
+
+        logsToAddToDB.splice(i, 1)
+
+        i--
+
+      }
+
+
+    }
+
+
+  } catch (err) { }
 
 
   setTimeout(Meteor.bindEnvironment(dbUpdatePush), 1000);
@@ -2437,251 +2423,279 @@ tablesUpdate()
 
 function tablesUpdate() {
 
-  try{
+  try {
 
-  if (doTablesUpdate == false) {
+    if (doTablesUpdate == false) {
 
-
-  } else {
-
-
-
-    addFilesToDB = false
-
-
-    var startDate = new Date();
-
-    allFilesPulledTable = FileDB.find({}).fetch()
-
-    allFilesPulledTable = allFilesPulledTable.sort(function (a, b) {
-      return new Date(b.createdAt) - new Date(a.createdAt);
-    });
-
-
-
-    var settings = SettingsDB.find({}, { sort: { createdAt: 1 } }).fetch()
-
-
-
-    //
-
-
-    //Alternating libraries in queue
-
-    var step = settings.length
-    var idxHolder = {}
-    var newArr = []
-
-    for (var i = 0; i < settings.length; i++) {
-
-      idxHolder[settings[i]._id] = i
-
-    }
-
-    for (var i = 0; i < allFilesPulledTable.length; i++) {
-
-      newArr[idxHolder[allFilesPulledTable[i].DB]] = allFilesPulledTable[i]
-      idxHolder[allFilesPulledTable[i].DB] += step
-
-    }
-
-    var filtered = newArr.filter(function (el) {
-      return el != null;
-    });
-
-
-    allFilesPulledTable = newArr.slice()
-    newArr = []
-//
-
-    var table1data = allFilesPulledTable.filter(row => (row.TranscodeDecisionMaker == "Not attempted" && row.processingStatus == false));
-    var table2data = allFilesPulledTable.filter(row => ((row.TranscodeDecisionMaker == "Transcode success" || row.TranscodeDecisionMaker == "Passed") && row.processingStatus == false));
-    var table3data = allFilesPulledTable.filter(row => ((row.TranscodeDecisionMaker == "Transcode error" || row.TranscodeDecisionMaker == "Transcode cancelled") && row.processingStatus == false));
-    var table4data = allFilesPulledTable.filter(row => (row.HealthCheck == "Not attempted" && row.fileMedium == "video" && row.processingStatus == false));
-    var table5data = allFilesPulledTable.filter(row => (row.HealthCheck == "Success" && row.processingStatus == false));
-    var table6data = allFilesPulledTable.filter(row => ((row.HealthCheck == "Error" || row.HealthCheck == "Cancelled") && row.processingStatus == false));
-
-    generalFiles = (table4data).concat(table1data)
-    //console.log("generalFiles:"+generalFiles)
-    transcodeFiles = table1data
-    healthcheckFiles = table4data
-
-    //
-
-    function getTimeNow() {
-
-      var d = new Date(),
-        h = (d.getHours() < 10 ? '' : '') + d.getHours(),
-        m = (d.getMinutes() < 10 ? '0' : '') + d.getMinutes();
-      var s = (d.getSeconds() < 10 ? '0' : '') + d.getSeconds();
-      var timenow = h
-
-      return timenow
-    }
-
-    var timeIdx = getTimeNow()
-    //console.log(timeIdx)
-
-
-    for (var i = 0; i < settings.length; i++) {
-
-
-      if (settings[i].schedule[timeIdx].checked == false) {
-
-
-
-        generalFiles = generalFiles.filter(row => row.DB != settings[i]._id);
-        transcodeFiles = transcodeFiles.filter(row => row.DB != settings[i]._id);
-        healthcheckFiles = healthcheckFiles.filter(row => row.DB != settings[i]._id);
-
-
-      }
-    }
-
-    //old
-
-
-
-
-
-    //
-
-
-
-
-    StatisticsDB.upsert('statistics',
-      {
-        $set: {
-          tdarrScore: ((table2data.length * 100.00) / (table1data.length + table2data.length + table3data.length)).toPrecision(4),
-          healthCheckScore: ((table5data.length * 100.00) / (table4data.length + table5data.length + table6data.length)).toPrecision(4),
-        }
-      }
-    );
-
-
-    table1data = table1data.slice(0, 20)
-    table2data = table2data.slice(0, 20)
-    table3data = table3data.slice(0, 20)
-    table4data = table4data.slice(0, 20)
-    table5data = table5data.slice(0, 20)
-    table6data = table6data.slice(0, 20)
-
-
-
-
-
-
-
-    var endDate = new Date();
-    var seconds2 = (endDate.getTime() - startDate.getTime()) / 1000;
-
-    newFetchtime = Math.round(seconds2 * 10) / 10;
-
-    // console.log("Fetch time: " + newFetchtime)
-
-    //console.log("data done")
-
-
-
-    ClientDB.upsert("client",
-      {
-        $set: {
-          table1: table1data,
-          table2: table2data,
-          table3: table3data,
-          table4: table4data,
-          table5: table5data,
-          table6: table6data,
-        }
-      }
-    );
-
-
-    //   ClientDB.upsert("client",
-    //   {
-    //       $set: {
-    //           table1:table1data,
-    //         }
-    //   }
-    // );
-
-
-
-
-    statisticsUpdate();
-
-
-
-
-
-
-    // filesToAddToDBLengthNew = 0
-    // filesToAddToDBLengthOld = 0
-    filesToAddToDBLengthNew = filesToAddToDB.length + logsToAddToDB.length
-
-    var DBLoadStatus
-
-    if (filesToAddToDBLengthNew > filesToAddToDBLengthOld || newFetchtime > oldFetchtime) {
-
-      DBLoadStatus = "Increasing"
-
-      //    DBPollPeriod += 1000
 
     } else {
 
-      if (filesToAddToDBLengthNew == filesToAddToDBLengthOld && newFetchtime == oldFetchtime) {
-
-        DBLoadStatus = "Decreasing"
 
 
+      addFilesToDB = false
 
+
+      var startDate = new Date();
+
+      allFilesPulledTable = FileDB.find({}).fetch()
+
+      allFilesPulledTable = allFilesPulledTable.sort(function (a, b) {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+
+
+
+      var settings = SettingsDB.find({}, { sort: { createdAt: 1 } }).fetch()
+
+
+
+      //
+
+
+      //Alternating libraries in queue
+
+      var step = settings.length
+      var idxHolder = {}
+      var newArr = []
+
+      for (var i = 0; i < settings.length; i++) {
+
+        idxHolder[settings[i]._id] = i
+
+      }
+
+      for (var i = 0; i < allFilesPulledTable.length; i++) {
+
+        newArr[idxHolder[allFilesPulledTable[i].DB]] = allFilesPulledTable[i]
+        idxHolder[allFilesPulledTable[i].DB] += step
+
+      }
+
+      newArr = newArr.filter(function (el) {
+        return el != null;
+      });
+
+
+      allFilesPulledTable = newArr.slice()
+      newArr = []
+
+      //
+
+      var table1data = allFilesPulledTable.filter(row => (row.TranscodeDecisionMaker == "Not attempted" && row.processingStatus == false));
+      var table2data = allFilesPulledTable.filter(row => ((row.TranscodeDecisionMaker == "Transcode success" || row.TranscodeDecisionMaker == "Passed") && row.processingStatus == false));
+      var table3data = allFilesPulledTable.filter(row => ((row.TranscodeDecisionMaker == "Transcode error" || row.TranscodeDecisionMaker == "Transcode cancelled") && row.processingStatus == false));
+      var table4data = allFilesPulledTable.filter(row => (row.HealthCheck == "Not attempted" && row.fileMedium == "video" && row.processingStatus == false));
+      var table5data = allFilesPulledTable.filter(row => (row.HealthCheck == "Success" && row.processingStatus == false));
+      var table6data = allFilesPulledTable.filter(row => ((row.HealthCheck == "Error" || row.HealthCheck == "Cancelled") && row.processingStatus == false));
+
+
+      StatisticsDB.upsert('statistics',
+        {
+          $set: {
+            tdarrScore: ((table2data.length * 100.00) / (table1data.length + table2data.length + table3data.length)).toPrecision(4),
+            healthCheckScore: ((table5data.length * 100.00) / (table4data.length + table5data.length + table6data.length)).toPrecision(4),
+          }
+        }
+      );
+
+
+
+
+
+      generalFiles = (table4data).concat(table1data)
+      transcodeFiles = table1data
+      healthcheckFiles = table4data
+
+      //
+
+
+      table1data = table1data.slice(0, 20)
+      table2data = table2data.slice(0, 20)
+      table3data = table3data.slice(0, 20)
+      table4data = table4data.slice(0, 20)
+      table5data = table5data.slice(0, 20)
+      table6data = table6data.slice(0, 20)
+
+
+
+
+      function getTimeNow() {
+
+        var d = new Date(),
+          h = (d.getHours() < 10 ? '' : '') + d.getHours(),
+          m = (d.getMinutes() < 10 ? '0' : '') + d.getMinutes();
+        var s = (d.getSeconds() < 10 ? '0' : '') + d.getSeconds();
+        var timenow = h
+
+        return timenow
+      }
+
+      var timeIdx = getTimeNow()
+
+      var d = new Date()
+      d = d.getDay()
+
+      //console.log(timeIdx)
+
+      timeIdx = parseInt(timeIdx) + (d * 24)
+
+      //+(0*24)
+
+      console.log(timeIdx)
+
+
+      //console.log("Here"+Date.getDay())
+
+      for (var i = 0; i < settings.length; i++) {
+
+        try{
+        if ((settings[i].schedule[timeIdx] !== undefined && settings[i].schedule[timeIdx].checked === false) || settings[i].processLibrary === false) {
+
+          generalFiles = generalFiles.filter(row => row.DB != settings[i]._id);
+          transcodeFiles = transcodeFiles.filter(row => row.DB != settings[i]._id);
+          healthcheckFiles = healthcheckFiles.filter(row => row.DB != settings[i]._id);
+          table1data = table1data.filter(row => row.DB != settings[i]._id);
+          table2data = table2data.filter(row => row.DB != settings[i]._id);
+          table3data = table3data.filter(row => row.DB != settings[i]._id);
+          table4data = table4data.filter(row => row.DB != settings[i]._id);
+          table5data = table5data.filter(row => row.DB != settings[i]._id);
+          table6data = table6data.filter(row => row.DB != settings[i]._id);
+
+        }
+      }catch(err){}
+      }
+
+      //old
+
+
+
+
+
+      //
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      var endDate = new Date();
+      var seconds2 = (endDate.getTime() - startDate.getTime()) / 1000;
+
+      newFetchtime = Math.round(seconds2 * 10) / 10;
+
+      // console.log("Fetch time: " + newFetchtime)
+
+      //console.log("data done")
+
+
+
+      ClientDB.upsert("client",
+        {
+          $set: {
+            table1: table1data,
+            table2: table2data,
+            table3: table3data,
+            table4: table4data,
+            table5: table5data,
+            table6: table6data,
+          }
+        }
+      );
+
+
+      //   ClientDB.upsert("client",
+      //   {
+      //       $set: {
+      //           table1:table1data,
+      //         }
+      //   }
+      // );
+
+
+
+
+      statisticsUpdate();
+
+
+
+
+
+
+      // filesToAddToDBLengthNew = 0
+      // filesToAddToDBLengthOld = 0
+      filesToAddToDBLengthNew = filesToAddToDB.length + logsToAddToDB.length
+
+      var DBLoadStatus
+
+      if (filesToAddToDBLengthNew > filesToAddToDBLengthOld || newFetchtime > oldFetchtime) {
+
+        DBLoadStatus = "Increasing"
+
+        //    DBPollPeriod += 1000
 
       } else {
 
-        DBLoadStatus = "Stable"
+        if (filesToAddToDBLengthNew == filesToAddToDBLengthOld && newFetchtime == oldFetchtime) {
 
+          DBLoadStatus = "Decreasing"
+
+
+
+
+        } else {
+
+          DBLoadStatus = "Stable"
+
+        }
+
+        // if (DBPollPeriod > 1000) {
+        //   DBPollPeriod -=1000
+        // }
       }
 
-      // if (DBPollPeriod > 1000) {
-      //   DBPollPeriod -=1000
-      // }
+      DBPollPeriod = allFilesPulledTable.length + filesToAddToDB.length + logsToAddToDB.length
+
+
+
+      //console.log("DBPollPeriod:" + DBPollPeriod)
+
+      oldFetchtime = newFetchtime
+      filesToAddToDBLengthOld = filesToAddToDB.length + logsToAddToDB.length
+
+
+      StatisticsDB.upsert("statistics",
+        {
+          $set: {
+            DBPollPeriod: DBPollPeriod > 1000 ? (DBPollPeriod / 1000) + "s" : "1s",
+            DBFetchTime: (newFetchtime).toFixed(1) + "s",
+            DBTotalTime: ((DBPollPeriod / 1000) + newFetchtime).toFixed(1) + "s",
+            DBLoadStatus: DBLoadStatus,
+            DBQueue: filesToAddToDB.length + + logsToAddToDB.length
+          }
+        }
+      );
+
+
+
+
     }
 
-    DBPollPeriod = allFilesPulledTable.length + filesToAddToDB.length + logsToAddToDB.length
 
+    setTimeout(Meteor.bindEnvironment(tablesUpdate), DBPollPeriod > 1000 ? DBPollPeriod : 1000);
 
+  } catch (err) {
 
-    //console.log("DBPollPeriod:" + DBPollPeriod)
-
-    oldFetchtime = newFetchtime
-    filesToAddToDBLengthOld = filesToAddToDB.length + logsToAddToDB.length
-
-
-    StatisticsDB.upsert("statistics",
-      {
-        $set: {
-          DBPollPeriod: DBPollPeriod > 1000 ? (DBPollPeriod / 1000) + "s" : "1s",
-          DBFetchTime: (newFetchtime).toFixed(1) + "s",
-          DBTotalTime: ((DBPollPeriod / 1000) + newFetchtime).toFixed(1) + "s",
-          DBLoadStatus: DBLoadStatus,
-          DBQueue: filesToAddToDB.length + + logsToAddToDB.length
-        }
-      }
-    );
-
-
-
+    setTimeout(Meteor.bindEnvironment(tablesUpdate), 10000);
 
   }
-
-  
-setTimeout(Meteor.bindEnvironment(tablesUpdate), DBPollPeriod > 1000 ? DBPollPeriod : 1000); 
-
-}catch(err){
-
-  setTimeout(Meteor.bindEnvironment(tablesUpdate), 10000 );
-
-}
 
 
   setTimeout(Meteor.bindEnvironment(() => { addFilesToDB = true }), 1000);
@@ -2783,49 +2797,49 @@ setProcessPriority()
 
 function setProcessPriority() {
 
-  try{
+  try {
 
-  if (process.platform == 'win32') {
+    if (process.platform == 'win32') {
 
-    var workerCommandFFmpeg = 'wmic process where name=\"ffmpeg.exe\" CALL setpriority \"Below normal\"'
-    var workerCommandHandBrake = 'wmic process where name=\"HandBrakeCLI.exe\" CALL setpriority \"Below normal\"'
-  }
-
-
-
-
-  if (process.platform == 'linux') {
-    var workerCommandFFmpeg = 'for p in $(pgrep ^ffmpeg$); do renice -n 20 -p $p; done'
-    var workerCommandHandBrake = 'for p in $(pgrep ^HandBrakeCLI$); do renice -n 20 -p $p; done'
-  }
+      var workerCommandFFmpeg = 'wmic process where name=\"ffmpeg.exe\" CALL setpriority \"Below normal\"'
+      var workerCommandHandBrake = 'wmic process where name=\"HandBrakeCLI.exe\" CALL setpriority \"Below normal\"'
+    }
 
 
 
 
-
-  if (process.platform == 'darwin') {
-    var workerCommandFFmpeg = 'for p in $(pgrep ^ffmpeg$); do renice -n 20 -p $p; done'
-    var workerCommandHandBrake = 'for p in $(pgrep ^HandBrakeCLI$); do renice -n 20 -p $p; done'
-
-  }
-
-  var shell = require('shelljs');
-
-
-  let globalSettings = GlobalSettingsDB.find({}, {}).fetch()
-
-  //console.log(globalSettings)
+    if (process.platform == 'linux') {
+      var workerCommandFFmpeg = 'for p in $(pgrep ^ffmpeg$); do renice -n 20 -p $p; done'
+      var workerCommandHandBrake = 'for p in $(pgrep ^HandBrakeCLI$); do renice -n 20 -p $p; done'
+    }
 
 
 
-  if (globalSettings[0].lowCPUPriority == true) {
 
-    shellWorker = shell.exec(workerCommandFFmpeg, function (code, stdout, stderr, stdin) { });
-    shellWorker = shell.exec(workerCommandHandBrake, function (code, stdout, stderr, stdin) { });
 
-  }
+    if (process.platform == 'darwin') {
+      var workerCommandFFmpeg = 'for p in $(pgrep ^ffmpeg$); do renice -n 20 -p $p; done'
+      var workerCommandHandBrake = 'for p in $(pgrep ^HandBrakeCLI$); do renice -n 20 -p $p; done'
 
-}catch(err){}
+    }
+
+    var shell = require('shelljs');
+
+
+    let globalSettings = GlobalSettingsDB.find({}, {}).fetch()
+
+    //console.log(globalSettings)
+
+
+
+    if (globalSettings[0].lowCPUPriority == true) {
+
+      shellWorker = shell.exec(workerCommandFFmpeg, function (code, stdout, stderr, stdin) { });
+      shellWorker = shell.exec(workerCommandHandBrake, function (code, stdout, stderr, stdin) { });
+
+    }
+
+  } catch (err) { }
 
   setTimeout(Meteor.bindEnvironment(setProcessPriority), 1000);
 
@@ -2843,80 +2857,120 @@ function workerUpdateCheck() {
 
   //
 
-  try{
+  try {
 
-  var generalWorkers = workerDB.filter(row => row.mode == "general").length;
-  var transcodeWorkers = workerDB.filter(row => row.mode == "transcode").length;
-  var healthcheckWorkers = workerDB.filter(row => row.mode == "healthcheck").length;
+    var generalWorkers = workerDB.filter(row => row.mode == "general")
+    var transcodeWorkers = workerDB.filter(row => row.mode == "transcode")
+    var healthcheckWorkers = workerDB.filter(row => row.mode == "healthcheck")
 
-  //
+    //
 
-  var globs = GlobalSettingsDB.find({}, {}).fetch()
+    var globs = GlobalSettingsDB.find({}, {}).fetch()
 
-  var gDiff = globs[0].generalWorkerLimit - generalWorkers
-  var tDiff = globs[0].transcodeWorkerLimit - transcodeWorkers
-  var hDiff = globs[0].healthcheckWorkerLimit - healthcheckWorkers
+    var gDiff = globs[0].generalWorkerLimit - generalWorkers.length
+    var tDiff = globs[0].transcodeWorkerLimit - transcodeWorkers.length
+    var hDiff = globs[0].healthcheckWorkerLimit - healthcheckWorkers.length
 
-  verboseLogs = globs[0].verboseLogs
+    verboseLogs = globs[0].verboseLogs
 
-  if (gDiff >= 1 && generalFiles.length > 0 ) {
-    Meteor.call('launchWorker', "general", gDiff, function (error, result) { });
-  }
-  if (tDiff >= 1 && transcodeFiles.length > 0 ) {
-    Meteor.call('launchWorker', "transcode", tDiff, function (error, result) { });
-  }
+    if (gDiff >= 1 && generalFiles.length > 0) {
+      Meteor.call('launchWorker', "general", gDiff, function (error, result) { });
+    }
+    if (tDiff >= 1 && transcodeFiles.length > 0) {
+      Meteor.call('launchWorker', "transcode", tDiff, function (error, result) { });
+    }
 
-  if (hDiff >= 1 && healthcheckFiles.length > 0 ) {
-    Meteor.call('launchWorker', "healthcheck", hDiff, function (error, result) { });
-  }
+    if (hDiff >= 1 && healthcheckFiles.length > 0) {
+      Meteor.call('launchWorker', "healthcheck", hDiff, function (error, result) { });
+    }
 
-
-  //
-
-
-
-  let workerCheck = findWorker()
-
-  for (var i = 0; i < workerCheck.length; i++) {
-
-    try {
+    var workerCheck = findWorker() //[]
 
 
 
-      if (workerStatus[workerCheck[i]._id][1] == 300) {
+
+
+    checkReduceIncrease(gDiff, generalWorkers)
+    checkReduceIncrease(tDiff, transcodeWorkers)
+    checkReduceIncrease(hDiff, healthcheckWorkers)
+
+    function checkReduceIncrease(Diff, WorkerType) {
+
+      for (var i = 0; i < WorkerType.length; i++) {
+        upsertWorker(WorkerType[i]._id, {
+          _id: WorkerType[i]._id,
+          idle: false,
+        })
+      }
+
+      if (Diff <= -1) {
+
+        var count = 0
+
+        for (var i = 0; i < WorkerType.length; i++) {
+
+          if (WorkerType[i].idle == false) {
+
+            upsertWorker(WorkerType[i]._id, {
+              _id: WorkerType[i]._id,
+              idle: true,
+            })
+
+            count--
+
+            if (count == Diff) {
+              break
+            }
+          }
+        }
+      }
+    }
+    //
 
 
 
-        if (workerStatus[workerCheck[i]._id][0] == workerCheck[i].file + workerCheck[i].percentage + "") {
+    var workerCheck = findWorker()
 
-          console.log("Worker " + workerCheck[i]._id + " stalled. Cancelling item.")
-          // Meteor.call('cancelWorkerItem', workerCheck[i]._id, function (error, result) { })
-          workerStatus[workerCheck[i]._id][0] = ""
-          workerStatus[workerCheck[i]._id][1] = -1
+    for (var i = 0; i < workerCheck.length; i++) {
+
+      try {
+
+
+
+        if (workerStatus[workerCheck[i]._id][1] == 300) {
+
+
+
+          if (workerStatus[workerCheck[i]._id][0] == workerCheck[i].file + workerCheck[i].percentage + "") {
+
+            console.log("Worker " + workerCheck[i]._id + " stalled. Cancelling item.")
+            // Meteor.call('cancelWorkerItem', workerCheck[i]._id, function (error, result) { })
+            workerStatus[workerCheck[i]._id][0] = ""
+            workerStatus[workerCheck[i]._id][1] = -1
+
+          } else {
+
+            console.log("Worker " + workerCheck[i]._id + " has not stalled.")
+
+            workerStatus[workerCheck[i]._id][0] = workerCheck[i].file + workerCheck[i].percentage + ""
+            workerStatus[workerCheck[i]._id][1] = 0
+
+          }
+
 
         } else {
 
-          console.log("Worker " + workerCheck[i]._id + " has not stalled.")
-
-          workerStatus[workerCheck[i]._id][0] = workerCheck[i].file + workerCheck[i].percentage + ""
-          workerStatus[workerCheck[i]._id][1] = 0
+          workerStatus[workerCheck[i]._id][1] = (workerStatus[workerCheck[i]._id][1]) + 1
 
         }
 
 
-      } else {
 
-        workerStatus[workerCheck[i]._id][1] = (workerStatus[workerCheck[i]._id][1]) + 1
-
-      }
+      } catch (err) { }
+    }
 
 
-
-    } catch (err) { }
-  }
-
-
-}catch(err){}
+  } catch (err) { }
 
   setTimeout(Meteor.bindEnvironment(workerUpdateCheck), 1000);
 }
