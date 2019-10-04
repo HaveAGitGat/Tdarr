@@ -26,7 +26,7 @@ export default class VideoCodec extends Component {
 
 
         <span className="scheduleContainer-item">
-         <Checkbox checked={!!this.props.item.checked} onChange={this.toggleChecked} />
+         <input type="checkbox" checked={!!this.props.item.checked} onChange={this.toggleChecked} />
         {/* {this.props.item._id.split(":")[1]} */}
         </span>
         
