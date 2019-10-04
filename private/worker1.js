@@ -375,8 +375,8 @@ process.on('message', (m) => {
         }
 
         errorLogFull = ""
-        errorLogFull += "Command: \n\n"
-        errorLogFull += workerCommand + "\n\n"
+        errorLogFull += "Command: \r\n"
+        errorLogFull += workerCommand + "\r\n"
         
         
 
@@ -518,7 +518,7 @@ process.on('message', (m) => {
         
                 //('stderrorWorker: ' + data);
 
-                errorLogFull += data;
+                errorLogFull += data + "\r\n";
 
 
                 var str = "" + data;
@@ -953,7 +953,7 @@ try{
 
             try{
 
-                errorLogFull += "Attempting to delete original file"
+                errorLogFull += "Attempting to delete original file"+ "\r\n"
                 updateConsole(workerNumber, "Attempting to delete original file" + currentSourceLine)
 
                
@@ -962,7 +962,7 @@ try{
   
 
 
-                errorLogFull += "Attempting to move new file to original folder"
+                errorLogFull += "Attempting to move new file to original folder"+ "\r\n"
                 updateConsole(workerNumber, "Attempting to move new file to original folder" + currentSourceLine)
 
                 var finalFilePathCopy = finalFilePath
@@ -983,24 +983,24 @@ try{
                     overwrite: true
                 })
 
-                errorLogFull += "Moving file successful:"
+                errorLogFull += "Moving file successful:"+ "\r\n"
                 updateConsole(workerNumber, "Moving file successful:" + currentDestinationLine + " to " + finalFilePathCopy)
 
 
 
                 fs.unlinkSync(currentSourceLine)
-                errorLogFull += "Original file deleted"
+                errorLogFull += "Original file deleted"+ "\r\n"
                 updateConsole(workerNumber, "Original file deleted" + currentSourceLine)
 
 
-                errorLogFull += "Renaming new file:"
+                errorLogFull += "Renaming new file:"+ "\r\n"
                 updateConsole(workerNumber, "Renaming new file:" + finalFilePathCopy + " to " + finalFilePath)
 
                 fsextra.moveSync(finalFilePathCopy, finalFilePath, {
                     overwrite: true
                 })
 
-                errorLogFull += "Renaming new file success:"
+                errorLogFull += "Renaming new file success:"+ "\r\n"
                 updateConsole(workerNumber, "Renaming new file success:" + finalFilePathCopy + " to " + finalFilePath)
 
 
@@ -1028,9 +1028,9 @@ try{
 
             }catch(err){
 
-                errorLogFull += err
+                errorLogFull += err+ "\r\n"
 
-                errorLogFull += "Deleting original file and moving new file unsuccessful"
+                errorLogFull += "Deleting original file and moving new file unsuccessful"+ "\r\n"
 
                 updateConsole(workerNumber, "Deleting original file and moving new file unsuccessful:" + currentDestinationLine + " to " + finalFilePath +" err:"+err)
 
