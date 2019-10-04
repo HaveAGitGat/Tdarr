@@ -198,7 +198,7 @@ Meteor.methods({
             true
 
         );
-    }, 'toggleSchedule'(DB_id, status) {
+    }, 'toggleSchedule'(DB_id, status,start,end) {
 
         
         var chxBoxes = SettingsDB.find({_id: DB_id}, {}).fetch()
@@ -206,7 +206,7 @@ Meteor.methods({
 
         
 
-        for (var i = 0; i < chxBoxes.length; i++) {
+        for (var i = start; i < end; i++) {
 
             SettingsDB.update({
                 "_id": DB_id,

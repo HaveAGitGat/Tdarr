@@ -18,7 +18,7 @@ import InputRange from 'react-input-range';
 
 import Checkbox from '@material-ui/core/Checkbox';
 
-import { Button,Dropdown } from 'react-bootstrap';
+import { Button, Dropdown } from 'react-bootstrap';
 
 
 import { css } from '@emotion/core';
@@ -67,9 +67,9 @@ class Folder extends Component {
 
   componentDidMount = () => {
 
-    this.verifyFolder(ReactDOM.findDOMNode(this.refs[this.props.libraryItem._id+'f']).value, 'folder',this.props.libraryItem._id+'f')
+    this.verifyFolder(ReactDOM.findDOMNode(this.refs[this.props.libraryItem._id + 'f']).value, 'folder', this.props.libraryItem._id + 'f')
 
-    this.verifyFolder(ReactDOM.findDOMNode(this.refs[this.props.libraryItem._id+'f']).value, 'cache',this.props.libraryItem._id+'c')
+    this.verifyFolder(ReactDOM.findDOMNode(this.refs[this.props.libraryItem._id + 'f']).value, 'cache', this.props.libraryItem._id + 'c')
 
 
   }
@@ -79,16 +79,17 @@ class Folder extends Component {
     Meteor.call('toggleFolderWatch', status, this.props.libraryItem._id, false, function (error, result) { })
   }
 
-  verifyFolder = (folderPath, type,refType) => {
+  verifyFolder = (folderPath, type, refType) => {
 
-    Meteor.call('verifyFolder', folderPath, this.props.libraryItem._id, type+"Valid", (error, result) => {
-
-   
+    Meteor.call('verifyFolder', folderPath, this.props.libraryItem._id, type + "Valid", (error, result) => {
 
 
-     
 
-      if (result.length == 0) {
+
+      if (result === undefined) {
+
+
+      } else if (result.length == 0) {
 
         render(
           <Button variant="outline-dark" onClick={() => {
@@ -111,7 +112,7 @@ class Folder extends Component {
             );
 
             ReactDOM.findDOMNode(this.refs[refType]).value = temp;
-            this.verifyFolder(temp, type,refType)
+            this.verifyFolder(temp, type, refType)
 
 
           }}  >Back</Button>
@@ -143,7 +144,7 @@ class Folder extends Component {
 
               ReactDOM.findDOMNode(this.refs[refType]).value = row.fullPath.replace(/\\/g, "/");
 
-              this.verifyFolder((row.fullPath).replace(/\\/g, "/"), type,refType)
+              this.verifyFolder((row.fullPath).replace(/\\/g, "/"), type, refType)
 
 
             }}  >-></Button></td>
@@ -177,7 +178,7 @@ class Folder extends Component {
               );
 
               ReactDOM.findDOMNode(this.refs[refType]).value = temp;
-              this.verifyFolder(temp, type,refType)
+              this.verifyFolder(temp, type, refType)
 
 
             }}  >Back</Button>
@@ -191,7 +192,7 @@ class Folder extends Component {
           , document.getElementById(refType + 'Results'));
 
       }
-   
+
 
     })
 
@@ -223,7 +224,7 @@ class Folder extends Component {
 
       this.toggleFolderWatch(event.target.value)
 
-      this.verifyFolder(event.target.value, 'folder',this.props.libraryItem._id +'f')
+      this.verifyFolder(event.target.value, 'folder', this.props.libraryItem._id + 'f')
 
 
 
@@ -233,7 +234,7 @@ class Folder extends Component {
 
     if (event.target.name == "cache") {
 
-      this.verifyFolder(event.target.value, 'cache',this.props.libraryItem._id +'c')
+      this.verifyFolder(event.target.value, 'cache', this.props.libraryItem._id + 'c')
 
     }
 
@@ -447,98 +448,847 @@ class Folder extends Component {
 
 
 
-  renderScheduleBlocks() {
+  renderScheduleBlocks = () => {
 
 
     let blocks = this.props.settings;
     blocks = blocks.filter(setting => setting._id == this.props.libraryItem._id);
     blocks = blocks[0].schedule
 
-    blocks =  blocks.map((item , i) => {
+
+    //UpdateMigration
+    if (blocks.length < 168) {
+
+      SettingsDB.upsert(
+
+        this.props.libraryItem._id,
+        {
+          $set: {
+            schedule: [
+
+              {
+                _id: "Sun:00-01",
+                checked: true
+              },
+              {
+                _id: "Sun:01-02",
+                checked: true
+              },
+              {
+                _id: "Sun:02-03",
+                checked: true
+              },
+              {
+                _id: "Sun:03-04",
+                checked: true
+              },
+              {
+                _id: "Sun:04-05",
+                checked: true
+              },
+              {
+                _id: "Sun:05-06",
+                checked: true
+              },
+              {
+                _id: "Sun:06-07",
+                checked: true
+              },
+              {
+                _id: "Sun:07-08",
+                checked: true
+              },
+              {
+                _id: "Sun:08-09",
+                checked: true
+              },
+              {
+                _id: "Sun:09-10",
+                checked: true
+              },
+              {
+                _id: "Sun:10-11",
+                checked: true
+              },
+              {
+                _id: "Sun:11-12",
+                checked: true
+              },
+              {
+                _id: "Sun:12-13",
+                checked: true
+              },
+              {
+                _id: "Sun:13-14",
+                checked: true
+              },
+              {
+                _id: "Sun:14-15",
+                checked: true
+              },
+              {
+                _id: "Sun:15-16",
+                checked: true
+              },
+              {
+                _id: "Sun:16-17",
+                checked: true
+              },
+              {
+                _id: "Sun:17-18",
+                checked: true
+              },
+              {
+                _id: "Sun:18-19",
+                checked: true
+              },
+              {
+                _id: "Sun:19-20",
+                checked: true
+              },
+              {
+                _id: "Sun:20-21",
+                checked: true
+              },
+              {
+                _id: "Sun:21-22",
+                checked: true
+              },
+              {
+                _id: "Sun:22-23",
+                checked: true
+              },
+              {
+                _id: "Sun:23-00",
+                checked: true
+              },
+
+
+              {
+                _id: "Mon:00-01",
+                checked: true
+              },
+              {
+                _id: "Mon:01-02",
+                checked: true
+              },
+              {
+                _id: "Mon:02-03",
+                checked: true
+              },
+              {
+                _id: "Mon:03-04",
+                checked: true
+              },
+              {
+                _id: "Mon:04-05",
+                checked: true
+              },
+              {
+                _id: "Mon:05-06",
+                checked: true
+              },
+              {
+                _id: "Mon:06-07",
+                checked: true
+              },
+              {
+                _id: "Mon:07-08",
+                checked: true
+              },
+              {
+                _id: "Mon:08-09",
+                checked: true
+              },
+              {
+                _id: "Mon:09-10",
+                checked: true
+              },
+              {
+                _id: "Mon:10-11",
+                checked: true
+              },
+              {
+                _id: "Mon:11-12",
+                checked: true
+              },
+              {
+                _id: "Mon:12-13",
+                checked: true
+              },
+              {
+                _id: "Mon:13-14",
+                checked: true
+              },
+              {
+                _id: "Mon:14-15",
+                checked: true
+              },
+              {
+                _id: "Mon:15-16",
+                checked: true
+              },
+              {
+                _id: "Mon:16-17",
+                checked: true
+              },
+              {
+                _id: "Mon:17-18",
+                checked: true
+              },
+              {
+                _id: "Mon:18-19",
+                checked: true
+              },
+              {
+                _id: "Mon:19-20",
+                checked: true
+              },
+              {
+                _id: "Mon:20-21",
+                checked: true
+              },
+              {
+                _id: "Mon:21-22",
+                checked: true
+              },
+              {
+                _id: "Mon:22-23",
+                checked: true
+              },
+              {
+                _id: "Mon:23-00",
+                checked: true
+              },
+
+              {
+                _id: "Tue:00-01",
+                checked: true
+              },
+              {
+                _id: "Tue:01-02",
+                checked: true
+              },
+              {
+                _id: "Tue:02-03",
+                checked: true
+              },
+              {
+                _id: "Tue:03-04",
+                checked: true
+              },
+              {
+                _id: "Tue:04-05",
+                checked: true
+              },
+              {
+                _id: "Tue:05-06",
+                checked: true
+              },
+              {
+                _id: "Tue:06-07",
+                checked: true
+              },
+              {
+                _id: "Tue:07-08",
+                checked: true
+              },
+              {
+                _id: "Tue:08-09",
+                checked: true
+              },
+              {
+                _id: "Tue:09-10",
+                checked: true
+              },
+              {
+                _id: "Tue:10-11",
+                checked: true
+              },
+              {
+                _id: "Tue:11-12",
+                checked: true
+              },
+              {
+                _id: "Tue:12-13",
+                checked: true
+              },
+              {
+                _id: "Tue:13-14",
+                checked: true
+              },
+              {
+                _id: "Tue:14-15",
+                checked: true
+              },
+              {
+                _id: "Tue:15-16",
+                checked: true
+              },
+              {
+                _id: "Tue:16-17",
+                checked: true
+              },
+
+              {
+                _id: "Tue:17-18",
+                checked: true
+              },
+              {
+                _id: "Tue:18-19",
+                checked: true
+              },
+              {
+                _id: "Tue:19-20",
+                checked: true
+              },
+              {
+                _id: "Tue:20-21",
+                checked: true
+              },
+              {
+                _id: "Tue:21-22",
+                checked: true
+              },
+              {
+                _id: "Tue:22-23",
+                checked: true
+              },
+              {
+                _id: "Tue:23-00",
+                checked: true
+              },
+
+              {
+                _id: "Wed:00-01",
+                checked: true
+              },
+              {
+                _id: "Wed:01-02",
+                checked: true
+              },
+              {
+                _id: "Wed:02-03",
+                checked: true
+              },
+              {
+                _id: "Wed:03-04",
+                checked: true
+              },
+              {
+                _id: "Wed:04-05",
+                checked: true
+              },
+              {
+                _id: "Wed:05-06",
+                checked: true
+              },
+              {
+                _id: "Wed:06-07",
+                checked: true
+              },
+              {
+                _id: "Wed:07-08",
+                checked: true
+              },
+              {
+                _id: "Wed:08-09",
+                checked: true
+              },
+              {
+                _id: "Wed:09-10",
+                checked: true
+              },
+              {
+                _id: "Wed:10-11",
+                checked: true
+              },
+              {
+                _id: "Wed:11-12",
+                checked: true
+              },
+              {
+                _id: "Wed:12-13",
+                checked: true
+              },
+              {
+                _id: "Wed:13-14",
+                checked: true
+              },
+              {
+                _id: "Wed:14-15",
+                checked: true
+              },
+              {
+                _id: "Wed:15-16",
+                checked: true
+              },
+              {
+                _id: "Wed:16-17",
+                checked: true
+              },
+              {
+                _id: "Wed:17-18",
+                checked: true
+              },
+              {
+                _id: "Wed:18-19",
+                checked: true
+              },
+              {
+                _id: "Wed:19-20",
+                checked: true
+              },
+              {
+                _id: "Wed:20-21",
+                checked: true
+              },
+              {
+                _id: "Wed:21-22",
+                checked: true
+              },
+              {
+                _id: "Wed:22-23",
+                checked: true
+              },
+              {
+                _id: "Wed:23-00",
+                checked: true
+              },
+
+              {
+                _id: "Thur:00-01",
+                checked: true
+              },
+              {
+                _id: "Thur:01-02",
+                checked: true
+              },
+              {
+                _id: "Thur:02-03",
+                checked: true
+              },
+              {
+                _id: "Thur:03-04",
+                checked: true
+              },
+              {
+                _id: "Thur:04-05",
+                checked: true
+              },
+              {
+                _id: "Thur:05-06",
+                checked: true
+              },
+              {
+                _id: "Thur:06-07",
+                checked: true
+              },
+              {
+                _id: "Thur:07-08",
+                checked: true
+              },
+              {
+                _id: "Thur:08-09",
+                checked: true
+              },
+              {
+                _id: "Thur:09-10",
+                checked: true
+              },
+              {
+                _id: "Thur:10-11",
+                checked: true
+              },
+              {
+                _id: "Thur:11-12",
+                checked: true
+              },
+              {
+                _id: "Thur:12-13",
+                checked: true
+              },
+              {
+                _id: "Thur:13-14",
+                checked: true
+              },
+              {
+                _id: "Thur:14-15",
+                checked: true
+              },
+              {
+                _id: "Thur:15-16",
+                checked: true
+              },
+              {
+                _id: "Thur:16-17",
+                checked: true
+              },
+              {
+                _id: "Thur:17-18",
+                checked: true
+              },
+              {
+                _id: "Thur:18-19",
+                checked: true
+              },
+              {
+                _id: "Thur:19-20",
+                checked: true
+              },
+              {
+                _id: "Thur:20-21",
+                checked: true
+              },
+              {
+                _id: "Thur:21-22",
+                checked: true
+              },
+              {
+                _id: "Thur:22-23",
+                checked: true
+              },
+              {
+                _id: "Thur:23-00",
+                checked: true
+              },
+
+              {
+                _id: "Fri:00-01",
+                checked: true
+              },
+              {
+                _id: "Fri:01-02",
+                checked: true
+              },
+              {
+                _id: "Fri:02-03",
+                checked: true
+              },
+              {
+                _id: "Fri:03-04",
+                checked: true
+              },
+              {
+                _id: "Fri:04-05",
+                checked: true
+              },
+              {
+                _id: "Fri:05-06",
+                checked: true
+              },
+              {
+                _id: "Fri:06-07",
+                checked: true
+              },
+              {
+                _id: "Fri:07-08",
+                checked: true
+              },
+              {
+                _id: "Fri:08-09",
+                checked: true
+              },
+              {
+                _id: "Fri:09-10",
+                checked: true
+              },
+              {
+                _id: "Fri:10-11",
+                checked: true
+              },
+              {
+                _id: "Fri:11-12",
+                checked: true
+              },
+              {
+                _id: "Fri:12-13",
+                checked: true
+              },
+              {
+                _id: "Fri:13-14",
+                checked: true
+              },
+              {
+                _id: "Fri:14-15",
+                checked: true
+              },
+              {
+                _id: "Fri:15-16",
+                checked: true
+              },
+              {
+                _id: "Fri:16-17",
+                checked: true
+              },
+              {
+                _id: "Fri:17-18",
+                checked: true
+              },
+              {
+                _id: "Fri:18-19",
+                checked: true
+              },
+              {
+                _id: "Fri:19-20",
+                checked: true
+              },
+              {
+                _id: "Fri:20-21",
+                checked: true
+              },
+              {
+                _id: "Fri:21-22",
+                checked: true
+              },
+              {
+                _id: "Fri:22-23",
+                checked: true
+              },
+              {
+                _id: "Fri:23-00",
+                checked: true
+              },
+
+              {
+                _id: "Sat:00-01",
+                checked: true
+              },
+              {
+                _id: "Sat:01-02",
+                checked: true
+              },
+              {
+                _id: "Sat:02-03",
+                checked: true
+              },
+              {
+                _id: "Sat:03-04",
+                checked: true
+              },
+              {
+                _id: "Sat:04-05",
+                checked: true
+              },
+              {
+                _id: "Sat:05-06",
+                checked: true
+              },
+              {
+                _id: "Sat:06-07",
+                checked: true
+              },
+              {
+                _id: "Sat:07-08",
+                checked: true
+              },
+              {
+                _id: "Sat:08-09",
+                checked: true
+              },
+              {
+                _id: "Sat:09-10",
+                checked: true
+              },
+              {
+                _id: "Sat:10-11",
+                checked: true
+              },
+              {
+                _id: "Sat:11-12",
+                checked: true
+              },
+              {
+                _id: "Sat:12-13",
+                checked: true
+              },
+              {
+                _id: "Sat:13-14",
+                checked: true
+              },
+              {
+                _id: "Sat:14-15",
+                checked: true
+              },
+              {
+                _id: "Sat:15-16",
+                checked: true
+              },
+              {
+                _id: "Sat:16-17",
+                checked: true
+              },
+              {
+                _id: "Sat:17-18",
+                checked: true
+              },
+              {
+                _id: "Sat:18-19",
+                checked: true
+              },
+              {
+                _id: "Sat:19-20",
+                checked: true
+              },
+              {
+                _id: "Sat:20-21",
+                checked: true
+              },
+              {
+                _id: "Sat:21-22",
+                checked: true
+              },
+              {
+                _id: "Sat:22-23",
+                checked: true
+              },
+              {
+                _id: "Sat:23-00",
+                checked: true
+              },
+
+            ]
+          }
+        }
+      );
+
+
+
+    }
+
+    blocks = blocks.map((item, i) => {
 
 
 
       return (
 
         <td>
-        <ScheduleBlock
-          key={item._id}
-          item={item}
-          DB_id={this.props.libraryItem._id}
-        />
-         </td>
+          <ScheduleBlock
+            key={item._id}
+            item={item}
+            DB_id={this.props.libraryItem._id}
+          />
+        </td>
       );
     });
 
-    var row1 = blocks.slice(0,24)
-    var row2 = blocks.slice(24,48)
-    var row3 = blocks.slice(48,72)
-    var row4 = blocks.slice(72,96)
-    var row5 = blocks.slice(96,120)
-    var row6 = blocks.slice(120,144)
-    var row7 = blocks.slice(144,168)
+    var row1 = blocks.slice(0, 24)
+    var row2 = blocks.slice(24, 48)
+    var row3 = blocks.slice(48, 72)
+    var row4 = blocks.slice(72, 96)
+    var row5 = blocks.slice(96, 120)
+    var row6 = blocks.slice(120, 144)
+    var row7 = blocks.slice(144, 168)
+
+
+
+
 
 
     return <table className="scheduleTable">
       <tbody>
-      <tr>
-      <td>Day</td>
-              <td>{'\u00A0'}{'\u00A0'}00</td>
-              <td>{'\u00A0'}{'\u00A0'}01</td>
-              <td>{'\u00A0'}{'\u00A0'}02</td>
-              <td>{'\u00A0'}{'\u00A0'}03</td>
-              <td>{'\u00A0'}{'\u00A0'}04</td>
-              <td>{'\u00A0'}{'\u00A0'}05</td>
-              <td>{'\u00A0'}{'\u00A0'}06</td>
-              <td>{'\u00A0'}{'\u00A0'}07</td>
-              <td>{'\u00A0'}{'\u00A0'}08</td>
-              <td>{'\u00A0'}{'\u00A0'}09</td>
-              <td>{'\u00A0'}{'\u00A0'}10</td>
-              <td>{'\u00A0'}{'\u00A0'}11</td>
-              <td>{'\u00A0'}{'\u00A0'}12</td>
-              <td>{'\u00A0'}{'\u00A0'}13</td>
-              <td>{'\u00A0'}{'\u00A0'}14</td>
-              <td>{'\u00A0'}{'\u00A0'}15</td>
-              <td>{'\u00A0'}{'\u00A0'}16</td>
-              <td>{'\u00A0'}{'\u00A0'}17</td>
-              <td>{'\u00A0'}{'\u00A0'}18</td>
-              <td>{'\u00A0'}{'\u00A0'}19</td>
-              <td>{'\u00A0'}{'\u00A0'}20</td>
-              <td>{'\u00A0'}{'\u00A0'}21</td>
-              <td>{'\u00A0'}{'\u00A0'}22</td>
-              <td>{'\u00A0'}{'\u00A0'}23</td>
+        <tr>
+          <td>Day</td>
+          <td>{'\u00A0'}{'\u00A0'}00</td>
+          <td>{'\u00A0'}{'\u00A0'}01</td>
+          <td>{'\u00A0'}{'\u00A0'}02</td>
+          <td>{'\u00A0'}{'\u00A0'}03</td>
+          <td>{'\u00A0'}{'\u00A0'}04</td>
+          <td>{'\u00A0'}{'\u00A0'}05</td>
+          <td>{'\u00A0'}{'\u00A0'}06</td>
+          <td>{'\u00A0'}{'\u00A0'}07</td>
+          <td>{'\u00A0'}{'\u00A0'}08</td>
+          <td>{'\u00A0'}{'\u00A0'}09</td>
+          <td>{'\u00A0'}{'\u00A0'}10</td>
+          <td>{'\u00A0'}{'\u00A0'}11</td>
+          <td>{'\u00A0'}{'\u00A0'}12</td>
+          <td>{'\u00A0'}{'\u00A0'}13</td>
+          <td>{'\u00A0'}{'\u00A0'}14</td>
+          <td>{'\u00A0'}{'\u00A0'}15</td>
+          <td>{'\u00A0'}{'\u00A0'}16</td>
+          <td>{'\u00A0'}{'\u00A0'}17</td>
+          <td>{'\u00A0'}{'\u00A0'}18</td>
+          <td>{'\u00A0'}{'\u00A0'}19</td>
+          <td>{'\u00A0'}{'\u00A0'}20</td>
+          <td>{'\u00A0'}{'\u00A0'}21</td>
+          <td>{'\u00A0'}{'\u00A0'}22</td>
+          <td>{'\u00A0'}{'\u00A0'}23</td>
 
-              </tr>
+        </tr>
 
-   <tr> <td>Sun</td> {row1}  </tr>
-   <tr> <td>Mon</td> {row2}  </tr>
-   <tr> <td>Tue</td> {row3}  </tr>
-   <tr> <td>Wed</td> {row4}  </tr>
-   <tr> <td>Thur</td> {row5}  </tr>
-   <tr> <td>Fri</td> {row6}  </tr>
-   <tr> <td>Sat</td> {row7}  </tr>
+        <tr> <td><Button variant="outline-dark" onClick={() => {
 
+          Meteor.call('toggleSchedule', this.props.libraryItem._id, this.state.scheduleAll, 0, 24, function (error, result) { })
 
-</tbody>
-</table>
-
-    
-    {i == 0 ? <tr></tr>: null}
-    {i == 0 ? <td>Sun</td> : null}
-
-    {i == 24 ? <p>Mon</p> : null}
-    {i == 48 ? <p>Tue</p> : null}
-    {i == 72 ? <p>Wed</p> : null}
-    {i == 96 ? <p>Thurs</p> : null}
-    {i == 120 ? <p>Fri</p> : null}
-    {i == 144 ? <p>Sat</p> : null}
+          this.setState({
+            scheduleAll: !this.state.scheduleAll,
+          })
 
 
+        }}  >Toggle</Button>Sun </td> {row1}  </tr>
+        <tr> <td><Button variant="outline-dark" onClick={() => {
+
+          Meteor.call('toggleSchedule', this.props.libraryItem._id, this.state.scheduleAll, 24, 48, function (error, result) { })
+
+          this.setState({
+            scheduleAll: !this.state.scheduleAll,
+          })
+
+
+        }}  >Toggle</Button>Mon</td> {row2}  </tr>
+        <tr> <td><Button variant="outline-dark" onClick={() => {
+
+          Meteor.call('toggleSchedule', this.props.libraryItem._id, this.state.scheduleAll, 48, 72, function (error, result) { })
+
+          this.setState({
+            scheduleAll: !this.state.scheduleAll,
+          })
+
+
+        }}  >Toggle</Button>Tue</td> {row3}  </tr>
+        <tr> <td><Button variant="outline-dark" onClick={() => {
+
+          Meteor.call('toggleSchedule', this.props.libraryItem._id, this.state.scheduleAll, 72, 96, function (error, result) { })
+
+          this.setState({
+            scheduleAll: !this.state.scheduleAll,
+          })
+
+
+        }}  >Toggle</Button>Wed</td> {row4}  </tr>
+        <tr> <td><Button variant="outline-dark" onClick={() => {
+
+          Meteor.call('toggleSchedule', this.props.libraryItem._id, this.state.scheduleAll, 96, 120, function (error, result) { })
+
+          this.setState({
+            scheduleAll: !this.state.scheduleAll,
+          })
+
+
+        }}  >Toggle</Button>Thur</td> {row5}  </tr>
+        <tr> <td><Button variant="outline-dark" onClick={() => {
+          Meteor.call('toggleSchedule', this.props.libraryItem._id, this.state.scheduleAll, 120, 144, function (error, result) { })
+          this.setState({
+            scheduleAll: !this.state.scheduleAll,
+          })
+
+
+        }}  >Toggle</Button>Fri</td> {row6}  </tr>
+        <tr> <td><Button variant="outline-dark" onClick={() => {
+          Meteor.call('toggleSchedule', this.props.libraryItem._id, this.state.scheduleAll, 144, 168, function (error, result) { })
+          this.setState({ scheduleAll: !this.state.scheduleAll, })
+        }}  >Toggle</Button>Sat</td> {row7}  </tr>
+
+
+      </tbody>
+    </table>
 
 
     return blocks
 
   }
+
+
 
   showHideSettings(event) {
 
@@ -670,76 +1420,76 @@ class Folder extends Component {
   render() {
 
     var backgroundColour = {
-      backgroundColor:this.props.backgroundColour,
+      backgroundColor: this.props.backgroundColour,
     }
 
     return (
       <span>
 
-        <div className="libraryContainer" style={{backgroundColor:this.props.backgroundColour}}>
+        <div className="libraryContainer" style={{ backgroundColor: this.props.backgroundColour }}>
 
           <div className="libraryContainerItems">
             <center>
 
-            {/* <input type="text" className="libraryTitle"  name="name" defaultValue={this.props.libraryItem.name} onChange={this.handleChange}></input> */}
 
-            <input type="text" className="libraryTitle"  name="name" defaultValue={this.props.libraryItem.name !== undefined ? this.props.libraryItem.name : "Library Title"} onChange={this.handleChange}></input>
+              {/* UpdateMigration */}
+              <input type="text" className="libraryTitle" name="name" defaultValue={this.props.libraryItem.name !== undefined ? this.props.libraryItem.name : "Library Title"} onChange={this.handleChange}></input>
 
-<br/>
-<br/>
-            
+              <br />
+              <br />
 
-                <Dropdown>
-                  <Dropdown.Toggle variant="outline-success" id="dropdown-basic">
-                    Options
+
+              <Dropdown>
+                <Dropdown.Toggle variant="outline-success" id="dropdown-basic">
+                  Options
   </Dropdown.Toggle>
 
-                  <Dropdown.Menu>
+                <Dropdown.Menu>
 
                   <div className={this.props.libraryItem.scanButtons ? '' : 'hidden'} style={libButtonStyle}>
-                  <Dropdown.Item style={{color:'green'}}  onClick={() => this.scanFiles(0)} >Scan (Find new)</Dropdown.Item>
-                  <Dropdown.Item style={{color:'green'}} onClick={() => this.scanFiles(1)} >Scan (Fresh)</Dropdown.Item>
+                    <Dropdown.Item style={{ color: 'green' }} onClick={() => this.scanFiles(0)} >Scan (Find new)</Dropdown.Item>
+                    <Dropdown.Item style={{ color: 'green' }} onClick={() => this.scanFiles(1)} >Scan (Fresh)</Dropdown.Item>
 
 
-                  <Dropdown.Item onClick={() => this.resetAllStatus('TranscodeDecisionMaker')}>Reset all transcode status</Dropdown.Item>
-                  <Dropdown.Item onClick={() => this.resetAllStatus('HealthCheck')}>Reset all health check status</Dropdown.Item>
+                    <Dropdown.Item onClick={() => this.resetAllStatus('TranscodeDecisionMaker')}>Reset all transcode status</Dropdown.Item>
+                    <Dropdown.Item onClick={() => this.resetAllStatus('HealthCheck')}>Reset all health check status</Dropdown.Item>
 
 
 
-                  <Dropdown.Item style={{color:'red'}} onClick={() => {
+                    <Dropdown.Item style={{ color: 'red' }} onClick={() => {
 
-if (confirm('Are you sure you want to clear this library? Your files will not be affected.')) {
-  this.removeLibrary(this.props.libraryItem._id)
-}
-}
+                      if (confirm('Are you sure you want to clear this library? Your files will not be affected.')) {
+                        this.removeLibrary(this.props.libraryItem._id)
+                      }
+                    }
 
-}>Clear library</Dropdown.Item>
+                    }>Clear library</Dropdown.Item>
 
 
-<Dropdown.Item style={{color:'red'}} onClick={this.deleteThisLibrary.bind(this)}>Delete library</Dropdown.Item>
-                 
+                    <Dropdown.Item style={{ color: 'red' }} onClick={this.deleteThisLibrary.bind(this)}>Delete library</Dropdown.Item>
+
 
                   </div>
 
 
-                  </Dropdown.Menu>
-                </Dropdown>
+                </Dropdown.Menu>
+              </Dropdown>
 
 
 
-                <div className={this.props.libraryItem.scanButtons ? 'hidden' : ''} style={libButtonStyle}>
-                  <span> {this.props.libraryItem.scanFound}</span>
+              <div className={this.props.libraryItem.scanButtons ? 'hidden' : ''} style={libButtonStyle}>
+                <span> {this.props.libraryItem.scanFound}</span>
 
-                  <div className='sweet-loading'>
-                    <ScaleLoader
-                      css={override}
-                      sizeUnit={"px"}
-                      size={15}
-                      color={'#000000'}
-                      loading={true}
-                    />
-                  </div>
+                <div className='sweet-loading'>
+                  <ScaleLoader
+                    css={override}
+                    sizeUnit={"px"}
+                    size={15}
+                    color={'#000000'}
+                    loading={true}
+                  />
                 </div>
+              </div>
 
 
 
@@ -786,15 +1536,15 @@ if (confirm('Are you sure you want to clear this library? Your files will not be
                 <div style={libButtonStyle}>
                   <ToggleButton
 
-            
-                    value={ this.props.libraryItem.processLibrary === undefined ?  true : !!this.props.libraryItem.processLibrary }
+
+                    value={this.props.libraryItem.processLibrary === undefined ? true : !!this.props.libraryItem.processLibrary}
                     onToggle={() => {
 
                       console.log("here")
                       console.log(this.props.libraryItem._id)
 
-                      console.log(this.props.libraryItem.processLibrary) 
-                      
+                      console.log(this.props.libraryItem.processLibrary)
+
                       SettingsDB.upsert(
 
                         this.props.libraryItem._id,
@@ -827,7 +1577,7 @@ if (confirm('Are you sure you want to clear this library? Your files will not be
             </center>
 
 
-            <input type="text" className="folderPaths" ref={this.props.libraryItem._id +'f'} name="folder" defaultValue={this.props.libraryItem.folder} onChange={this.handleChange}></input>
+            <input type="text" className="folderPaths" ref={this.props.libraryItem._id + 'f'} name="folder" defaultValue={this.props.libraryItem.folder} onChange={this.handleChange}></input>
 
 
 
@@ -850,7 +1600,7 @@ if (confirm('Are you sure you want to clear this library? Your files will not be
             </div>
 
             <div className={this.state.folderBrowser ? '' : 'hidden'}>
-              <div id={this.props.libraryItem._id +'fResults'} className="folderResults"></div>
+              <div id={this.props.libraryItem._id + 'fResults'} className="folderResults"></div>
             </div>
 
 
@@ -870,7 +1620,7 @@ if (confirm('Are you sure you want to clear this library? Your files will not be
 
               <center>  <p> Transcode cache folder:</p>  </center>
 
-              <input type="text" className="folderPaths" ref={this.props.libraryItem._id +'c'} name="cache" defaultValue={this.props.libraryItem.cache} onChange={this.handleChange}></input>
+              <input type="text" className="folderPaths" ref={this.props.libraryItem._id + 'c'} name="cache" defaultValue={this.props.libraryItem.cache} onChange={this.handleChange}></input>
 
               <div className={this.props.libraryItem.cacheValid ? 'hidden' : ''}>
 
@@ -895,7 +1645,7 @@ if (confirm('Are you sure you want to clear this library? Your files will not be
 
               <div className={this.state.cacheBrowser ? '' : 'hidden'}>
 
-                <div id={this.props.libraryItem._id +'cResults'} className="folderResults"></div>
+                <div id={this.props.libraryItem._id + 'cResults'} className="folderResults"></div>
               </div>
 
               <p></p>
@@ -1286,7 +2036,7 @@ if (confirm('Are you sure you want to clear this library? Your files will not be
 
               <center><p>Schedule:  <Button variant="outline-dark" onClick={() => {
 
-                Meteor.call('toggleSchedule', this.props.libraryItem._id, this.state.scheduleAll, function (error, result) { })
+                Meteor.call('toggleSchedule', this.props.libraryItem._id, this.state.scheduleAll, 0, 168, function (error, result) { })
 
                 this.setState({
                   scheduleAll: !this.state.scheduleAll,
@@ -1302,7 +2052,7 @@ if (confirm('Are you sure you want to clear this library? Your files will not be
 
                 {this.renderScheduleBlocks()}
 
-  
+
               </div>
 
 
