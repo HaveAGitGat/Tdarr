@@ -1,6 +1,6 @@
 import assert from "assert";
 
-describe("tdarr001", function () {
+describe("Tdarr", function () {
   it("package.json has correct name", async function () {
     const { name } = await import("../package.json");
     assert.strictEqual(name, "tdarr001");
