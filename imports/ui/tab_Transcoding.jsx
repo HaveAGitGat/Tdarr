@@ -40,73 +40,45 @@ class App extends Component {
   constructor(props) {
     super(props);
 
-    this.state = { value: true, lowCPU: true, x: 1, workerButtonsLoad: true, }
-
-    this.toggleWorkers = this.toggleWorkers.bind(this);
-
-    this.addWorker = this.addWorker.bind(this);
-
-
+    this.state = { value: true, lowCPU: true, x: 1, }
 
 
 
   }
 
 
-  addWorker = (workerType) => {
-
-    
-
-
-      this.setState({
-        workerButtonsLoad: false,
-      })
-
-     
-
-      setTimeout(this.reset, 1000);
-  
-
-    Meteor.call('launchWorker', workerType, 1,  (error, result) => { 
 
 
 
-    });
-
-  }
-
-  reset = () => {
-
-    this.setState({
-      workerButtonsLoad: true,
-    })
-
-
-  }
-
-  toggleWorkers = () => {
+  alterWorkerLimit(process,workerType){
 
 
 
-    this.setState({
-      value: !this.state.value,
-    })
+    var globsettings = this.props.globalSettings[0]
+    globsettings= globsettings
+
+    if(process == "increase"){
 
 
-    Meteor.call('getWorkers', (error, result) => {
+      GlobalSettingsDB.update("globalsettings",
+          {
+            $inc: { [workerType]: 1 }
+          }
+        );
 
-      var workers = result
-      for (var i = 0; i < workers.length; i++) {
+    }else if(process == "decrease"){
 
-        Meteor.call('upsertWorkers', workers[i]._id, {
-          idle: !this.state.value,
-        }, function (error, result) { });
+      if(globsettings[workerType] > 0){
+
+        GlobalSettingsDB.update("globalsettings",
+        {
+          $inc: { [workerType]: -1 }
+        }
+      );
 
       }
-
-    });
+    }
   }
-
 
 
   renderSlider(slider,sliderColour,sliderColour2) {
@@ -239,17 +211,6 @@ class App extends Component {
 
     this.interval = setInterval(() => this.renderWorkers(), 500);
 
-    // render(<ClipLoader
-
-    //   sizeUnit={"px"}
-    //   size={25}
-    //   color={'#000000'}
-    //   loading={true}
-    // />
-
-
-    //   , document.getElementById('workerButtons'));
-
 
   }
 
@@ -276,107 +237,12 @@ class App extends Component {
         render(workers, document.getElementById('allWorkersContainerID'));
       } catch (err) { }
 
-      var generalWorkers = result.filter(row => row.mode == "general");
-      var transcodeWorkers = result.filter(row => row.mode == "transcode");
-      var healthcheckWorkers = result.filter(row => row.mode == "healthcheck");
+;
 
-
-
-if(!!this.state.workerButtonsLoad){
-
-  var workerButtons = <div>
-
-  <div className={!!this.state.workerButtonsLoad ? '' : 'hidden'} style={ButtonStyle}>
-    
-  
-            <input type="button" className="generalWorkerButton" onClick={() => (this.addWorker("general"))} value={"(" + generalWorkers.length + ") General worker +"}></input>
-            <input type="button" className="transcodeWorkerButton" onClick={() => this.addWorker("transcode")} value={"(" + transcodeWorkers.length + ") Transcode worker +"}></input>
-            <input type="button" className="healthcheckWorkerButton" onClick={() => this.addWorker("healthcheck")} value={"(" + healthcheckWorkers.length + ") Health check worker +"}></input>
-  
-            </div>
-        </div>
-
-
-
-
-}else{
-
-  var workerButtons = <div>
-  
-          <div className={!this.state.workerButtonsLoad ? '' : 'hidden'} style={ButtonStyle}>
-  
-          <div className="buttonClipPlaceholder" style={ButtonStyle}>
-          <center>
-            <ClipLoader
-  
-              sizeUnit={"px"}
-              size={25}
-              color={'#000000'}
-              loading={true}
-            />
-            </center>
-  
-  </div>
-  
-  <div className="buttonClipPlaceholder" style={ButtonStyle}>
-  
-  <center>
-  
-            <ClipLoader
-  
-              sizeUnit={"px"}
-              size={25}
-              color={'#000000'}
-              loading={true}
-            />
-            </center>
-  
-  </div>
-  
-  <div className="buttonClipPlaceholder" style={ButtonStyle}>
-  
-  <center>
-            <ClipLoader
-  
-              sizeUnit={"px"}
-              size={25}
-              color={'#000000'}
-              loading={true}
-            />
-            </center>
-  
-  
-            </div>
-  </div>
-  
-        </div>
-
-
-
-}
-
-
-
-
-
-
-
-
-      try {
-        // render(workerButtons, document.getElementById('workerButtons'));
-
-      } catch (err) { }
 
     
 
     });
-
-
-
-
-
-
-
   }
 
 
@@ -445,10 +311,6 @@ if(!!this.state.workerButtonsLoad){
 
         return data.map((row, i) => (
 
-          // <div className="tableItem">
-          //   <li key={row._id}>{i + 1}  {row.file}  {this.renderRedoButton(row.file, mode)} {this.renderInfoButton(row.cliLog)} </li>
-          // </div>
-
           <tr key={row._id}>
             <td>{i + 1}</td><td>{row.file}</td><td>{row.TranscodeDecisionMaker}</td><td>{this.renderRedoButton(row.file, mode)}</td><td>{this.renderInfoButton(row.cliLog)}</td>
           </tr>
@@ -460,9 +322,7 @@ if(!!this.state.workerButtonsLoad){
 
         return data.map((row, i) => (
 
-          // <div className="tableItem">
-          //   <li key={row._id}>{i + 1}  {row.file}  {this.renderRedoButton(row.file, mode)} {this.renderInfoButton(row.cliLog)} </li>
-          // </div>
+
 
           <tr key={row._id}>
             <td>{i + 1}</td><td>{row.file}</td><td>{this.renderRedoButton(row.file, mode)}</td><td>{this.renderInfoButton(row.cliLog)}</td>
@@ -478,10 +338,6 @@ if(!!this.state.workerButtonsLoad){
     if (type == "error") {
 
       return data.map((row, i) => (
-
-        // <div className="tableItem">
-        //   <li key={row._id}>{i + 1}  {row.file}{this.renderRedoButton(row.file, mode)}{this.renderIgnoreButton(row.file, mode)} {this.renderInfoButton(row.cliLog)}  </li>
-        // </div>
 
         <tr key={row._id}>
           <td>{i + 1}</td><td>{row.file}</td><td>{this.renderRedoButton(row.file, mode)}</td><td>{this.renderIgnoreButton(row.file, mode)}</td><td>{this.renderInfoButton(row.cliLog)}</td>
@@ -533,6 +389,12 @@ if(!!this.state.workerButtonsLoad){
 
   renderInfoButton(cliLog) {
 
+    try{
+
+    cliLog = cliLog.split("\n")
+
+    cliLog = cliLog.map( row => <p>{row}</p> )
+
     return <Modal
       trigger={<Button variant="outline-dark" >i</Button>}
       modal
@@ -545,6 +407,12 @@ if(!!this.state.workerButtonsLoad){
     </div>
   </div>
     </Modal>
+
+    }catch(err){
+
+      return null
+
+    }
 
   }
 
@@ -602,7 +470,6 @@ if(!!this.state.workerButtonsLoad){
     <div className="scroll"> 
  
     <p>Use the sliders to tell Tdarr to start up and maintain the specified number of workers. </p>
-    <p>To reduce the number of workers, lower the slider and then toggle 'Off' the required number of workers in progress.</p>
     <p>Workers which are toggled 'Off' will finish their current item before closing down.</p>
     <p>If you cancel an item, the worker will move onto the next item in the queue.</p>
 
@@ -624,37 +491,70 @@ if(!!this.state.workerButtonsLoad){
         <center>Workers:</center>
 
 
+
+
+
+
+
+
+<div className="sliderGrid-container">
+
+<div className="sliderGrid-item2">
+<Button   variant="outline-dark" onClick={() => this.alterWorkerLimit("decrease","generalWorkerLimit")} >-</Button>
+</div>
+
+<div className="sliderGrid-item">
 {this.renderSlider('generalWorkerLimit','black','#808080')}
+</div>
+<div className="sliderGrid-item3">
+<Button   variant="outline-dark" onClick={() => this.alterWorkerLimit("increase","generalWorkerLimit")} >+</Button>
+</div>
 
 
+<div className="sliderGrid-item2">
+<Button   variant="outline-dark" onClick={() => this.alterWorkerLimit("decrease","transcodeWorkerLimit")} >-</Button>
+</div>
+
+<div className="sliderGrid-item">
 {this.renderSlider('transcodeWorkerLimit','#66ccff','#B3E6FF')}
+</div>
 
+<div className="sliderGrid-item3">
+<Button   variant="outline-dark" onClick={() => this.alterWorkerLimit("increase","transcodeWorkerLimit")} >+</Button>
+</div>
+
+
+<div className="sliderGrid-item2">
+<Button   variant="outline-dark" onClick={() => this.alterWorkerLimit("decrease","healthcheckWorkerLimit")} >-</Button>
+</div>
+
+<div className="sliderGrid-item">
 {this.renderSlider('healthcheckWorkerLimit','#4CAF50','#A6D7A8')}
+</div>
+
+<div className="sliderGrid-item3">
+<Button   variant="outline-dark" onClick={() => this.alterWorkerLimit("increase","healthcheckWorkerLimit")} >+</Button>
+</div>
+
+
+</div>
+
 
 
           <p></p>
+
+
+          
+          
 
           <center>
 
           <div style={ButtonStyle} className="workerButtoncontainer">
 
-            <div id="workerButtons" style={ButtonStyle}></div>
 
 
 
 
-            <div style={ButtonStyle}>
-              <span >Toggle all workers
-     <div style={ButtonStyle}>
-                  <ToggleButton
-                    value={this.state.value}
-                    onToggle={this.toggleWorkers}
-                  />
-
-                </div>
-              </span>
-            </div>
-            {'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}
 
             <Button variant="outline-danger" onClick={() => {
 
@@ -694,6 +594,9 @@ if(!!this.state.workerButtonsLoad){
 
 
           <p></p>
+          <br/>
+          <br/>
+          <br/>
 
           <div className="allWorkersContainer" id="allWorkersContainerID">
 
