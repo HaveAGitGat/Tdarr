@@ -25,7 +25,12 @@ https://github.com/HaveAGitGat/Tdarr_Plugins
 - Expanding stats page
 
 
-Currently in pre-alpha but looking for feedback/suggestions. 
+Currently in Alpha but looking for feedback/suggestions. 
+
+
+
+
+
 
 ![Screenshot](https://i.imgur.com/8iqpGQk.png)
 
