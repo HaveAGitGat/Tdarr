@@ -36,6 +36,7 @@ p {
     margin-top: 10px;
     /* color: rgba(255, 255, 255, 0.4); */
     color: black;
+    size:1em;
 }
 
 
@@ -81,6 +82,21 @@ p {
     box-sizing: border-box;
     
     }
+    .libraryTitle {
+
+      width: 90%;
+      margin: 0% 5%;
+      display: inline-block;
+      background: transparent;
+      border: none;
+      font-size: 2em;
+      font-weight: bold;
+      text-align: center; 
+      border: 0;
+      outline: 0;
+      text-decoration: underline;
+      
+      }
     
 
     .button{
@@ -258,7 +274,7 @@ p {
   border-radius: 5px;
 
   width: 100%;
-  min-height:100px;
+  min-height:300px;
 
 
 
@@ -276,7 +292,7 @@ p {
 
 .workerItemsGrid{
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
 }
 
 .workerContainer{
@@ -520,9 +536,10 @@ p {
 
     .deleteCodecButton{
 
-      background:white;
       color:red;
       border:none;
+      background: transparent;
+      border: none;
 
 
     }
@@ -764,3 +781,52 @@ table.sliderTable {
   white-space: normal;
 
 }
+
+.iconContainer {
+  background-color: white;
+  display: inline-block;
+
+}
+.iconContainer img:hover {
+  opacity: .5;
+}
+
+.dropdownScan{
+  color:green;
+}
+
+
+.dropdownDelete{
+  color:red;
+}
+
+
+.sliderGrid-container {
+  display: grid;
+  grid-template-columns: auto 90% auto;
+}
+
+.sliderGrid-item {
+
+}
+
+.sliderGrid-item2 {
+  margin: 1em 2em;
+
+}
+
+.sliderGrid-item3 {
+  margin: 1em 0 0 0.5em;
+
+}
+
+
+
+
+table.scheduleTable {
+
+  width: 100%;
+}
+
+
+
