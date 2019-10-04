@@ -178,9 +178,30 @@ class App extends Component {
 
           Header: 'Description',
           accessor: 'Description',
-          style: { 'white-space': 'unset' },
+          
+          id: 'Description',
+        //   accessor: d => {
+
+        //     console.log("d.Description:"+d.Description)
+        //       var desc = d.Description.split("\n")
+        //         desc = desc.map( row => <p>{row}<br/></p> )
+
+        //         console.dir("desc:"+desc)
+
+
+        //         return desc
+
+        //   },
+
+        style: { 'white-space': 'unset' },
+
+
           getProps: (state, rowInfo, column) => {
+
+            console.log("rowInfo:"+rowInfo)
             return {
+             
+
               style: {
                 background: rowInfo && rowInfo.row.Description.includes("BUG") ? 'red' : null,
               },
@@ -206,10 +227,6 @@ class App extends Component {
           width: 100,
 
         }
-
-
-
-
 
 
         ]
