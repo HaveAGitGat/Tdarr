@@ -4,6 +4,7 @@ import { Progress } from 'react-sweet-progress';
 import "react-sweet-progress/lib/style.css";
 
 import { Button } from 'react-bootstrap';
+import Modal from "reactjs-popup";
 
 
 import ToggleButton from 'react-toggle-button'
@@ -20,6 +21,28 @@ export default class Worker extends Component {
 
   constructor(props) {
     super(props);
+  }
+
+  
+  renderInfoButton(cliLog) {
+
+    cliLog = cliLog.split("\n")
+
+    cliLog = cliLog.map( row => <p>{row}</p> )
+
+    return <Modal
+      trigger={<Button variant="outline-dark" >i</Button>}
+      modal
+      closeOnDocumentClick
+    >
+       <div className="frame">
+    <div className="scroll"> 
+   {cliLog}
+      
+    </div>
+  </div>
+    </Modal>
+
   }
 
 
@@ -64,6 +87,14 @@ export default class Worker extends Component {
 
                 </div>
               </div>
+
+
+              <div className="grid-item" style={ButtonStyle}>
+                <div style={ButtonStyle}>
+              {this.renderInfoButton(this.props.worker.cliLogAdd)}
+              </div>
+              </div>
+
 
 
 
