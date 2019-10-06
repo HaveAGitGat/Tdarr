@@ -27,6 +27,7 @@ const util = require('util')
 var path = require("path");
 var fs = require('fs');
 const fsextra = require('fs-extra')
+var rimraf = require("rimraf");
 
 var os = require('os-utils');
 
@@ -541,90 +542,90 @@ Meteor.methods({
 
   'verifyFolder'(folderPath, DB_id, folderType) {
 
-try{
+    try {
 
 
-    folderPath = folderPath.replace(/\\/g, "/");
+      folderPath = folderPath.replace(/\\/g, "/");
 
 
 
-    if (fs.existsSync(folderPath)) {
+      if (fs.existsSync(folderPath)) {
 
-      SettingsDB.upsert(
-        DB_id,
-        {
-          $set: {
-            [folderType]: true,
+        SettingsDB.upsert(
+          DB_id,
+          {
+            $set: {
+              [folderType]: true,
+            }
+          }
+        );
+
+        var folders = getDirectories(folderPath)
+
+        folders = folders.map((row) => {
+
+          return {
+
+            fullPath: path.join(folderPath + '/' + row),
+            folder: row
           }
         }
-      );
-
-      var folders = getDirectories(folderPath)
-
-      folders = folders.map((row) => {
-
-        return {
-
-          fullPath: path.join(folderPath + '/' + row),
-          folder: row
-        }
-      }
-      )
+        )
 
 
 
-      return folders
+        return folders
 
 
 
-    } else {
+      } else {
 
-      SettingsDB.upsert(
+        SettingsDB.upsert(
 
-        DB_id,
-        {
-          $set: {
-            [folderType]: false,
+          DB_id,
+          {
+            $set: {
+              [folderType]: false,
+            }
+          }
+        );
+
+        folderPath2 = folderPath.split('/')
+        var idx = folderPath2.length - 1
+        folderPath2.splice(idx, 1)
+        folderPath2 = folderPath2.join('/')
+
+        var folders = getDirectories(folderPath)
+
+        folder = folders.map((row) => {
+
+          return {
+
+            fullPath: path.join(folderPath + '/' + row),
+            folder: row
           }
         }
-      );
+        )
 
-      folderPath2 = folderPath.split('/')
-      var idx = folderPath2.length - 1
-      folderPath2.splice(idx, 1)
-      folderPath2 = folderPath2.join('/')
 
-      var folders = getDirectories(folderPath)
+        return folders
 
-      folder = folders.map((row) => {
 
-        return {
 
-          fullPath: path.join(folderPath + '/' + row),
-          folder: row
-        }
       }
-      )
 
-
-      return folders
-
-
-
-    }
-
-    function getDirectories(path) {
-      return fs.readdirSync(path).filter(function (file) {
-        return fs.statSync(path + '/' + file).isDirectory();
-      });
-    }
+      function getDirectories(path) {
+        return fs.readdirSync(path).filter(function (file) {
+          return fs.statSync(path + '/' + file).isDirectory();
+        });
+      }
 
 
 
 
 
 
-  }catch(err){}
+    } catch (err) { }
 
   },
 
@@ -978,8 +979,78 @@ function scheduledPluginUpdate() {
 
   } catch (err) { }
 
+
+
   setTimeout(Meteor.bindEnvironment(scheduledPluginUpdate), 3600000);
 
+}
+
+
+scheduledCacheClean()
+
+function scheduledCacheClean() {
+
+  try {
+
+  var settings = SettingsDB.find({}, { sort: { createdAt: 1 } }).fetch()
+
+  for (var i = 0; i < settings.length; i++) {
+
+
+    try {
+      traverseDir(settings[i].cache)
+    } catch (err) { }
+  }
+
+
+
+
+  function traverseDir(inputPathStem) {
+
+    try {
+    fs.readdirSync(inputPathStem).forEach(file => {
+
+      let fullPath = (path.join(inputPathStem, file)).replace(/\\/g, "/");
+
+      try {
+        if (fs.lstatSync(fullPath).isDirectory()) {
+
+          var stats = fs.statSync(fullPath);
+          var mtime = stats.mtime;
+          var n = new Date()
+          var secsSinceModified = (n - mtime) / 1000
+
+          if (secsSinceModified > 86400) {
+
+            console.log("Removing:"+fullPath)
+
+            rimraf.sync(fullPath);
+
+          } else {
+
+            try {
+
+              traverseDir(fullPath);
+            } catch (err) {
+              console.error(err.stack);
+
+            }
+          }
+        }
+      } catch (err) {
+        console.error(err.stack);
+      }
+    });
+
+
+
+  }catch(err){}
+}
+
+
+} catch (err) { }
+
+  setTimeout(Meteor.bindEnvironment(scheduledCacheClean), 60000);
 }
 
 
@@ -2538,21 +2609,21 @@ function tablesUpdate() {
 
       for (var i = 0; i < settings.length; i++) {
 
-        try{
-        if ((settings[i].schedule[timeIdx] !== undefined && settings[i].schedule[timeIdx].checked === false) || settings[i].processLibrary === false) {
+        try {
+          if ((settings[i].schedule[timeIdx] !== undefined && settings[i].schedule[timeIdx].checked === false) || settings[i].processLibrary === false) {
 
-          generalFiles = generalFiles.filter(row => row.DB != settings[i]._id);
-          transcodeFiles = transcodeFiles.filter(row => row.DB != settings[i]._id);
-          healthcheckFiles = healthcheckFiles.filter(row => row.DB != settings[i]._id);
-          table1data = table1data.filter(row => row.DB != settings[i]._id);
-          table2data = table2data.filter(row => row.DB != settings[i]._id);
-          table3data = table3data.filter(row => row.DB != settings[i]._id);
-          table4data = table4data.filter(row => row.DB != settings[i]._id);
-          table5data = table5data.filter(row => row.DB != settings[i]._id);
-          table6data = table6data.filter(row => row.DB != settings[i]._id);
+            generalFiles = generalFiles.filter(row => row.DB != settings[i]._id);
+            transcodeFiles = transcodeFiles.filter(row => row.DB != settings[i]._id);
+            healthcheckFiles = healthcheckFiles.filter(row => row.DB != settings[i]._id);
+            table1data = table1data.filter(row => row.DB != settings[i]._id);
+            table2data = table2data.filter(row => row.DB != settings[i]._id);
+            table3data = table3data.filter(row => row.DB != settings[i]._id);
+            table4data = table4data.filter(row => row.DB != settings[i]._id);
+            table5data = table5data.filter(row => row.DB != settings[i]._id);
+            table6data = table6data.filter(row => row.DB != settings[i]._id);
 
-        }
-      }catch(err){}
+          }
+        } catch (err) { }
       }
 
       //old
@@ -2715,10 +2786,11 @@ function statisticsUpdate() {
 
   updatePieStats("TranscodeDecisionMaker", '', 'pie1')
   updatePieStats('HealthCheck', '', 'pie2')
-  updatePieStats('video_codec_name', 'video', 'pie3')
 
+  updatePieStats('video_codec_name', 'video', 'pie3')
   updatePieStats('container', 'video', 'pie4')
   updatePieStats('video_resolution', 'video', 'pie5')
+
   updatePieStats('audio_codec_name', 'audio', 'pie6')
   updatePieStats('container', 'audio', 'pie7')
 
@@ -2761,7 +2833,17 @@ function updatePieStats(property, fileMedium, pie) {
 
   for (var i = 0; i < uniquePropArr.length; i++) {
 
-    data.push({ name: uniquePropArr[i], value: allFilesWithProp.filter(row => row[property] == uniquePropArr[i]).length })
+    if (uniquePropArr[i] == "Not attempted") {
+
+
+      data.push({ name: "Queued", value: allFilesWithProp.filter(row => row[property] == uniquePropArr[i]).length })
+
+    } else {
+
+
+      data.push({ name: uniquePropArr[i], value: allFilesWithProp.filter(row => row[property] == uniquePropArr[i]).length })
+    }
+
 
 
   }
