@@ -292,7 +292,7 @@ p {
 
 .workerItemsGrid{
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(2, 1fr);
 }
 
 .workerContainer{
@@ -757,27 +757,25 @@ table.sliderTable td {
 
   border: 1px solid white;
   color: black;
-  /* font-family: "Courier New" */
+
 }
 
 table.sliderTable tr {
-  /* display: table;
-width: auto;
-table-layout: fixed;  */
+
 }
 
 
 table.sliderTable tr:nth-child(even) {
-  background-color: white;
+
 }
 
 table.sliderTable tr:nth-child(odd) {
-  background-color: white;
+
 }
 
 
 table.sliderTable tr:hover {
-  background-color: rgb(202, 202, 202);
+
 }
 
 table.sliderTable {
@@ -832,6 +830,14 @@ table.sliderTable {
 table.scheduleTable {
 
   width: 100%;
+}
+
+table.workerDetailTable td {
+
+ 
+  color: black;
+  vertical-align: text-top;
+
 }
 
 

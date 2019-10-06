@@ -955,7 +955,37 @@ Meteor.methods({
 
 
 
-  }
+  }, 'returnPieFiles'(property, fileMedium, detail) {
+
+
+  
+    var allFilesWithProp = allFilesPulledTable
+  
+  
+    if (fileMedium == "video" || fileMedium == "audio") {
+  
+      allFilesWithProp = allFilesWithProp.filter(row => (!!row[property] && row.fileMedium == fileMedium));
+  
+    } else {
+  
+      allFilesWithProp = allFilesWithProp.filter(row => (!!row[property]));
+  
+    }
+
+    if(detail == "Queued"){
+
+      return allFilesWithProp.filter(row => row[property] == "Not attempted")
+
+    }else{
+      return allFilesWithProp.filter(row => row[property] == detail)
+    }
+  
+  
+  
+
+
+  }, 
+
 })
 
 
@@ -1502,7 +1532,7 @@ function launchWorkerModule(workerType) {
                     handBrakeMode = ''
                     FFmpegMode = ''
                     reQueueAfter = ''
-                    cliLogAdd += 'No plugins selected!'
+                    cliLogAdd += 'No plugins selected!  \n'
 
 
 
@@ -1577,7 +1607,7 @@ function launchWorkerModule(workerType) {
 
                     console.log("File is not video")
 
-                    cliLogAdd += "File is not video"
+                    cliLogAdd += "File is not video \n"
 
                     processFile = false;
                   } else {
@@ -1594,35 +1624,45 @@ function launchWorkerModule(workerType) {
 
                       console.log(video_codec_names_exclude + "   " + firstItem.video_codec_name)
 
-                      console.log("File already in required codec")
+                      console.log("File video already in required codec")
 
-                      cliLogAdd += "File already in required codec"
+                      cliLogAdd += "File already in required codec  \n"
 
                       processFile = false;
+
+                    }else{
+                      cliLogAdd += "File video not in required codec  \n"
 
                     }
 
                     if (firstItem.file_size >= settings[0].decisionMaker.video_size_range_include.max || firstItem.file_size <= settings[0].decisionMaker.video_size_range_include.min) {
                       console.log("File not in video size range")
 
-                      cliLogAdd += "File not in video size range"
+                      cliLogAdd += "File not in video size range  \n"
 
                       processFile = false;
+                    }else{
+                      cliLogAdd += "File in video size range \n"
                     }
 
                     if (firstItem.ffProbeData.streams[0]["height"] >= settings[0].decisionMaker.video_height_range_include.max || firstItem.ffProbeData.streams[0]["height"] <= settings[0].decisionMaker.video_height_range_include.min) {
                       console.log("File not in video height range")
 
-                      cliLogAdd += "File not in video height range"
+                      cliLogAdd += "File not in video height range  \n"
 
                       processFile = false;
+                    }else{
+                      cliLogAdd += "File in video height range \n"
                     }
 
                     if (firstItem.ffProbeData.streams[0]["width"] >= settings[0].decisionMaker.video_width_range_include.max || firstItem.ffProbeData.streams[0]["width"] <= settings[0].decisionMaker.video_width_range_include.min) {
                       console.log("File not in video width range")
-                      cliLogAdd += "File not in video width range"
+                      cliLogAdd += "File not in video width range  \n"
 
                       processFile = false;
+                    }else{
+                      cliLogAdd += "File in video width range  \n"
+
                     }
 
                   }
@@ -1632,7 +1672,7 @@ function launchWorkerModule(workerType) {
                   if (firstItem.fileMedium !== "audio") {
 
                     console.log("File is not audio")
-                    cliLogAdd += "File is not audio"
+                    cliLogAdd += "File is not audio  \n"
 
                     processFile = false;
                   } else {
@@ -1648,9 +1688,12 @@ function launchWorkerModule(workerType) {
                     if (audio_codec_names_exclude.includes(firstItem.ffProbeData.streams[0]["codec_name"]) && typeof firstItem.ffProbeData.streams[0]["codec_name"] !== 'undefined') {
 
                       console.log("File already in required codec")
-                      cliLogAdd += "File already in required codec"
+                      cliLogAdd += "File already in required codec  \n"
 
                       processFile = false;
+
+                    }else{
+                      cliLogAdd += "File audio not in required codec  \n"
 
                     }
 
@@ -1658,9 +1701,12 @@ function launchWorkerModule(workerType) {
 
                       console.log("File not in audio size range")
 
-                      cliLogAdd += "File not in audio size range"
+                      cliLogAdd += "File not in audio size range  \n"
 
                       processFile = false;
+                    }else{
+                      cliLogAdd += "File in audio size range  \n"
+
                     }
 
 
@@ -1668,7 +1714,7 @@ function launchWorkerModule(workerType) {
 
                 } else {
 
-                  cliLogAdd += "No library settings selected."
+                  cliLogAdd += "No library settings selected.  \n"
                   processFile = false;
 
 
@@ -1752,6 +1798,25 @@ function launchWorkerModule(workerType) {
               } else if (processFile == true) {
 
 
+                try{
+                var sourcefileSizeInGbytes = (((fs.statSync(fileToProcess)).size) / 1000000000.0);
+                }catch(err){
+                var sourcefileSizeInGbytes = "Error"
+                }
+
+                if(handBrakeMode == true){
+
+                  var CLIType = "HandBrake"
+
+                }else if(FFmpegMode == true){
+
+                  var CLIType = "FFmpeg"
+                }
+
+
+
+
+
                 upsertWorker(message[0], {
                   _id: message[0],
                   file: fileToProcess,
@@ -1759,7 +1824,11 @@ function launchWorkerModule(workerType) {
                   modeType: mode,
                   idle: false,
                   percentage: 0,
-                  cliLogAdd: cliLogAdd
+                  cliLogAdd: cliLogAdd,
+                  sourcefileSizeInGbytes:sourcefileSizeInGbytes,
+                  startTime:new Date(),
+                  CLIType:CLIType,
+                  preset:preset,
                 })
 
 
@@ -2800,9 +2869,6 @@ function statisticsUpdate() {
 function updatePieStats(property, fileMedium, pie) {
 
 
-
-
-
   const data = [];
 
   var allFilesWithProp = allFilesPulledTable
@@ -2844,10 +2910,7 @@ function updatePieStats(property, fileMedium, pie) {
       data.push({ name: uniquePropArr[i], value: allFilesWithProp.filter(row => row[property] == uniquePropArr[i]).length })
     }
 
-
-
   }
-
 
   StatisticsDB.upsert("statistics",
     {
@@ -2856,7 +2919,11 @@ function updatePieStats(property, fileMedium, pie) {
       }
     }
   );
+
+
 }
+
+
 
 
 
