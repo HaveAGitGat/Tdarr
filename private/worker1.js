@@ -283,14 +283,14 @@ process.on('message', (m) => {
 
                try {
 
-                   // if (mode != "healthcheck") {
+                    if (mode != "healthcheck") {
 
 
                         shell.mkdir('-p', outputFolderPath);
 
 
 
-                //    }
+                    }
 
                 } catch (err) {
                     updateConsole(workerNumber, "Unable to create folder!")
@@ -423,18 +423,7 @@ process.on('message', (m) => {
         
                 var str = "" + data;
         
-                // if (saveWorkerLogs) {
-        
-                //     var message = [
-                //         workerNumber,
-                //         "appendRequest",
-                //         homePath + "/Documents/HBBatchBeast/Logs/Worker" + workerNumber + "ConsoleOutput.txt",
-                //         str,
-                //         //currentSourceLine+" ConversionError\n",
-                //     ];
-                //     process.send(message);
-                // }
-        
+   
                 // send percentage update to GUI
         
                 if (handBrakeMode == true) {
@@ -523,17 +512,7 @@ process.on('message', (m) => {
 
                 var str = "" + data;
         
-                // if (saveWorkerLogs) {
-                //     var message = [
-                //         workerNumber,
-                //         "appendRequest",
-                //         homePath + "/Documents/HBBatchBeast/Logs/Worker" + workerNumber + "ConsoleOutputError.txt",
-                //         str,
-                //         //currentSourceLine+" ConversionError\n",
-                //     ];
-                //     process.send(message);
-                // }
-        
+
                // errorLogFull += data;
                 // send percentage update to GUI
         
@@ -670,22 +649,7 @@ process.on('message', (m) => {
                     process.send(message);
         
         
-        
-        
-                    //     // errorLogFull += "\n HBBatchBeast ALERT: NO OUTPUT FILE PRODUCED";
-                    //     // if (currentSourceLine.includes("'") && process.platform == 'linux') {
-                    //     //     errorLogFull += "\n Operation may have failed due to apostrophe in file name. Please try using the setting 'Remove apostrophes from filenames' in the advanced settings section.:" + currentSourceLine
-                    //     //     updateConsole(workerNumber, "\n Operation may have failed due to apostrophe in file name. Please try using the setting 'Remove apostrophes from filenames' in the advanced settings section.:" + currentSourceLine)
-                    //     // }
-        
-                    //     // var message = [
-                    //     //     workerNumber,
-                    //     //     "error",
-                    //     //     globalQueueNumber,
-                    //     //     preset,
-                    //     //     errorLogFull
-                    //     // ];
-                    //     // process.send(message);
+    
         
                     //   //  checkifQueuePause();
 
