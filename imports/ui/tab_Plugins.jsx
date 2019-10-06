@@ -198,7 +198,6 @@ class App extends Component {
 
           getProps: (state, rowInfo, column) => {
 
-            console.log("rowInfo:"+rowInfo)
             return {
              
 

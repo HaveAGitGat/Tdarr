@@ -43,6 +43,7 @@
     "react-toggle-button": "^2.2.0",
     "reactjs-popup": "^1.5.0",
     "recharts": "^1.7.1",
+    "rimraf": "^3.0.0",
     "shelljs": "^0.8.3",
     "shortid": "^2.2.14",
     "simple-git": "^1.126.0"
