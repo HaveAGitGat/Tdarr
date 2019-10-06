@@ -81,6 +81,9 @@ var finalFilePath
 var mode
 var settingsDBIndex
 
+var oldProgress = ""
+var lastProgCheck = ""
+
 
 
 
@@ -424,7 +427,7 @@ process.on('message', (m) => {
                 var str = "" + data;
         
    
-                // send percentage update to GUI
+                
         
                 if (handBrakeMode == true) {
         
@@ -441,7 +444,10 @@ process.on('message', (m) => {
                         output = output.join("")
                  
                        // updateConsole(workerNumber, " : " + output)
-                   
+
+
+                       updateETA(output)
+
                         var message = [
                             workerNumber,
                             "percentage",
@@ -466,7 +472,7 @@ process.on('message', (m) => {
 
                                 if(frameCount != "undefined"){
 
-                                output = ((output / frameCount) * 100).toFixed(2) + "%"
+                                output = ((output / frameCount) * 100).toFixed(2)
                                 output = output.split("")
                                 output.splice(output.length-1,1)
                                 output = output.join("")
@@ -479,7 +485,7 @@ process.on('message', (m) => {
         
                         
         
-    
+                                updateETA(output)
                              //  updateConsole(workerNumber, " : " + output)
                                 var message = [
                                     workerNumber,
@@ -513,8 +519,7 @@ process.on('message', (m) => {
                 var str = "" + data;
         
 
-               // errorLogFull += data;
-                // send percentage update to GUI
+             
         
                 if (handBrakeMode == true) {
         
@@ -529,6 +534,8 @@ process.on('message', (m) => {
                         output = output.join("")
 
                       //  updateConsole(workerNumber, " : " + output)
+                      updateETA(output)
+
                         var message = [
                             workerNumber,
                             "percentage",
@@ -553,7 +560,7 @@ process.on('message', (m) => {
         
                                 if(frameCount != "undefined"){
 
-                                    output = ((output / frameCount) * 100).toFixed(2) + "%"
+                                    output = ((output / frameCount) * 100).toFixed(2)
                                     output = output.split("")
                                     output.splice(output.length-1,1)
                                     output = output.join("")
@@ -565,7 +572,7 @@ process.on('message', (m) => {
                                     }
 
                                 
-        
+                                    updateETA(output)
                                // updateConsole(workerNumber, " : " + output)
                                 var message = [
                                     workerNumber,
@@ -579,10 +586,6 @@ process.on('message', (m) => {
                         }
                     }
                 }
-        
-        
-        
-        
             });
         
         
@@ -1141,3 +1144,90 @@ try{
         }
     }
 }
+
+var progAVG = []
+
+function updateETA(perc){
+
+    if( !isNaN(perc) && perc > 0){
+
+      
+
+
+    if(lastProgCheck == ""){
+
+        lastProgCheck = new Date()
+        oldProgress = perc
+
+
+    }else{
+
+        if(perc != oldProgress){
+
+      
+
+        var n = new Date()
+        var secsSinceLastCheck = (n - lastProgCheck) / 1000
+
+    
+        if (secsSinceLastCheck > 1) {
+
+  
+
+            var eta = Math.round((100/(perc-oldProgress))*secsSinceLastCheck)
+
+                progAVG.push(eta)
+
+                
+           // let values = [2, 56, 3, 41, 0, 4, 100, 23];
+            var sum = progAVG.reduce((previous, current) => current += previous);
+            var avg = sum /progAVG.length;
+
+            var message = [
+                workerNumber,
+                "ETAUpdate",
+                fancyTimeFormat(avg)
+            ];
+            process.send(message);
+
+            if(progAVG.length > 30){
+                progAVG.splice(0,1)
+            }
+
+
+            
+            lastProgCheck = n 
+            oldProgress = perc
+
+
+            
+
+           
+
+    
+        }
+
+    }
+//
+    }
+}
+}
+
+function fancyTimeFormat(time) {
+    // Hours, minutes and seconds
+    var hrs = ~~(time / 3600);
+    var mins = ~~((time % 3600) / 60);
+    var secs = ~~time % 60;
+
+    // Output like "1:01" or "4:03:59" or "123:03:59"
+    var ret = "";
+
+  //  if (hrs > 0) {
+      ret += "" + hrs + ":" + (mins < 10 ? "0" : "");
+   // }
+
+    ret += "" + mins + ":" + (secs < 10 ? "0" : "");
+    ret += "" + secs;
+    return ret;
+  }
+

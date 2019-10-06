@@ -5,6 +5,7 @@ import "react-sweet-progress/lib/style.css";
 
 import { Button } from 'react-bootstrap';
 import Modal from "reactjs-popup";
+import { render } from 'react-dom';
 
 
 import ToggleButton from 'react-toggle-button'
@@ -15,36 +16,25 @@ var ButtonStyle = {
   display: 'inline-block',
 }
 
+const borderRadiusStyle = { borderRadius: 2 }
 
 
 export default class Worker extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { infoHidden: true }
+    this.state = { infoHidden: true,oldProgress:"Calculating..." }
+  }
+
+  componentDidMount() {
+
+    // this.interval = setInterval(() => this.ETA(), 5000);
+    // render("Calculating...", document.getElementById('ETA'));
+
   }
 
 
-  // renderInfoButton(cliLog) {
 
-  //   cliLog = cliLog.split("\n")
-
-  //   cliLog = cliLog.map(row => <p>{row}</p>)
-
-  //   return <Modal
-  //     trigger={<Button variant="outline-dark" >i</Button>}
-  //     modal
-  //     closeOnDocumentClick
-  //   >
-  //     <div className="frame">
-  //       <div className="scroll">
-  //         {cliLog}
-
-  //       </div>
-  //     </div>
-  //   </Modal>
-
-  // }
 
   toTime = (d) => {
 
@@ -63,25 +53,9 @@ export default class Worker extends Component {
     var timeNow = new Date()
     var secsSinceStart = Math.round((timeNow - start) / 1000)
 
-    function fancyTimeFormat(time) {
-      // Hours, minutes and seconds
-      var hrs = ~~(time / 3600);
-      var mins = ~~((time % 3600) / 60);
-      var secs = ~~time % 60;
 
-      // Output like "1:01" or "4:03:59" or "123:03:59"
-      var ret = "";
 
-      if (hrs > 0) {
-        ret += "" + hrs + ":" + (mins < 10 ? "0" : "");
-      }
-
-      ret += "" + mins + ":" + (secs < 10 ? "0" : "");
-      ret += "" + secs;
-      return ret;
-    }
-
-    return fancyTimeFormat(secsSinceStart)
+    return this.fancyTimeFormat(secsSinceStart)
   }
 
   transcodeReason(info){
@@ -93,6 +67,26 @@ export default class Worker extends Component {
     return info
 
   }
+
+  fancyTimeFormat(time) {
+    // Hours, minutes and seconds
+    var hrs = ~~(time / 3600);
+    var mins = ~~((time % 3600) / 60);
+    var secs = ~~time % 60;
+
+    // Output like "1:01" or "4:03:59" or "123:03:59"
+    var ret = "";
+
+  //  if (hrs > 0) {
+      ret += "" + hrs + ":" + (mins < 10 ? "0" : "");
+   // }
+
+    ret += "" + mins + ":" + (secs < 10 ? "0" : "");
+    ret += "" + secs;
+    return ret;
+  }
+
+
 
   render() {
 
@@ -114,6 +108,8 @@ export default class Worker extends Component {
               <div className="grid-item" style={ButtonStyle} >
                 <div style={ButtonStyle} className="toggleWorkerButton">
                   <ToggleButton
+      thumbStyle={borderRadiusStyle}
+      trackStyle={borderRadiusStyle}
 
                     value={!this.props.worker.idle || false}
                     onToggle={() => {
@@ -134,6 +130,15 @@ export default class Worker extends Component {
 
                 </div>
               </div>
+
+
+              <div className="grid-item" style={ButtonStyle}>
+
+              ETA:{this.props.worker.percentage <= 100 ? this.props.worker.ETA : ''}
+
+              </div>
+
+
 
 
 
