@@ -1829,6 +1829,7 @@ function launchWorkerModule(workerType) {
                   startTime:new Date(),
                   CLIType:CLIType,
                   preset:preset,
+                  ETA:"Calculating..."
                 })
 
 
@@ -1861,9 +1862,13 @@ function launchWorkerModule(workerType) {
       upsertWorker(message[0], {
         percentage: message[2],
       })
+    }
 
+    if (message[1] == "ETAUpdate") {
 
-
+      upsertWorker(message[0], {
+        ETA: message[2],
+      })
     }
 
     if (message[1] == "repair_worker_percentage") {
@@ -2980,7 +2985,7 @@ function setProcessPriority() {
 
   } catch (err) { }
 
-  setTimeout(Meteor.bindEnvironment(setProcessPriority), 1000);
+  setTimeout(Meteor.bindEnvironment(setProcessPriority), 10000);
 
 }
 
