@@ -116,7 +116,7 @@ class App extends Component {
         var results = result.map((row, i) => (
 
           <tr>
-            <td> {row.file} </td> <td> {this.renderBumpButton(row.file)}</td> <td>{this.renderRedoButton(row.file, 'TranscodeDecisionMaker')}</td> <td>{this.renderRedoButton(row.file, 'HealthCheck')}</td><td>{this.renderInfoButton(row)}</td>
+            <td>{row.file}</td> <td> {this.renderBumpButton(row.file)}</td> <td>{this.renderRedoButton(row.file, 'TranscodeDecisionMaker')}</td> <td>{this.renderRedoButton(row.file, 'HealthCheck')}</td><td>{this.renderInfoButton(row)}</td>
           </tr>
 
         ));
