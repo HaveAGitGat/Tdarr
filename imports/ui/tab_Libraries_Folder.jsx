@@ -1282,10 +1282,6 @@ class Folder extends Component {
 
       </tbody>
     </table>
-
-
-    return blocks
-
   }
 
 
