@@ -41,23 +41,31 @@ export default class App extends Component {
 
         <p>Join us!</p>
  
-        <div className="iconContainer">
-            <a href={"https://discord.gg/GF8X8cq"}><img src={"/images/icons/D.svg"} alt='icon' height="60" width="60" /></a>
+ 
+          <div className="iconContainer">
+        <img src={"/images/icons/D.svg"}  onClick={()=> window.open("https://discord.gg/GF8X8cq", "_blank")} alt='icon' height="60" width="60" />
+          </div>
+
+
+         
+
+          <br></br>
+          <br></br>
+
+    
+           
+          <div className="iconContainer">
+        <img src={"/images/icons/G.png"}  onClick={()=> window.open("https://github.com/HaveAGitGat/Tdarr/wiki", "_blank")} alt='icon' height="60" width="60" />
           </div>
 
           <br></br>
           <br></br>
 
+
+
+           
           <div className="iconContainer">
-            <a href={"https://github.com/HaveAGitGat/Tdarr"}><img src={"/images/icons/G.png"} alt='icon' height="50" width="50" /></a>
-          </div>
-
-          <br></br>
-          <br></br>
-
-
-          <div className="iconContainer">
-            <a href={"https://www.reddit.com/r/Tdarr"}><img src={"/images/icons/R.png"} alt='icon' height="50" width="50" /></a>
+        <img src={"/images/icons/R.png"}  onClick={()=> window.open("https://www.reddit.com/r/Tdarr", "_blank")} alt='icon' height="60" width="60" />
           </div>
 
           <br></br>
