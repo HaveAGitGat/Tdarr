@@ -21,31 +21,78 @@ export default class Worker extends Component {
 
   constructor(props) {
     super(props);
-  }
-
-  
-  renderInfoButton(cliLog) {
-
-    cliLog = cliLog.split("\n")
-
-    cliLog = cliLog.map( row => <p>{row}</p> )
-
-    return <Modal
-      trigger={<Button variant="outline-dark" >i</Button>}
-      modal
-      closeOnDocumentClick
-    >
-       <div className="frame">
-    <div className="scroll"> 
-   {cliLog}
-      
-    </div>
-  </div>
-    </Modal>
-
+    this.state = { infoHidden: true }
   }
 
 
+  // renderInfoButton(cliLog) {
+
+  //   cliLog = cliLog.split("\n")
+
+  //   cliLog = cliLog.map(row => <p>{row}</p>)
+
+  //   return <Modal
+  //     trigger={<Button variant="outline-dark" >i</Button>}
+  //     modal
+  //     closeOnDocumentClick
+  //   >
+  //     <div className="frame">
+  //       <div className="scroll">
+  //         {cliLog}
+
+  //       </div>
+  //     </div>
+  //   </Modal>
+
+  // }
+
+  toTime = (d) => {
+
+    var h = (d.getHours() < 10 ? '0' : '') + d.getHours();
+    var m = (d.getMinutes() < 10 ? '0' : '') + d.getMinutes();
+    var s = (d.getSeconds() < 10 ? '0' : '') + d.getSeconds();
+    var timenow = h + ':' + m + ':' + s;
+
+    return timenow
+
+
+  }
+
+  duration = (start) => {
+
+    var timeNow = new Date()
+    var secsSinceStart = Math.round((timeNow - start) / 1000)
+
+    function fancyTimeFormat(time) {
+      // Hours, minutes and seconds
+      var hrs = ~~(time / 3600);
+      var mins = ~~((time % 3600) / 60);
+      var secs = ~~time % 60;
+
+      // Output like "1:01" or "4:03:59" or "123:03:59"
+      var ret = "";
+
+      if (hrs > 0) {
+        ret += "" + hrs + ":" + (mins < 10 ? "0" : "");
+      }
+
+      ret += "" + mins + ":" + (secs < 10 ? "0" : "");
+      ret += "" + secs;
+      return ret;
+    }
+
+    return fancyTimeFormat(secsSinceStart)
+  }
+
+  transcodeReason(info){
+
+    info = info.split("\n")
+
+    info = info.map( row =><span>{row}<br/></span> )
+
+    return info
+
+  }
 
   render() {
 
@@ -89,45 +136,7 @@ export default class Worker extends Component {
               </div>
 
 
-              <div className="grid-item" style={ButtonStyle}>
-                <div style={ButtonStyle}>
-              {this.renderInfoButton(this.props.worker.cliLogAdd)}
-              </div>
-              </div>
 
-
-
-
-              <div className="grid-item" style={ButtonStyle}>
-                <div style={ButtonStyle}>
-
-
-                  <Button variant="outline-danger" style={ButtonStyle} onClick={() => {
-
-
-                    Meteor.call('cancelWorkerItem', this.props.worker._id, function (error, result) { })
-
-
-                  }} >Cancel item</Button>
-                </div>
-              </div>
-
-
-              <div className="grid-item" style={ButtonStyle}>
-                <div style={ButtonStyle}>
-
-
-                  <Button variant="outline-danger" style={ButtonStyle} onClick={() => {
-
-
-                    Meteor.call('killWorker', this.props.worker._id, this.props.worker.file, this.props.worker.mode, function (error, result) { })
-
-
-                  }} >X</Button>
-
-                </div>
-
-              </div>
             </div>
 
             <p>
@@ -184,6 +193,64 @@ export default class Worker extends Component {
               </center>
 
             </div>
+
+<center>
+            <Button variant="outline-dark" onClick={() =>  this.setState({
+          infoHidden: !this.state.infoHidden,
+        })} >{this.state.infoHidden ? 'i' : 'i'}</Button>
+
+</center>
+
+            <div className={this.state.infoHidden ? 'hidden' : ''}>
+
+          
+
+
+
+
+            <table className="workerDetailTable">
+              <tbody>
+                <tr><td>CLI:</td><td>{this.props.worker.CLIType}</td></tr>
+
+                <tr><td>Preset:</td><td>{this.props.worker.preset}</td></tr>
+
+
+                <tr><td>Transcode reasons:</td><td>{this.transcodeReason(this.props.worker.cliLogAdd)}</td></tr>
+
+                <tr><td>Start time:</td><td>{this.toTime(this.props.worker.startTime)}</td></tr>
+
+                <tr><td>Duration:</td><td>{this.duration(this.props.worker.startTime)}</td></tr>
+
+                <tr><td>Original size (GB)</td><td>{this.props.worker.sourcefileSizeInGbytes}</td></tr>
+                
+                </tbody>
+
+
+            </table>
+
+            <center>         
+            <Button variant="outline-danger" style={ButtonStyle} onClick={() => {
+
+
+Meteor.call('cancelWorkerItem', this.props.worker._id, function (error, result) { })
+
+
+}} >Cancel item</Button>{'\u00A0'}
+
+<Button variant="outline-danger" style={ButtonStyle} onClick={() => {
+
+
+Meteor.call('killWorker', this.props.worker._id, this.props.worker.file, this.props.worker.mode, function (error, result) { })
+
+
+}} >Shutdown worker</Button>
+
+</center>
+
+
+
+            </div>
+
           </div>
         </div>
       </div>
