@@ -32,6 +32,7 @@ var ButtonStyle = {
 
 
 
+const borderRadiusStyle = { borderRadius: 2 }
 
 
 // App component - represents the whole app
@@ -186,9 +187,14 @@ class App extends Component {
 
   renderLowCPUButton() {
 
+   
     return this.props.globalSettings.map((item, i) => (
 
-      <ToggleButton value={item.lowCPUPriority} onToggle={() => {
+      <ToggleButton
+      thumbStyle={borderRadiusStyle}
+      trackStyle={borderRadiusStyle}
+      
+      value={item.lowCPUPriority} onToggle={() => {
 
         GlobalSettingsDB.upsert('globalsettings',
           {

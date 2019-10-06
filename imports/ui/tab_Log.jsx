@@ -20,6 +20,7 @@ import {
 
 var dateFormat = require('dateformat');
 
+const borderRadiusStyle = { borderRadius: 2 }
 
 
 var ButtonStyle = {
@@ -343,7 +344,10 @@ try{
 
         return this.props.globalSettings.map((item, i) => (
 
-            <ToggleButton value={item.verboseLogs}  style={ButtonStyle} onToggle={() => {
+            <ToggleButton
+            thumbStyle={borderRadiusStyle}
+            trackStyle={borderRadiusStyle}
+             value={item.verboseLogs}  style={ButtonStyle} onToggle={() => {
 
                 GlobalSettingsDB.upsert('globalsettings',
                     {

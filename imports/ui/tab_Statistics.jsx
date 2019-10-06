@@ -107,6 +107,17 @@ try{
                   
                   if (confirm('Are you sure you want to load all files from this pie segment?')) {
 
+                    
+
+        render(<center><ClipLoader
+
+          sizeUnit={"px"}
+          size={25}
+          color={'#000000'}
+          loading={true}
+        /></center>, document.getElementById('searchResults'));
+
+
                     Meteor.call('returnPieFiles',property, fileMedium,entry.name, (error, result) => {
 
                       this.setState({

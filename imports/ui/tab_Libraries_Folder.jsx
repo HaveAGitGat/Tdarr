@@ -24,6 +24,7 @@ import { Button, Dropdown } from 'react-bootstrap';
 import { css } from '@emotion/core';
 
 
+const borderRadiusStyle = { borderRadius: 2 }
 
 
 
@@ -1503,6 +1504,8 @@ class Folder extends Component {
                 Source folder:{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'} Folder watch:
         <div style={libButtonStyle}>
                   <ToggleButton
+      thumbStyle={borderRadiusStyle}
+      trackStyle={borderRadiusStyle}
 
                     name="folderWatching"
                     value={!!this.props.libraryItem.folderWatching || false}
@@ -1531,6 +1534,9 @@ class Folder extends Component {
                 {'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}Process Library:
                 <div style={libButtonStyle}>
                   <ToggleButton
+      thumbStyle={borderRadiusStyle}
+      trackStyle={borderRadiusStyle}
+                  
 
 
                     value={this.props.libraryItem.processLibrary === undefined ? true : !!this.props.libraryItem.processLibrary}
@@ -1662,6 +1668,8 @@ class Folder extends Component {
               <center>
 
                 Plugin: <div style={libButtonStyle}><ToggleButton
+      thumbStyle={borderRadiusStyle}
+      trackStyle={borderRadiusStyle}
 
                   value={!!this.props.libraryItem.decisionMaker.pluginFilter}
                   onToggle={() => {
@@ -1702,6 +1710,8 @@ class Folder extends Component {
                 /></div>{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}
 
                 Video library: <div style={libButtonStyle}><ToggleButton
+      thumbStyle={borderRadiusStyle}
+      trackStyle={borderRadiusStyle}
 
                   value={!!this.props.libraryItem.decisionMaker.videoFilter}
                   onToggle={() => {
@@ -1739,6 +1749,8 @@ class Folder extends Component {
 
                 Audio library:
 <div style={libButtonStyle}> <ToggleButton
+      thumbStyle={borderRadiusStyle}
+      trackStyle={borderRadiusStyle}
 
                   value={!!this.props.libraryItem.decisionMaker.audioFilter}
                   onToggle={() => {
