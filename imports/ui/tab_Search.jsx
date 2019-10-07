@@ -124,6 +124,11 @@ class App extends Component {
         render(
 
           <table className="pluginTable">   <tbody>
+
+<tr>
+  Count:{results.length}
+</tr>
+
             <tr>
               <th>File</th>
               <th>Bump</th>
