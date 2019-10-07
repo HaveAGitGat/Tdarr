@@ -1190,99 +1190,56 @@ class Folder extends Component {
       <tbody>
         <tr>
           <td>Day</td>
-          <td>{'\u00A0'}{'\u00A0'}00</td>
-          <td>{'\u00A0'}{'\u00A0'}01</td>
-          <td>{'\u00A0'}{'\u00A0'}02</td>
-          <td>{'\u00A0'}{'\u00A0'}03</td>
-          <td>{'\u00A0'}{'\u00A0'}04</td>
-          <td>{'\u00A0'}{'\u00A0'}05</td>
-          <td>{'\u00A0'}{'\u00A0'}06</td>
-          <td>{'\u00A0'}{'\u00A0'}07</td>
-          <td>{'\u00A0'}{'\u00A0'}08</td>
-          <td>{'\u00A0'}{'\u00A0'}09</td>
-          <td>{'\u00A0'}{'\u00A0'}10</td>
-          <td>{'\u00A0'}{'\u00A0'}11</td>
-          <td>{'\u00A0'}{'\u00A0'}12</td>
-          <td>{'\u00A0'}{'\u00A0'}13</td>
-          <td>{'\u00A0'}{'\u00A0'}14</td>
-          <td>{'\u00A0'}{'\u00A0'}15</td>
-          <td>{'\u00A0'}{'\u00A0'}16</td>
-          <td>{'\u00A0'}{'\u00A0'}17</td>
-          <td>{'\u00A0'}{'\u00A0'}18</td>
-          <td>{'\u00A0'}{'\u00A0'}19</td>
-          <td>{'\u00A0'}{'\u00A0'}20</td>
-          <td>{'\u00A0'}{'\u00A0'}21</td>
-          <td>{'\u00A0'}{'\u00A0'}22</td>
-          <td>{'\u00A0'}{'\u00A0'}23</td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(0,24,"Hour")}  >00</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(1,24,"Hour")}  >01</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(2,24,"Hour")}  >02</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(3,24,"Hour")}  >03</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(4,24,"Hour")}  >04</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(5,24,"Hour")}  >05</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(6,24,"Hour")}  >06</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(7,24,"Hour")}  >07</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(8,24,"Hour")}  >08</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(9,24,"Hour")}  >09</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(10,24,"Hour")} >10</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(11,24,"Hour")} >11</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(12,24,"Hour")} >12</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(13,24,"Hour")} >13</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(14,24,"Hour")} >14</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(15,24,"Hour")} >15</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(16,24,"Hour")} >16</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(17,24,"Hour")} >17</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(18,24,"Hour")} >18</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(19,24,"Hour")} >19</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(20,24,"Hour")} >00</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(21,24,"Hour")} >21</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(22,24,"Hour")} >22</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(23,24,"Hour")} >23</Button></td>
 
         </tr>
 
-        <tr> <td><Button variant="outline-dark" onClick={() => {
-
-          Meteor.call('toggleSchedule', this.props.libraryItem._id, this.state.scheduleAll, 0, 24, function (error, result) { })
-
-          this.setState({
-            scheduleAll: !this.state.scheduleAll,
-          })
-
-
-        }}  >Toggle</Button>Sun </td> {row1}  </tr>
-        <tr> <td><Button variant="outline-dark" onClick={() => {
-
-          Meteor.call('toggleSchedule', this.props.libraryItem._id, this.state.scheduleAll, 24, 48, function (error, result) { })
-
-          this.setState({
-            scheduleAll: !this.state.scheduleAll,
-          })
-
-
-        }}  >Toggle</Button>Mon</td> {row2}  </tr>
-        <tr> <td><Button variant="outline-dark" onClick={() => {
-
-          Meteor.call('toggleSchedule', this.props.libraryItem._id, this.state.scheduleAll, 48, 72, function (error, result) { })
-
-          this.setState({
-            scheduleAll: !this.state.scheduleAll,
-          })
-
-
-        }}  >Toggle</Button>Tue</td> {row3}  </tr>
-        <tr> <td><Button variant="outline-dark" onClick={() => {
-
-          Meteor.call('toggleSchedule', this.props.libraryItem._id, this.state.scheduleAll, 72, 96, function (error, result) { })
-
-          this.setState({
-            scheduleAll: !this.state.scheduleAll,
-          })
-
-
-        }}  >Toggle</Button>Wed</td> {row4}  </tr>
-        <tr> <td><Button variant="outline-dark" onClick={() => {
-
-          Meteor.call('toggleSchedule', this.props.libraryItem._id, this.state.scheduleAll, 96, 120, function (error, result) { })
-
-          this.setState({
-            scheduleAll: !this.state.scheduleAll,
-          })
-
-
-        }}  >Toggle</Button>Thur</td> {row5}  </tr>
-        <tr> <td><Button variant="outline-dark" onClick={() => {
-          Meteor.call('toggleSchedule', this.props.libraryItem._id, this.state.scheduleAll, 120, 144, function (error, result) { })
-          this.setState({
-            scheduleAll: !this.state.scheduleAll,
-          })
-
-
-        }}  >Toggle</Button>Fri</td> {row6}  </tr>
-        <tr> <td><Button variant="outline-dark" onClick={() => {
-          Meteor.call('toggleSchedule', this.props.libraryItem._id, this.state.scheduleAll, 144, 168, function (error, result) { })
-          this.setState({ scheduleAll: !this.state.scheduleAll, })
-        }}  >Toggle</Button>Sat</td> {row7}  </tr>
+        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(0,24)}  >Sun</Button></td> {row1}  </tr>
+        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(24,48)}  >Mon</Button></td> {row2}  </tr>
+        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(48,72)}  >Tue</Button></td> {row3}  </tr>
+        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(72,96)}  >Wed</Button></td> {row4}  </tr>
+        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(96,120)}  >Thur</Button></td> {row5}  </tr>
+        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(120,144)}  >Fri</Button></td> {row6}  </tr>
+        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(144,168)}  >Sat</Button></td> {row7}  </tr>
 
 
       </tbody>
     </table>
+  }
+
+  toggleSchedule(start,end,type){
+
+    Meteor.call('toggleSchedule', this.props.libraryItem._id, this.state.scheduleAll, start, end,type, function (error, result) { })
+
+this.setState({
+  scheduleAll: !this.state.scheduleAll,
+})
+
+
+
   }
 
 
@@ -2039,17 +1996,20 @@ class Folder extends Component {
               </div>
 
 
-              <center><p>Schedule:  <Button variant="outline-dark" onClick={() => {
+              <center><p>Schedule:  </p>  </center>
 
-                Meteor.call('toggleSchedule', this.props.libraryItem._id, this.state.scheduleAll, 0, 168, function (error, result) { })
+              <Button variant="outline-dark" onClick={() => {
 
-                this.setState({
-                  scheduleAll: !this.state.scheduleAll,
-                })
+Meteor.call('toggleSchedule', this.props.libraryItem._id, this.state.scheduleAll, 0, 168, function (error, result) { })
+
+this.setState({
+  scheduleAll: !this.state.scheduleAll,
+})
 
 
 
-              }}  >Toggle all</Button></p>  </center>
+}}  >Toggle all</Button>
+
               <div className="scheduleContainer">
 
 

@@ -198,28 +198,69 @@ Meteor.methods({
             true
 
         );
-    }, 'toggleSchedule'(DB_id, status,start,end) {
+    }, 'toggleSchedule'(DB_id, status, start, end, type) {
 
-        
-        var chxBoxes = SettingsDB.find({_id: DB_id}, {}).fetch()
+
+        var chxBoxes = SettingsDB.find({ _id: DB_id }, {}).fetch()
         chxBoxes = chxBoxes[0].schedule
 
-        
+        var status = true
 
-        for (var i = start; i < end; i++) {
+        if (type == "Hour") {
 
-            SettingsDB.update({
-                "_id": DB_id,
-                "schedule._id": chxBoxes[i]._id
-            }, {
-                $set: { "schedule.$.checked": status }
-            },
-                false,
-                true
+            for (var i = start; i < chxBoxes.length; i += end) {
 
-            );
+                if(chxBoxes[i].checked == true){
+                        status = false
+                }
+            }
+
+
+            for (var i = start; i < chxBoxes.length; i += end) {
+
+                SettingsDB.update({
+                    "_id": DB_id,
+                    "schedule._id": chxBoxes[i]._id
+                }, {
+                    $set: { "schedule.$.checked": status }
+                },
+                    false,
+                    true
+
+                );
+
+            }
+
+
+        } else {
+
+            for (var i = start; i < end; i++) {
+
+                if(chxBoxes[i].checked == true){
+                    status = false
+            }
+
+            }
+
+            for (var i = start; i < end; i++) {
+
+                SettingsDB.update({
+                    "_id": DB_id,
+                    "schedule._id": chxBoxes[i]._id
+                }, {
+                    $set: { "schedule.$.checked": status }
+                },
+                    false,
+                    true
+
+                );
+
+            }
+
 
         }
+
+
     }
 
 });
