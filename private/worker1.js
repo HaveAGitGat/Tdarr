@@ -33,7 +33,7 @@ var exitRequestSent = false
 var errorLogFull
 
 if (process.platform == 'win32') {
-  
+
     var stringProcessingSlash = "/";
     //   var stringProcessingSlash = "\\";
 }
@@ -46,11 +46,11 @@ if (process.platform == 'linux' || process.platform == 'darwin') {
 
 var fs = require('fs');
 
-if (fs.existsSync(path.join(process.cwd()+"/npm"))) {
+if (fs.existsSync(path.join(process.cwd() + "/npm"))) {
 
-    var rootModules = path.join(process.cwd()+'/npm/node_modules/')
+    var rootModules = path.join(process.cwd() + '/npm/node_modules/')
 
-}else{
+} else {
 
     var rootModules = ''
 
@@ -59,17 +59,17 @@ if (fs.existsSync(path.join(process.cwd()+"/npm"))) {
 
 
 
-var shell = require(rootModules+'shelljs');
-var fsextra = require(rootModules+'fs-extra')
+var shell = require(rootModules + 'shelljs');
+var fsextra = require(rootModules + 'fs-extra')
 
 
 var fileToProcess
 var inputFolderStem
 var outputFolder
 var container
-var preset 
+var preset
 var handBrakeMode
-var FFmpegMode 
+var FFmpegMode
 var frameCount
 var reQueueAfter
 
@@ -84,24 +84,26 @@ var settingsDBIndex
 var oldProgress = ""
 var lastProgCheck = ""
 
+var currentFileObject
 
 
 
 
 
-function getRootDir(){
 
-    var rootDir =  path.resolve();
+function getRootDir() {
+
+    var rootDir = path.resolve();
     rootDir = rootDir.split("\\")
-    var firstEle =  rootDir.length - 5
+    var firstEle = rootDir.length - 5
     rootDir.splice(firstEle, 5)
     rootDir = rootDir.join("\\")
-  
-  
+
+
     return rootDir
-  }
-  
-  //__dirname = getRootDir()
+}
+
+//__dirname = getRootDir()
 
 
 
@@ -128,7 +130,7 @@ updateConsole(workerNumber, "Worker online. Requesting item")
 process.on('message', (m) => {
 
 
-    
+
     if (m[0] == "requestNewItem") {
 
         checkifQueuePause()
@@ -206,11 +208,11 @@ process.on('message', (m) => {
 
         } catch (err) { }
 
-       // repair_worker
+        // repair_worker
 
 
     }
-    
+
 
 
     if (m[0] == "queueNumber") {
@@ -226,19 +228,20 @@ process.on('message', (m) => {
         FFmpegMode = m[8]
         frameCount = m[9]
         settingsDBIndex = m[10]
-        reQueueAfter= m[11]
+        reQueueAfter = m[11]
+        currentFileObject = m[12]
 
-      
-        
-        if(container.charAt(0) != '.'){
 
-            container = '.'+container
+
+        if (container.charAt(0) != '.') {
+
+            container = '.' + container
 
         }
 
 
-        updateConsole(workerNumber, "File received:"+ fileToProcess )
-        
+        updateConsole(workerNumber, "File received:" + fileToProcess)
+
 
         // Workers.upsert(workerNumber,
 
@@ -254,28 +257,28 @@ process.on('message', (m) => {
 
 
 
-        
-        
 
-        
-        
-        
-        
-        
+
+
+
+
+
+
+
         var presetSplit
         presetSplit = preset.split(',')
         var workerCommand = "";
-        
+
         currentDestinationLine = getOutputPath(fileToProcess, container, inputFolderStem, outputFolder)
 
-        updateConsole(workerNumber, "currentDestinationLine:"+currentDestinationLine)
+        updateConsole(workerNumber, "currentDestinationLine:" + currentDestinationLine)
 
-        finalFilePath = getOutputPath(currentDestinationLine, container, outputFolder,inputFolderStem )
+        finalFilePath = getOutputPath(currentDestinationLine, container, outputFolder, inputFolderStem)
 
-        updateConsole(workerNumber, "finalFilePath:"+finalFilePath)
-        
-        
-        
+        updateConsole(workerNumber, "finalFilePath:" + finalFilePath)
+
+
+
         var outputFolderPath = currentDestinationLine.substring(0, currentDestinationLine.lastIndexOf(stringProcessingSlash))
 
         if (fs.existsSync(outputFolderPath)) {
@@ -284,59 +287,59 @@ process.on('message', (m) => {
         } else {
 
 
-               try {
+            try {
 
-                    if (mode != "healthcheck") {
-
-
-                        shell.mkdir('-p', outputFolderPath);
+                if (mode != "healthcheck") {
 
 
+                    shell.mkdir('-p', outputFolderPath);
 
-                    }
 
-                } catch (err) {
-                    updateConsole(workerNumber, "Unable to create folder!")
-                 }            
+
+                }
+
+            } catch (err) {
+                updateConsole(workerNumber, "Unable to create folder!")
+            }
 
         }
 
-        if (fs.existsSync(path.join(process.cwd()+"/npm"))) {
+        if (fs.existsSync(path.join(process.cwd() + "/npm"))) {
 
-            var handBrakeCLIPath =  path.join(process.cwd()+'/assets/app/HandBrakeCLI.exe')
+            var handBrakeCLIPath = path.join(process.cwd() + '/assets/app/HandBrakeCLI.exe')
 
 
-        }else{
-            var handBrakeCLIPath =   path.join(process.cwd()+'/private/HandBrakeCLI.exe')
+        } else {
+            var handBrakeCLIPath = path.join(process.cwd() + '/private/HandBrakeCLI.exe')
         }
 
-        
-       
+
+
 
 
 
         var ffmpegPath = getFFmpegCLIPath();
 
 
-        
+
         currentSourceLine = fileToProcess
-        
-        
-        
-        
-        if(process.platform == 'win32' && handBrakeMode == true) {
+
+
+
+
+        if (process.platform == 'win32' && handBrakeMode == true) {
             workerCommand = handBrakeCLIPath + " -i \"" + currentSourceLine + "\" -o \"" + currentDestinationLine + "\" " + preset;
         } else if (process.platform == 'win32' && FFmpegMode == true) {
             workerCommand = ffmpegPath + " " + presetSplit[0] + " -i \"" + currentSourceLine + "\" " + presetSplit[1] + " \"" + currentDestinationLine + "\" "
-        
+
         }
-        
-        
+
+
         var currentSourceLineUnix = currentSourceLine.replace(/'/g, '\'\"\'\"\'');
         var currentDestinationLineUnix = currentDestinationLine.replace(/'/g, '\'\"\'\"\'');
         var presetUnix = preset.replace(/'/g, '\'\"\'\"\'');
-        
-        
+
+
         var ffmpegPathUnix = ffmpegPath.replace(/'/g, '\'\"\'\"\'');
         try {
             var preset0Unix = presetSplit[0].replace(/'/g, '\'\"\'\"\'');
@@ -344,33 +347,33 @@ process.on('message', (m) => {
         try {
             var preset1Unix = presetSplit[1].replace(/'/g, '\'\"\'\"\'');
         } catch (err) { }
-        
-        
-        
-        
+
+
+
+
         if (process.platform == 'linux' && handBrakeMode == true) {
-        
+
             workerCommand = "HandBrakeCLI -i '" + currentSourceLineUnix + "' -o '" + currentDestinationLineUnix + "' " + presetUnix;
-        
+
         } else if (process.platform == 'linux' && FFmpegMode == true) {
-        
+
             workerCommand = ffmpegPathUnix + " " + preset0Unix + " -i '" + currentSourceLineUnix + "' " + preset1Unix + " '" + currentDestinationLineUnix + "' "
-        
+
         }
-        
-        
+
+
         //
-        
+
         if (process.platform == 'darwin' && handBrakeMode == true) {
             workerCommand = "/usr/local/bin/HandBrakeCLI -i '" + currentSourceLineUnix + "' -o '" + currentDestinationLineUnix + "' " + presetUnix;
         } else if (process.platform == 'darwin' && FFmpegMode == true) {
             workerCommand = ffmpegPathUnix + " " + preset0Unix + " -i '" + currentSourceLineUnix + "' " + preset1Unix + " '" + currentDestinationLineUnix + "' "
         }
-        
+
 
         if (mode == "transcode") {
 
-            if(fs.existsSync(currentDestinationLine)){
+            if (fs.existsSync(currentDestinationLine)) {
 
                 fs.unlinkSync(currentDestinationLine)
 
@@ -380,73 +383,73 @@ process.on('message', (m) => {
         errorLogFull = ""
         errorLogFull += "Command: \r\n"
         errorLogFull += workerCommand + "\r\n"
-        
-        
 
-        
-       
-        
+
+
+
+
+
         processFile()
-        
+
         function processFile() {
             //
-        
+
             var childProcess = require('child_process');
-           // var shellThreadPath = "worker2.js"
-        
+            // var shellThreadPath = "worker2.js"
+
             //
             updateConsole(workerNumber, "Launching sub-worker:")
-        
-          // var workerPath = path.join(__dirname, "/imports/api/worker2.js")
 
-          var workerPath = "assets/app/worker2.js"
-        
+            // var workerPath = path.join(__dirname, "/imports/api/worker2.js")
 
-        
+            var workerPath = "assets/app/worker2.js"
+
+
+
             shellThreadModule = childProcess.fork(workerPath, [], {
                 silent: true
             });
             // var shellThreadModule = childProcess.fork(path.join(__dirname, shellThreadPath ));
-           updateConsole(workerNumber, "Launching sub-worker successful:")
-        
+            updateConsole(workerNumber, "Launching sub-worker successful:")
 
-        
+
+
             var infoArray = [
                 "processFile",
                 workerCommand
             ];
-        
+
             updateConsole(workerNumber, "Sending command to sub-worker:" + workerCommand)
             shellThreadModule.send(infoArray);
-        
-        
+
+
             shellThreadModule.stdout.on('data', function (data) {
                 //  ('stdoutWorker: ' + data);
                 //log console output to text file
-        
+
                 var str = "" + data;
-        
-   
-                
-        
+
+
+
+
                 if (handBrakeMode == true) {
-        
+
                     var numbers = "0123456789"
                     var n = str.indexOf("%")
-        
+
                     if (str.length >= 6 && str.indexOf("%") >= 6 && numbers.includes(str.charAt(n - 5))) {
-        
+
                         var output = str.substring(n - 6, n + 1)
-        
-        
+
+
                         output = output.split("")
-                        output.splice(output.length-1,1)
+                        output.splice(output.length - 1, 1)
                         output = output.join("")
-                 
-                       // updateConsole(workerNumber, " : " + output)
+
+                        // updateConsole(workerNumber, " : " + output)
 
 
-                       updateETA(output)
+                        updateETA(output)
 
                         var message = [
                             workerNumber,
@@ -454,87 +457,72 @@ process.on('message', (m) => {
                             output
                         ];
                         process.send(message);
-        
-        
-        
-        
+
+
+
+
                     }
                 } else if (FFmpegMode == true) {
-        
+
                     if (str.includes("frame=")) {
                         if (str.length >= 6) {
                             var n = str.indexOf("fps");
-        
+
                             if (n >= 6) {
-        
+
+                              
                                 var output = str.substring(6, n)
 
-
-                                if(frameCount != "undefined"){
-
-                                output = ((output / frameCount) * 100).toFixed(2)
-                                output = output.split("")
-                                output.splice(output.length-1,1)
-                                output = output.join("")
-
-
-                                }else{
-                                    output = output
-
-                                }
-        
                         
-        
+                                output = getFFmpegPercentage( output,frameCount,currentFileObject.meta.VideoFrameRate,currentFileObject.meta.Duration)
+
+
                                 updateETA(output)
-                             //  updateConsole(workerNumber, " : " + output)
+                                //  updateConsole(workerNumber, " : " + output)
                                 var message = [
                                     workerNumber,
                                     "percentage",
                                     output
                                 ];
                                 process.send(message);
-        
-        
+
+
                             }
                         }
                     }
                 }
                 if (str.includes("Exit code:")) {
-                  
+
                 }
-        
+
                 if (str.includes("stderr:")) {
-        
+
                 }
             });
 
-        
+
             shellThreadModule.stderr.on('data', function (data) {
-        
+
                 //('stderrorWorker: ' + data);
 
                 errorLogFull += data + "\r\n";
 
-
                 var str = "" + data;
-        
 
-             
-        
                 if (handBrakeMode == true) {
-        
+
                     var numbers = "0123456789"
                     var n = str.indexOf("%")
                     if (str.length >= 6 && str.indexOf("%") >= 6 && numbers.includes(str.charAt(n - 5))) {
-        
+
                         var output = str.substring(n - 6, n + 1)
-        
+
                         output = output.split("")
-                        output.splice(output.length-1,1)
+                        output.splice(output.length - 1, 1)
                         output = output.join("")
 
-                      //  updateConsole(workerNumber, " : " + output)
-                      updateETA(output)
+                        //  updateConsole(workerNumber, " : " + output)
+                        updateETA(output)
 
                         var message = [
                             workerNumber,
@@ -542,146 +530,140 @@ process.on('message', (m) => {
                             output
                         ];
                         process.send(message);
-    
-        
+
+
                     }
-        
-        
-        
+
+
+
                 } else if (FFmpegMode == true) {
-        
+
                     if (str.includes("frame=")) {
                         if (str.length >= 6) {
                             var n = str.indexOf("fps");
-        
+
                             if (n >= 6) {
-        
+
+                                //get frame
                                 var output = str.substring(6, n)
-        
-                                if(frameCount != "undefined"){
 
-                                    output = ((output / frameCount) * 100).toFixed(2)
-                                    output = output.split("")
-                                    output.splice(output.length-1,1)
-                                    output = output.join("")
-    
-    
-                                    }else{
-                                        output = output
-    
-                                    }
 
-                                
-                                    updateETA(output)
-                               // updateConsole(workerNumber, " : " + output)
+                                output = getFFmpegPercentage( output,frameCount,currentFileObject.meta.VideoFrameRate,currentFileObject.meta.Duration)
+
+
+
+                                //
+
+                                updateETA(output)
+                                // updateConsole(workerNumber, " : " + output)
                                 var message = [
                                     workerNumber,
                                     "percentage",
                                     output
                                 ];
                                 process.send(message);
-        
-        
+
+
                             }
                         }
                     }
                 }
             });
-        
-        
-        
-        
+
+
+
+
             shellThreadModule.on("exit", function (code, ) {
                 //('shellThreadExited:', code,);
-               updateConsole(workerNumber, "Sub-worker exited")
-        
+                updateConsole(workerNumber, "Sub-worker exited")
+
             });
-        
-        
+
+
             shellThreadModule.on('message', function (message) {
-        
-                
-        
-        
+
+
+
+
                 if (message[0] == "consoleMessage") {
-                   
-                   updateConsole("Worker " + workerNumber + ":" + message[1] + "");
+
+                    updateConsole("Worker " + workerNumber + ":" + message[1] + "");
                 }
-        
-        
-        
+
+
+
                 if (message.error) {
                     console.error(message.error);
                 }
-        
+
                 //var message2 = message.split(",");
-        
-        
-        
+
+
+
                 if (message[0] == "Exit") {
-        
-        
-                   updateConsole(workerNumber, "Sub-worker exit status received")
-        
+
+
+                    updateConsole(workerNumber, "Sub-worker exit status received")
+
                     shellThreadModule = "";
-        
-                
-        
-        
-        
-        
+
+
+
+
+
+
                     //// exit code begin
-        
-        
-        
-        
-                     if (mode != "healthcheck" && !fs.existsSync(currentDestinationLine)) {
-        
-                    updateConsole(workerNumber, "Tdarr ALERT: NO OUTPUT FILE PRODUCED" + currentDestinationLine)
-
-
-                    var message = [
-                        workerNumber,
-                        "error",
-                        currentSourceLine,
-                        settingsDBIndex,
-                        mode,
-                        errorLogFull
-            
-                    ];
-                    process.send(message);
-        
-        
-    
-        
-                    //   //  checkifQueuePause();
-
-                    checkifQueuePause();
-        
-        
-                     } else if (message[1] != 0) {
-        
-                     workerEncounteredError(message[1])
-        
-                     } else {
-                    //     // workerEncounteredError(message[1])
-                    workerNotEncounteredError();
-        
-        
-                     }
 
 
 
-    
-        
-        
-        
-        
-        
-                //    checkifQueuePause()
-        
-                
-        
+
+                    if (mode != "healthcheck" && !fs.existsSync(currentDestinationLine)) {
+
+                        updateConsole(workerNumber, "Tdarr ALERT: NO OUTPUT FILE PRODUCED" + currentDestinationLine)
+
+
+                        var message = [
+                            workerNumber,
+                            "error",
+                            currentSourceLine,
+                            settingsDBIndex,
+                            mode,
+                            errorLogFull
+
+                        ];
+                        process.send(message);
+
+
+
+
+                        //   //  checkifQueuePause();
+
+                        checkifQueuePause();
+
+
+                    } else if (message[1] != 0) {
+
+                        workerEncounteredError(message[1])
+
+                    } else {
+                        //     // workerEncounteredError(message[1])
+                        workerNotEncounteredError();
+
+
+                    }
+
+
+
+
+
+
+
+
+
+                    //    checkifQueuePause()
+
+
+
                 }
             });
         }
@@ -700,33 +682,33 @@ process.on('message', (m) => {
 
 
 
-        if(exitRequestSent == false){}
-        
-        
-                var message = [
-                    workerNumber,
-                    "exitRequest",
-                ];
-        
-                process.send(message);
-        
-                updateConsole(workerNumber, "Exit request")
-        
-                exitRequestSent = true
-        
-        
-            }
-        
-        
-            if (m[0] == "exitApproved") {
-        
-                updateConsole(workerNumber, "Exiting")
-        
-                process.exit();
-        
-        
-        
-            }
+        if (exitRequestSent == false) { }
+
+
+        var message = [
+            workerNumber,
+            "exitRequest",
+        ];
+
+        process.send(message);
+
+        updateConsole(workerNumber, "Exit request")
+
+        exitRequestSent = true
+
+
+    }
+
+
+    if (m[0] == "exitApproved") {
+
+        updateConsole(workerNumber, "Exiting")
+
+        process.exit();
+
+
+
+    }
 
 
 
@@ -747,8 +729,8 @@ process.on('message', (m) => {
 
 
 function checkifQueuePause() {
-        
-   
+
+
     var message = [
         workerNumber,
         "queueRequest",
@@ -766,106 +748,106 @@ function checkifQueuePause() {
 
 
 
- // Workers.remove({workerNumber})
+// Workers.remove({workerNumber})
 
 
- function getFFmpegCLIPath() {
+function getFFmpegCLIPath() {
 
 
-        var ffmpegPath = require(rootModules+'@ffmpeg-installer/ffmpeg').path;
+    var ffmpegPath = require(rootModules + '@ffmpeg-installer/ffmpeg').path;
 
-  
+
     return ffmpegPath
-  
-  }
-  
-  
-  
-  
-  
-  
-  
-  function getHandBrakeCLIPath() {
-  
-  
+
+}
+
+
+
+
+
+
+
+function getHandBrakeCLIPath() {
+
+
     //handbrake CLI path
     if (process.platform == 'win32') {
-        var handBrakeCLIPath = path.join(__dirname, "/imports/api/HandBrakeCLI.exe" )
+        var handBrakeCLIPath = path.join(__dirname, "/imports/api/HandBrakeCLI.exe")
 
     }
-  
-  
+
+
     if (process.platform == 'linux' || process.platform == 'darwin') {
         //development && //production
         var handBrakeCLIPath = "HandBrakeCLI -i \""
     }
-  
-    return handBrakeCLIPath
-  
-  }
-  
-  
-  
-  function getOutputPath(inputFilePath, outputFileContainer, inputPathStem, outputPathStem) {
 
-    while(inputPathStem.charAt(inputPathStem.length - 1) == '/'){
+    return handBrakeCLIPath
+
+}
+
+
+
+function getOutputPath(inputFilePath, outputFileContainer, inputPathStem, outputPathStem) {
+
+    while (inputPathStem.charAt(inputPathStem.length - 1) == '/') {
         inputPathStem = inputPathStem.split("")
-        inputPathStem.splice(inputPathStem.length - 1,1)
+        inputPathStem.splice(inputPathStem.length - 1, 1)
         inputPathStem = inputPathStem.join("")
     }
 
-    while(outputPathStem.charAt(outputPathStem.length - 1) == '/'){
+    while (outputPathStem.charAt(outputPathStem.length - 1) == '/') {
         outputPathStem = outputPathStem.split("")
-        outputPathStem.splice(outputPathStem.length - 1,1)
+        outputPathStem.splice(outputPathStem.length - 1, 1)
         outputPathStem = outputPathStem.join("")
     }
-  
-  
+
+
     inputPathStemSplit = inputPathStem.split(','); // comma removed step 1:  /path/to/folder
-  
-  
-  
+
+
+
     topFolder = inputPathStemSplit[inputPathStemSplit.length - 1] // comma removed step 2:  /path/to/folder
-  
+
     topFolderCharLength = topFolder.length   //
-  
-  
-  
+
+
+
     // var thisFile = fullPath + "" // path/to/folder/test.mp4
-  
+
     // fileTypeSplit = thisFile.split('.');    // 
     // fileType = fileTypeSplit[fileTypeSplit.length - 1]   // mp4
-  
-  
-    var str = inputFilePath  // path/to/topfolder/subfolder/test.mp4
-  
-  
-    str = str.substring(topFolderCharLength);       // /subfolder/test.mp4
-  
-    
-    pointer = str.split(stringProcessingSlash);
-  
-    filePathEnd = pointer[pointer.length - 1]   //     test.mp4
-  
-    filePathEndFileType = filePathEnd.slice(0, filePathEnd.lastIndexOf('.'));   // test
-  
-  
-  
-    subfilePath = filePathEndFileType + outputFileContainer;   // "test" +".mp4"
-  
-  
-  
-    LongsubfilePath = str.slice(0, str.lastIndexOf(stringProcessingSlash)); //  path/to/folder
-  
-    newsubfilePath = LongsubfilePath + stringProcessingSlash + subfilePath; // path/to/folder + "/" + "test.mp4"
-  
-    outputFilePath = outputPathStem + newsubfilePath;
-  
-    return outputFilePath.replace(/\\/g, "/");
-  }
-  
 
-  function workerNotEncounteredError() {
+
+    var str = inputFilePath  // path/to/topfolder/subfolder/test.mp4
+
+
+    str = str.substring(topFolderCharLength);       // /subfolder/test.mp4
+
+
+    pointer = str.split(stringProcessingSlash);
+
+    filePathEnd = pointer[pointer.length - 1]   //     test.mp4
+
+    filePathEndFileType = filePathEnd.slice(0, filePathEnd.lastIndexOf('.'));   // test
+
+
+
+    subfilePath = filePathEndFileType + outputFileContainer;   // "test" +".mp4"
+
+
+
+    LongsubfilePath = str.slice(0, str.lastIndexOf(stringProcessingSlash)); //  path/to/folder
+
+    newsubfilePath = LongsubfilePath + stringProcessingSlash + subfilePath; // path/to/folder + "/" + "test.mp4"
+
+    outputFilePath = outputPathStem + newsubfilePath;
+
+    return outputFilePath.replace(/\\/g, "/");
+}
+
+
+function workerNotEncounteredError() {
 
 
     if (mode == "healthcheck") {
@@ -886,17 +868,17 @@ function checkifQueuePause() {
 
     } else {
 
-try{
-        var sourcefileSizeInGbytes = (((fs.statSync(currentSourceLine)).size) / 1000000000.0);
-        var destfileSizeInGbytes = (((fs.statSync(currentDestinationLine)).size) / 1000000000.0);
-        var sizeDiffGB = sourcefileSizeInGbytes - destfileSizeInGbytes
+        try {
+            var sourcefileSizeInGbytes = (((fs.statSync(currentSourceLine)).size) / 1000000000.0);
+            var destfileSizeInGbytes = (((fs.statSync(currentDestinationLine)).size) / 1000000000.0);
+            var sizeDiffGB = sourcefileSizeInGbytes - destfileSizeInGbytes
 
-    }catch(err){
+        } catch (err) {
 
-        var sizeDiffGB = 0;
+            var sizeDiffGB = 0;
 
 
-    }
+        }
 
 
 
@@ -912,126 +894,126 @@ try{
 
         //currentSourceLine
 
-        
-
-            updateConsole(workerNumber, "Moving file:" + currentDestinationLine + " to " + finalFilePath)
 
 
-
-            try{
-
-                errorLogFull += "Attempting to delete original file"+ "\r\n"
-                updateConsole(workerNumber, "Attempting to delete original file" + currentSourceLine)
-
-               
-
-
-  
-
-
-                errorLogFull += "Attempting to move new file to original folder"+ "\r\n"
-                updateConsole(workerNumber, "Attempting to move new file to original folder" + currentSourceLine)
-
-                var finalFilePathCopy = finalFilePath
-
-            
-                
-                
-
-                finalFilePathCopy = finalFilePathCopy.split(".")
-
-
-                finalFilePathCopy[finalFilePathCopy.length-2] = finalFilePathCopy[finalFilePathCopy.length-2]+"-TdarrNew"
-
-                finalFilePathCopy = finalFilePathCopy.join(".")
-
-
-                fsextra.moveSync(currentDestinationLine, finalFilePathCopy, {
-                    overwrite: true
-                })
-
-                errorLogFull += "Moving file successful:"+ "\r\n"
-                updateConsole(workerNumber, "Moving file successful:" + currentDestinationLine + " to " + finalFilePathCopy)
+        updateConsole(workerNumber, "Moving file:" + currentDestinationLine + " to " + finalFilePath)
 
 
 
-                fs.unlinkSync(currentSourceLine)
-                errorLogFull += "Original file deleted"+ "\r\n"
-                updateConsole(workerNumber, "Original file deleted" + currentSourceLine)
+        try {
 
-
-                errorLogFull += "Renaming new file:"+ "\r\n"
-                updateConsole(workerNumber, "Renaming new file:" + finalFilePathCopy + " to " + finalFilePath)
-
-                fsextra.moveSync(finalFilePathCopy, finalFilePath, {
-                    overwrite: true
-                })
-
-                errorLogFull += "Renaming new file success:"+ "\r\n"
-                updateConsole(workerNumber, "Renaming new file success:" + finalFilePathCopy + " to " + finalFilePath)
-
-
-                
-
-                
-
-
-                var message = [
-                    workerNumber,
-                    "success",
-                    finalFilePath,
-                    settingsDBIndex,
-                    mode,
-                    currentSourceLine,
-                    reQueueAfter,
-                    sizeDiffGB,
-                ];
-                process.send(message);
-
-                checkifQueuePause();
-
-
-
-
-            }catch(err){
-
-                errorLogFull += err+ "\r\n"
-
-                errorLogFull += "Deleting original file and moving new file unsuccessful"+ "\r\n"
-
-                updateConsole(workerNumber, "Deleting original file and moving new file unsuccessful:" + currentDestinationLine + " to " + finalFilePath +" err:"+err)
-
-
-                var message = [
-                    workerNumber,
-                    "error",
-                    currentSourceLine,
-                    settingsDBIndex,
-                    mode,
-                    errorLogFull
-        
-                ];
-                process.send(message);
-
-                // var message = [
-                //     workerNumber,
-                //     "Original not replaced",
-                //     currentSourceLine,
-        
-                // ];
-                // process.send(message);
-
-
-                checkifQueuePause();
-
-            }
+            errorLogFull += "Attempting to delete original file" + "\r\n"
+            updateConsole(workerNumber, "Attempting to delete original file" + currentSourceLine)
 
 
 
 
 
 
-     
+
+            errorLogFull += "Attempting to move new file to original folder" + "\r\n"
+            updateConsole(workerNumber, "Attempting to move new file to original folder" + currentSourceLine)
+
+            var finalFilePathCopy = finalFilePath
+
+
+
+
+
+            finalFilePathCopy = finalFilePathCopy.split(".")
+
+
+            finalFilePathCopy[finalFilePathCopy.length - 2] = finalFilePathCopy[finalFilePathCopy.length - 2] + "-TdarrNew"
+
+            finalFilePathCopy = finalFilePathCopy.join(".")
+
+
+            fsextra.moveSync(currentDestinationLine, finalFilePathCopy, {
+                overwrite: true
+            })
+
+            errorLogFull += "Moving file successful:" + "\r\n"
+            updateConsole(workerNumber, "Moving file successful:" + currentDestinationLine + " to " + finalFilePathCopy)
+
+
+
+            fs.unlinkSync(currentSourceLine)
+            errorLogFull += "Original file deleted" + "\r\n"
+            updateConsole(workerNumber, "Original file deleted" + currentSourceLine)
+
+
+            errorLogFull += "Renaming new file:" + "\r\n"
+            updateConsole(workerNumber, "Renaming new file:" + finalFilePathCopy + " to " + finalFilePath)
+
+            fsextra.moveSync(finalFilePathCopy, finalFilePath, {
+                overwrite: true
+            })
+
+            errorLogFull += "Renaming new file success:" + "\r\n"
+            updateConsole(workerNumber, "Renaming new file success:" + finalFilePathCopy + " to " + finalFilePath)
+
+
+
+
+
+
+
+            var message = [
+                workerNumber,
+                "success",
+                finalFilePath,
+                settingsDBIndex,
+                mode,
+                currentSourceLine,
+                reQueueAfter,
+                sizeDiffGB,
+            ];
+            process.send(message);
+
+            checkifQueuePause();
+
+
+
+
+        } catch (err) {
+
+            errorLogFull += err + "\r\n"
+
+            errorLogFull += "Deleting original file and moving new file unsuccessful" + "\r\n"
+
+            updateConsole(workerNumber, "Deleting original file and moving new file unsuccessful:" + currentDestinationLine + " to " + finalFilePath + " err:" + err)
+
+
+            var message = [
+                workerNumber,
+                "error",
+                currentSourceLine,
+                settingsDBIndex,
+                mode,
+                errorLogFull
+
+            ];
+            process.send(message);
+
+            // var message = [
+            //     workerNumber,
+            //     "Original not replaced",
+            //     currentSourceLine,
+
+            // ];
+            // process.send(message);
+
+
+            checkifQueuePause();
+
+        }
+
+
+
+
+
+
+
 
     }
 }
@@ -1039,7 +1021,7 @@ try{
 
 
 
-  function workerEncounteredError(messageOne) {
+function workerEncounteredError(messageOne) {
 
 
     if (messageOne == "Cancelled") {
@@ -1067,43 +1049,43 @@ try{
 
             //if repair file == true
 
-                var message = [
-                    workerNumber,
-                    "error",
-                    currentSourceLine,
-                    settingsDBIndex,
-                    mode,
-                    errorLogFull
-        
-                ];
-                process.send(message);
+            var message = [
+                workerNumber,
+                "error",
+                currentSourceLine,
+                settingsDBIndex,
+                mode,
+                errorLogFull
 
-                updateConsole(workerNumber, "Sub worker error when processing:" + currentSourceLine)
+            ];
+            process.send(message);
 
-                // if (moveCorruptFileOnOff == true) {
-                //     moveCorruptedFile();
-                // }
+            updateConsole(workerNumber, "Sub worker error when processing:" + currentSourceLine)
 
-                // if (saveWorkerLogs) {
-                //     var errorLogWrite = "[" + getDateNow() + "#" + getTimeNow() + "]" + currentSourceLine + "\r\n" + errorLogFull + "\r\n"
+            // if (moveCorruptFileOnOff == true) {
+            //     moveCorruptedFile();
+            // }
 
-                // }else{
-                //     var errorLogWrite =   currentSourceLine + "\r\n"
+            // if (saveWorkerLogs) {
+            //     var errorLogWrite = "[" + getDateNow() + "#" + getTimeNow() + "]" + currentSourceLine + "\r\n" + errorLogFull + "\r\n"
 
-                // }
+            // }else{
+            //     var errorLogWrite =   currentSourceLine + "\r\n"
 
-                // var message = [
-                //     workerNumber,
-                //     "appendRequest",
-                //     homePath + "/Documents/HBBatchBeast/Logs/ErrorLog.txt",
-                //     errorLogWrite,
-                // ];
-                // process.send(message);
-                // checkifQueuePause();
+            // }
 
-                checkifQueuePause();
+            // var message = [
+            //     workerNumber,
+            //     "appendRequest",
+            //     homePath + "/Documents/HBBatchBeast/Logs/ErrorLog.txt",
+            //     errorLogWrite,
+            // ];
+            // process.send(message);
+            // checkifQueuePause();
 
-  
+            checkifQueuePause();
+
+
 
 
         } else {
@@ -1115,7 +1097,7 @@ try{
                 settingsDBIndex,
                 mode,
                 errorLogFull
-    
+
             ];
             process.send(message);
 
@@ -1147,70 +1129,70 @@ try{
 
 var progAVG = []
 
-function updateETA(perc){
+function updateETA(perc) {
 
-    if( !isNaN(perc) && perc > 0){
-
-      
+    if (!isNaN(perc) && perc > 0) {
 
 
-    if(lastProgCheck == ""){
-
-        lastProgCheck = new Date()
-        oldProgress = perc
 
 
-    }else{
+        if (lastProgCheck == "") {
 
-        if(perc != oldProgress){
-
-      
-
-        var n = new Date()
-        var secsSinceLastCheck = (n - lastProgCheck) / 1000
-
-    
-        if (secsSinceLastCheck > 1) {
-
-  
-
-            var eta = Math.round((100/(perc-oldProgress))*secsSinceLastCheck)
-
-                progAVG.push(eta)
-
-                
-           // let values = [2, 56, 3, 41, 0, 4, 100, 23];
-            var sum = progAVG.reduce((previous, current) => current += previous);
-            var avg = sum /progAVG.length;
-
-            var message = [
-                workerNumber,
-                "ETAUpdate",
-                fancyTimeFormat(avg)
-            ];
-            process.send(message);
-
-            if(progAVG.length > 30){
-                progAVG.splice(0,1)
-            }
-
-
-            
-            lastProgCheck = n 
+            lastProgCheck = new Date()
             oldProgress = perc
 
 
-            
+        } else {
 
-           
+            if (perc != oldProgress) {
 
-    
+
+                var n = new Date()
+                var secsSinceLastCheck = (n - lastProgCheck) / 1000
+
+
+                if (secsSinceLastCheck > 1) {
+
+                    //eta total
+                    var eta = Math.round((100 / (perc - oldProgress)) * secsSinceLastCheck)
+
+                    //eta remaining
+                    eta = ((100 - perc) / 100) * eta
+
+                    progAVG.push(eta)
+
+                    // let values = [2, 56, 3, 41, 0, 4, 100, 23];
+                    var sum = progAVG.reduce((previous, current) => current += previous);
+                    var avg = sum / progAVG.length;
+
+                    var message = [
+                        workerNumber,
+                        "ETAUpdate",
+                        fancyTimeFormat(avg)
+                    ];
+                    process.send(message);
+
+                    if (progAVG.length > 30) {
+                        progAVG.splice(0, 1)
+                    }
+
+
+
+                    lastProgCheck = n
+                    oldProgress = perc
+
+
+
+
+
+
+
+                }
+
+            }
+            //
         }
-
     }
-//
-    }
-}
 }
 
 function fancyTimeFormat(time) {
@@ -1222,12 +1204,29 @@ function fancyTimeFormat(time) {
     // Output like "1:01" or "4:03:59" or "123:03:59"
     var ret = "";
 
-  //  if (hrs > 0) {
-      ret += "" + hrs + ":" + (mins < 10 ? "0" : "");
-   // }
+    //  if (hrs > 0) {
+    ret += "" + hrs + ":" + (mins < 10 ? "0" : "");
+    // }
 
     ret += "" + mins + ":" + (secs < 10 ? "0" : "");
     ret += "" + secs;
     return ret;
-  }
+}
+
+
+function getFFmpegPercentage(frame,frameCount,VideoFrameRate,Duration){
+
+    if (frameCount != "undefined") {
+
+        return ((frame / frameCount) * 100).toFixed(2)
+  
+    } else if (VideoFrameRate != 'undefined' && Duration != 'undefined') {
+
+        return (((frame / VideoFrameRate) / Duration) * 100).toFixed(2)
+
+    } else {
+        return output
+    }
+
+}
 

@@ -134,7 +134,7 @@ export default class Worker extends Component {
 
               <div className="grid-item" style={ButtonStyle}>
 
-              ETA:{this.props.worker.percentage <= 100 ? this.props.worker.ETA : ''}
+              ETA{'\u00A0'}{'\u00A0'}{this.props.worker.percentage <= 100 ? this.props.worker.ETA : ''}
 
               </div>
 
@@ -194,7 +194,7 @@ export default class Worker extends Component {
                 }
               />
               <center >
-                No total frame count. Frame: {this.props.worker.percentage / 100}
+                 Frame: {this.props.worker.percentage / 100}
               </center>
 
             </div>

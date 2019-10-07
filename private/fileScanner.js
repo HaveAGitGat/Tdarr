@@ -505,28 +505,25 @@ function ffprobeLaunch(filesToScan) {
         try {
             var singleFileSize = fs.statSync(filepath)
             var singleFileSize = singleFileSize.size
-            var bit_rate = (8 * singleFileSize) / (parseInt(jsonData.streams[0]["duration"]))
+
             var fileSizeInMbytes = singleFileSize / 1000000.0;
-
-
-            thisFileObject.bit_rate = bit_rate
             thisFileObject.file_size = fileSizeInMbytes
 
-            // DocumentsDB.upsert(filepath,
 
-
-            //     {
-            //         $set: {
-            //             bit_rate: bit_rate,
-            //             file_size: fileSizeInMbytes
-            //         }
-            //     }
-            // );
 
 
         } catch (err) {
 
-            updateConsole(scannerID, `File scanner " + ${scannerID} + ":Tagging size data failed:${filepath}.`)
+          
+        }
+
+        try{
+            var bit_rate = (8 * singleFileSize) / (parseInt(jsonData.streams[0]["duration"]))
+            thisFileObject.bit_rate = bit_rate
+        }catch(err){
+            
+            updateConsole(scannerID, `File scanner " + ${scannerID} + ":Tagging bitrate data failed:${filepath}.`)
+           
         }
 
 

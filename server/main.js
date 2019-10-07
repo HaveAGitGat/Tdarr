@@ -1524,7 +1524,7 @@ function launchWorkerModule(workerType) {
                   pluginsSelected = pluginsSelected.filter(row => (row.checked));
 
 
-                  if (pluginsSelected == 0) {
+                  if (pluginsSelected.length == 0) {
 
                     processFile = false
                     preset = ''
@@ -1723,7 +1723,7 @@ function launchWorkerModule(workerType) {
 
                 if (firstItem.ffProbeData == undefined || firstItem.ffProbeData.streams[0]["nb_frames"] == undefined || firstItem.ffProbeData.streams[0] == undefined) {
 
-                  var frameCount = 1
+                  var frameCount = "undefined"
 
                 } else {
 
@@ -1731,7 +1731,7 @@ function launchWorkerModule(workerType) {
 
                 }
 
-                console.log("frameCount:" + frameCount)
+             
 
                 var messageOut = [
                   "queueNumber",
@@ -1746,6 +1746,8 @@ function launchWorkerModule(workerType) {
                   frameCount,
                   settingsDBIndex,
                   reQueueAfter,
+                  firstItem,
+                  
 
                 ]
 

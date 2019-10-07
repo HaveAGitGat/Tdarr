@@ -1542,10 +1542,7 @@ class Folder extends Component {
                     value={this.props.libraryItem.processLibrary === undefined ? true : !!this.props.libraryItem.processLibrary}
                     onToggle={() => {
 
-                      console.log("here")
-                      console.log(this.props.libraryItem._id)
-
-                      console.log(this.props.libraryItem.processLibrary)
+                      
 
                       SettingsDB.upsert(
 
