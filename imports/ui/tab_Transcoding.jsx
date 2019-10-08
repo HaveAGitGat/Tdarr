@@ -314,7 +314,7 @@ class App extends Component {
         return data.map((row, i) => {
 
           if(row.lastTranscodeDate != undefined){
-            var lastTranscodeDate = row.lastTranscodeDate.toISOString()
+            var lastTranscodeDate = this.toTime(row.lastTranscodeDate)
           }else{
             var lastTranscodeDate = "-"
           }
@@ -329,15 +329,13 @@ class App extends Component {
       } else {
 
         return data.map((row, i) => {
+
           if(row.lastHealthCheckDate != undefined){
-            var lastHealthCheckDate = row.lastHealthCheckDate.toISOString()
+            var lastHealthCheckDate = this.toTime(row.lastHealthCheckDate)
           }else{
             var lastHealthCheckDate = "-"
           }
   
-
-
-
          return <tr key={row._id}>
             <td>{i + 1}</td><td>{lastHealthCheckDate}</td><td>{row.file}</td><td>{this.renderRedoButton(row.file, mode)}</td><td>{this.renderInfoButton(row.cliLog)}</td>
           </tr>
@@ -356,7 +354,7 @@ class App extends Component {
       return data.map((row, i) => {
 
         if(row.lastTranscodeDate != undefined){
-          var lastTranscodeDate = row.lastTranscodeDate.toISOString()
+          var lastTranscodeDate = this.toTime(row.lastTranscodeDate)
         }else{
           var lastTranscodeDate = "-"
         }
@@ -375,7 +373,7 @@ class App extends Component {
 
           
         if(row.lastHealthCheckDate != undefined){
-          var lastHealthCheckDate = row.lastHealthCheckDate.toISOString()
+          var lastHealthCheckDate = this.toTime(row.lastHealthCheckDate)
         }else{
           var lastHealthCheckDate = "-"
         }
@@ -393,6 +391,17 @@ class App extends Component {
     }
 
 
+
+  }
+
+  toTime = (d) => {
+
+    var h = (d.getHours() < 10 ? '0' : '') + d.getHours();
+    var m = (d.getMinutes() < 10 ? '0' : '') + d.getMinutes();
+    var s = (d.getSeconds() < 10 ? '0' : '') + d.getSeconds();
+    var timenow = h + ':' + m + ':' + s;
+
+    return timenow
 
   }
 
@@ -701,7 +710,7 @@ class App extends Component {
             <table className="itemTable"><tbody>
               <tr>
                 <th>No.</th>
-                <th>Date</th>
+                <th>Time</th>
                 <th>File</th>
                 <th>Status</th>
                 <th>Re-queue</th>
@@ -723,7 +732,7 @@ class App extends Component {
             <table className="itemTable">   <tbody>
               <tr>
                 <th>No.</th>
-                <th>Date</th>
+                <th>Time</th>
                 <th>File</th>
                 <th>Status</th>
                 <th>Ignore</th>
@@ -768,7 +777,7 @@ class App extends Component {
             <table className="itemTable">   <tbody>
               <tr>
                 <th>No.</th>
-                <th>Date</th>
+                <th>Time</th>
                 <th>File</th>
                 <th>Re-queue</th>
                 <th>Info</th>
@@ -788,7 +797,7 @@ class App extends Component {
             <table className="itemTable">   <tbody>
               <tr>
                 <th>No.</th>
-                <th>Date</th>
+                <th>Time</th>
                 <th>File</th>
                 <th>Status</th>
                 <th>Ignore</th>

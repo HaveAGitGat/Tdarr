@@ -879,7 +879,18 @@ Meteor.methods({
 
         //  console.log("Queueing file to be added to DB")
 
-        var jsonData = message[2];
+        var jsonData = JSON.parse(message[2]);
+
+        if(jsonData.createdAt){
+          jsonData.createdAt = new Date(jsonData.createdAt);
+        }
+        if(jsonData.lastHealthCheckDate){
+          jsonData.lastHealthCheckDate = new Date(jsonData.lastHealthCheckDate);
+        }
+        if(jsonData.lastTranscodeDate){
+          jsonData.lastTranscodeDate = new Date(jsonData.lastTranscodeDate);
+        }
+
 
 
 
@@ -1978,31 +1989,7 @@ function launchWorkerModule(workerType) {
 
         newFile = [message[2],]
 
-        console.log(message[6])
-
-
-        if (message[6] == true) {
-
-          var obj = {
-            HealthCheck:"Not attempted",
-            TranscodeDecisionMaker:"Not attempted",
-            lastTranscodeDate: new Date()
-          }
-
-          Meteor.call('scanFiles', message[3], newFile, 0, 3,obj, function (error, result) { });
-
-        } else {
-
-          var obj = {
-            HealthCheck:"Not attempted",
-            TranscodeDecisionMaker:"Transcode success",
-            lastTranscodeDate: new Date()
-          }
-
-
-          Meteor.call('scanFiles', message[3], newFile, 0, 3, obj, function (error, result) { });
-        }
-
+          Meteor.call('scanFiles', message[3], newFile, 0, 3,JSON.parse(message[6]), function (error, result) { });
 
         StatisticsDB.update("statistics",
           {
@@ -2138,7 +2125,7 @@ function launchWorkerModule(workerType) {
               HealthCheck: "Cancelled",
               processingStatus: false,
               cliLog: "Item was cancelled by user.",
-              createdAt: new Date(),
+              lastHealthCheckDate: new Date(),
             }
           }
         );
@@ -2399,6 +2386,7 @@ function createFolderWatch(Folder, DB_id) {
       var obj = {
         HealthCheck:"Not attempted",
         TranscodeDecisionMaker:"Not attempted",
+        cliLog:"",
       }
 
       Meteor.call('scanFiles', DB_id, filesToProcess, 0, 3, obj, function (error, result) { });

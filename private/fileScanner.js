@@ -475,6 +475,8 @@ function ffprobeLaunch(filesToScan) {
         var obj = {
             HealthCheck:"Error",
             TranscodeDecisionMaker:"Transcode error",
+            lastHealthCheckDate:new Date(),
+            lastTranscodeDate:new Date(),
         }
 
         addFileToDB(filepath, thisFileObject, obj)
@@ -606,8 +608,9 @@ function ffprobeLaunch(filesToScan) {
         }
 
 
-        thisFileObject.cliLog = "No info"
+     //   thisFileObject.cliLog = "No info"
 
+            filePropertiesToAdd.cliLog += "\n"
 
         // console.log(JSON.stringify(thisFileObject))
 
@@ -642,7 +645,7 @@ function addFileToDB(filePath, FileObject,obj) {
     var message = [
         scannerID,
         "addFileToDB",
-        FileObject,
+        JSON.stringify(FileObject),
     ];
     process.send(message);
 

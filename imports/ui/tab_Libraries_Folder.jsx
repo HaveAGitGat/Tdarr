@@ -1286,6 +1286,7 @@ this.setState({
     var obj = {
       HealthCheck:"Not attempted",
       TranscodeDecisionMaker:"Not attempted",
+      cliLog:"",
     }
 
     Meteor.call('scanFiles', this.props.libraryItem._id, this.props.libraryItem.folder, 1, mode, obj, function (error, result) {
