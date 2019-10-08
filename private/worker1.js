@@ -868,17 +868,20 @@ function workerNotEncounteredError() {
 
     } else {
 
-        try {
-            var sourcefileSizeInGbytes = (((fs.statSync(currentSourceLine)).size) / 1000000000.0);
-            var destfileSizeInGbytes = (((fs.statSync(currentDestinationLine)).size) / 1000000000.0);
-            var sizeDiffGB = sourcefileSizeInGbytes - destfileSizeInGbytes
+            try {  var sourcefileSizeInGbytes = (((fs.statSync(currentSourceLine)).size) / 1000000000.0); } catch (err) {
 
-        } catch (err) {
+                var sourcefileSizeInGbytes = "Unable to retrieve size"
+            }
+            try { var destfileSizeInGbytes = (((fs.statSync(currentDestinationLine)).size) / 1000000000.0); } catch (err) {
 
-            var sizeDiffGB = 0;
+                var destfileSizeInGbytes = "Unable to retrieve size"
+            }
+            try {  var sizeDiffGB = sourcefileSizeInGbytes - destfileSizeInGbytes } catch (err) {
 
+                var sizeDiffGB = 0;
+            }
 
-        }
+      
 
 
 
@@ -953,9 +956,28 @@ function workerNotEncounteredError() {
             updateConsole(workerNumber, "Renaming new file success:" + finalFilePathCopy + " to " + finalFilePath)
 
 
+            var cliLog = "\n Original size GB:"+ sourcefileSizeInGbytes
+            cliLog += "\n New size GB:"+ destfileSizeInGbytes
 
+            if (reQueueAfter == true) {
 
-
+                var filePropertiesToAdd = {
+                  HealthCheck:"Not attempted",
+                  TranscodeDecisionMaker:"Not attempted",
+                  lastTranscodeDate: new Date(),
+                  cliLog:cliLog,
+                }
+      
+              } else {
+      
+                var filePropertiesToAdd = {
+                  HealthCheck:"Not attempted",
+                  TranscodeDecisionMaker:"Transcode success",
+                  lastTranscodeDate: new Date(),
+                  cliLog:cliLog,
+                }
+              }
+            
 
 
             var message = [
@@ -965,7 +987,7 @@ function workerNotEncounteredError() {
                 settingsDBIndex,
                 mode,
                 currentSourceLine,
-                reQueueAfter,
+                JSON.stringify(filePropertiesToAdd),
                 sizeDiffGB,
             ];
             process.send(message);
@@ -994,14 +1016,6 @@ function workerNotEncounteredError() {
 
             ];
             process.send(message);
-
-            // var message = [
-            //     workerNumber,
-            //     "Original not replaced",
-            //     currentSourceLine,
-
-            // ];
-            // process.send(message);
 
 
             checkifQueuePause();
@@ -1062,26 +1076,6 @@ function workerEncounteredError(messageOne) {
 
             updateConsole(workerNumber, "Sub worker error when processing:" + currentSourceLine)
 
-            // if (moveCorruptFileOnOff == true) {
-            //     moveCorruptedFile();
-            // }
-
-            // if (saveWorkerLogs) {
-            //     var errorLogWrite = "[" + getDateNow() + "#" + getTimeNow() + "]" + currentSourceLine + "\r\n" + errorLogFull + "\r\n"
-
-            // }else{
-            //     var errorLogWrite =   currentSourceLine + "\r\n"
-
-            // }
-
-            // var message = [
-            //     workerNumber,
-            //     "appendRequest",
-            //     homePath + "/Documents/HBBatchBeast/Logs/ErrorLog.txt",
-            //     errorLogWrite,
-            // ];
-            // process.send(message);
-            // checkifQueuePause();
 
             checkifQueuePause();
 
@@ -1100,26 +1094,6 @@ function workerEncounteredError(messageOne) {
 
             ];
             process.send(message);
-
-            // updateConsole(workerNumber, "Sub worker error when processing:" + currentSourceLine)
-
-            // if (tempFolderSelected == true) {
-            //     var message = [
-            //         workerNumber,
-            //         "appendRequest",
-            //         homePath + "/Documents/HBBatchBeast/Logs/fileConversionLog.txt",
-            //         "[" + getDateNow() + "#" + getTimeNow() + "]"+ "--------ERROR----------" + currentSourceLine + "------------to----------" + currentDestinationFinalLine + "----------using preset----------:" + preset + "\r\n" + errorLogFull + "\r\n",
-            //     ];
-            //     process.send(message);
-            // } else {
-            //     var message = [
-            //         workerNumber,
-            //         "appendRequest",
-            //         homePath + "/Documents/HBBatchBeast/Logs/fileConversionLog.txt",
-            //         "[" + getDateNow() + "#" + getTimeNow() + "]" + "--------ERROR----------" + currentSourceLine + "------------to----------" + currentDestinationLine + "----------using preset----------:" + preset + "\r\n" + errorLogFull + "\r\n",
-            //     ];
-            //     process.send(message);
-            // }
 
             checkifQueuePause();
 
@@ -1190,7 +1164,6 @@ function updateETA(perc) {
                 }
 
             }
-            //
         }
     }
 }
