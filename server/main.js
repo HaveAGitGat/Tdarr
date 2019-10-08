@@ -735,7 +735,7 @@ Meteor.methods({
     } catch (err) { }
 
 
-  }, 'scanFiles'(DB_id, arrayOrPath, arrayOrPathSwitch, mode, HealthCheck, TranscodeDecisionMaker) {
+  }, 'scanFiles'(DB_id, arrayOrPath, arrayOrPathSwitch, mode, filePropertiesToAdd) {
 
 
 
@@ -836,8 +836,7 @@ Meteor.methods({
       arrayOrPathSwitch,
       allowedContainers,
       mode,
-      HealthCheck,
-      TranscodeDecisionMaker,
+      JSON.stringify(filePropertiesToAdd),
       homePath,
     ]
 
@@ -880,18 +879,9 @@ Meteor.methods({
 
         //  console.log("Queueing file to be added to DB")
 
+        var jsonData = message[2];
 
 
-
-        var jsonData = message[3];
-
-        jsonData._id = message[2]
-        jsonData.file = message[2]
-        jsonData.DB = message[4]
-        jsonData.HealthCheck = message[5]
-        jsonData.TranscodeDecisionMaker = message[6]
-        jsonData.processingStatus = false
-        jsonData.createdAt = new Date()
 
 
         if (typeof jsonData === 'object' && jsonData !== null) {
@@ -1346,9 +1336,7 @@ function launchWorkerModule(workerType) {
 
 
             var files = generalFiles
-
-
-
+            
 
           } else if (workerType == "transcode") {
 
@@ -1429,15 +1417,6 @@ function launchWorkerModule(workerType) {
 
 
 
-              upsertWorker(message[0], {
-                _id: message[0],
-                file: firstItem.file,
-                mode: workerType,
-                modeType: mode,
-                idle: false,
-                percentage: 0,
-                created: true
-              })
 
 
 
@@ -1470,6 +1449,11 @@ function launchWorkerModule(workerType) {
 
 
               if (mode == "healthcheck") {
+
+                cliLogAdd += 'Health check! \n'
+
+
+
 
                 if (handbrakescan == true) {
 
@@ -1769,7 +1753,7 @@ function launchWorkerModule(workerType) {
                       TranscodeDecisionMaker: "Passed",
                       processingStatus: false,
                       cliLog: cliLogAdd,
-                      createdAt: new Date(),
+                      lastTranscodeDate: new Date(),
 
                     }
                   }
@@ -1826,12 +1810,13 @@ function launchWorkerModule(workerType) {
                   modeType: mode,
                   idle: false,
                   percentage: 0,
+                  created: true,
                   cliLogAdd: cliLogAdd,
                   sourcefileSizeInGbytes:sourcefileSizeInGbytes,
                   startTime:new Date(),
                   CLIType:CLIType,
                   preset:preset,
-                  ETA:"Calculating..."
+                  ETA:"Calculating...",
                 })
 
 
@@ -1907,6 +1892,7 @@ function launchWorkerModule(workerType) {
               processingStatus: false,
               cliLog: message[5],
               createdAt: new Date(),
+              lastHealthCheckDate: new Date()
             }
           }
         );
@@ -1930,6 +1916,7 @@ function launchWorkerModule(workerType) {
               processingStatus: false,
               cliLog: message[5],
               createdAt: new Date(),
+              lastTranscodeDate: new Date()
             }
           }
         );
@@ -1968,6 +1955,7 @@ function launchWorkerModule(workerType) {
               HealthCheck: "Success",
               processingStatus: false,
               createdAt: new Date(),
+              lastHealthCheckDate: new Date()
             }
           }
         );
@@ -1992,12 +1980,27 @@ function launchWorkerModule(workerType) {
 
         console.log(message[6])
 
+
         if (message[6] == true) {
 
-          Meteor.call('scanFiles', message[3], newFile, 0, 3, "Not attempted", "Not attempted", function (error, result) { });
+          var obj = {
+            HealthCheck:"Not attempted",
+            TranscodeDecisionMaker:"Not attempted",
+            lastTranscodeDate: new Date()
+          }
+
+          Meteor.call('scanFiles', message[3], newFile, 0, 3,obj, function (error, result) { });
 
         } else {
-          Meteor.call('scanFiles', message[3], newFile, 0, 3, "Not attempted", "Transcode success", function (error, result) { });
+
+          var obj = {
+            HealthCheck:"Not attempted",
+            TranscodeDecisionMaker:"Transcode success",
+            lastTranscodeDate: new Date()
+          }
+
+
+          Meteor.call('scanFiles', message[3], newFile, 0, 3, obj, function (error, result) { });
         }
 
 
@@ -2151,7 +2154,7 @@ function launchWorkerModule(workerType) {
               TranscodeDecisionMaker: "Transcode cancelled",
               processingStatus: false,
               cliLog: "Item was cancelled by user.",
-              createdAt: new Date(),
+              lastTranscodeDate: new Date(),
             }
           }
         );
@@ -2393,8 +2396,12 @@ function createFolderWatch(Folder, DB_id) {
       var filesToProcess = message[3]
 
 
-      Meteor.call('scanFiles', DB_id, filesToProcess, 0, 3, "Not attempted", "Not attempted", function (error, result) { });
+      var obj = {
+        HealthCheck:"Not attempted",
+        TranscodeDecisionMaker:"Not attempted",
+      }
 
+      Meteor.call('scanFiles', DB_id, filesToProcess, 0, 3, obj, function (error, result) { });
 
     }
 
@@ -2625,18 +2632,40 @@ function tablesUpdate() {
       //
 
       var table1data = allFilesPulledTable.filter(row => (row.TranscodeDecisionMaker == "Not attempted" && row.processingStatus == false));
-      var table2data = allFilesPulledTable.filter(row => ((row.TranscodeDecisionMaker == "Transcode success" || row.TranscodeDecisionMaker == "Passed") && row.processingStatus == false));
+      
+      var table2data = allFilesPulledTable.filter(row => ((row.TranscodeDecisionMaker == "Transcode success" || row.TranscodeDecisionMaker == "Passed") && row.processingStatus == false)); 
       var table3data = allFilesPulledTable.filter(row => ((row.TranscodeDecisionMaker == "Transcode error" || row.TranscodeDecisionMaker == "Transcode cancelled") && row.processingStatus == false));
       var table4data = allFilesPulledTable.filter(row => (row.HealthCheck == "Not attempted" && row.fileMedium == "video" && row.processingStatus == false));
       var table5data = allFilesPulledTable.filter(row => (row.HealthCheck == "Success" && row.processingStatus == false));
       var table6data = allFilesPulledTable.filter(row => ((row.HealthCheck == "Error" || row.HealthCheck == "Cancelled") && row.processingStatus == false));
 
+      table2data = sortTable(table2data,"lastTranscodeDate")
+      table3data = sortTable(table3data,"lastTranscodeDate")
+
+      table5data = sortTable(table5data,"lastHealthCheckDate")
+      table6data = sortTable(table6data,"lastHealthCheckDate")
+      
+      
+      function sortTable(data,sortType){
+
+        return data.sort(function (a, b) {
+          return new Date(b[sortType]) - new Date(a[sortType]);
+        });
+
+      }
+   
 
       StatisticsDB.upsert('statistics',
         {
           $set: {
             tdarrScore: ((table2data.length * 100.00) / (table1data.length + table2data.length + table3data.length)).toPrecision(4),
             healthCheckScore: ((table5data.length * 100.00) / (table4data.length + table5data.length + table6data.length)).toPrecision(4),
+            table1Count:table1data.length,
+            table2Count:table2data.length,
+            table3Count:table3data.length,
+            table4Count:table4data.length,
+            table5Count:table5data.length,
+            table6Count:table6data.length,
           }
         }
       );

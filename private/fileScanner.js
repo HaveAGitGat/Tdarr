@@ -42,9 +42,12 @@ var arrayOrPathSwitch = process.argv[5]
 var allowedContainers = process.argv[6]
 allowedContainers = allowedContainers.split(',');
 var mode = process.argv[7]
-var HealthCheck = process.argv[8]
-var TranscodeDecisionMaker = process.argv[9]
-var homePath = process.argv[10]
+
+
+var filePropertiesToAdd = JSON.parse(process.argv[8])
+
+
+var homePath = process.argv[9]
 
 updateConsole(scannerID, "File scanner " + scannerID + " online.")
 
@@ -469,7 +472,12 @@ function ffprobeLaunch(filesToScan) {
 
         updateConsole(scannerID, `File scanner " + ${scannerID} + ":FFprobe was unable to extract data from this file:${filepath}.`)
 
-        addFileToDB(filepath, thisFileObject, "Error", "Transcode error")
+        var obj = {
+            HealthCheck:"Error",
+            TranscodeDecisionMaker:"Transcode error",
+        }
+
+        addFileToDB(filepath, thisFileObject, obj)
 
     }
 
@@ -604,28 +612,37 @@ function ffprobeLaunch(filesToScan) {
         // console.log(JSON.stringify(thisFileObject))
 
 
-        addFileToDB(filepath, thisFileObject, HealthCheck, TranscodeDecisionMaker)
+        addFileToDB(filepath, thisFileObject,filePropertiesToAdd)
 
     }
 }
 
 
-function addFileToDB(filePath, FileObject, HealthCheck, TranscodeDecisionMaker) {
+function addFileToDB(filePath, FileObject,obj) {
 
     updateConsole(scannerID, `File scanner " + ${scannerID} + ":Sending add file to DB:${filePath}.`)
 
-    //  FileObject = JSON.stringify(FileObject);
+    
+    //
 
-    //console.log("Adding to DB2:"+filePath)
+    FileObject._id = filePath
+    FileObject.file = filePath
+    FileObject.DB = DB_id
+
+
+    // FileObject.HealthCheck = HealthCheck
+    // FileObject.TranscodeDecisionMaker = TranscodeDecisionMaker
+    FileObject.processingStatus = false
+    FileObject.createdAt = new Date()
+
+    FileObject = {...FileObject, ...obj};
+
+
+    //
     var message = [
         scannerID,
         "addFileToDB",
-        filePath,
         FileObject,
-        DB_id,
-        HealthCheck,
-        TranscodeDecisionMaker,
-
     ];
     process.send(message);
 

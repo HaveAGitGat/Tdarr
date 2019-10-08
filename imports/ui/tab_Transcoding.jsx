@@ -164,12 +164,13 @@ class App extends Component {
     if (statistics.length == 0) {
 
 
-      var statDat = <center><ClipLoader
+      var statDat = <center style={ButtonStyle}><ClipLoader
 
         sizeUnit={"px"}
         size={10}
         color={'#000000'}
         loading={true}
+        style={ButtonStyle}
       /></center>
 
     } else {
@@ -289,23 +290,16 @@ class App extends Component {
 
     if (type == "queue") {
 
+
+
+
       return data.map((row, i) => (
 
-        // <div className="tableItem">
-        //   <li key={row._id}>{i + 1}  {row.file} {this.renderBumpButton(row.file)} </li>
-
-
-
-        // </div>
 
 
         <tr key={row._id}>
           <td>{i + 1}</td><td>{row.file}</td><td>{this.renderBumpButton(row.file)}</td>
         </tr>
-
-
-
-
 
 
       ));
@@ -315,42 +309,87 @@ class App extends Component {
 
       if (mode == "TranscodeDecisionMaker") {
 
-        return data.map((row, i) => (
 
-          <tr key={row._id}>
-            <td>{i + 1}</td><td>{row.file}</td><td>{row.TranscodeDecisionMaker}</td><td>{this.renderRedoButton(row.file, mode)}</td><td>{this.renderInfoButton(row.cliLog)}</td>
+
+        return data.map((row, i) => {
+
+          if(row.lastTranscodeDate != undefined){
+            var lastTranscodeDate = row.lastTranscodeDate.toISOString()
+          }else{
+            var lastTranscodeDate = "-"
+          }
+
+         return <tr key={row._id}>
+            <td>{i + 1}</td><td>{lastTranscodeDate}</td><td>{row.file}</td><td>{row.TranscodeDecisionMaker}</td><td>{this.renderRedoButton(row.file, mode)}</td><td>{this.renderInfoButton(row.cliLog)}</td>
           </tr>
 
 
-        ));
+        });
 
       } else {
 
-        return data.map((row, i) => (
+        return data.map((row, i) => {
+          if(row.lastHealthCheckDate != undefined){
+            var lastHealthCheckDate = row.lastHealthCheckDate.toISOString()
+          }else{
+            var lastHealthCheckDate = "-"
+          }
+  
 
 
 
-          <tr key={row._id}>
-            <td>{i + 1}</td><td>{row.file}</td><td>{this.renderRedoButton(row.file, mode)}</td><td>{this.renderInfoButton(row.cliLog)}</td>
+         return <tr key={row._id}>
+            <td>{i + 1}</td><td>{lastHealthCheckDate}</td><td>{row.file}</td><td>{this.renderRedoButton(row.file, mode)}</td><td>{this.renderInfoButton(row.cliLog)}</td>
           </tr>
 
 
 
-        ));
+        });
 
       }
     }
 
     if (type == "error") {
 
-      return data.map((row, i) => (
+      if (mode == "TranscodeDecisionMaker") {
 
-        <tr key={row._id}>
-          <td>{i + 1}</td><td>{row.file}</td><td>{this.renderRedoButton(row.file, mode)}</td><td>{this.renderIgnoreButton(row.file, mode)}</td><td>{this.renderInfoButton(row.cliLog)}</td>
+      return data.map((row, i) => {
+
+        if(row.lastTranscodeDate != undefined){
+          var lastTranscodeDate = row.lastTranscodeDate.toISOString()
+        }else{
+          var lastTranscodeDate = "-"
+        }
+
+
+       return <tr key={row._id}>
+          <td>{i + 1}</td><td>{lastTranscodeDate}</td><td>{row.file}</td><td>{this.renderRedoButton(row.file, mode)}</td><td>{this.renderIgnoreButton(row.file, mode)}</td><td>{this.renderInfoButton(row.cliLog)}</td>
         </tr>
 
 
-      ));
+      });
+
+      }else{
+
+        return data.map((row, i) => {
+
+          
+        if(row.lastHealthCheckDate != undefined){
+          var lastHealthCheckDate = row.lastHealthCheckDate.toISOString()
+        }else{
+          var lastHealthCheckDate = "-"
+        }
+
+         return <tr key={row._id}>
+            <td>{i + 1}</td><td>{lastHealthCheckDate}</td><td>{row.file}</td><td>{this.renderRedoButton(row.file, mode)}</td><td>{this.renderIgnoreButton(row.file, mode)}</td><td>{this.renderInfoButton(row.cliLog)}</td>
+          </tr>
+  
+  
+      });
+
+
+
+      }
     }
 
 
@@ -637,7 +676,7 @@ class App extends Component {
 
 
 
-            <center><p><b>Transcode queue</b></p></center>
+            <center><p><b>Transcode queue ({this.renderStat('table1Count')})</b></p></center>
 
             <table className="itemTable">   <tbody>
               <tr>
@@ -656,12 +695,13 @@ class App extends Component {
           <div className="queuegrid-item">
 
 
-            <center><p><b>Transcode: Completed or passed</b></p></center>
+            <center><p><b>Transcode: Completed or passed ({this.renderStat('table2Count')})</b></p></center>
 
 
             <table className="itemTable"><tbody>
               <tr>
                 <th>No.</th>
+                <th>Date</th>
                 <th>File</th>
                 <th>Status</th>
                 <th>Re-queue</th>
@@ -677,12 +717,13 @@ class App extends Component {
 
           <div className="queuegrid-item">
 
-            <center><p><b>Transcode: Error</b></p></center>
+            <center><p><b>Transcode: Error ({this.renderStat('table3Count')})</b></p></center>
 
 
             <table className="itemTable">   <tbody>
               <tr>
                 <th>No.</th>
+                <th>Date</th>
                 <th>File</th>
                 <th>Status</th>
                 <th>Ignore</th>
@@ -701,7 +742,7 @@ class App extends Component {
 
           <div className="queuegrid-item">
 
-            <center><p><b>Health check queue</b></p></center>
+            <center><p><b>Health check queue ({this.renderStat('table4Count')})</b></p></center>
 
 
             <table className="itemTable">   <tbody>
@@ -720,13 +761,14 @@ class App extends Component {
           <div className="queuegrid-item">
 
 
-            <center><p><b>Health check: Healthy</b></p></center>
+            <center><p><b>Health check: Healthy ({this.renderStat('table5Count')})</b></p></center>
 
 
 
             <table className="itemTable">   <tbody>
               <tr>
                 <th>No.</th>
+                <th>Date</th>
                 <th>File</th>
                 <th>Re-queue</th>
                 <th>Info</th>
@@ -742,10 +784,11 @@ class App extends Component {
 
           <div className="queuegrid-item">
 
-
+          <center><p><b>Health check: Error ({this.renderStat('table6Count')})</b></p></center>
             <table className="itemTable">   <tbody>
               <tr>
                 <th>No.</th>
+                <th>Date</th>
                 <th>File</th>
                 <th>Status</th>
                 <th>Ignore</th>
@@ -754,7 +797,7 @@ class App extends Component {
 
               </tr>
 
-              <center><p><b>Health check: Error</b></p></center>
+            
 
 
               {this.renderTable('table6', 'error', 'HealthCheck')}
