@@ -88,7 +88,13 @@ class App extends Component {
 
             render('', document.getElementById('searchResults'));
           }}  style={ButtonStyle}>Clear</Button>
-          <Button variant="outline-dark" className="addFolderButton" onClick={this.updatePlugins} style={ButtonStyle}>Update community plugins</Button>
+
+
+
+      <Button variant="outline-dark" className="addFolderButton" onClick={this.updatePlugins} style={ButtonStyle}>Update community plugins</Button>
+      <Button variant="outline-dark" className="addFolderButton" onClick={()=> window.open("https://github.com/HaveAGitGat/Tdarr_Plugins", "_blank")} style={ButtonStyle}>Create a plugin</Button>
+          
+          
           <Modal
           trigger={<Button variant="outline-dark" >i</Button>}
           modal
@@ -104,9 +110,6 @@ class App extends Component {
         <p></p>
 
         <p>For information on creating community and local plugins, have a look at:https://github.com/HaveAGitGat/Tdarr_Plugins</p>
-
-
-            
 
             </div>
           </div>
