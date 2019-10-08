@@ -199,6 +199,7 @@ try{
                     columns={columns}
                     defaultPageSize={10}
                     pageSizeOptions={[10, 100, 1000]}
+                    filterable={true}
                 />
             </div>, document.getElementById('logDiv'));
 
