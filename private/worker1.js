@@ -307,8 +307,6 @@ process.on('message', (m) => {
         if (fs.existsSync(path.join(process.cwd() + "/npm"))) {
 
             var handBrakeCLIPath = path.join(process.cwd() + '/assets/app/HandBrakeCLI.exe')
-
-
         } else {
             var handBrakeCLIPath = path.join(process.cwd() + '/private/HandBrakeCLI.exe')
         }
@@ -347,9 +345,6 @@ process.on('message', (m) => {
         try {
             var preset1Unix = presetSplit[1].replace(/'/g, '\'\"\'\"\'');
         } catch (err) { }
-
-
-
 
         if (process.platform == 'linux' && handBrakeMode == true) {
 

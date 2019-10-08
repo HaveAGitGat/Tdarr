@@ -1,7 +1,15 @@
-import React, { Component } from 'react';
+ import React, { Component } from 'react';
 
 import { Meteor } from 'meteor/meteor';
 
+import { Button} from 'react-bootstrap';
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+
+import { render } from 'react-dom';
+import ReactDOM from 'react-dom'
+
+
+import 'react-tabs/style/react-tabs.css';
 
 
 
@@ -16,6 +24,51 @@ export default class App extends Component {
   constructor(props) {
     super(props);
 
+  }
+
+  componentDidMount() {
+
+    this.interval = setInterval(() => this.loadText(), 1000);
+
+
+  }
+
+
+
+  loadText = () =>{
+
+
+    Meteor.call('readHelpCommandText',function (error, result) {
+
+      var ffmpegText = result[0].split("\r\n").map(row => <span>{row}<br/></span>)
+      var handbrakeText = result[1].split("\r\n").map(row => <span>{row}<br/></span>)
+
+      try{
+      render(ffmpegText, document.getElementById('FFmpegHelp'));
+    }catch(err){}
+
+    try{
+      render(handbrakeText, document.getElementById('HandBrakeHelp'));
+    }catch(err){}
+
+    })
+  
+
+
+
+  }
+
+
+
+  runHelpCommand = (mode,input) =>{
+
+
+    var text = ReactDOM.findDOMNode(this.refs[input]).value.trim()
+
+
+    Meteor.call('runHelpCommand',mode,text,function (error, result) {})
+  
+  
   }
 
   render() {
@@ -74,7 +127,49 @@ export default class App extends Component {
 
 
 
+
+
+
+
         </center>
+
+
+<br/>
+     
+       
+  <Tabs>
+    <TabList>
+      <Tab>FFmpeg</Tab>
+      <Tab>HandBrake</Tab>
+    </TabList>
+
+    <TabPanel>
+      
+
+    <center>
+<input type="text" className="folderPaths"  ref="ffmpegCommand" defaultValue={"--help"}></input>
+<p></p>
+<Button   variant="outline-dark" onClick={() => this.runHelpCommand("ffmpeg","ffmpegCommand")} >Run</Button>
+</center>
+
+    <div id="FFmpegHelp"></div> 
+    </TabPanel>
+    <TabPanel>
+
+      
+   
+    <center>
+<input type="text" className="folderPaths"   ref="handbrakeCommand" defaultValue={"--help"}></input>
+<p></p>
+<Button   variant="outline-dark" onClick={() => this.runHelpCommand("handbrake","handbrakeCommand")} >Run</Button>
+
+</center>
+
+    <div id="HandBrakeHelp"></div> 
+
+    </TabPanel>
+  </Tabs> 
+         
 
 
 
@@ -83,4 +178,3 @@ export default class App extends Component {
     );
   }
 }
-

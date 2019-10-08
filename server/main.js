@@ -985,7 +985,79 @@ Meteor.methods({
   
 
 
-  }, 
+  }, 'runHelpCommand'(mode,text) {
+
+    console.log(mode,text)
+
+    if (fs.existsSync(path.join(process.cwd() + "/npm"))) {
+      var handBrakeCLIPath = path.join(process.cwd() + '/assets/app/HandBrakeCLI.exe')
+  } else {
+      var handBrakeCLIPath = path.join(process.cwd() + '/private/HandBrakeCLI.exe')
+  }
+
+  var ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
+  var shell = require('shelljs');
+
+
+
+  console.log(handBrakeCLIPath)
+
+  console.log(ffmpegPath)
+
+if (process.platform == 'win32' && mode == "handbrake") {
+    workerCommand = handBrakeCLIPath + " "+text
+} else if (process.platform == 'win32' && mode == "ffmpeg") {
+    workerCommand = ffmpegPath + " "+text
+}
+
+if (process.platform == 'linux' && mode == "handbrake") {
+    workerCommand = "HandBrakeCLI" + " "+text
+} else if (process.platform == 'linux' && mode == "ffmpeg") {
+
+    workerCommand = ffmpegPath + " "+text
+
+}
+
+if (process.platform == 'darwin' && mode == "handbrake") {
+    workerCommand = "/usr/local/bin/HandBrakeCLI" + " "+text
+} else if (process.platform == 'darwin' && mode == "ffmpeg") {
+    workerCommand = ffmpegPath + " "+text
+}
+
+fs.writeFileSync(homePath + "/Tdarr/Data/" + mode + ".txt", "", 'utf8');
+
+
+var output = ""
+
+
+  var shellWorker = shell.exec(workerCommand, function (code, stdout, stderr, stdin) {
+    
+    console.log('Exit code:', code);
+
+      fs.appendFileSync(homePath + "/Tdarr/Data/" + mode + ".txt", stdout +'\r\n', 'utf8');
+      fs.appendFileSync(homePath + "/Tdarr/Data/" + mode + ".txt", stderr +'\r\n', 'utf8');
+
+});
+
+
+
+  }, 'readHelpCommandText'() {
+
+  try{
+    var ffmpegText = fs.readFileSync(homePath + "/Tdarr/Data/ffmpeg.txt", 'utf8')
+  }catch(err){
+    var ffmpegText = ''
+  }
+
+  try{
+    var handbrakeText = fs.readFileSync(homePath + "/Tdarr/Data/handbrake.txt", 'utf8')
+  }catch(err){
+    var handbrakeText = ''
+  }
+
+  return [ffmpegText,handbrakeText]
+
+  }
 
 })
 
@@ -1017,7 +1089,7 @@ function scheduledPluginUpdate() {
 }
 
 
-scheduledCacheClean()
+//scheduledCacheClean()
 
 function scheduledCacheClean() {
 
@@ -1044,31 +1116,46 @@ function scheduledCacheClean() {
       let fullPath = (path.join(inputPathStem, file)).replace(/\\/g, "/");
 
       try {
-        if (fs.lstatSync(fullPath).isDirectory()) {
 
-          var stats = fs.statSync(fullPath);
-          var mtime = stats.mtime;
-          var n = new Date()
-          var secsSinceModified = (n - mtime) / 1000
 
-          if (secsSinceModified > 86400) {
 
-            console.log("Removing:"+fullPath)
+        
+        var stats = fs.statSync(fullPath);
+        var mtime = stats.mtime;
+        var n = new Date()
+        var secsSinceModified = (n - mtime) / 1000
+        
+        if (secsSinceModified > 86400) {
 
-            rimraf.sync(fullPath);
+          console.log("Removing:"+fullPath)
 
-          } else {
+          try {
+          rimraf.sync(fullPath);
+        } catch (err) {
+          console.error(err.stack);
+          try {
+            traverseDir(fullPath);
+          } catch (err) {
+            console.error(err.stack);
 
-            try {
-
-              traverseDir(fullPath);
-            } catch (err) {
-              console.error(err.stack);
-
-            }
           }
         }
+       
+        } else {
+
+          try {
+            traverseDir(fullPath);
+          } catch (err) {
+            console.error(err.stack);
+
+          }
+        }
+
+        
+    
       } catch (err) {
+       
+
         console.error(err.stack);
       }
     });
