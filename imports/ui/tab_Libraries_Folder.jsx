@@ -1284,8 +1284,8 @@ this.setState({
 
 
     var obj = {
-      HealthCheck:"Not attempted",
-      TranscodeDecisionMaker:"Not attempted",
+      HealthCheck:"Queued",
+      TranscodeDecisionMaker:"Queued",
       cliLog:"",
     }
 
@@ -1410,8 +1410,8 @@ this.setState({
                     <Dropdown.Item style={{ color: 'green' }} onClick={() => this.scanFiles(1)} >Scan (Fresh)</Dropdown.Item>
 
 
-                    <Dropdown.Item onClick={() => this.resetAllStatus('TranscodeDecisionMaker')}>Reset all transcode status</Dropdown.Item>
-                    <Dropdown.Item onClick={() => this.resetAllStatus('HealthCheck')}>Reset all health check status</Dropdown.Item>
+                    <Dropdown.Item onClick={() => this.resetAllStatus('TranscodeDecisionMaker')}>Requeue all items (transcode)</Dropdown.Item>
+                    <Dropdown.Item onClick={() => this.resetAllStatus('HealthCheck')}>Requeue all items (health check)</Dropdown.Item>
 
 
 
