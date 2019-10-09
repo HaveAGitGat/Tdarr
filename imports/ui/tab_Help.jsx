@@ -1,15 +1,16 @@
- import React, { Component } from 'react';
+import React, { Component } from 'react';
 
 import { Meteor } from 'meteor/meteor';
 
-import { Button} from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
 
 import { render } from 'react-dom';
 import ReactDOM from 'react-dom'
 
 
-import 'react-tabs/style/react-tabs.css';
+
 
 
 
@@ -28,6 +29,8 @@ export default class App extends Component {
 
   componentDidMount() {
 
+
+
     this.interval = setInterval(() => this.loadText(), 1000);
 
 
@@ -35,24 +38,24 @@ export default class App extends Component {
 
 
 
-  loadText = () =>{
+  loadText = () => {
 
 
-    Meteor.call('readHelpCommandText',function (error, result) {
+    Meteor.call('readHelpCommandText', function (error, result) {
 
-      var ffmpegText = result[0].split("\r\n").map(row => <span>{row}<br/></span>)
-      var handbrakeText = result[1].split("\r\n").map(row => <span>{row}<br/></span>)
+      var ffmpegText = result[0].split("\r\n").map(row => <span>{row}<br /></span>)
+      var handbrakeText = result[1].split("\r\n").map(row => <span>{row}<br /></span>)
 
-      try{
-      render(ffmpegText, document.getElementById('FFmpegHelp'));
-    }catch(err){}
+      try {
+        render(ffmpegText, document.getElementById('FFmpegHelp'));
+      } catch (err) { }
 
-    try{
-      render(handbrakeText, document.getElementById('HandBrakeHelp'));
-    }catch(err){}
+      try {
+        render(handbrakeText, document.getElementById('HandBrakeHelp'));
+      } catch (err) { }
 
     })
-  
+
 
 
 
@@ -60,15 +63,14 @@ export default class App extends Component {
 
 
 
-  runHelpCommand = (mode,input) =>{
-
+  runHelpCommand = (mode, input ) => {
 
     var text = ReactDOM.findDOMNode(this.refs[input]).value.trim()
 
 
-    Meteor.call('runHelpCommand',mode,text,function (error, result) {})
-  
-  
+    Meteor.call('runHelpCommand', mode, text, function (error, result) { })
+
+
   }
 
   render() {
@@ -92,34 +94,36 @@ export default class App extends Component {
         <center>
 
 
-        <p>Join us!</p>
- 
- 
-          <div className="iconContainer">
-        <img src={"/images/icons/D.svg"}  onClick={()=> window.open("https://discord.gg/GF8X8cq", "_blank")} alt='icon' height="60" width="60" />
+          <p>Join us!</p>
+
+          </center>
+
+          <center>
+
+
+            <table>
+
+            <tbody>
+      <tr>
+        <td><div className="iconContainer">
+            <img src={"/images/icons/D.svg"} onClick={() => window.open("https://discord.gg/GF8X8cq", "_blank")} alt='icon' height="60" width="60" />
+          </div></td>
+        <td><div className="iconContainer">
+            <img src={"/images/icons/G.png"} onClick={() => window.open("https://github.com/HaveAGitGat/Tdarr/wiki", "_blank")} alt='icon' height="60" width="60" />
           </div>
 
+</td>
+        <td>       <div className="iconContainer">
+            <img src={"/images/icons/R.png"} onClick={() => window.open("https://www.reddit.com/r/Tdarr", "_blank")} alt='icon' height="60" width="60" />
+          </div></td>
+      </tr>
 
-         
-
-          <br></br>
-          <br></br>
-
-    
-           
-          <div className="iconContainer">
-        <img src={"/images/icons/G.png"}  onClick={()=> window.open("https://github.com/HaveAGitGat/Tdarr/wiki", "_blank")} alt='icon' height="60" width="60" />
-          </div>
-
-          <br></br>
-          <br></br>
+            </tbody>
+            </table>
 
 
+          </center>
 
-           
-          <div className="iconContainer">
-        <img src={"/images/icons/R.png"}  onClick={()=> window.open("https://www.reddit.com/r/Tdarr", "_blank")} alt='icon' height="60" width="60" />
-          </div>
 
           <br></br>
           <br></br>
@@ -131,45 +135,63 @@ export default class App extends Component {
 
 
 
-        </center>
-
-
-<br/>
-     
        
-  <Tabs>
-    <TabList>
-      <Tab>FFmpeg</Tab>
-      <Tab>HandBrake</Tab>
-    </TabList>
 
-    <TabPanel>
-      
+        <br />
 
-    <center>
-<input type="text" className="folderPaths"  ref="ffmpegCommand" defaultValue={"--help"}></input>
-<p></p>
-<Button   variant="outline-dark" onClick={() => this.runHelpCommand("ffmpeg","ffmpegCommand")} >Run</Button>
-</center>
 
-    <div id="FFmpegHelp"></div> 
-    </TabPanel>
-    <TabPanel>
+        <Tabs>
+          <TabList>
+            <Tab>FFmpeg</Tab>
+            <Tab>HandBrake</Tab>
+          </TabList>
 
-      
-   
-    <center>
-<input type="text" className="folderPaths"   ref="handbrakeCommand" defaultValue={"--help"}></input>
-<p></p>
-<Button   variant="outline-dark" onClick={() => this.runHelpCommand("handbrake","handbrakeCommand")} >Run</Button>
+          <TabPanel>
 
-</center>
 
-    <div id="HandBrakeHelp"></div> 
 
-    </TabPanel>
-  </Tabs> 
-         
+
+
+            <form onSubmit={(event) => {
+                
+              event.preventDefault();
+              this.runHelpCommand("ffmpeg", "ffmpegCommand")}}  >
+
+              <center>
+
+                ffmpeg<input type="text" className="folderPaths" ref="ffmpegCommand" defaultValue={"--help"}></input>
+                <p></p>
+                <Button variant="outline-dark" onClick={() => this.runHelpCommand("ffmpeg", "ffmpegCommand")} >Run</Button>
+              </center>
+
+
+
+            </form>
+
+
+            <div id="FFmpegHelp"></div>
+          </TabPanel>
+          <TabPanel>
+
+
+            <form onSubmit={() => {
+              event.preventDefault();
+              this.runHelpCommand("handbrake", "handbrakeCommand")}}  >
+
+              <center>
+                HandBrakeCLI<input type="text" className="folderPaths" ref="handbrakeCommand" defaultValue={"--help"}></input>
+                <p></p>
+                <Button variant="outline-dark" onClick={() => this.runHelpCommand("handbrake", "handbrakeCommand")} >Run</Button>
+
+              </center>
+
+            </form>
+
+            <div id="HandBrakeHelp"></div>
+
+          </TabPanel>
+        </Tabs>
+
 
 
 
