@@ -23,6 +23,9 @@ import ItemButton from './item_Button.jsx'
 
 import ClipLoader from 'react-spinners/ClipLoader';
 
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
+
 
 
 
@@ -676,18 +679,23 @@ class App extends Component {
 
 
 
+        <Tabs>
+    <TabList>
+      <Tab>Transcode queue ({this.renderStat('table1Count')})</Tab>
+      <Tab>Transcode: Completed or passed ({this.renderStat('table2Count')})</Tab>
+      <Tab>Transcode: Error ({this.renderStat('table3Count')})</Tab>
 
 
+      <Tab>Health check queue ({this.renderStat('table4Count')})</Tab>
+      <Tab>Health check: Healthy ({this.renderStat('table5Count')})</Tab>
+      <Tab>Health check: Error ({this.renderStat('table6Count')})</Tab>
 
-        <div className="queuegrid-container">
+    </TabList>
 
-          <div className="queuegrid-item">
+    <TabPanel>
+      
 
-
-
-            <center><p><b>Transcode queue ({this.renderStat('table1Count')})</b></p></center>
-
-            <table className="itemTable">   <tbody>
+    <table className="itemTable">   <tbody>
               <tr>
                 <th>No.</th>
                 <th>File</th>
@@ -696,23 +704,20 @@ class App extends Component {
               </tr>
               {this.renderTable('table1', 'queue')}
             </tbody></table>
+   
 
 
 
-          </div>
-
-          <div className="queuegrid-item">
-
-
-            <center><p><b>Transcode: Completed or passed ({this.renderStat('table2Count')})</b></p></center>
-
-
-            <table className="itemTable"><tbody>
+    </TabPanel>
+    <TabPanel>
+    <table className="itemTable"><tbody>
               <tr>
                 <th>No.</th>
                 <th>Time</th>
                 <th>File</th>
                 <th>Status</th>
+                <th>Old size</th>
+                <th>New size</th>
                 <th>Re-queue</th>
                 <th>Info</th>
 
@@ -721,15 +726,11 @@ class App extends Component {
               {this.renderTable('table2', 'success', 'TranscodeDecisionMaker')}
 
             </tbody></table>
+    </TabPanel>
 
-          </div>
+    <TabPanel>
 
-          <div className="queuegrid-item">
-
-            <center><p><b>Transcode: Error ({this.renderStat('table3Count')})</b></p></center>
-
-
-            <table className="itemTable">   <tbody>
+    <table className="itemTable">   <tbody>
               <tr>
                 <th>No.</th>
                 <th>Time</th>
@@ -747,14 +748,12 @@ class App extends Component {
 
             </tbody></table>
 
-          </div>
 
-          <div className="queuegrid-item">
+    </TabPanel>
 
-            <center><p><b>Health check queue ({this.renderStat('table4Count')})</b></p></center>
+    <TabPanel>
 
-
-            <table className="itemTable">   <tbody>
+    <table className="itemTable">   <tbody>
               <tr>
                 <th>No.</th>
                 <th>File</th>
@@ -765,16 +764,12 @@ class App extends Component {
 
             </tbody></table>
 
-          </div>
 
-          <div className="queuegrid-item">
+    </TabPanel>
 
+    <TabPanel>
 
-            <center><p><b>Health check: Healthy ({this.renderStat('table5Count')})</b></p></center>
-
-
-
-            <table className="itemTable">   <tbody>
+    <table className="itemTable">   <tbody>
               <tr>
                 <th>No.</th>
                 <th>Time</th>
@@ -789,12 +784,12 @@ class App extends Component {
 
 
             </tbody></table>
-          </div>
 
-          <div className="queuegrid-item">
 
-          <center><p><b>Health check: Error ({this.renderStat('table6Count')})</b></p></center>
-            <table className="itemTable">   <tbody>
+    </TabPanel>
+
+    <TabPanel>
+    <table className="itemTable">   <tbody>
               <tr>
                 <th>No.</th>
                 <th>Time</th>
@@ -813,10 +808,9 @@ class App extends Component {
 
             </tbody></table>
 
-          </div>
+    </TabPanel>
+  </Tabs> 
 
-
-        </div>
       </span>
     );
   }

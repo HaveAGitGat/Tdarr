@@ -153,6 +153,8 @@ if (!fs.existsSync(homePath + "/Tdarr/Plugins/Local")) {
 
 
 
+
+
 process.on('uncaughtException', function (err) {
   console.error(err.stack);
 
@@ -982,7 +984,8 @@ Meteor.methods({
     }
   
   
-  
+
+
 
 
   }, 'runHelpCommand'(mode,text) {
@@ -1060,6 +1063,11 @@ var output = ""
   }
 
 })
+
+
+//Init help page
+Meteor.call('runHelpCommand',"ffmpeg","--help",function (error, result) {})
+Meteor.call('runHelpCommand',"handbrake","--help",function (error, result) {})
 
 
 
@@ -3010,13 +3018,13 @@ function updatePieStats(property, fileMedium, pie) {
 
   for (var i = 0; i < uniquePropArr.length; i++) {
 
-    if (uniquePropArr[i] == "Not attempted") {
 
+
+    if (uniquePropArr[i] == "Not attempted") {
 
       data.push({ name: "Queued", value: allFilesWithProp.filter(row => row[property] == uniquePropArr[i]).length })
 
     } else {
-
 
       data.push({ name: uniquePropArr[i], value: allFilesWithProp.filter(row => row[property] == uniquePropArr[i]).length })
     }
