@@ -173,7 +173,7 @@ class App extends Component {
 
 
     var obj = {
-      [mode]: "Not attempted",
+      [mode]: "Queued",
       processingStatus: false,
       createdAt: new Date(),
     }

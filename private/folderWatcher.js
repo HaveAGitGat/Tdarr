@@ -186,8 +186,6 @@ function scanWatcherFiles() {
         ];
         process.send(message);
 
-       // Meteor.call('scanFiles', watcherFilesToScan[key].id, watcherFilesToScan[key].filesToScan, 0, 3, "Not attempted", "Not attempted", function (error, result) { });
-
        
        
        

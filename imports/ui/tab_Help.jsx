@@ -43,8 +43,8 @@ export default class App extends Component {
 
     Meteor.call('readHelpCommandText', function (error, result) {
 
-      var ffmpegText = result[0].split("\r\n").map(row => <span>{row}<br /></span>)
-      var handbrakeText = result[1].split("\r\n").map(row => <span>{row}<br /></span>)
+      var ffmpegText = result[0].split("\n").map(row => <span>{row}<br /></span>)
+      var handbrakeText = result[1].split("\n").map(row => <span>{row}<br /></span>)
 
       try {
         render(ffmpegText, document.getElementById('FFmpegHelp'));

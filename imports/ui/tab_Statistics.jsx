@@ -188,7 +188,7 @@ renderRedoButton(file, mode) {
 
 
   var obj = {
-    [mode]: "Not attempted",
+    [mode]: "Queued",
     processingStatus: false,
     createdAt: new Date(),
   }

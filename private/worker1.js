@@ -957,19 +957,23 @@ function workerNotEncounteredError() {
             if (reQueueAfter == true) {
 
                 var filePropertiesToAdd = {
-                  HealthCheck:"Not attempted",
-                  TranscodeDecisionMaker:"Not attempted",
+                  HealthCheck:"Queued",
+                  TranscodeDecisionMaker:"Queued",
                   lastTranscodeDate: new Date(),
                   cliLog:cliLog,
+                  oldSize:sourcefileSizeInGbytes,
+                  newSize:destfileSizeInGbytes
                 }
       
               } else {
       
                 var filePropertiesToAdd = {
-                  HealthCheck:"Not attempted",
+                  HealthCheck:"Queued",
                   TranscodeDecisionMaker:"Transcode success",
                   lastTranscodeDate: new Date(),
                   cliLog:cliLog,
+                  oldSize:sourcefileSizeInGbytes,
+                  newSize:destfileSizeInGbytes
                 }
               }
             

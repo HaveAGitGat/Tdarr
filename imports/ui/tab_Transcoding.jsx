@@ -294,18 +294,38 @@ class App extends Component {
     if (type == "queue") {
 
 
+      if (mode == "TranscodeDecisionMaker") {
 
 
-      return data.map((row, i) => (
+      return data.map((row, i) => {
+
+        if(row.file_size != undefined){
+          var file_size =  parseFloat((row.file_size/1000).toPrecision(4))
+        }else{
+          var file_size = "-"
+        }
 
 
+       return <tr key={row._id}>
+          <td>{i + 1}</td><td>{row.file}</td><td>{row.video_codec_name}</td><td>{row.video_resolution}</td><td>{file_size}</td><td>{this.renderBumpButton(row.file)}</td>
+          </tr>
 
-        <tr key={row._id}>
+      }
+      );
+
+
+    }else{
+
+      return data.map((row, i) => {
+
+       return <tr key={row._id}>
           <td>{i + 1}</td><td>{row.file}</td><td>{this.renderBumpButton(row.file)}</td>
-        </tr>
+          </tr>
 
+      }
+      );
 
-      ));
+    }
     }
 
     if (type == "success") {
@@ -322,8 +342,24 @@ class App extends Component {
             var lastTranscodeDate = "-"
           }
 
+          if(row.oldSize != undefined){
+            var oldSize =  parseFloat((row.oldSize/1000).toPrecision(4))
+          }else{
+            var oldSize = "-"
+          }
+
+          if(row.newSize != undefined){
+            var newSize  =  parseFloat((row.newSize/1000).toPrecision(4))
+          }else{
+            var newSize = "-"
+          }
+
+
+
+   
+
          return <tr key={row._id}>
-            <td>{i + 1}</td><td>{lastTranscodeDate}</td><td>{row.file}</td><td>{row.TranscodeDecisionMaker}</td><td>{this.renderRedoButton(row.file, mode)}</td><td>{this.renderInfoButton(row.cliLog)}</td>
+            <td>{i + 1}</td><td>{lastTranscodeDate}</td><td>{row.file}</td><td>{row.video_codec_name}</td><td>{row.video_resolution}</td><td>{row.TranscodeDecisionMaker}</td><td>{oldSize}</td><td>{newSize}</td><td>{this.renderRedoButton(row.file, mode)}</td><td>{this.renderInfoButton(row.cliLog)}</td>
           </tr>
 
 
@@ -423,7 +459,7 @@ class App extends Component {
 
 
     var obj = {
-      [mode]: "Not attempted",
+      [mode]: "Queued",
       processingStatus: false,
       createdAt: new Date(),
     }
@@ -682,13 +718,14 @@ class App extends Component {
         <Tabs>
     <TabList>
       <Tab>Transcode queue ({this.renderStat('table1Count')})</Tab>
-      <Tab>Transcode: Completed or passed ({this.renderStat('table2Count')})</Tab>
-      <Tab>Transcode: Error ({this.renderStat('table3Count')})</Tab>
+      <Tab>Transcode: Completed/Passed ({this.renderStat('table2Count')})</Tab>
+      <Tab>Transcode: Error/Cancelled ({this.renderStat('table3Count')})</Tab>
+
 
 
       <Tab>Health check queue ({this.renderStat('table4Count')})</Tab>
       <Tab>Health check: Healthy ({this.renderStat('table5Count')})</Tab>
-      <Tab>Health check: Error ({this.renderStat('table6Count')})</Tab>
+      <Tab>Health check: Error/Cancelled ({this.renderStat('table6Count')})</Tab>
 
     </TabList>
 
@@ -699,10 +736,13 @@ class App extends Component {
               <tr>
                 <th>No.</th>
                 <th>File</th>
+                <th>Codec</th>
+                <th>Resolution</th>
+                <th>Size (GB)</th>
                 <th>Bump</th>
 
               </tr>
-              {this.renderTable('table1', 'queue')}
+              {this.renderTable('table1', 'queue','TranscodeDecisionMaker')}
             </tbody></table>
    
 
@@ -715,9 +755,11 @@ class App extends Component {
                 <th>No.</th>
                 <th>Time</th>
                 <th>File</th>
+                <th>Codec</th>
+                <th>Resolution</th>
                 <th>Status</th>
-                <th>Old size</th>
-                <th>New size</th>
+                <th>Old size (GB)</th>
+                <th>New size (GB)</th>
                 <th>Re-queue</th>
                 <th>Info</th>
 
@@ -735,7 +777,7 @@ class App extends Component {
                 <th>No.</th>
                 <th>Time</th>
                 <th>File</th>
-                <th>Status</th>
+                <th>Re-queue</th>
                 <th>Ignore</th>
                 <th>Info</th>
 
@@ -760,7 +802,7 @@ class App extends Component {
                 <th>Bump</th>
 
               </tr>
-              {this.renderTable('table4', 'queue')}
+              {this.renderTable('table4', 'queue','HealthCheck')}
 
             </tbody></table>
 
@@ -794,7 +836,7 @@ class App extends Component {
                 <th>No.</th>
                 <th>Time</th>
                 <th>File</th>
-                <th>Status</th>
+                <th>Re-queue</th>
                 <th>Ignore</th>
                 <th>Info</th>
 

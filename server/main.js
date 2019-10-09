@@ -150,6 +150,40 @@ if (!fs.existsSync(homePath + "/Tdarr/Plugins/Local")) {
 //fs.writeFileSync(homePath + "/Tdarr/Data/test.txt", "Hello", 'utf8');
 
 
+//migration step
+
+var dbMigration = FileDB.find({}).fetch()
+
+
+for(var i = 0; i < dbMigration.length; i++){
+
+  if(dbMigration[i].TranscodeDecisionMaker == "Not attempted"){
+
+    FileDB.upsert(
+      dbMigration[i].file,
+      {
+        $set: {
+          TranscodeDecisionMaker: "Queued",
+        }
+      }
+    );
+  }
+
+  if(dbMigration[i].HealthCheck == "Not attempted"){
+
+    FileDB.upsert(
+      dbMigration[i].file,
+      {
+        $set: {
+          HealthCheck: "Queued",
+        }
+      }
+    );
+
+    
+  }
+}
+
 
 
 
@@ -533,7 +567,7 @@ Meteor.methods({
           allFiles[i].file,
           {
             $set: {
-              [mode]: "Not attempted",
+              [mode]: "Queued",
             }
           }
         );
@@ -975,14 +1009,9 @@ Meteor.methods({
   
     }
 
-    if(detail == "Queued"){
-
-      return allFilesWithProp.filter(row => row[property] == "Not attempted")
-
-    }else{
+ 
       return allFilesWithProp.filter(row => row[property] == detail)
-    }
-  
+
   
 
 
@@ -1037,8 +1066,8 @@ var output = ""
     
     console.log('Exit code:', code);
 
-      fs.appendFileSync(homePath + "/Tdarr/Data/" + mode + ".txt", stdout +'\r\n', 'utf8');
-      fs.appendFileSync(homePath + "/Tdarr/Data/" + mode + ".txt", stderr +'\r\n', 'utf8');
+      fs.appendFileSync(homePath + "/Tdarr/Data/" + mode + ".txt", stdout +'\n', 'utf8');
+      fs.appendFileSync(homePath + "/Tdarr/Data/" + mode + ".txt", stderr +'\n', 'utf8');
 
 });
 
@@ -1512,11 +1541,11 @@ function launchWorkerModule(workerType) {
 
               if (workerType == "general") {
 
-                if (firstItem.HealthCheck == "Not attempted" && firstItem.fileMedium == "video") {
+                if (firstItem.HealthCheck == "Queued" && firstItem.fileMedium == "video") {
 
                   var mode = "healthcheck"
 
-                } else if (firstItem.TranscodeDecisionMaker == "Not attempted") {
+                } else if (firstItem.TranscodeDecisionMaker == "Queued") {
                   var mode = "transcode"
                 }
               }
@@ -1631,6 +1660,8 @@ function launchWorkerModule(workerType) {
 
                     for (var i = 0; i < pluginsSelected.length; i++) {
 
+                      try{
+
                       //var pluginID = settings[0].pluginID
                       var pluginID = pluginsSelected[i]._id
 
@@ -1675,6 +1706,17 @@ function launchWorkerModule(workerType) {
                         break
 
                       }
+                    }catch(err){
+                      processFile = false
+                      preset = ''
+                      container = ''
+                      handBrakeMode = ''
+                      FFmpegMode = ''
+                      reQueueAfter = ''
+                      cliLogAdd += 'Plugin does not exist!  \n'
+
+
+                    }
                     }
                   }
 
@@ -1997,7 +2039,6 @@ function launchWorkerModule(workerType) {
               HealthCheck: "Error",
               processingStatus: false,
               cliLog: message[5],
-              createdAt: new Date(),
               lastHealthCheckDate: new Date()
             }
           }
@@ -2021,7 +2062,6 @@ function launchWorkerModule(workerType) {
               TranscodeDecisionMaker: "Transcode error",
               processingStatus: false,
               cliLog: message[5],
-              createdAt: new Date(),
               lastTranscodeDate: new Date()
             }
           }
@@ -2060,7 +2100,6 @@ function launchWorkerModule(workerType) {
               _id: message[2],
               HealthCheck: "Success",
               processingStatus: false,
-              createdAt: new Date(),
               lastHealthCheckDate: new Date()
             }
           }
@@ -2479,8 +2518,8 @@ function createFolderWatch(Folder, DB_id) {
 
 
       var obj = {
-        HealthCheck:"Not attempted",
-        TranscodeDecisionMaker:"Not attempted",
+        HealthCheck:"Queued",
+        TranscodeDecisionMaker:"Queued",
         cliLog:"",
       }
 
@@ -2714,11 +2753,11 @@ function tablesUpdate() {
 
       //
 
-      var table1data = allFilesPulledTable.filter(row => (row.TranscodeDecisionMaker == "Not attempted" && row.processingStatus == false));
+      var table1data = allFilesPulledTable.filter(row => (row.TranscodeDecisionMaker == "Queued" && row.processingStatus == false));
       
       var table2data = allFilesPulledTable.filter(row => ((row.TranscodeDecisionMaker == "Transcode success" || row.TranscodeDecisionMaker == "Passed") && row.processingStatus == false)); 
       var table3data = allFilesPulledTable.filter(row => ((row.TranscodeDecisionMaker == "Transcode error" || row.TranscodeDecisionMaker == "Transcode cancelled") && row.processingStatus == false));
-      var table4data = allFilesPulledTable.filter(row => (row.HealthCheck == "Not attempted" && row.fileMedium == "video" && row.processingStatus == false));
+      var table4data = allFilesPulledTable.filter(row => (row.HealthCheck == "Queued" && row.fileMedium == "video" && row.processingStatus == false));
       var table5data = allFilesPulledTable.filter(row => (row.HealthCheck == "Success" && row.processingStatus == false));
       var table6data = allFilesPulledTable.filter(row => ((row.HealthCheck == "Error" || row.HealthCheck == "Cancelled") && row.processingStatus == false));
 
@@ -3020,14 +3059,9 @@ function updatePieStats(property, fileMedium, pie) {
 
 
 
-    if (uniquePropArr[i] == "Not attempted") {
-
-      data.push({ name: "Queued", value: allFilesWithProp.filter(row => row[property] == uniquePropArr[i]).length })
-
-    } else {
 
       data.push({ name: uniquePropArr[i], value: allFilesWithProp.filter(row => row[property] == uniquePropArr[i]).length })
-    }
+    
 
   }
 
