@@ -557,7 +557,7 @@ function ffprobeLaunch(filesToScan) {
                 //Bounds +- 10%
                 // 480p	720	480		648	792		432	528
                 // 576p	720	576		648	792		518.4	633.6
-                // 720p	1280	720		1152	1408		648	792
+                // 720p	1280	720		1152/864	1408		648	792
                 // 1080p	1920	1080		1728	2112		972	1188
                 // 4KUHD	3840	2160		3456	4224		1944	2376
                 // DCI4K	4096	2160		3686.4	4505.6		1944	2376
@@ -570,7 +570,7 @@ function ffprobeLaunch(filesToScan) {
                     videoResolution = "480p"
                 } else if (vidWidth >= 648 && vidWidth <= 792 && vidHeight >= 518 && vidHeight <= 634) {
                     videoResolution = "576p"
-                } else if (vidWidth >= 1152 && vidWidth <= 1408 && vidHeight >= 648 && vidHeight <= 792) {
+                } else if (vidWidth >= 864 && vidWidth <= 1408 && vidHeight >= 648 && vidHeight <= 792) {
                     videoResolution = "720p"
                 } else if (vidWidth >= 1728 && vidWidth <= 2112 && vidHeight >= 972 && vidHeight <= 1188) {
                     videoResolution = "1080p"
