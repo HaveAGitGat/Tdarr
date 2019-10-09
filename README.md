@@ -28,7 +28,7 @@ https://github.com/HaveAGitGat/Tdarr_Plugins
 Currently in Alpha but looking for feedback/suggestions. 
 
 <p align="center">
-<img src="https://i.imgur.com/bp0EvhO.png" height="300" />
+<img src="https://i.imgur.com/wRV6tBJ.png" height="300" />
 </p>
 
 
