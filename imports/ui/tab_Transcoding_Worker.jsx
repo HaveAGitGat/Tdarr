@@ -220,7 +220,9 @@ export default class Worker extends Component {
 
                 <tr><td>Duration:</td><td>{this.duration(this.props.worker.startTime)}</td></tr>
 
-                <tr><td>Original size (GB)</td><td>{this.props.worker.sourcefileSizeInGbytes}</td></tr>
+                <tr><td>Original size (GB)</td><td>{parseFloat((this.props.worker.sourcefileSizeInGbytes).toPrecision(4))}</td></tr>
+
+               
                 
                 </tbody>
 

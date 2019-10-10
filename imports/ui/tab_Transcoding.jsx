@@ -797,7 +797,7 @@ class App extends Component {
                 <th>File</th>
                 <th>Codec</th>
                 <th>Resolution</th>
-                <th>Status</th>
+                <th>Transcode</th>
                 <th>Old size (GB)</th>
                 <th>New size (GB)</th>
                 <th>Re-queue</th>

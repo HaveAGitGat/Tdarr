@@ -139,7 +139,7 @@ export default class App extends Component {
 
         <br />
 
-
+Terminal:
         <Tabs>
           <TabList>
             <Tab>FFmpeg</Tab>

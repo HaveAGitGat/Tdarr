@@ -718,7 +718,7 @@ class App extends Component {
 
 <img src="https://i.imgur.com/vyp7fle.png"/>
 
-<p>'Scan (Find new)' does 2 things - it removes files from the database which don't exist anymore, and adds newly detected files. Turn on 'Folder watch' to automate this process.</p>
+<p>'Scan (Find new)' does 2 things - it removes files from the database which don't exist anymore, and adds newly detected files. Turn on 'Folder watch' to automate this process. New files will be scanned for every 30 seconds or so.</p>
 <p>All new files will be added to both the transcode queues and the health check queues. If you're not interested in using one or the other, then just make sure not to fire up any workers for that respective queue.</p>
 
 <p></p>

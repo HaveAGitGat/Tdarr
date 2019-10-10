@@ -109,6 +109,37 @@ export default class App extends Component {
             <p></p>
             <p>@GilbN and @Drawmonster for support and debugging.</p>
 
+            <p></p>
+            <p></p>
+            <p></p>
+
+            <p>Change log</p>
+
+            <p>v1.003 release [10th Oct 19]:
+  <br/>No breaking changes.
+  <br/>Changes:
+  <br/>-Workers now show more detailed information: ETA, CLI type, preset, process reasons, start time, duration and original file size.
+  <br/>-Help links updated
+  <br/>-Improvements to FFmpeg percentages
+  <br/>-Switch to turn processing of a library On/Off
+  <br/>-Can now click on Pie-chart segments to see files in those segments
+  <br/>-'Not attempted' items renamed to 'Queued'. 'Transcode:Passed' items renamed to 'Transcode:Not required'
+  <br/>-Status tables have been put into tabs. Each tab shows the number of related items on it (e.g. No. items in queue.) Additional information added to items (codec,resolution etc)
+  <br/>-Date time stamp now shown on processed items. Old/New size now shown for transcode items.
+  <br/>-HandBrake and FFmpeg terminal implemented on the 'Help' tab. This is mainly so you can see documentation such as what encoder types are enabled etc but any HandBrake/FFmpeg commands can be put into the terminal.
+  <br/>-Create a sample button added to items in Search results. Clicking the button will create a 30 second sample of the selected file and output it in the new 'Samples' folder in the Tdarr data folder. Use the sample to test plugins/transcode settings and to help when reporting bugs.
+  <br/>-Additional schedule buttons added so you can bulk change daily hour slots.
+  <br/>-Reduced 720p boundaries so now 960*720 video files will show up in the 720p category instead of just 1280*720 files.
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+</p>
+
+
 
 
           </div>
