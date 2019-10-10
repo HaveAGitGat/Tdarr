@@ -103,14 +103,14 @@ class App extends Component {
           <div className="frame">
             <div className="scroll">
 
-            
+            <div className="modalText">
         <p></p>
         <p>Copy a community plugin id into the 'Plugin ID:' section of one of your libraries. Make sure the 'Community' checkbox is selected.</p>
         <p></p>
         <p></p>
 
         <p>For information on creating community and local plugins, have a look at:https://github.com/HaveAGitGat/Tdarr_Plugins</p>
-
+        </div>
             </div>
           </div>
         </Modal>

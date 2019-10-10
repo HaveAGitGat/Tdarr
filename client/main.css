@@ -848,5 +848,11 @@ table.workerDetailTable td {
   text-align: left;
 }
 
+.modalText{
+
+  padding-right: 10%;
+  padding-left: 10%;
+  text-align: left;
+}
 
 

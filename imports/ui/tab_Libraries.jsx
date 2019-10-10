@@ -708,7 +708,7 @@ class App extends Component {
           <div className="frame">
             <div className="scroll">
 
-
+            <div className="modalText">
             <p>Tdarr is designed to automatically manage transcoding and health checking of your media libraries. If you've used HBBatchBeast, a lot of the settings will look familiar.</p>
 
 
@@ -759,7 +759,7 @@ class App extends Component {
 <p>Watch out for the schedule settings. If scheduled blocks are ticked, and worker limits are set at the top of the 'Tdarr' tab, then workers will be fired up even if you keep closing them down. It's also important to note that workers won't process items for the respective library outside the selected time blocks.</p>
 
 
-            
+</div>  
 
             </div>
           </div>
