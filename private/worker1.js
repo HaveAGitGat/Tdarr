@@ -831,11 +831,8 @@ function getOutputPath(inputFilePath, outputFileContainer, inputPathStem, output
     subfilePath = filePathEndFileType + outputFileContainer;   // "test" +".mp4"
 
 
-
     LongsubfilePath = str.slice(0, str.lastIndexOf(stringProcessingSlash)); //  path/to/folder
-
     newsubfilePath = LongsubfilePath + stringProcessingSlash + subfilePath; // path/to/folder + "/" + "test.mp4"
-
     outputFilePath = outputPathStem + newsubfilePath;
 
     return outputFilePath.replace(/\\/g, "/");
@@ -922,7 +919,6 @@ function workerNotEncounteredError() {
 
 
             finalFilePathCopy[finalFilePathCopy.length - 2] = finalFilePathCopy[finalFilePathCopy.length - 2] + "-TdarrNew"
-
             finalFilePathCopy = finalFilePathCopy.join(".")
 
 

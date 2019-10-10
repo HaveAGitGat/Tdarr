@@ -653,7 +653,6 @@ function addFileToDB(filePath, FileObject,obj) {
 
     if (foundCounter % 10 == 0) {
 
-
         var message = [
             scannerID,
             "updateScanFound",

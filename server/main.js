@@ -88,19 +88,6 @@ if (process.env.NODE_ENV == 'production') {
 
   }
 
-  // try{
-  //   var homePath = process.env.DATA
-
-  // }catch(errr){
-
-  //   var homePath = home + '/Documents'
-  // }
-
-  // if(process.env.DATA == 'undefined'){
-  //   var homePath = home + '/Documents'
-  // }else{
-  //   var homePath = process.env.DATA
-  // }
 } else {
   var homePath = home + '/Documents'
 }
@@ -144,6 +131,11 @@ if (!fs.existsSync(homePath + "/Tdarr/Plugins/Local")) {
 
 }
 
+if (!fs.existsSync(homePath + "/Tdarr/Samples")) {
+  fs.mkdirSync(homePath + "/Tdarr/Samples");
+
+}
+
 
 //Test
 //console.log("homePath:"+homePath)
@@ -155,9 +147,9 @@ if (!fs.existsSync(homePath + "/Tdarr/Plugins/Local")) {
 var dbMigration = FileDB.find({}).fetch()
 
 
-for(var i = 0; i < dbMigration.length; i++){
+for (var i = 0; i < dbMigration.length; i++) {
 
-  if(dbMigration[i].TranscodeDecisionMaker == "Not attempted"){
+  if (dbMigration[i].TranscodeDecisionMaker == "Not attempted") {
 
     FileDB.upsert(
       dbMigration[i].file,
@@ -169,7 +161,7 @@ for(var i = 0; i < dbMigration.length; i++){
     );
   }
 
-  if(dbMigration[i].HealthCheck == "Not attempted"){
+  if (dbMigration[i].HealthCheck == "Not attempted") {
 
     FileDB.upsert(
       dbMigration[i].file,
@@ -180,7 +172,7 @@ for(var i = 0; i < dbMigration.length; i++){
       }
     );
 
-    
+
   }
 }
 
@@ -294,8 +286,6 @@ StatisticsDB.upsert("statistics",
     }
   }
 );
-
-
 
 
 ClientDB.upsert('client',
@@ -812,7 +802,17 @@ Meteor.methods({
       filesInDB = filesInDB.map(row => row + '\r\n')
       filesInDB = filesInDB.join("")
 
-      fs.writeFileSync(homePath + "/Tdarr/Data/" + scannerID + ".txt", filesInDB, 'utf8');
+      try{
+
+        fs.writeFileSync(homePath + "/Tdarr/Data/" + scannerID + ".txt", filesInDB, 'utf8');
+
+      }catch(err){
+
+        updateConsole("Error writing to file: " + err.stack, true)
+
+      }
+
+    
 
       filesInDB = []
 
@@ -833,7 +833,12 @@ Meteor.methods({
       arrayOrPath = arrayOrPath.map(row => row + '\r\n')
       arrayOrPath = arrayOrPath.join("")
 
-      fs.writeFileSync(homePath + "/Tdarr/Data/" + scannerID + ".txt", arrayOrPath, 'utf8');
+     
+      try{
+        fs.writeFileSync(homePath + "/Tdarr/Data/" + scannerID + ".txt", arrayOrPath, 'utf8');
+      }catch(err){
+        updateConsole("Error writing to file: " + err.stack, true)
+      }
 
       arrayOrPath = []
 
@@ -917,13 +922,13 @@ Meteor.methods({
 
         var jsonData = JSON.parse(message[2]);
 
-        if(jsonData.createdAt){
+        if (jsonData.createdAt) {
           jsonData.createdAt = new Date(jsonData.createdAt);
         }
-        if(jsonData.lastHealthCheckDate){
+        if (jsonData.lastHealthCheckDate) {
           jsonData.lastHealthCheckDate = new Date(jsonData.lastHealthCheckDate);
         }
-        if(jsonData.lastTranscodeDate){
+        if (jsonData.lastTranscodeDate) {
           jsonData.lastTranscodeDate = new Date(jsonData.lastTranscodeDate);
         }
 
@@ -995,108 +1000,151 @@ Meteor.methods({
   }, 'returnPieFiles'(property, fileMedium, detail) {
 
 
-  
+
     var allFilesWithProp = allFilesPulledTable
-  
-  
+
+
     if (fileMedium == "video" || fileMedium == "audio") {
-  
+
       allFilesWithProp = allFilesWithProp.filter(row => (!!row[property] && row.fileMedium == fileMedium));
-  
+
     } else {
-  
+
       allFilesWithProp = allFilesWithProp.filter(row => (!!row[property]));
-  
+
     }
 
- 
-      return allFilesWithProp.filter(row => row[property] == detail)
 
-  
+    return allFilesWithProp.filter(row => row[property] == detail)
 
 
 
 
-  }, 'runHelpCommand'(mode,text) {
 
-    console.log(mode,text)
 
-    if (fs.existsSync(path.join(process.cwd() + "/npm"))) {
-      var handBrakeCLIPath = path.join(process.cwd() + '/assets/app/HandBrakeCLI.exe')
-  } else {
-      var handBrakeCLIPath = path.join(process.cwd() + '/private/HandBrakeCLI.exe')
+  }, 'runHelpCommand'(mode, text) {
+
+    console.log(mode, text)
+
+
+
+
+
+
+    if (process.platform == 'win32' && mode == "handbrake") {
+      workerCommand = handBrakeCLIPath + " " + text
+    } else if (process.platform == 'win32' && mode == "ffmpeg") {
+      workerCommand = ffmpegPath + " " + text
+    }
+
+    if (process.platform == 'linux' && mode == "handbrake") {
+      workerCommand = "HandBrakeCLI" + " " + text
+    } else if (process.platform == 'linux' && mode == "ffmpeg") {
+
+      workerCommand = ffmpegPath + " " + text
+
+    }
+
+    if (process.platform == 'darwin' && mode == "handbrake") {
+      workerCommand = "/usr/local/bin/HandBrakeCLI" + " " + text
+    } else if (process.platform == 'darwin' && mode == "ffmpeg") {
+      workerCommand = ffmpegPath + " " + text
+    }
+
+    fs.writeFileSync(homePath + "/Tdarr/Data/" + mode + ".txt", "", 'utf8');
+
+
+    var shellWorker = shell.exec(workerCommand, function (code, stdout, stderr, stdin) {
+
+      console.log('Exit code:', code);
+
+      fs.appendFileSync(homePath + "/Tdarr/Data/" + mode + ".txt", stdout + '\n', 'utf8');
+      fs.appendFileSync(homePath + "/Tdarr/Data/" + mode + ".txt", stderr + '\n', 'utf8');
+
+    });
+
+
+
+  },
+
+  'readHelpCommandText'() {
+
+    try {
+      var ffmpegText = fs.readFileSync(homePath + "/Tdarr/Data/ffmpeg.txt", 'utf8')
+    } catch (err) {
+      var ffmpegText = ''
+    }
+
+    try {
+      var handbrakeText = fs.readFileSync(homePath + "/Tdarr/Data/handbrake.txt", 'utf8')
+    } catch (err) {
+      var handbrakeText = ''
+    }
+
+    return [ffmpegText, handbrakeText]
+
+  },
+  'createSample'(filePath) {
+
+    console.log(filePath)
+    var inputFile = filePath
+    var outputFile = filePath.split(".")
+
+    outputFile[outputFile.length - 2] = outputFile[outputFile.length - 2] + " - TdarrSample"
+    outputFile = outputFile.join(".")
+
+    outputFile = outputFile.split("/")
+    outputFile = homePath + "/Tdarr/Samples/" +outputFile[outputFile.length - 1]
+
+    var inputFileUnix = inputFile.replace(/'/g, '\'\"\'\"\'');
+    var outputFileUnix = outputFile.replace(/'/g, '\'\"\'\"\'');
+    var ffmpegPathUnix = ffmpegPath.replace(/'/g, '\'\"\'\"\'');
+
+    var preset = "-ss 1 -t 30 -acodec copy -vcodec copy"
+
+    if (fs.existsSync(outputFile)) {
+      fs.unlinkSync(outputFile)
   }
 
-  var ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
-  var shell = require('shelljs');
+
+    if (process.platform == 'win32') {
+      workerCommand = ffmpegPath + " -i \"" + inputFile + "\" " + preset + " \"" + outputFile + "\" "
+    }
+
+    if (process.platform == 'linux' || process.platform == 'darwin') {
+
+      workerCommand = ffmpegPathUnix + " -i '" + inputFileUnix + "' " + preset + " '" + outputFileUnix + "' "
+    }
+
+    var shellWorker = shell.exec(workerCommand, function (code, stdout, stderr, stdin) {
+
+      console.log('Exit code:', code);
+    });
 
 
 
-  console.log(handBrakeCLIPath)
-
-  console.log(ffmpegPath)
-
-if (process.platform == 'win32' && mode == "handbrake") {
-    workerCommand = handBrakeCLIPath + " "+text
-} else if (process.platform == 'win32' && mode == "ffmpeg") {
-    workerCommand = ffmpegPath + " "+text
-}
-
-if (process.platform == 'linux' && mode == "handbrake") {
-    workerCommand = "HandBrakeCLI" + " "+text
-} else if (process.platform == 'linux' && mode == "ffmpeg") {
-
-    workerCommand = ffmpegPath + " "+text
-
-}
-
-if (process.platform == 'darwin' && mode == "handbrake") {
-    workerCommand = "/usr/local/bin/HandBrakeCLI" + " "+text
-} else if (process.platform == 'darwin' && mode == "ffmpeg") {
-    workerCommand = ffmpegPath + " "+text
-}
-
-fs.writeFileSync(homePath + "/Tdarr/Data/" + mode + ".txt", "", 'utf8');
-
-
-var output = ""
-
-
-  var shellWorker = shell.exec(workerCommand, function (code, stdout, stderr, stdin) {
-    
-    console.log('Exit code:', code);
-
-      fs.appendFileSync(homePath + "/Tdarr/Data/" + mode + ".txt", stdout +'\n', 'utf8');
-      fs.appendFileSync(homePath + "/Tdarr/Data/" + mode + ".txt", stderr +'\n', 'utf8');
-
-});
-
-
-
-  }, 'readHelpCommandText'() {
-
-  try{
-    var ffmpegText = fs.readFileSync(homePath + "/Tdarr/Data/ffmpeg.txt", 'utf8')
-  }catch(err){
-    var ffmpegText = ''
-  }
-
-  try{
-    var handbrakeText = fs.readFileSync(homePath + "/Tdarr/Data/handbrake.txt", 'utf8')
-  }catch(err){
-    var handbrakeText = ''
-  }
-
-  return [ffmpegText,handbrakeText]
-
-  }
+  },
 
 })
 
 
 //Init help page
-Meteor.call('runHelpCommand',"ffmpeg","--help",function (error, result) {})
-Meteor.call('runHelpCommand',"handbrake","--help",function (error, result) {})
+Meteor.call('runHelpCommand', "ffmpeg", "--help", function (error, result) { })
+Meteor.call('runHelpCommand', "handbrake", "--help", function (error, result) { })
+
+
+if (fs.existsSync(path.join(process.cwd() + "/npm"))) {
+  var handBrakeCLIPath = path.join(process.cwd() + '/assets/app/HandBrakeCLI.exe')
+} else {
+  var handBrakeCLIPath = path.join(process.cwd() + '/private/HandBrakeCLI.exe')
+}
+
+var ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
+var shell = require('shelljs');
+
+
+
+
 
 
 
@@ -1132,78 +1180,78 @@ function scheduledCacheClean() {
 
   try {
 
-  var settings = SettingsDB.find({}, { sort: { createdAt: 1 } }).fetch()
+    var settings = SettingsDB.find({}, { sort: { createdAt: 1 } }).fetch()
 
-  for (var i = 0; i < settings.length; i++) {
+    for (var i = 0; i < settings.length; i++) {
 
-
-    try {
-      traverseDir(settings[i].cache)
-    } catch (err) { }
-  }
-
-
-
-
-  function traverseDir(inputPathStem) {
-
-    try {
-    fs.readdirSync(inputPathStem).forEach(file => {
-
-      let fullPath = (path.join(inputPathStem, file)).replace(/\\/g, "/");
 
       try {
+        traverseDir(settings[i].cache)
+      } catch (err) { }
+    }
 
 
 
-        
-        var stats = fs.statSync(fullPath);
-        var mtime = stats.mtime;
-        var n = new Date()
-        var secsSinceModified = (n - mtime) / 1000
-        
-        if (secsSinceModified > 86400) {
 
-          console.log("Removing:"+fullPath)
+    function traverseDir(inputPathStem) {
+
+      try {
+        fs.readdirSync(inputPathStem).forEach(file => {
+
+          let fullPath = (path.join(inputPathStem, file)).replace(/\\/g, "/");
 
           try {
-          rimraf.sync(fullPath);
-        } catch (err) {
-          console.error(err.stack);
-          try {
-            traverseDir(fullPath);
+
+
+
+
+            var stats = fs.statSync(fullPath);
+            var mtime = stats.mtime;
+            var n = new Date()
+            var secsSinceModified = (n - mtime) / 1000
+
+            if (secsSinceModified > 86400) {
+
+              console.log("Removing:" + fullPath)
+
+              try {
+                rimraf.sync(fullPath);
+              } catch (err) {
+                console.error(err.stack);
+                try {
+                  traverseDir(fullPath);
+                } catch (err) {
+                  console.error(err.stack);
+
+                }
+              }
+
+            } else {
+
+              try {
+                traverseDir(fullPath);
+              } catch (err) {
+                console.error(err.stack);
+
+              }
+            }
+
+
+
           } catch (err) {
+
+
             console.error(err.stack);
-
           }
-        }
-       
-        } else {
-
-          try {
-            traverseDir(fullPath);
-          } catch (err) {
-            console.error(err.stack);
-
-          }
-        }
-
-        
-    
-      } catch (err) {
-       
-
-        console.error(err.stack);
-      }
-    });
+        });
 
 
 
-  }catch(err){}
-}
+      } catch (err) { }
+    }
 
 
-} catch (err) { }
+  } catch (err) { }
 
   setTimeout(Meteor.bindEnvironment(scheduledCacheClean), 60000);
 }
@@ -1471,7 +1519,7 @@ function launchWorkerModule(workerType) {
 
 
             var files = generalFiles
-            
+
 
           } else if (workerType == "transcode") {
 
@@ -1660,63 +1708,63 @@ function launchWorkerModule(workerType) {
 
                     for (var i = 0; i < pluginsSelected.length; i++) {
 
-                      try{
+                      try {
 
-                      //var pluginID = settings[0].pluginID
-                      var pluginID = pluginsSelected[i]._id
-
-
-                      var plugin = ''
-
-                      if (settings[0].pluginCommunity == true) {
-                        // var plugin = require(homePath + '/Tdarr/Plugins/Community/' + pluginID + '.js');
-
-                        var hwSource = fs.readFileSync(homePath + '/Tdarr/Plugins/Community/' + pluginID + '.js', 'utf8');
-                        var hwFunc = new Function('module', hwSource);
-                        var hwModule = { exports: {} };
-                        hwFunc(hwModule)
-                        var plugin = hwModule.exports;
+                        //var pluginID = settings[0].pluginID
+                        var pluginID = pluginsSelected[i]._id
 
 
-                      } else {
-                        // var plugin = require(homePath + '/Tdarr/Plugins/Local/' + pluginID + '.js');
-                        var hwSource = fs.readFileSync(homePath + '/Tdarr/Plugins/Local/' + pluginID + '.js', 'utf8');
-                        var hwFunc = new Function('module', hwSource);
-                        var hwModule = { exports: {} };
-                        hwFunc(hwModule)
-                        var plugin = hwModule.exports;
+                        var plugin = ''
+
+                        if (settings[0].pluginCommunity == true) {
+                          // var plugin = require(homePath + '/Tdarr/Plugins/Community/' + pluginID + '.js');
+
+                          var hwSource = fs.readFileSync(homePath + '/Tdarr/Plugins/Community/' + pluginID + '.js', 'utf8');
+                          var hwFunc = new Function('module', hwSource);
+                          var hwModule = { exports: {} };
+                          hwFunc(hwModule)
+                          var plugin = hwModule.exports;
+
+
+                        } else {
+                          // var plugin = require(homePath + '/Tdarr/Plugins/Local/' + pluginID + '.js');
+                          var hwSource = fs.readFileSync(homePath + '/Tdarr/Plugins/Local/' + pluginID + '.js', 'utf8');
+                          var hwFunc = new Function('module', hwSource);
+                          var hwModule = { exports: {} };
+                          hwFunc(hwModule)
+                          var plugin = hwModule.exports;
+                        }
+
+
+
+                        var response = plugin.plugin(firstItem);
+
+                        console.dir(response)
+
+                        processFile = response.processFile
+                        preset = response.preset
+                        container = response.container
+                        handBrakeMode = response.handBrakeMode
+                        FFmpegMode = response.FFmpegMode
+                        reQueueAfter = response.reQueueAfter
+                        cliLogAdd += response.infoLog
+
+                        if (processFile == true) {
+
+                          break
+
+                        }
+                      } catch (err) {
+                        processFile = false
+                        preset = ''
+                        container = ''
+                        handBrakeMode = ''
+                        FFmpegMode = ''
+                        reQueueAfter = ''
+                        cliLogAdd += 'Plugin does not exist!  \n'
+
+
                       }
-
-
-
-                      var response = plugin.plugin(firstItem);
-
-                      console.dir(response)
-
-                      processFile = response.processFile
-                      preset = response.preset
-                      container = response.container
-                      handBrakeMode = response.handBrakeMode
-                      FFmpegMode = response.FFmpegMode
-                      reQueueAfter = response.reQueueAfter
-                      cliLogAdd += response.infoLog
-
-                      if (processFile == true) {
-
-                        break
-
-                      }
-                    }catch(err){
-                      processFile = false
-                      preset = ''
-                      container = ''
-                      handBrakeMode = ''
-                      FFmpegMode = ''
-                      reQueueAfter = ''
-                      cliLogAdd += 'Plugin does not exist!  \n'
-
-
-                    }
                     }
                   }
 
@@ -1762,7 +1810,7 @@ function launchWorkerModule(workerType) {
 
                       processFile = false;
 
-                    }else{
+                    } else {
                       cliLogAdd += "File video not in required codec  \n"
 
                     }
@@ -1773,7 +1821,7 @@ function launchWorkerModule(workerType) {
                       cliLogAdd += "File not in video size range  \n"
 
                       processFile = false;
-                    }else{
+                    } else {
                       cliLogAdd += "File in video size range \n"
                     }
 
@@ -1783,7 +1831,7 @@ function launchWorkerModule(workerType) {
                       cliLogAdd += "File not in video height range  \n"
 
                       processFile = false;
-                    }else{
+                    } else {
                       cliLogAdd += "File in video height range \n"
                     }
 
@@ -1792,7 +1840,7 @@ function launchWorkerModule(workerType) {
                       cliLogAdd += "File not in video width range  \n"
 
                       processFile = false;
-                    }else{
+                    } else {
                       cliLogAdd += "File in video width range  \n"
 
                     }
@@ -1824,7 +1872,7 @@ function launchWorkerModule(workerType) {
 
                       processFile = false;
 
-                    }else{
+                    } else {
                       cliLogAdd += "File audio not in required codec  \n"
 
                     }
@@ -1836,7 +1884,7 @@ function launchWorkerModule(workerType) {
                       cliLogAdd += "File not in audio size range  \n"
 
                       processFile = false;
-                    }else{
+                    } else {
                       cliLogAdd += "File in audio size range  \n"
 
                     }
@@ -1863,7 +1911,7 @@ function launchWorkerModule(workerType) {
 
                 }
 
-             
+
 
                 var messageOut = [
                   "queueNumber",
@@ -1879,7 +1927,7 @@ function launchWorkerModule(workerType) {
                   settingsDBIndex,
                   reQueueAfter,
                   firstItem,
-                  
+
 
                 ]
 
@@ -1932,17 +1980,17 @@ function launchWorkerModule(workerType) {
               } else if (processFile == true) {
 
 
-                try{
-                var sourcefileSizeInGbytes = (((fs.statSync(fileToProcess)).size) / 1000000000.0);
-                }catch(err){
-                var sourcefileSizeInGbytes = "Error"
+                try {
+                  var sourcefileSizeInGbytes = (((fs.statSync(fileToProcess)).size) / 1000000000.0);
+                } catch (err) {
+                  var sourcefileSizeInGbytes = "Error"
                 }
 
-                if(handBrakeMode == true){
+                if (handBrakeMode == true) {
 
                   var CLIType = "HandBrake"
 
-                }else if(FFmpegMode == true){
+                } else if (FFmpegMode == true) {
 
                   var CLIType = "FFmpeg"
                 }
@@ -1960,11 +2008,11 @@ function launchWorkerModule(workerType) {
                   percentage: 0,
                   created: true,
                   cliLogAdd: cliLogAdd,
-                  sourcefileSizeInGbytes:sourcefileSizeInGbytes,
-                  startTime:new Date(),
-                  CLIType:CLIType,
-                  preset:preset,
-                  ETA:"Calculating...",
+                  sourcefileSizeInGbytes: sourcefileSizeInGbytes,
+                  startTime: new Date(),
+                  CLIType: CLIType,
+                  preset: preset,
+                  ETA: "Calculating...",
                 })
 
 
@@ -2123,7 +2171,7 @@ function launchWorkerModule(workerType) {
 
         newFile = [message[2],]
 
-          Meteor.call('scanFiles', message[3], newFile, 0, 3,JSON.parse(message[6]), function (error, result) { });
+        Meteor.call('scanFiles', message[3], newFile, 0, 3, JSON.parse(message[6]), function (error, result) { });
 
         StatisticsDB.update("statistics",
           {
@@ -2518,9 +2566,9 @@ function createFolderWatch(Folder, DB_id) {
 
 
       var obj = {
-        HealthCheck:"Queued",
-        TranscodeDecisionMaker:"Queued",
-        cliLog:"",
+        HealthCheck: "Queued",
+        TranscodeDecisionMaker: "Queued",
+        cliLog: "",
       }
 
       Meteor.call('scanFiles', DB_id, filesToProcess, 0, 3, obj, function (error, result) { });
@@ -2754,40 +2802,40 @@ function tablesUpdate() {
       //
 
       var table1data = allFilesPulledTable.filter(row => (row.TranscodeDecisionMaker == "Queued" && row.processingStatus == false));
-      
-      var table2data = allFilesPulledTable.filter(row => ((row.TranscodeDecisionMaker == "Transcode success" || row.TranscodeDecisionMaker == "Passed") && row.processingStatus == false)); 
+
+      var table2data = allFilesPulledTable.filter(row => ((row.TranscodeDecisionMaker == "Transcode success" || row.TranscodeDecisionMaker == "Passed") && row.processingStatus == false));
       var table3data = allFilesPulledTable.filter(row => ((row.TranscodeDecisionMaker == "Transcode error" || row.TranscodeDecisionMaker == "Transcode cancelled") && row.processingStatus == false));
       var table4data = allFilesPulledTable.filter(row => (row.HealthCheck == "Queued" && row.fileMedium == "video" && row.processingStatus == false));
       var table5data = allFilesPulledTable.filter(row => (row.HealthCheck == "Success" && row.processingStatus == false));
       var table6data = allFilesPulledTable.filter(row => ((row.HealthCheck == "Error" || row.HealthCheck == "Cancelled") && row.processingStatus == false));
 
-      table2data = sortTable(table2data,"lastTranscodeDate")
-      table3data = sortTable(table3data,"lastTranscodeDate")
+      table2data = sortTable(table2data, "lastTranscodeDate")
+      table3data = sortTable(table3data, "lastTranscodeDate")
 
-      table5data = sortTable(table5data,"lastHealthCheckDate")
-      table6data = sortTable(table6data,"lastHealthCheckDate")
-      
-      
-      function sortTable(data,sortType){
+      table5data = sortTable(table5data, "lastHealthCheckDate")
+      table6data = sortTable(table6data, "lastHealthCheckDate")
+
+
+      function sortTable(data, sortType) {
 
         return data.sort(function (a, b) {
           return new Date(b[sortType]) - new Date(a[sortType]);
         });
 
       }
-   
+
 
       StatisticsDB.upsert('statistics',
         {
           $set: {
             tdarrScore: ((table2data.length * 100.00) / (table1data.length + table2data.length + table3data.length)).toPrecision(4),
             healthCheckScore: ((table5data.length * 100.00) / (table4data.length + table5data.length + table6data.length)).toPrecision(4),
-            table1Count:table1data.length,
-            table2Count:table2data.length,
-            table3Count:table3data.length,
-            table4Count:table4data.length,
-            table5Count:table5data.length,
-            table6Count:table6data.length,
+            table1Count: table1data.length,
+            table2Count: table2data.length,
+            table3Count: table3data.length,
+            table4Count: table4data.length,
+            table5Count: table5data.length,
+            table6Count: table6data.length,
           }
         }
       );
@@ -2803,12 +2851,7 @@ function tablesUpdate() {
       //
 
 
-      table1data = table1data.slice(0, 20)
-      table2data = table2data.slice(0, 20)
-      table3data = table3data.slice(0, 20)
-      table4data = table4data.slice(0, 20)
-      table5data = table5data.slice(0, 20)
-      table6data = table6data.slice(0, 20)
+
 
 
 
@@ -2860,6 +2903,13 @@ function tablesUpdate() {
 
 
       //
+
+      table1data = table1data.slice(0, 20)
+      table2data = table2data.slice(0, 20)
+      table3data = table3data.slice(0, 20)
+      table4data = table4data.slice(0, 20)
+      table5data = table5data.slice(0, 20)
+      table6data = table6data.slice(0, 20)
 
 
 
@@ -3055,13 +3105,11 @@ function updatePieStats(property, fileMedium, pie) {
 
   }
 
+  //Make sure to update Pie chart read section if this is changed
+
   for (var i = 0; i < uniquePropArr.length; i++) {
 
-
-
-
-      data.push({ name: uniquePropArr[i], value: allFilesWithProp.filter(row => row[property] == uniquePropArr[i]).length })
-    
+    data.push({ name: uniquePropArr[i], value: allFilesWithProp.filter(row => row[property] == uniquePropArr[i]).length })
 
   }
 

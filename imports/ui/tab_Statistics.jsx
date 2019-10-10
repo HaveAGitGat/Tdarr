@@ -180,7 +180,7 @@ renderBumpButton(file) {
   }
 
 
-  return <ItemButton file={file} obj={obj} symbol={'↑'} />
+  return <ItemButton file={file} obj={obj} symbol={'↑'} type="updateDBAction" />
 
 }
 
@@ -194,7 +194,7 @@ renderRedoButton(file, mode) {
   }
 
 
-  return <ItemButton file={file} obj={obj} symbol={'↻'} />
+  return <ItemButton file={file} obj={obj} symbol={'↻'}  type="updateDBAction"/>
 }
 
 renderIgnoreButton(file, mode) {
@@ -204,7 +204,7 @@ renderIgnoreButton(file, mode) {
     processingStatus: false,
     createdAt: new Date(),
   }
-  return <ItemButton file={file} obj={obj} symbol={'Ignore'} />
+  return <ItemButton file={file} obj={obj} symbol={'Ignore'} type="updateDBAction" />
 
 
 }

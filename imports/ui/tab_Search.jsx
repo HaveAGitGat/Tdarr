@@ -29,9 +29,6 @@ class App extends Component {
   renderSearchButtons() {
 
 
-
-
-
     return this.props.globalSettings.map((item, i) => {
 
       if (item.propertySearchLoading == true) {
@@ -61,7 +58,7 @@ class App extends Component {
           <div className="frame">
             <div className="scroll">
 
-            
+            <div className="modalText">
              <p>Search for files based on hundreds of properties</p>
               
                 <p>Codec suggestions: h264,hevc,mpeg4,mpeg2video,vp9,vp8,theora,aac,ac3,dts</p>
@@ -71,9 +68,17 @@ class App extends Component {
 
             <p>shrek,aac,h264,subtitle</p>
 
-            
+
+            <p></p>
+
+            <p>Create a 30 second sample using the '✄' button. The sample will be placed in the 'Samples' folder in the Tdarr documents/data folder with suffix '- TdarrSample'. Use the sample to test plugins/transcode settings and to help when reporting bugs.</p>
+
+            <p></p>
+
+            <p>To return a list of all files, leave the search bar empty.</p>
 
             </div>
+          </div>
           </div>
         </Modal>
 
@@ -113,13 +118,19 @@ class App extends Component {
       } else {
 
 
-        var results = result.map((row, i) => (
+        var results = result.map((row, i) => {
 
-          <tr>
-            <td>{row.file}</td> <td> {this.renderBumpButton(row.file)}</td> <td>{this.renderRedoButton(row.file, 'TranscodeDecisionMaker')}</td> <td>{this.renderRedoButton(row.file, 'HealthCheck')}</td><td>{this.renderInfoButton(row)}</td>
+          if(row.file_size != undefined){
+            var file_size =  parseFloat((row.file_size/1000).toPrecision(4))
+          }else{
+            var file_size = "-"
+          }
+
+         return <tr>
+            <td>{row.file}</td><td>{row.video_codec_name}</td><td>{row.video_resolution}</td><td>{file_size}</td> <td> {this.renderBumpButton(row.file)}</td><td>{this.renderCreateSampleButton(row.file)}</td> <td>{this.renderRedoButton(row.file, 'TranscodeDecisionMaker')}</td> <td>{this.renderRedoButton(row.file, 'HealthCheck')}</td><td>{this.renderInfoButton(row)}</td>
           </tr>
 
-        ));
+        });
 
         render(
 
@@ -131,7 +142,12 @@ class App extends Component {
 
             <tr>
               <th>File</th>
-              <th>Bump</th>
+             
+              <th>Codec</th>
+                <th>Resolution</th>
+                <th>Size (GB)</th>
+                <th>Bump</th>
+              <th>Create sample</th>
               <th>Transcode</th>
               <th>Health check</th>
               <th>Info</th>
@@ -165,7 +181,14 @@ class App extends Component {
     }
 
 
-    return <ItemButton file={file} obj={obj} symbol={'↑'} />
+    return <ItemButton file={file} obj={obj} symbol={'↑'} type="updateDBAction" />
+
+  }
+
+  renderCreateSampleButton(file){
+
+
+    return <ItemButton file={file} symbol={'✄'} type="createSample" />
 
   }
 
@@ -179,7 +202,7 @@ class App extends Component {
     }
 
 
-    return <ItemButton file={file} obj={obj} symbol={'↻'} />
+    return <ItemButton file={file} obj={obj} symbol={'↻'} type="updateDBAction" />
   }
 
   renderIgnoreButton(file, mode) {
@@ -189,7 +212,7 @@ class App extends Component {
       processingStatus: false,
       createdAt: new Date(),
     }
-    return <ItemButton file={file} obj={obj} symbol={'Ignore'} />
+    return <ItemButton file={file} obj={obj} symbol={'Ignore'} type="updateDBAction" />
 
 
   }

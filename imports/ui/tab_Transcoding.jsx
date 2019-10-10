@@ -451,7 +451,7 @@ class App extends Component {
     }
 
 
-    return <ItemButton file={file} obj={obj} symbol={'↑'} />
+    return <ItemButton file={file} obj={obj} symbol={'↑'} type="updateDBAction" />
 
   }
 
@@ -465,7 +465,7 @@ class App extends Component {
     }
 
 
-    return <ItemButton file={file} obj={obj} symbol={'↻'} />
+    return <ItemButton file={file} obj={obj} symbol={'↻'} type="updateDBAction" />
   }
 
   renderIgnoreButton(file, mode) {
@@ -475,7 +475,7 @@ class App extends Component {
       processingStatus: false,
       createdAt: new Date(),
     }
-    return <ItemButton file={file} obj={obj} symbol={'Ignore'} />
+    return <ItemButton file={file} obj={obj} symbol={'Ignore'} type="updateDBAction" />
 
 
   }
@@ -576,6 +576,8 @@ class App extends Component {
     >
        <div className="frame">
     <div className="scroll"> 
+
+    <div className="modalText">
  
     <p>Use the sliders to tell Tdarr to start up and maintain the specified number of workers. </p>
     <p>Workers which are toggled 'Off' will finish their current item before closing down.</p>
@@ -590,7 +592,7 @@ class App extends Component {
     <p></p>
 
     <p>Important: Workers will not process items unless they are within the scheduled times set in the library settings.</p>
-
+    </div>
       
     </div>
   </div>
@@ -712,8 +714,40 @@ class App extends Component {
           </div>
 
         </div>
+        <p></p>
+    <p></p>
+    <p></p>
+
+        <Modal
+      trigger={<Button variant="outline-dark" >i</Button>}
+      modal
+      closeOnDocumentClick
+    >
+       <div className="frame">
+    <div className="scroll"> 
+
+    <div className="modalText">
+ 
+    <p>Use the sliders to tell Tdarr to start up and maintain the specified number of workers. </p>
+    <p>Workers which are toggled 'Off' will finish their current item before closing down.</p>
+    <p>If you cancel an item, the worker will move onto the next item in the queue.</p>
+
+    <p></p>
+    <p>Workers process newest items first and cycle between your libraries.</p>
+
+    <p>General workers process both transcode and health check items. They prioritise health check </p>
+    <p></p>
+    <p></p>
+    <p></p>
+
+    <p>Important: Workers will not process items unless they are within the scheduled times set in the library settings.</p>
 
 
+    </div>
+      
+    </div>
+  </div>
+    </Modal>
 
         <Tabs>
     <TabList>
