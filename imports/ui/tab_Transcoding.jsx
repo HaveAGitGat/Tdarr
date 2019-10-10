@@ -728,19 +728,25 @@ class App extends Component {
 
     <div className="modalText">
  
-    <p>Use the sliders to tell Tdarr to start up and maintain the specified number of workers. </p>
-    <p>Workers which are toggled 'Off' will finish their current item before closing down.</p>
-    <p>If you cancel an item, the worker will move onto the next item in the queue.</p>
+    <p>All newly scanned files will be placed in the transcode and health check queues.</p>
+    
+    <p>Files in the queues will be sent to available workers.</p>
 
-    <p></p>
-    <p>Workers process newest items first and cycle between your libraries.</p>
-
-    <p>General workers process both transcode and health check items. They prioritise health check </p>
-    <p></p>
-    <p></p>
+    <p>For transcodes, if files already meet the codec (etc) requirements they will be marked as 'Not required' in 'Transcode: Success/Not required' tab.</p>
+    
+    
+    <p>If files don't meet the requirements they will be transcoded. If transcoding is successful files will be marked as 'Transcode success' in the  'Transcode: Success/Not required' tab.</p>
     <p></p>
 
-    <p>Important: Workers will not process items unless they are within the scheduled times set in the library settings.</p>
+    
+    <p>If transcoding fails or is cancelled then files will be marked accordingly in the 'Transcode: Error/Cancelled' tab.</p>
+
+
+    <p></p>
+    <p></p>
+
+
+    <p><b>The aim of Tdarr is to be able to run it on your library and all items come out as 'Transcode:Not required', meaning nothing needed to be transcoded/remuxed etc.</b></p>
 
 
     </div>
@@ -752,7 +758,7 @@ class App extends Component {
         <Tabs>
     <TabList>
       <Tab>Transcode queue ({this.renderStat('table1Count')})</Tab>
-      <Tab>Transcode: Completed/Passed ({this.renderStat('table2Count')})</Tab>
+      <Tab>Transcode: Success/Not required ({this.renderStat('table2Count')})</Tab>
       <Tab>Transcode: Error/Cancelled ({this.renderStat('table3Count')})</Tab>
 
 

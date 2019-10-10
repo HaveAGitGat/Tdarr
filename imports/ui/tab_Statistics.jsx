@@ -313,12 +313,12 @@ renderInfoButton(row) {
   <div className="pieaudiogrid-container">
 
   <div className="pieaudiogrid-item-title">
-  <center><b>Transcodes </b>{this.renderStat('tdarrScore')}%</center>
+  <center><b>Transcode</b>{this.renderStat('tdarrScore')}%</center>
   </div>
 
   
   <div className="pieaudiogrid-item-title">
-  <center><b>Health checks </b>{this.renderStat('healthCheckScore')}%</center>
+  <center><b>Health</b>{this.renderStat('healthCheckScore')}%</center>
 
   </div>
 

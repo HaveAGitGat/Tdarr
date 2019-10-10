@@ -157,9 +157,9 @@ Additional points:
 
 - Use it for transcoding, remuxing, health checking or just to see library codec data. Different types of workers mean if you don't want to do transcoding or health checking then just set Tdarr up to not use any of those workers.
 
-- Files are passed through a transcode decision-maker based on file property data. Currently, you can filter by codec, size and resolution (height and width). Many more options are in the pipeline to match HBBatchBeast while providing a better UI.
+- Files are sent through a transcode decision-maker based on file property data. Currently, you can filter by codec, size and resolution (height and width). Many more options are in the pipeline to match HBBatchBeast while providing a better UI.
 
-- As file property data is used instead of say, a list of files which have been processed, this means that at any time you can delete your Tdarr installation and data completely then reinstall and all files already in the correct codec etc will be 'passed' by the transcode decision-maker.
+- As file property data is used instead of say, a list of files which have been processed, this means that at any time you can delete your Tdarr installation and data completely then reinstall and all files already in the correct codec etc will be marked as 'Transcode:Not required' by the transcode decision-maker.
 
 - Transcoding and health checking won't occur on the same file at the same time to prevent errors. Fetching files from the database can take some time, so there is additional logic to make sure workers don't process the same tasks. Also, all newly transcoded files will automatically be put into the health check queue to make sure they are valid.
 

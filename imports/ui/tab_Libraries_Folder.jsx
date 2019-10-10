@@ -1614,7 +1614,7 @@ this.setState({
 
               <center>  <p>Container types to scan for:</p>  </center>
 
-              <input type="text" className="folderPaths" name="containerFilter" defaultValue={this.props.libraryItem.containerFilter} onChange={this.handleChange}></input>
+              <input type="text" className="folderPaths2" name="containerFilter" defaultValue={this.props.libraryItem.containerFilter} onChange={this.handleChange}></input>
 
 
 
@@ -1810,7 +1810,7 @@ this.setState({
 
                 <center><p>Output file container: </p>  </center>
 
-                <input type="text" name="container" className="folderPaths" defaultValue={this.props.libraryItem.container} onChange={this.handleChange}></input>
+                <input type="text" name="container" className="folderPaths3" defaultValue={this.props.libraryItem.container} onChange={this.handleChange}></input>
 
 
 
@@ -1858,7 +1858,7 @@ this.setState({
                     type="text"
                     ref="addVideoCodecExcludeText"
                     placeholder="Add new video codecs...(use Enter↵)"
-                    className="folderPaths"
+                    className="folderPaths3"
                   />
                 </form>
 
@@ -1959,7 +1959,7 @@ this.setState({
                     type="text"
                     ref="addAudioCodecExcludeText"
                     placeholder="Add new audio codecs...(use Enter↵)"
-                    className="folderPaths"
+                    className="folderPaths3"
                   />
                 </form>
 

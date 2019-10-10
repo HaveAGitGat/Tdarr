@@ -742,13 +742,19 @@ class App extends Component {
 <p>--preset-import-file "C:\Users\HaveAGitGat\Desktop\testpreset.json" -Z "My Preset"</p>
 
 
-<p>You can find learn more about HandBrake presets here:</p>
+<p>You can learn more about HandBrake presets here:</p>
 
-<p>https://handbrake.fr/docs/en/latest/technical/official-presets.html</p>
+<a href="" onClick={() => window.open("https://handbrake.fr/docs/en/latest/technical/official-presets.html", "_blank")}>HandBrake presets</a>
 
-<p>If you're having trouble with custom presets, it may be due to a known bug with the HandBrakeCLI (will be fixed in next HandBrakeCLI release). Please see this for a temporary solution:  https://github.com/HandBrake/HandBrake/issues/2047</p>
+<p>Please see the following tools for help with creating FFmpeg commands:</p>
+
+<p><a href="" onClick={() => window.open("http://rodrigopolo.com/ffmpeg/", "_blank")}>http://rodrigopolo.com/ffmpeg/</a></p>
+<p><a href="" onClick={() => window.open("http://www.mackinger.at/ffmpeg/", "_blank")}>http://www.mackinger.at/ffmpeg/</a></p>
+<p><a href="" onClick={() => window.open("https://axiomui.github.io/", "_blank")}>Axiom</a></p>
+
+<p>If you're having trouble with custom HandBrake json presets, it may be due to a known bug with the HandBrakeCLI (will be fixed in next HandBrakeCLI release).<a href="" onClick={() => window.open("https://github.com/HandBrake/HandBrake/issues/2047", "_blank")}>Please see this for a temporary solution.</a></p>
 <p></p>
-<p>Regarding the transcode filter settings, these are applied when the items are being processed in the transcode queue. If files do not meet the transcode requirements then they will be passed.</p>
+<p>Regarding the transcode filter settings, these are applied when the items are being processed in the transcode queue. If files do not meet the transcode requirements then they will be marked as 'Transcode:Not required'.</p>
 
 <p></p>
 
