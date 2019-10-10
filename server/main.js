@@ -161,6 +161,18 @@ for (var i = 0; i < dbMigration.length; i++) {
     );
   }
 
+  if (dbMigration[i].TranscodeDecisionMaker == "Passed") {
+
+    FileDB.upsert(
+      dbMigration[i].file,
+      {
+        $set: {
+          TranscodeDecisionMaker: "Not required",
+        }
+      }
+    );
+  }
+
   if (dbMigration[i].HealthCheck == "Not attempted") {
 
     FileDB.upsert(
@@ -174,6 +186,33 @@ for (var i = 0; i < dbMigration.length; i++) {
 
 
   }
+
+
+  if (!dbMigration[i].lastTranscodeDate) {
+
+    FileDB.upsert(
+      dbMigration[i].file,
+      {
+        $set: {
+          lastTranscodeDate: new Date(),
+        }
+      }
+    );
+  }
+
+  if (!dbMigration[i].lastHealthCheckDate) {
+
+    FileDB.upsert(
+      dbMigration[i].file,
+      {
+        $set: {
+          lastHealthCheckDate: new Date(),
+        }
+      }
+    );
+  }
+
+
 }
 
 
@@ -802,17 +841,17 @@ Meteor.methods({
       filesInDB = filesInDB.map(row => row + '\r\n')
       filesInDB = filesInDB.join("")
 
-      try{
+      try {
 
         fs.writeFileSync(homePath + "/Tdarr/Data/" + scannerID + ".txt", filesInDB, 'utf8');
 
-      }catch(err){
+      } catch (err) {
 
         updateConsole("Error writing to file: " + err.stack, true)
 
       }
 
-    
+
 
       filesInDB = []
 
@@ -833,10 +872,10 @@ Meteor.methods({
       arrayOrPath = arrayOrPath.map(row => row + '\r\n')
       arrayOrPath = arrayOrPath.join("")
 
-     
-      try{
+
+      try {
         fs.writeFileSync(homePath + "/Tdarr/Data/" + scannerID + ".txt", arrayOrPath, 'utf8');
-      }catch(err){
+      } catch (err) {
         updateConsole("Error writing to file: " + err.stack, true)
       }
 
@@ -1094,7 +1133,7 @@ Meteor.methods({
     outputFile = outputFile.join(".")
 
     outputFile = outputFile.split("/")
-    outputFile = homePath + "/Tdarr/Samples/" +outputFile[outputFile.length - 1]
+    outputFile = homePath + "/Tdarr/Samples/" + outputFile[outputFile.length - 1]
 
     var inputFileUnix = inputFile.replace(/'/g, '\'\"\'\"\'');
     var outputFileUnix = outputFile.replace(/'/g, '\'\"\'\"\'');
@@ -1104,7 +1143,7 @@ Meteor.methods({
 
     if (fs.existsSync(outputFile)) {
       fs.unlinkSync(outputFile)
-  }
+    }
 
 
     if (process.platform == 'win32') {
@@ -1946,7 +1985,7 @@ function launchWorkerModule(workerType) {
                   {
                     $set: {
                       _id: fileToProcess,
-                      TranscodeDecisionMaker: "Passed",
+                      TranscodeDecisionMaker: "Not required",
                       processingStatus: false,
                       cliLog: cliLogAdd,
                       lastTranscodeDate: new Date(),
@@ -2803,7 +2842,7 @@ function tablesUpdate() {
 
       var table1data = allFilesPulledTable.filter(row => (row.TranscodeDecisionMaker == "Queued" && row.processingStatus == false));
 
-      var table2data = allFilesPulledTable.filter(row => ((row.TranscodeDecisionMaker == "Transcode success" || row.TranscodeDecisionMaker == "Passed") && row.processingStatus == false));
+      var table2data = allFilesPulledTable.filter(row => ((row.TranscodeDecisionMaker == "Transcode success" || row.TranscodeDecisionMaker == "Not required") && row.processingStatus == false));
       var table3data = allFilesPulledTable.filter(row => ((row.TranscodeDecisionMaker == "Transcode error" || row.TranscodeDecisionMaker == "Transcode cancelled") && row.processingStatus == false));
       var table4data = allFilesPulledTable.filter(row => (row.HealthCheck == "Queued" && row.fileMedium == "video" && row.processingStatus == false));
       var table5data = allFilesPulledTable.filter(row => (row.HealthCheck == "Success" && row.processingStatus == false));
