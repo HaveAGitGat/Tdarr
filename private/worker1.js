@@ -957,7 +957,7 @@ function workerNotEncounteredError() {
                   TranscodeDecisionMaker:"Queued",
                   lastTranscodeDate: new Date(),
                   cliLog:cliLog,
-                  oldSize:sourcefileSizeInGbytes,
+                  oldSize: currentFileObject.oldSize ? currentFileObject.oldSize : sourcefileSizeInGbytes,
                   newSize:destfileSizeInGbytes
                 }
       
@@ -968,7 +968,7 @@ function workerNotEncounteredError() {
                   TranscodeDecisionMaker:"Transcode success",
                   lastTranscodeDate: new Date(),
                   cliLog:cliLog,
-                  oldSize:sourcefileSizeInGbytes,
+                  oldSize: currentFileObject.oldSize ? currentFileObject.oldSize : sourcefileSizeInGbytes,
                   newSize:destfileSizeInGbytes
                 }
               }

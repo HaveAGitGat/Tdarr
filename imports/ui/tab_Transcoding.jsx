@@ -343,13 +343,13 @@ class App extends Component {
           }
 
           if(row.oldSize != undefined){
-            var oldSize =  parseFloat((row.oldSize/1000).toPrecision(4))
+            var oldSize =  parseFloat((row.oldSize).toPrecision(4))
           }else{
             var oldSize = "-"
           }
 
           if(row.newSize != undefined){
-            var newSize  =  parseFloat((row.newSize/1000).toPrecision(4))
+            var newSize  =  parseFloat((row.newSize).toPrecision(4))
           }else{
             var newSize = "-"
           }
@@ -746,7 +746,7 @@ class App extends Component {
     <p></p>
 
 
-    <p><b>The aim of Tdarr is to be able to run it on your library and all items come out as 'Transcode:Not required', meaning nothing needed to be transcoded/remuxed etc.</b></p>
+    <p><b>The end goal of Tdarr is to be able to run it on your library and all items come out as 'Transcode:Not required', meaning nothing needed to be transcoded/remuxed etc.</b></p>
 
 
     </div>

@@ -74,7 +74,7 @@ function getRootDir() {
 
 var home = require("os").homedir();
 
-console.log("process.env.DATA:" + process.env.DATA)
+//console.log("process.env.DATA:" + process.env.DATA)
 
 if (process.env.NODE_ENV == 'production') {
 
@@ -1985,7 +1985,7 @@ function launchWorkerModule(workerType) {
                   {
                     $set: {
                       _id: fileToProcess,
-                      TranscodeDecisionMaker: "Not required",
+                      TranscodeDecisionMaker: firstItem.oldSize ? "Transcode success" : "Not required",
                       processingStatus: false,
                       cliLog: cliLogAdd,
                       lastTranscodeDate: new Date(),
