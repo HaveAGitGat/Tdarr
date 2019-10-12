@@ -897,22 +897,14 @@ function workerNotEncounteredError() {
 
         try {
 
-            errorLogFull += "Attempting to delete original file" + "\r\n"
-            updateConsole(workerNumber, "Attempting to delete original file" + currentSourceLine)
 
-
-
-
-
+            
 
 
             errorLogFull += "Attempting to move new file to original folder" + "\r\n"
             updateConsole(workerNumber, "Attempting to move new file to original folder" + currentSourceLine)
 
             var finalFilePathCopy = finalFilePath
-
-
-
 
 
             finalFilePathCopy = finalFilePathCopy.split(".")
@@ -928,6 +920,10 @@ function workerNotEncounteredError() {
 
             errorLogFull += "Moving file successful:" + "\r\n"
             updateConsole(workerNumber, "Moving file successful:" + currentDestinationLine + " to " + finalFilePathCopy)
+
+
+            errorLogFull += "Attempting to delete original file" + "\r\n"
+            updateConsole(workerNumber, "Attempting to delete original file" + currentSourceLine)
 
 
 

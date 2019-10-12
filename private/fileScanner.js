@@ -144,6 +144,8 @@ if (arrayOrPathSwitch == 0) {
 
     updateConsole(scannerID, `File scanner " + ${scannerID} + ":Launching FFprobe on these files: ${arrayOrPath}`)
 
+    arrayOrPath = arrayOrPath.filter(row => !row.includes("TdarrNew"))
+
     ffprobeLaunch(arrayOrPath)
 
 
@@ -246,6 +248,8 @@ if (arrayOrPathSwitch == 1) {
 
 
     foundCounter = 0
+
+    filesToScan = filesToScan.filter(row => !row.includes("TdarrNew"))
 
     ffprobeLaunch(filesToScan)
 
