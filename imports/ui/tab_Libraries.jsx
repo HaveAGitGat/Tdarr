@@ -54,6 +54,7 @@ class App extends Component {
       createdAt: new Date(),
       folderWatching:false,
       processLibrary:true,
+      scanOnStart:true,
       scanButtons:true,
       scanFound:0,
       expanded:true,

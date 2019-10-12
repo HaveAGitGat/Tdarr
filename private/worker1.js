@@ -898,7 +898,10 @@ function workerNotEncounteredError() {
         try {
 
 
-            
+        
+
+
+          
 
 
             errorLogFull += "Attempting to move new file to original folder" + "\r\n"
@@ -946,6 +949,10 @@ function workerNotEncounteredError() {
             var cliLog = "\n Original size GB:"+ sourcefileSizeInGbytes
             cliLog += "\n New size GB:"+ destfileSizeInGbytes
 
+
+
+        
+
             if (reQueueAfter == true) {
 
                 var filePropertiesToAdd = {
@@ -968,6 +975,9 @@ function workerNotEncounteredError() {
                   newSize:destfileSizeInGbytes
                 }
               }
+
+
+           
             
 
 

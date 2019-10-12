@@ -1289,10 +1289,7 @@ this.setState({
       cliLog:"",
     }
 
-    Meteor.call('scanFiles', this.props.libraryItem._id, this.props.libraryItem.folder, 1, mode, obj, function (error, result) {
-      Meteor.call('consolelog', result);
-
-    });
+    Meteor.call('scanFiles', this.props.libraryItem._id, this.props.libraryItem.folder, 1, mode, obj, function (error, result) {});
 
 
 
@@ -1512,6 +1509,34 @@ this.setState({
                         {
                           $set: {
                             processLibrary: !this.props.libraryItem.processLibrary,
+                          }
+                        }
+                      );
+                    }
+
+                    }
+                  />
+                </div>
+
+
+
+
+
+                {'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}Scan on start:
+                <div style={libButtonStyle}>
+                  <ToggleButton
+      thumbStyle={borderRadiusStyle}
+      trackStyle={borderRadiusStyle}
+                  
+                    value={this.props.libraryItem.scanOnStart === undefined ? true : !!this.props.libraryItem.scanOnStart}
+                    onToggle={() => {
+
+                      SettingsDB.upsert(
+
+                        this.props.libraryItem._id,
+                        {
+                          $set: {
+                            scanOnStart: !this.props.libraryItem.scanOnStart,
                           }
                         }
                       );

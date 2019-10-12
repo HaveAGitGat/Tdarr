@@ -67,6 +67,10 @@ watchers[DB_id] = chokidar.watch(Folder, {
   usePolling: true,
   interval: 30000,
   binaryInterval: 30000,
+  awaitWriteFinish: {
+    stabilityThreshold: 2000,
+    pollInterval: 100
+  },
 });
 
 // Something to use when events are received.

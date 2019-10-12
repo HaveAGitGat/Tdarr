@@ -262,30 +262,6 @@ GlobalSettingsDB.upsert('globalsettings',
 
 
 
-
-
-
-
-//initialise GUI properties
-
-var settingsInit = SettingsDB.find({}, {}).fetch()
-
-for (var i = 0; i < settingsInit.length; i++) {
-
-
-  SettingsDB.upsert(settingsInit[i]._id,
-    {
-      $set: {
-        scanButtons: true,
-        scanFound: "Files found:" + 0,
-      }
-    }
-  );
-
-
-
-}
-
 //initialise stats properties
 
 var count = StatisticsDB.find({}, {}).fetch()
@@ -1170,6 +1146,77 @@ Meteor.methods({
 //Init help page
 Meteor.call('runHelpCommand', "ffmpeg", "--help", function (error, result) { })
 Meteor.call('runHelpCommand', "handbrake", "--help", function (error, result) { })
+
+//initialise GUI properties
+
+var settingsInit = SettingsDB.find({}, {}).fetch()
+
+for (var i = 0; i < settingsInit.length; i++) {
+
+
+  SettingsDB.upsert(settingsInit[i]._id,
+    {
+      $set: {
+        scanButtons: true,
+        scanFound: "Files found:" + 0,
+      }
+    }
+  );
+
+  if(settingsInit[i].scanOnStart !== false){
+
+    allFilesPulledTable = FileDB.find({}).fetch()
+
+    var obj = {
+      HealthCheck:"Queued",
+      TranscodeDecisionMaker:"Queued",
+      cliLog:"",
+    }
+
+    Meteor.call('scanFiles', settingsInit[i]._id, settingsInit[i].folder, 1, 0, obj, function (error, result) {});
+
+  }
+}
+
+
+runScheduledManualScan()
+
+function runScheduledManualScan(){
+
+  
+  console.log("runScheduledManualScan")
+
+  try{
+
+
+  var settingsInit = SettingsDB.find({}, {}).fetch()
+
+  for (var i = 0; i < settingsInit.length; i++) {
+  
+    if(settingsInit[i].folderWatching == true && settingsInit[i].scanOnStart !== false){
+  
+      allFilesPulledTable = FileDB.find({}).fetch()
+  
+      var obj = {
+        HealthCheck:"Queued",
+        TranscodeDecisionMaker:"Queued",
+        cliLog:"",
+      }
+  
+      Meteor.call('scanFiles', settingsInit[i]._id, settingsInit[i].folder, 1, 0, obj, function (error, result) {});
+  
+    }
+  }
+
+
+}catch(err){}
+
+
+setTimeout(Meteor.bindEnvironment(runScheduledManualScan), 600000);
+
+}
+
+
 
 
 if (fs.existsSync(path.join(process.cwd() + "/npm"))) {
@@ -2764,17 +2811,7 @@ var DBPollPeriod = 4000
 
 var addFilesToDB = true
 
-// function checkIfShouldUpdate() {
 
-//   if (updateTableFlag == true) {
-
-//     updateTableFlag = false
-//     addFilesToDB = false
-//     tablesUpdate()
-
-//   }
-
-// }
 
 var doTablesUpdate = true
 
