@@ -36,7 +36,7 @@ p {
     margin-top: 10px;
     /* color: rgba(255, 255, 255, 0.4); */
     color: black;
-    font-size: small;
+    font-size: 14px;
 }
 
 
@@ -604,7 +604,7 @@ p {
 
     .versionInfo{
 
-      font-size: 0.7em;
+      font-size: 14px;
       float:right;
       color:white;
 
@@ -621,7 +621,7 @@ p {
     .dbStatusContainer table{
 
       border-collapse: collapse;
-      font-size: 0.7em
+      font-size: 10px;
     }
 
     .dbStatusContainer tr{

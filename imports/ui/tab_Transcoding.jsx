@@ -530,7 +530,7 @@ class App extends Component {
             <tbody>
               <tr>
 
-                <td> <p>DB</p></td>
+                <td><b>DB</b></td>
                 <td>{'\u00A0'}<b>Poll period</b>:{this.renderStat('DBPollPeriod')}</td>
                 <td>{'\u00A0'}<b>Fetch time</b>: {this.renderStat('DBFetchTime')}</td>
                 <td>{'\u00A0'}<b>Total</b>: {this.renderStat('DBTotalTime')}</td>

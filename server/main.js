@@ -144,6 +144,7 @@ if (!fs.existsSync(homePath + "/Tdarr/Samples")) {
 
 //migration step
 
+
 var dbMigration = FileDB.find({}).fetch()
 
 
@@ -214,6 +215,8 @@ for (var i = 0; i < dbMigration.length; i++) {
 
 
 }
+
+dbMigration = []
 
 
 
@@ -332,7 +335,6 @@ Meteor.methods({
 
     console.log(string)
 
-    // var allFiles = FileDB.find({}).fetch()
 
     var allFiles = allFilesPulledTable
 
@@ -410,12 +412,6 @@ Meteor.methods({
       });
 
 
-      //       const hwSource = fs.readFileSync('/Users/fredstark/helloworld.js', 'utf8');
-      // const hwFunc = new Function('module', hwSource);
-      // const hwModule = { exports: {} };
-      // hwFunc(hwModule)
-      // const hw = hwModule.exports;
-      // console.log(hw('World'));
 
 
       string = string.split(',')
@@ -555,9 +551,7 @@ Meteor.methods({
 
   }, 'resetAllStatus'(mode) {
 
-    //  var allFiles = FileDB.find({},{ sort: { createdAt: - 1 }}).fetch()
 
-    // var allFiles = FileDB.find({}).fetch()
 
     var allFiles = allFilesPulledTable
 
@@ -791,7 +785,7 @@ Meteor.methods({
 
 
 
-      // var filesInDB = FileDB.find({}).fetch()
+  
 
       var filesInDB = allFilesPulledTable
 
@@ -1165,6 +1159,7 @@ for (var i = 0; i < settingsInit.length; i++) {
 
   if(settingsInit[i].scanOnStart !== false){
 
+    allFilesPulledTable = []
     allFilesPulledTable = FileDB.find({}).fetch()
 
     var obj = {
@@ -1179,12 +1174,13 @@ for (var i = 0; i < settingsInit.length; i++) {
 }
 
 
-runScheduledManualScan()
+//runScheduledManualScan()
+
+setTimeout(Meteor.bindEnvironment(runScheduledManualScan), 3600000);
 
 function runScheduledManualScan(){
 
-  
-  console.log("runScheduledManualScan")
+  console.log("scanning!")
 
   try{
 
@@ -1195,6 +1191,7 @@ function runScheduledManualScan(){
   
     if(settingsInit[i].folderWatching == true && settingsInit[i].scanOnStart !== false){
   
+      allFilesPulledTable = []
       allFilesPulledTable = FileDB.find({}).fetch()
   
       var obj = {
@@ -1212,7 +1209,7 @@ function runScheduledManualScan(){
 }catch(err){}
 
 
-setTimeout(Meteor.bindEnvironment(runScheduledManualScan), 600000);
+setTimeout(Meteor.bindEnvironment(runScheduledManualScan), 3600000);
 
 }
 
@@ -1656,10 +1653,7 @@ function launchWorkerModule(workerType) {
 
             } else {
 
-
-
-
-
+              filesBeingProcessed.push(firstItem.file + "")
 
               FileDB.upsert(firstItem.file,
                 {
@@ -1671,7 +1665,8 @@ function launchWorkerModule(workerType) {
                 }
               );
 
-              filesBeingProcessed.push(firstItem.file + "")
+            
+
 
               if (workerType == "general") {
 
@@ -2833,6 +2828,7 @@ function tablesUpdate() {
 
       var startDate = new Date();
 
+      allFilesPulledTable = []
       allFilesPulledTable = FileDB.find({}).fetch()
 
       allFilesPulledTable = allFilesPulledTable.sort(function (a, b) {
@@ -2881,7 +2877,7 @@ function tablesUpdate() {
 
       var table2data = allFilesPulledTable.filter(row => ((row.TranscodeDecisionMaker == "Transcode success" || row.TranscodeDecisionMaker == "Not required") && row.processingStatus == false));
       var table3data = allFilesPulledTable.filter(row => ((row.TranscodeDecisionMaker == "Transcode error" || row.TranscodeDecisionMaker == "Transcode cancelled") && row.processingStatus == false));
-      var table4data = allFilesPulledTable.filter(row => (row.HealthCheck == "Queued" && row.fileMedium == "video" && row.processingStatus == false));
+      var table4data = allFilesPulledTable.filter(row => (row.HealthCheck == "Queued" && row.fileMedium !== "audio" && row.processingStatus == false));
       var table5data = allFilesPulledTable.filter(row => (row.HealthCheck == "Success" && row.processingStatus == false));
       var table6data = allFilesPulledTable.filter(row => ((row.HealthCheck == "Error" || row.HealthCheck == "Cancelled") && row.processingStatus == false));
 
