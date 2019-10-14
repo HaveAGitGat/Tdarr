@@ -1210,7 +1210,7 @@ class Folder extends Component {
           <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(17,24,"Hour")} >17</Button></td>
           <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(18,24,"Hour")} >18</Button></td>
           <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(19,24,"Hour")} >19</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(20,24,"Hour")} >00</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(20,24,"Hour")} >20</Button></td>
           <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(21,24,"Hour")} >21</Button></td>
           <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(22,24,"Hour")} >22</Button></td>
           <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(23,24,"Hour")} >23</Button></td>

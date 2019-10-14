@@ -8,7 +8,7 @@ import '../imports/api/tasks.js';
 import { LogDB, FileDB, SettingsDB, GlobalSettingsDB, StatisticsDB, ClientDB } from '../imports/api/tasks.js';
 
 
-
+console.log("Tdarr started")
 
 
 const shortid = require('shortid');
@@ -145,15 +145,15 @@ if (!fs.existsSync(homePath + "/Tdarr/Samples")) {
 //migration step
 
 
-var dbMigration = FileDB.find({}).fetch()
+allFilesPulledTable = FileDB.find({}).fetch()
 
 
-for (var i = 0; i < dbMigration.length; i++) {
+for (var i = 0; i < allFilesPulledTable.length; i++) {
 
-  if (dbMigration[i].TranscodeDecisionMaker == "Not attempted") {
+  if (allFilesPulledTable[i].TranscodeDecisionMaker == "Not attempted") {
 
     FileDB.upsert(
-      dbMigration[i].file,
+      allFilesPulledTable[i].file,
       {
         $set: {
           TranscodeDecisionMaker: "Queued",
@@ -162,10 +162,10 @@ for (var i = 0; i < dbMigration.length; i++) {
     );
   }
 
-  if (dbMigration[i].TranscodeDecisionMaker == "Passed") {
+  if (allFilesPulledTable[i].TranscodeDecisionMaker == "Passed") {
 
     FileDB.upsert(
-      dbMigration[i].file,
+      allFilesPulledTable[i].file,
       {
         $set: {
           TranscodeDecisionMaker: "Not required",
@@ -174,10 +174,10 @@ for (var i = 0; i < dbMigration.length; i++) {
     );
   }
 
-  if (dbMigration[i].HealthCheck == "Not attempted") {
+  if (allFilesPulledTable[i].HealthCheck == "Not attempted") {
 
     FileDB.upsert(
-      dbMigration[i].file,
+      allFilesPulledTable[i].file,
       {
         $set: {
           HealthCheck: "Queued",
@@ -189,10 +189,10 @@ for (var i = 0; i < dbMigration.length; i++) {
   }
 
 
-  if (!dbMigration[i].lastTranscodeDate) {
+  if (!allFilesPulledTable[i].lastTranscodeDate) {
 
     FileDB.upsert(
-      dbMigration[i].file,
+      allFilesPulledTable[i].file,
       {
         $set: {
           lastTranscodeDate: new Date(),
@@ -201,10 +201,10 @@ for (var i = 0; i < dbMigration.length; i++) {
     );
   }
 
-  if (!dbMigration[i].lastHealthCheckDate) {
+  if (!allFilesPulledTable[i].lastHealthCheckDate) {
 
     FileDB.upsert(
-      dbMigration[i].file,
+      allFilesPulledTable[i].file,
       {
         $set: {
           lastHealthCheckDate: new Date(),
@@ -216,7 +216,6 @@ for (var i = 0; i < dbMigration.length; i++) {
 
 }
 
-dbMigration = []
 
 
 
@@ -817,7 +816,7 @@ Meteor.methods({
 
       } catch (err) {
 
-        updateConsole("Error writing to file: " + err.stack, true)
+        updateConsole("Error writing to file: " + err.stack, false)
 
       }
 
@@ -846,7 +845,7 @@ Meteor.methods({
       try {
         fs.writeFileSync(homePath + "/Tdarr/Data/" + scannerID + ".txt", arrayOrPath, 'utf8');
       } catch (err) {
-        updateConsole("Error writing to file: " + err.stack, true)
+        updateConsole("Error writing to file: " + err.stack, false)
       }
 
       arrayOrPath = []
@@ -1159,8 +1158,8 @@ for (var i = 0; i < settingsInit.length; i++) {
 
   if(settingsInit[i].scanOnStart !== false){
 
-    allFilesPulledTable = []
-    allFilesPulledTable = FileDB.find({}).fetch()
+ 
+    //fileDB
 
     var obj = {
       HealthCheck:"Queued",
@@ -1187,13 +1186,14 @@ function runScheduledManualScan(){
 
   var settingsInit = SettingsDB.find({}, {}).fetch()
 
+  // allFilesPulledTable = []
+  // allFilesPulledTable = FileDB.find({}).fetch()
+
+
   for (var i = 0; i < settingsInit.length; i++) {
   
     if(settingsInit[i].folderWatching == true && settingsInit[i].scanOnStart !== false){
-  
-      allFilesPulledTable = []
-      allFilesPulledTable = FileDB.find({}).fetch()
-  
+
       var obj = {
         HealthCheck:"Queued",
         TranscodeDecisionMaker:"Queued",
@@ -2812,6 +2812,10 @@ var doTablesUpdate = true
 
 tablesUpdate()
 
+
+
+
+
 function tablesUpdate() {
 
   try {
@@ -2825,11 +2829,11 @@ function tablesUpdate() {
 
       addFilesToDB = false
 
-
-      var startDate = new Date();
-
       allFilesPulledTable = []
       allFilesPulledTable = FileDB.find({}).fetch()
+
+
+      var startDate = new Date();
 
       allFilesPulledTable = allFilesPulledTable.sort(function (a, b) {
         return new Date(b.createdAt) - new Date(a.createdAt);
