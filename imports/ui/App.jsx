@@ -173,7 +173,7 @@ class Nav extends Component {
             }
 
  <div className="versionInfo">
-         Tdarr Alpha 1.0031
+         Tdarr Alpha 1.0032
           </div>
           </div>
 
