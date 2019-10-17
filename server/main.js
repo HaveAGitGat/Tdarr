@@ -92,9 +92,11 @@ if (process.env.NODE_ENV == 'production') {
   var homePath = home + '/Documents'
 }
 
+console.log("Tdarr documents folder:"+ homePath)
 
 
 
+console.log("Checking directories")
 
 if (!fs.existsSync(homePath + "")) {
   fs.mkdirSync(homePath + "");
@@ -145,10 +147,14 @@ if (!fs.existsSync(homePath + "/Tdarr/Samples")) {
 //migration step
 
 
+console.log("Initialising DB")
+
 allFilesPulledTable = FileDB.find({}).fetch()
 
 
 for (var i = 0; i < allFilesPulledTable.length; i++) {
+
+  console.log("Checking file:"+(i+1))
 
   if (allFilesPulledTable[i].TranscodeDecisionMaker == "Not attempted") {
 
@@ -357,7 +363,7 @@ Meteor.methods({
 
         return true
 
-      } catch (err) {
+      } catch (err) { console.log(err.stack)
       }
 
 
@@ -432,7 +438,7 @@ Meteor.methods({
 
 
 
-        } catch (err) { }
+        } catch (err) { console.log(err.stack) }
 
 
       }
@@ -442,7 +448,7 @@ Meteor.methods({
 
     } catch (err) {
 
-      console.log(err)
+      console.log(err.stack)
     }
 
 
@@ -506,7 +512,7 @@ Meteor.methods({
 
     try {
       fsextra.removeSync(homePath + '/Tdarr/Plugins/temp')
-    } catch (err) { }
+    } catch (err) {  console.log(err.stack)}
 
     var clone = require('git-clone');
 
@@ -518,12 +524,12 @@ Meteor.methods({
 
       try {
         fsextra.copySync(homePath + '/Tdarr/Plugins/temp/Community', homePath + "/Tdarr/Plugins/Community", { overwrite: true })
-      } catch (err) { }
+      } catch (err) { console.log(err.stack) }
 
 
       try {
         fsextra.removeSync(homePath + '/Tdarr/Plugins/temp')
-      } catch (err) { }
+      } catch (err) { console.log(err.stack) }
 
 
       console.log('Plugin update finished')
@@ -570,7 +576,7 @@ Meteor.methods({
           }
         );
 
-      } catch (err) { }
+      } catch (err) {  console.log(err.stack)}
     }
   },
 
@@ -659,7 +665,7 @@ Meteor.methods({
 
 
 
-    } catch (err) { }
+    } catch (err) { console.log(err.stack) }
 
   },
 
@@ -749,7 +755,7 @@ Meteor.methods({
 
       workers[workerID].send(messageOut);
 
-    } catch (err) { }
+    } catch (err) { console.log(err.stack) }
 
     //var indexEle = filesBeingProcessed.indexOf(file)
     //filesBeingProcessed.splice(indexEle, 1)
@@ -766,7 +772,7 @@ Meteor.methods({
 
     try {
       workers[workerID].send(messageOut);
-    } catch (err) { }
+    } catch (err) { console.log(err.stack) }
 
 
   }, 'scanFiles'(DB_id, arrayOrPath, arrayOrPathSwitch, mode, filePropertiesToAdd) {
@@ -815,7 +821,7 @@ Meteor.methods({
         fs.writeFileSync(homePath + "/Tdarr/Data/" + scannerID + ".txt", filesInDB, 'utf8');
 
       } catch (err) {
-
+        console.log(err.stack)
         updateConsole("Error writing to file: " + err.stack, false)
 
       }
@@ -844,7 +850,7 @@ Meteor.methods({
 
       try {
         fs.writeFileSync(homePath + "/Tdarr/Data/" + scannerID + ".txt", arrayOrPath, 'utf8');
-      } catch (err) {
+      } catch (err) { console.log(err.stack)
         updateConsole("Error writing to file: " + err.stack, false)
       }
 
@@ -1079,13 +1085,15 @@ Meteor.methods({
 
     try {
       var ffmpegText = fs.readFileSync(homePath + "/Tdarr/Data/ffmpeg.txt", 'utf8')
-    } catch (err) {
+    } catch (err) { 
+      console.log(err.stack)
       var ffmpegText = ''
     }
 
     try {
       var handbrakeText = fs.readFileSync(homePath + "/Tdarr/Data/handbrake.txt", 'utf8')
     } catch (err) {
+      console.log(err.stack)
       var handbrakeText = ''
     }
 
@@ -1206,7 +1214,10 @@ function runScheduledManualScan(){
   }
 
 
-}catch(err){}
+}catch(err){
+
+  console.log(err.stack)
+}
 
 
 setTimeout(Meteor.bindEnvironment(runScheduledManualScan), 3600000);
@@ -1248,7 +1259,9 @@ function scheduledPluginUpdate() {
     });
 
 
-  } catch (err) { }
+  } catch (err) {
+    console.log(err.stack)
+   }
 
 
 
@@ -1270,7 +1283,9 @@ function scheduledCacheClean() {
 
       try {
         traverseDir(settings[i].cache)
-      } catch (err) { }
+      } catch (err) {
+        console.log(err.stack)
+       }
     }
 
 
@@ -1330,11 +1345,11 @@ function scheduledCacheClean() {
 
 
 
-      } catch (err) { }
+      } catch (err) { console.log(err.stack) }
     }
 
 
-  } catch (err) { }
+  } catch (err) {  console.log(err.stack)}
 
   setTimeout(Meteor.bindEnvironment(scheduledCacheClean), 60000);
 }
@@ -1393,7 +1408,7 @@ function upsertWorker(w_id, obj) {
 
       } catch (err) {
 
-
+        console.log(err.stack)
 
       }
 
@@ -1836,6 +1851,9 @@ function launchWorkerModule(workerType) {
 
                         }
                       } catch (err) {
+                        console.log(err.stack)
+
+
                         processFile = false
                         preset = ''
                         container = ''
@@ -2064,6 +2082,7 @@ function launchWorkerModule(workerType) {
                 try {
                   var sourcefileSizeInGbytes = (((fs.statSync(fileToProcess)).size) / 1000000000.0);
                 } catch (err) {
+                  console.log(err.stack)
                   var sourcefileSizeInGbytes = "Error"
                 }
 
@@ -2279,7 +2298,7 @@ function launchWorkerModule(workerType) {
 
 
       }
-    } catch (err) { }
+    } catch (err) { console.log(err.stack) }
 
     if (message[1] == "copied") {
 
@@ -2300,7 +2319,7 @@ function launchWorkerModule(workerType) {
 
 
       }
-    } catch (err) { }
+    } catch (err) { console.log(err.stack) }
 
     //if (message[1] == "originalNotReplaced") {
     try {
@@ -2309,7 +2328,7 @@ function launchWorkerModule(workerType) {
 
 
       }
-    } catch (err) { }
+    } catch (err) { console.log(err.stack) }
 
 
 
@@ -2319,7 +2338,7 @@ function launchWorkerModule(workerType) {
 
 
       }
-    } catch (err) { }
+    } catch (err) { console.log(err.stack) }
 
     try {
       if (message[1].includes("Unable to repair file")) {
@@ -2327,7 +2346,7 @@ function launchWorkerModule(workerType) {
 
 
       }
-    } catch (err) { }
+    } catch (err) {  console.log(err.stack)}
 
 
 
@@ -2583,6 +2602,7 @@ function deleteFolderWatch(DB_id) {
 
 
   } catch (err) {
+    console.log(err.stack)
 
     console.log("Deleting folder watcher failed (does not exist)")
 
@@ -2730,7 +2750,7 @@ function dbUpdatePush() {
 
         } catch (err) {
 
-
+          console.log(err.stack)
 
         }
 
@@ -2767,7 +2787,7 @@ function dbUpdatePush() {
 
 
         } catch (err) {
-
+          console.log(err.stack)
 
 
         }
@@ -2782,7 +2802,9 @@ function dbUpdatePush() {
     }
 
 
-  } catch (err) { }
+  } catch (err) {
+    console.log(err.stack)
+   }
 
 
   setTimeout(Meteor.bindEnvironment(dbUpdatePush), 1000);
@@ -2969,7 +2991,7 @@ function tablesUpdate() {
             table6data = table6data.filter(row => row.DB != settings[i]._id);
 
           }
-        } catch (err) { }
+        } catch (err) { console.log(err.stack) }
       }
 
       //old
@@ -3106,6 +3128,8 @@ function tablesUpdate() {
     setTimeout(Meteor.bindEnvironment(tablesUpdate), DBPollPeriod > 1000 ? DBPollPeriod : 1000);
 
   } catch (err) {
+
+    console.log(err.stack)
 
     setTimeout(Meteor.bindEnvironment(tablesUpdate), 10000);
 
@@ -3255,7 +3279,9 @@ function setProcessPriority() {
 
     }
 
-  } catch (err) { }
+  } catch (err) { 
+    console.log(err.stack)
+  }
 
   setTimeout(Meteor.bindEnvironment(setProcessPriority), 10000);
 
@@ -3382,11 +3408,11 @@ function workerUpdateCheck() {
 
 
 
-      } catch (err) { }
+      } catch (err) { console.log(err.stack) }
     }
 
 
-  } catch (err) { }
+  } catch (err) { console.log(err.stack) }
 
   setTimeout(Meteor.bindEnvironment(workerUpdateCheck), 1000);
 }
