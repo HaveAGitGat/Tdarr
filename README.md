@@ -45,6 +45,12 @@ Requirements (MongoDB + NodeJS 8.x)
 
 INSTALLATION - (Docker/unRAID -- Easiest method):
 
+There are 2 Docker containers:
+
+    tdarr - Alpine image with MongoDB separate (same as before)
+    tdarr_aio - all-in-one Ubuntu image with MongoDB inside + hardware transcoding in future
+
+tdarr:
 1. Pull and run the MongoDB Docker container:
 
         docker pull mongo
@@ -61,10 +67,11 @@ INSTALLATION - (Docker/unRAID -- Easiest method):
 
        docker run -ti --rm \
         --net=host \
-        -v /media/mount/:/media \
-        -v /home/z/Documents/Tdarr:/home/Tdarr/Documents/Tdarr \
+        -v /media:/home/Tdarr/Media \
+        -v /home/user/Documents/Tdarr:/home/Tdarr/Documents/Tdarr \
         -p 8265:8265 \
         -e "MONGO_URL=mongodb://localhost:27017/Tdarr" \
+        -v /etc/localtime:/etc/localtime:ro \
          haveagitgat/tdarr
         
         
@@ -77,6 +84,22 @@ For unRAID please see the following screenshots for the MongoDB and Tdarr contai
 ![Screenshot](https://i.imgur.com/qnP9YhI.png)
 
 ![Screenshot](https://i.imgur.com/7WFU0AJ.png)
+
+ tdarr_aio:
+ 
+ 1. Pull the Tdarr Docker image:
+
+        docker pull haveagitgat/tdarr_aio
+  
+2. Run the container (change the '8265' on the left to your preferred port and add required volumes)
+         
+         docker run -ti --rm \
+        -v /media:/home/Tdarr/Media \
+ 	      -v /home/user/Documents/Tdarr:/home/Tdarr/Documents/Tdarr \
+        -p 8265:8265 \
+        -v TdarrData:/var/lib/mongodb/ \
+        -v /etc/localtime:/etc/localtime:ro \
+        haveagitgat/tdarr_aio
 
 ---------------------------------------------------------------------------------------
 
