@@ -90,14 +90,18 @@ For unRAID please see the following screenshots for the MongoDB and Tdarr contai
  1. Pull the Tdarr Docker image:
 
         docker pull haveagitgat/tdarr_aio
+        
+2. Create a TdarrData docker volume (recommended) else skip this step and replace 'TdarrData' in the step below with any folder on your host machine where you want the MongoDB data to be kept.
+
+        docker volume create TdarrData
   
-2. Run the container (change the '8265' on the left to your preferred port and add required volumes)
+3. Run the container (change the '8265' on the left to your preferred port and add required volumes)
          
          docker run -ti --rm \
         -v /media:/home/Tdarr/Media \
  	      -v /home/user/Documents/Tdarr:/home/Tdarr/Documents/Tdarr \
         -p 8265:8265 \
-        -v TdarrData:/var/lib/mongodb/ \
+        -v TdarrData:/var/lib/mongodb/data \
         -v /etc/localtime:/etc/localtime:ro \
         haveagitgat/tdarr_aio
 
