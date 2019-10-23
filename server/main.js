@@ -78,14 +78,10 @@ var home = require("os").homedir();
 
 if (process.env.NODE_ENV == 'production') {
 
-
   if (process.env.DATA) {
     var homePath = process.env.DATA
-
-
   } else {
     var homePath = home + '/Documents'
-
   }
 
 } else {
@@ -97,6 +93,25 @@ console.log("Tdarr documents folder:"+ homePath)
 
 
 console.log("Checking directories")
+
+
+const isDocker = require('is-docker');
+
+if (isDocker()) {
+  console.log('Running inside a Docker container');
+  if (!fs.existsSync("/temp")) {
+    fs.mkdirSync("/temp");
+  
+  }
+}else{
+  console.log('Not running inside a Docker container');
+
+}
+
+
+
+
+
 
 if (!fs.existsSync(homePath + "")) {
   fs.mkdirSync(homePath + "");
@@ -818,7 +833,12 @@ Meteor.methods({
 
       try {
 
-        fs.writeFileSync(homePath + "/Tdarr/Data/" + scannerID + ".txt", filesInDB, 'utf8');
+        if (isDocker()) {
+          fs.writeFileSync("/temp/" + scannerID + ".txt", filesInDB, 'utf8');
+        }else{
+          fs.writeFileSync(homePath + "/Tdarr/Data/" + scannerID + ".txt", filesInDB, 'utf8');
+        }
+       
 
       } catch (err) {
         console.log(err.stack)
@@ -849,7 +869,16 @@ Meteor.methods({
 
 
       try {
-        fs.writeFileSync(homePath + "/Tdarr/Data/" + scannerID + ".txt", arrayOrPath, 'utf8');
+
+        if (isDocker()) {
+          fs.writeFileSync("/temp/" + scannerID + ".txt", arrayOrPath, 'utf8');
+        }else{
+          fs.writeFileSync(homePath + "/Tdarr/Data/" + scannerID + ".txt", arrayOrPath, 'utf8');
+        }
+       
+
+
+
       } catch (err) { console.log(err.stack)
         updateConsole("Error writing to file: " + err.stack, false)
       }
@@ -1064,6 +1093,22 @@ Meteor.methods({
     } else if (process.platform == 'darwin' && mode == "ffmpeg") {
       workerCommand = ffmpegPath + " " + text
     }
+
+
+    if (process.env.HWT == true) {
+    if (isDocker()) {
+
+    if (process.platform == 'linux' && mode == "handbrake") {
+      workerCommand = "/usr/local/bin/HandBrakeCLI " + text
+    } else if (process.platform == 'linux' && mode == "ffmpeg") {
+
+      workerCommand = "/usr/local/bin/ffmpeg " + text
+
+    }
+  }
+}
+
+
 
     fs.writeFileSync(homePath + "/Tdarr/Data/" + mode + ".txt", "", 'utf8');
 
