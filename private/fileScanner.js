@@ -61,12 +61,11 @@ if (fs.existsSync(path.join(process.cwd() + "/npm"))) {
     var rootModules = path.join(process.cwd() + '/npm/node_modules/')
 
 } else {
-
     var rootModules = ''
-
 }
 
 
+const isDocker = require(rootModules + 'is-docker');
 
 const exiftool = require(rootModules + "exiftool-vendored").exiftool
 
@@ -78,18 +77,35 @@ var home = require("os").homedir();
 
 if (mode == 0) {
 
-    var filesInDB = fs.readFileSync(homePath + "/Tdarr/Data/" + scannerID + ".txt", 'utf8')
+    if (isDocker()) {
+        console.log("Filescanner in Docker")
 
-    fs.unlinkSync(homePath + "/Tdarr/Data/" + scannerID + ".txt")
+        var filesInDB = fs.readFileSync("/temp/" + scannerID + ".txt", 'utf8')
+        fs.unlinkSync("/temp/" + scannerID + ".txt")
+    }else{
+
+        var filesInDB = fs.readFileSync(homePath + "/Tdarr/Data/" + scannerID + ".txt", 'utf8')
+        fs.unlinkSync(homePath + "/Tdarr/Data/" + scannerID + ".txt")
+    }
+
+   
+
+   
 
     filesInDB = filesInDB.split('\r\n')
 
 } else if (mode == 3) {
 
+    if (isDocker()) {
+        arrayOrPath = fs.readFileSync("/temp/" + scannerID + ".txt", 'utf8')
+        fs.unlinkSync("/temp/" + scannerID + ".txt")
+   
+    }else{
+        arrayOrPath = fs.readFileSync(homePath + "/Tdarr/Data/" + scannerID + ".txt", 'utf8')
+        fs.unlinkSync(homePath + "/Tdarr/Data/" + scannerID + ".txt")
+    }
 
-    arrayOrPath = fs.readFileSync(homePath + "/Tdarr/Data/" + scannerID + ".txt", 'utf8')
-
-    fs.unlinkSync(homePath + "/Tdarr/Data/" + scannerID + ".txt")
+   
     arrayOrPath = arrayOrPath.split('\r\n')
 
 
