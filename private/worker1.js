@@ -61,6 +61,7 @@ if (fs.existsSync(path.join(process.cwd() + "/npm"))) {
 
 var shell = require(rootModules + 'shelljs');
 var fsextra = require(rootModules + 'fs-extra')
+const isDocker = require(rootModules + 'is-docker');
 
 
 var fileToProcess
@@ -346,6 +347,9 @@ process.on('message', (m) => {
             var preset1Unix = presetSplit[1].replace(/'/g, '\'\"\'\"\'');
         } catch (err) { }
 
+
+
+
         if (process.platform == 'linux' && handBrakeMode == true) {
 
             workerCommand = "HandBrakeCLI -i '" + currentSourceLineUnix + "' -o '" + currentDestinationLineUnix + "' " + presetUnix;
@@ -363,6 +367,20 @@ process.on('message', (m) => {
             workerCommand = "/usr/local/bin/HandBrakeCLI -i '" + currentSourceLineUnix + "' -o '" + currentDestinationLineUnix + "' " + presetUnix;
         } else if (process.platform == 'darwin' && FFmpegMode == true) {
             workerCommand = ffmpegPathUnix + " " + preset0Unix + " -i '" + currentSourceLineUnix + "' " + preset1Unix + " '" + currentDestinationLineUnix + "' "
+        }
+
+
+        if (process.env.HWT == true) {
+        if (isDocker()) {
+
+            console.log("Worker in Docker")
+            if (process.platform == 'linux' && handBrakeMode == true) {
+              workerCommand = "/usr/local/bin/HandBrakeCLI -i '" + currentSourceLineUnix + "' -o '" + currentDestinationLineUnix + "' " + presetUnix;
+            } else if (process.platform == 'linux' && FFmpegMode == true) {
+              workerCommand = "/usr/local/bin/ffmpeg " + preset0Unix + " -i '" + currentSourceLineUnix + "' " + preset1Unix + " '" + currentDestinationLineUnix + "' "
+        
+            }
+          }
         }
 
 
