@@ -115,6 +115,24 @@ export default class App extends Component {
 
             <p>Change log</p>
 
+
+<p>v1.004 release [23rd Oct 19]:
+  <br/>No breaking changes.
+  <br/>Changes:
+  <br/>-Scan on start switch added
+  <br/>-Prevent Tdarr temp output files mistakenly being scanned
+  <br/>-Docker memory fix for large libraries (30,000+ files)
+  <br/>-Improved garbage collection
+  <br/>-Temp scanner data written inside container (Should fix permission issues with host)
+  <br/>-tdarr_aio (All-in-one) Ubuntu container now available with MongoDB inside container.
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  </p>
             <p>v1.003 release [10th Oct 19]:
   <br/>No breaking changes.
   <br/>Changes:
