@@ -91,7 +91,7 @@ For unRAID please see the following screenshots for the MongoDB and Tdarr contai
 
         docker pull haveagitgat/tdarr_aio
         
-2. Create a TdarrData docker volume (recommended) else skip this step and replace 'TdarrData' in the step below with any folder on your host machine where you want the MongoDB data to be kept.
+2. Create a TdarrData docker volume (recommended) else skip this step and replace 'TdarrData' in the step below with any folder on your host machine where you want the MongoDB data to be kept (may cause errors).
 
         docker volume create TdarrData
   
