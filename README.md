@@ -101,7 +101,7 @@ For unRAID please see the following screenshots for the MongoDB and Tdarr contai
         -v /media:/home/Tdarr/Media \
  	      -v /home/user/Documents/Tdarr:/home/Tdarr/Documents/Tdarr \
         -p 8265:8265 \
-        -v TdarrData:/var/lib/mongodb/data \
+        -v TdarrData:/var/lib/mongodb \
         -v /etc/localtime:/etc/localtime:ro \
         haveagitgat/tdarr_aio
 
