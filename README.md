@@ -48,7 +48,7 @@ INSTALLATION - (Docker/unRAID -- Easiest method):
 There are 2 Docker containers:
 
     tdarr - Alpine image with MongoDB separate (same as before)
-    tdarr_aio - all-in-one Ubuntu image with MongoDB inside + hardware transcoding in future
+    tdarr_aio - all-in-one Ubuntu image with MongoDB inside + hardware transcoding
 
 tdarr:
 1. Pull and run the MongoDB Docker container:
