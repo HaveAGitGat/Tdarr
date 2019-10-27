@@ -23,6 +23,7 @@ https://github.com/HaveAGitGat/Tdarr_Plugins
 - Tested on a 180,000 file dummy library with 60 workers
 - Search for files based on hundreds of properties
 - Expanding stats page
+- Hardware transcoding container (install Nvidia plugin on UnRaid/nVidia runtime container on Ubuntu)
 
 
 Currently in Alpha but looking for feedback/suggestions. 
@@ -91,7 +92,7 @@ For unRAID please see the following screenshots for the MongoDB and Tdarr contai
 
         docker pull haveagitgat/tdarr_aio
         
-2. Create a TdarrData docker volume (recommended) else skip this step and replace 'TdarrData' in the step below with any folder on your host machine where you want the MongoDB data to be kept (may cause errors).
+2. Create a TdarrDB docker volume else skip this step and replace 'TdarrDB' in the step below with any folder on your host machine where you want the MongoDB data to be kept.
 
         docker volume create TdarrData
   
@@ -101,7 +102,7 @@ For unRAID please see the following screenshots for the MongoDB and Tdarr contai
         -v /media:/home/Tdarr/Media \
  	      -v /home/user/Documents/Tdarr:/home/Tdarr/Documents/Tdarr \
         -p 8265:8265 \
-        -v TdarrData:/var/lib/mongodb \
+        -v TdarrDB:/var/lib/mongodb \
         -v /etc/localtime:/etc/localtime:ro \
         haveagitgat/tdarr_aio
 
