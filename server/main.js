@@ -32,8 +32,6 @@ var rimraf = require("rimraf");
 var os = require('os-utils');
 
 
-
-
 var workers = {}
 var fileScanners = {}
 //var fileScannersData = {}

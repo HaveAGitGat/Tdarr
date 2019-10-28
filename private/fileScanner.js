@@ -49,7 +49,7 @@ var filePropertiesToAdd = JSON.parse(process.argv[8])
 
 var homePath = process.argv[9]
 
-updateConsole(scannerID, "File scanner " + scannerID + " online.")
+updateConsole(scannerID, "Online.")
 
 
 
@@ -121,7 +121,7 @@ if (mode == 0) {
 
 
 
-updateConsole(scannerID, `File scanner + ${scannerID} + vars received:
+updateConsole(scannerID, `vars received:
 
 ${process.argv}
 
@@ -144,7 +144,7 @@ if (arrayOrPathSwitch == 0) {
 
         if (checkContainer(arrayOrPath[i]) != true) {
 
-            updateConsole(scannerID, `File scanner " + ${scannerID} + ":File ${arrayOrPath[i]} does not meet container requirements.`)
+            updateConsole(scannerID, `File ${arrayOrPath[i]} does not meet container requirements.`)
 
 
 
@@ -158,7 +158,7 @@ if (arrayOrPathSwitch == 0) {
     }
 
 
-    updateConsole(scannerID, `File scanner " + ${scannerID} + ":Launching FFprobe on these files: ${arrayOrPath}`)
+    updateConsole(scannerID, `Launching FFprobe on these files: ${arrayOrPath}`)
 
     arrayOrPath = arrayOrPath.filter(row => !row.includes("TdarrNew"))
 
@@ -206,7 +206,7 @@ if (arrayOrPathSwitch == 1) {
                     fullPath = fullPath.replace(/\\/g, "/");
 
 
-                    updateConsole(scannerID, `File scanner " + ${scannerID} + ":Found: ${fullPath}`)
+                    updateConsole(scannerID, `Found: ${fullPath}`)
 
 
                     if (filesInDB.includes(fullPath)) {
@@ -342,7 +342,7 @@ process.on('exit', (code) => {
 function ffprobeLaunch(filesToScan) {
 
 
-    updateConsole(scannerID, `File scanner " + ${scannerID} + ":ffprobeLaunch received these files:${filesToScan} `)
+    updateConsole(scannerID, `ffprobeLaunch received these files:${filesToScan} `)
 
 
     var ffprobe = require(rootModules + 'ffprobe'),
@@ -375,7 +375,7 @@ function ffprobeLaunch(filesToScan) {
                 // Meteor.call('logthis', "Extracting data from this file:" + filepath, function (error, result) { });
 
 
-                updateConsole(scannerID, `File scanner " + ${scannerID} + ":Launching FFprobe on this file: ${filepath}`)
+                updateConsole(scannerID, `Launching FFprobe on this file: ${filepath}`)
 
                 ffprobe(filepath, { path: ffprobeStaticPath }, function (err, jsonData) {
                     //if (err) return done(err);
@@ -384,7 +384,7 @@ function ffprobeLaunch(filesToScan) {
 
                     if (err) {
 
-                        updateConsole(scannerID, `File scanner " + ${scannerID} + ":FFprobe extract error on this file:${filepath}`)
+                        updateConsole(scannerID, `FFprobe extract error on this file:${filepath}`)
 
                         extractDataError(filepath, err)
 
@@ -400,7 +400,7 @@ function ffprobeLaunch(filesToScan) {
 
                     if (jsonData) {
 
-                        updateConsole(scannerID, `File scanner " + ${scannerID} + ":FFprobe extract success on this file:${filepath}. Launching exiftool`)
+                        updateConsole(scannerID, `FFprobe extract success on this file:${filepath}. Launching exiftool`)
 
                         exiftool
                             .read(filepath)
@@ -408,7 +408,7 @@ function ffprobeLaunch(filesToScan) {
                                 // console.log(
                                 //     `Title: ${tags.Title}`
                                 //)
-                                updateConsole(scannerID, `File scanner " + ${scannerID} + "exiftool finished on this file:${filepath}.`)
+                                updateConsole(scannerID, `exiftool finished on this file:${filepath}`)
 
                                 extractData(filepath, jsonData, tags)
 
@@ -490,7 +490,7 @@ function ffprobeLaunch(filesToScan) {
 
         thisFileObject.cliLog = "FFprobe was unable to extract data from this file. It is highly likely that the file is corrupt."
 
-        updateConsole(scannerID, `File scanner " + ${scannerID} + ":FFprobe was unable to extract data from this file:${filepath}.`)
+        updateConsole(scannerID, `FFprobe was unable to extract data from this file:${filepath}`)
 
         var obj = {
             HealthCheck:"Error",
@@ -513,7 +513,7 @@ function ffprobeLaunch(filesToScan) {
         thisFileObject.meta = tags
 
 
-        updateConsole(scannerID, `File scanner " + ${scannerID} + ":Beginning extractData on:${filepath}.`)
+        updateConsole(scannerID, `Beginning extractData on:${filepath}`)
 
 
 
@@ -524,13 +524,13 @@ function ffprobeLaunch(filesToScan) {
         thisFileObject.ffProbeRead = "success"
         thisFileObject.ffProbeData = jsonData
 
-        updateConsole(scannerID, `File scanner " + ${scannerID} + ":Tagging ffprobe data:${filepath}.`)
+        updateConsole(scannerID, `Tagging ffprobe data:${filepath}`)
 
         var jsonString = JSON.stringify(jsonData)
 
 
 
-        updateConsole(scannerID, `File scanner " + ${scannerID} + ":Tagging size data:${filepath}.`)
+        updateConsole(scannerID, `Tagging size data:${filepath}`)
 
         try {
             var singleFileSize = fs.statSync(filepath)
@@ -552,7 +552,7 @@ function ffprobeLaunch(filesToScan) {
             thisFileObject.bit_rate = bit_rate
         }catch(err){
             
-            updateConsole(scannerID, `File scanner " + ${scannerID} + ":Tagging bitrate data failed:${filepath}.`)
+            updateConsole(scannerID, `Tagging bitrate data failed:${filepath}`)
            
         }
 
@@ -561,7 +561,7 @@ function ffprobeLaunch(filesToScan) {
 
         if (jsonString.includes('"codec_type":"video"')) {
 
-            updateConsole(scannerID, `File scanner " + ${scannerID} + ":Tagging video res:${filepath}.`)
+            updateConsole(scannerID, `Tagging video res:${filepath}`)
 
             try {
 
@@ -609,7 +609,7 @@ function ffprobeLaunch(filesToScan) {
 
             } catch (err) {
 
-                updateConsole(scannerID, `File scanner " + ${scannerID} + ":Tagging video res failed:${filepath}.`)
+                updateConsole(scannerID, `Tagging video res failed:${filepath}`)
             }
 
             thisFileObject.fileMedium = "video"
@@ -643,7 +643,7 @@ function ffprobeLaunch(filesToScan) {
 
 function addFileToDB(filePath, FileObject,obj) {
 
-    updateConsole(scannerID, `File scanner " + ${scannerID} + ":Sending add file to DB:${filePath}.`)
+    updateConsole(scannerID, `Sending add file to DB:${filePath}`)
 
     
     //
