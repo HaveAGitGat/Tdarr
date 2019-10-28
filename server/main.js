@@ -362,21 +362,42 @@ Meteor.methods({
     allFiles = allFiles.filter(row => {
 
       try {
-
-
         for (var i = 0; i < string.length; i++) {
 
-          if (!(JSON.stringify(row)).toLowerCase().includes(string[i].toLowerCase())) {
 
+
+
+          /// 
+
+          var match = []
+
+          if(string[i].charAt(0) == "!"){
+
+           var subString = string[i].substring(1)
+
+            if ((JSON.stringify(row)).toLowerCase().includes(subString.toLowerCase())) {
+             // match.push(true)
+             return false
+            }
+
+
+          }else{
+
+            if (!(JSON.stringify(row)).toLowerCase().includes(string[i].toLowerCase())) {
+            //  match.push(false)
             return false
-
+            }
           }
 
+
+
+         
         }
 
         return true
 
-      } catch (err) { console.log(err.stack)
+      } catch (err) {
+         console.log(err.stack)
       }
 
 
@@ -384,6 +405,17 @@ Meteor.methods({
 
 
     );
+
+
+    //Add queue positions to search results
+
+    for (var i = 0; i < allFiles.length; i++) {
+      var tFiles = transcodeFiles.map(row => row.file )
+      var hFiles = healthcheckFiles.map(row => row.file )
+      allFiles[i].tPosition =  tFiles.indexOf(allFiles[i].file)+1
+      allFiles[i].hPosition =  hFiles.indexOf(allFiles[i].file)+1
+    }
+
 
     GlobalSettingsDB.upsert('globalsettings',
       {
@@ -394,7 +426,6 @@ Meteor.methods({
     );
 
     doTablesUpdate = true
-
 
     return allFiles
 
