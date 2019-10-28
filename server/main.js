@@ -598,15 +598,15 @@ Meteor.methods({
 
 
 
-  }, 'resetAllStatus'(mode) {
-
+  }, 'resetAllStatus'(DB_id,mode) {
 
 
     var allFiles = allFilesPulledTable
 
-
-
-
+    if(DB_id != "all"){
+      allFiles =  allFiles.filter(row => row.DB == DB_id);
+    }
+    
     for (var i = 0; i < allFiles.length; i++) {
 
       try {

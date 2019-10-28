@@ -1297,9 +1297,9 @@ class Folder extends Component {
 
   resetAllStatus(mode) {
 
-    if (confirm('Are you want reset all files ' + mode + ' status to "Not attempted"?')) {
+    if (confirm('Are you sure you want to re-queue all files?')) {
 
-      Meteor.call('resetAllStatus', mode, function (error, result) { })
+      Meteor.call('resetAllStatus', this.props.libraryItem._id, mode, function (error, result) { })
 
     }
   }

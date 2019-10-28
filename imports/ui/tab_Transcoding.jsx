@@ -510,6 +510,15 @@ class App extends Component {
   }
 
 
+  resetAllStatus(mode) {
+
+    if (confirm('Are you sure you want to re-queue all files?')) {
+
+      Meteor.call('resetAllStatus', 'all', mode, function (error, result) { })
+
+    }
+  }
+
 
 
 
@@ -800,7 +809,7 @@ class App extends Component {
                 <th>Transcode</th>
                 <th>Old size (GB)</th>
                 <th>New size (GB)</th>
-                <th>Re-queue</th>
+                <th><Button variant="outline-dark" onClick={() => this.resetAllStatus('TranscodeDecisionMaker')} >Re-queue</Button></th>
                 <th>Info</th>
 
 
@@ -817,7 +826,7 @@ class App extends Component {
                 <th>No.</th>
                 <th>Time</th>
                 <th>File</th>
-                <th>Re-queue</th>
+                <th><Button variant="outline-dark" onClick={() => this.resetAllStatus('TranscodeDecisionMaker')} >Re-queue</Button></th>
                 <th>Ignore</th>
                 <th>Info</th>
 
@@ -856,7 +865,7 @@ class App extends Component {
                 <th>No.</th>
                 <th>Time</th>
                 <th>File</th>
-                <th>Re-queue</th>
+                <th><Button   variant="outline-dark" onClick={() => this.resetAllStatus('HealthCheck')} >Re-queue</Button></th>
                 <th>Info</th>
               </tr>
 
@@ -876,7 +885,7 @@ class App extends Component {
                 <th>No.</th>
                 <th>Time</th>
                 <th>File</th>
-                <th>Re-queue</th>
+                <th><Button   variant="outline-dark" onClick={() => this.resetAllStatus('HealthCheck')} >Re-queue</Button></th>
                 <th>Ignore</th>
                 <th>Info</th>
 
