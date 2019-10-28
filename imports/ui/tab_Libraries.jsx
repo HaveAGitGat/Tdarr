@@ -72,11 +72,11 @@ class App extends Component {
         videoFilter:false,
         video_codec_names_exclude:[
           {codec:"hevc",
-          checked:true
+          checked:false
           
         },
           {codec:"h264",
-          checked:false
+          checked:true
         
         }
         ],

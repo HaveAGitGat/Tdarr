@@ -784,29 +784,27 @@ table.sliderTable td {
 
 }
 
-table.sliderTable tr {
-
-}
-
-
-table.sliderTable tr:nth-child(even) {
-
-}
-
-table.sliderTable tr:nth-child(odd) {
-
-}
-
-
-table.sliderTable tr:hover {
-
-}
 
 table.sliderTable {
   border-radius: 5px;
   width: 100%;
   table-layout: auto;
   white-space: normal;
+
+}
+table.searchResultsTable th {
+
+
+  border: 1px solid white;
+  color: black;
+
+}
+
+table.searchResultsTable td {
+
+
+  border: 1px solid white;
+  color: black;
 
 }
 
@@ -855,6 +853,10 @@ table.sliderTable {
 table.scheduleTable {
 
   width: 100%;
+}
+
+table.scheduleTable tr:hover {
+  background-color: rgb(202, 202, 202);
 }
 
 table.workerDetailTable td {

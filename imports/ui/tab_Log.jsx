@@ -191,15 +191,23 @@ try{
             ]
 
 
+            function filterMethod(filter, row){
+                if(row[filter.id].includes(filter.value)){
+                    return true
+                }
+            }
+
+
 
 
             render(<div>
                 <ReactTable
                     data={data}
                     columns={columns}
-                    defaultPageSize={10}
+                    defaultPageSize={1000}
                     pageSizeOptions={[10, 100, 1000]}
                     filterable={true}
+                    defaultFilterMethod ={(filter, row) => filterMethod(filter, row)}
                 />
             </div>, document.getElementById('logDiv'));
 
@@ -213,6 +221,9 @@ try{
             //     },
 
             //   ];
+
+
+            //Old graph code
 
             var data = result.sort(function (a, b) {
                 return new Date(a.createdAt) - new Date(b.createdAt);

@@ -548,8 +548,9 @@ function ffprobeLaunch(filesToScan) {
         }
 
         try{
-            var bit_rate = (8 * singleFileSize) / (parseInt(jsonData.streams[0]["duration"]))
+            var bit_rate = (8 * singleFileSize) / parseFloat(thisFileObject.ffProbeData.streams[0]["duration"])
             thisFileObject.bit_rate = bit_rate
+           
         }catch(err){
             
             updateConsole(scannerID, `Tagging bitrate data failed:${filepath}`)

@@ -5,11 +5,15 @@ import { render } from 'react-dom';
 import ItemButton from './item_Button.jsx'
 import { Button } from 'react-bootstrap';
 
+import ReactTable from "react-table";
+
 import Modal from "reactjs-popup";
 
 import ClipLoader from 'react-spinners/ClipLoader';
 
 import { GlobalSettingsDB } from '../api/tasks.js';
+
+import { renderToString } from 'react-dom/server'
 
 
 
@@ -109,60 +113,281 @@ class App extends Component {
     Meteor.call('searchDB', ReactDOM.findDOMNode(this.refs.searchString).value.trim(), (error, result) => {
 
 
-
-      //console.log(result)
-
       if (result.length == 0) {
 
         render(<center>No results</center>, document.getElementById('searchResults'));
-      } else {
 
 
-        var results = result.map((row, i) => {
+      }else{
 
-          if(row.file_size != undefined){
-            var file_size =  parseFloat((row.file_size/1000).toPrecision(4))
-          }else{
-            var file_size = "-"
-          }
-
-         return <tr>
-            <td>{row.file}</td><td>{row.video_codec_name}</td><td>{row.video_resolution}</td><td>{file_size}</td> <td> {this.renderBumpButton(row.file)}</td><td>{this.renderCreateSampleButton(row.file)}</td> <td>{this.renderRedoButton(row.file, 'TranscodeDecisionMaker')}</td> <td>{this.renderRedoButton(row.file, 'HealthCheck')}</td><td>{this.renderInfoButton(row)}</td>
-          </tr>
-
-        });
-
-        render(
-
-          <table className="pluginTable">   <tbody>
-
-<tr>
-  Count:{results.length}
-</tr>
-
-            <tr>
-              <th>File</th>
-             
-              <th>Codec</th>
-                <th>Resolution</th>
-                <th>Size (GB)</th>
-                <th>Bump</th>
-              <th>Create sample</th>
-              <th>Transcode</th>
-              <th>Health check</th>
-              <th>Info</th>
+      var data = result
 
 
-            </tr>
+      function getStreams(file){
 
-            {results}
+        var streams = file.ffProbeData.streams
+        streams = streams.map((row) => {
+             return <tr>
+                <td>{row.index}</td>
+                <td>{row.codec_type}</td>
+                <td>{row.codec_name}</td>
+                <td>{row.bit_rate != undefined ?  parseFloat((row.bit_rate / 1000000).toPrecision(4))+" Mbs" : "-"}</td>
+              </tr>
 
-          </tbody></table>
+        })
 
+        return <table className="searchResultsTable">
+            <tbody>
 
-          , document.getElementById('searchResults'));
+            {streams}
+            </tbody>
+          </table>
 
+            
       }
+
+      const getColumnWidth = (rows, accessor, headerText) => {
+        const maxWidth = 400
+        const magicSpacing = 10
+        const cellLength = Math.max(
+          ...rows.map(row => (`${row[accessor]}` || '').length),
+          headerText.length,
+        )
+        return Math.min(maxWidth, cellLength * magicSpacing)
+      }
+      
+                  const columns = [
+                    
+                    {
+                      Header: 'File',
+                      accessor: 'file',
+                      width: getColumnWidth(data, 'file', 'File'),
+                    },
+
+                    {
+                      Header: 'Streams',
+                      id: 'streams',
+                      accessor: row => {
+                        var streams = row.ffProbeData.streams
+                        streams = streams.map((row) => {
+                             return <tr>
+                                <td>{row.index}</td>
+                                <td>{row.codec_type}</td>
+                                <td>{row.codec_name}</td>
+                                <td>{row.bit_rate != undefined ?  parseFloat((row.bit_rate / 1000000).toPrecision(4))+" Mbs" : "-"}</td>
+                                <td>{ row.tags != undefined && row.tags.language != undefined ?  row.tags.language : "-"}</td>
+                              </tr>
+                        })
+                
+                        return <table className="searchResultsTable">
+                            <tbody>
+
+                              <th>Index</th>
+                              <th>Type</th>
+                              <th>Codec</th>
+                              <th>Bitrate</th>
+                              <th>Lang</th>
+                            {streams}
+                            </tbody>
+                          </table>
+                
+                      }
+                      
+                    },
+                    {
+                      Header: 'Codec',
+                      accessor: 'video_codec_name',
+                      width: getColumnWidth(data, 'video_codec_name', 'Codec'),
+                    },
+                    {
+                      Header: 'Resolution',
+                      accessor: 'video_resolution',
+                      width: getColumnWidth(data, 'video_resolution', 'Resolution'),
+                    },
+                    {
+                      Header: 'Size (GB)',
+                      id: 'size',
+                      accessor: row => row.file_size != undefined ? parseFloat((row.file_size / 1000).toPrecision(4)) : 0
+                    },
+
+                    {
+                      Header: 'Bitrate (Mbs)',
+                      id: 'Bitrate',
+                      accessor: row => row.bit_rate != undefined ?  parseFloat((row.bit_rate / 1000000).toPrecision(4)) : 0
+                    },
+
+                    {
+                      Header: 'Duration (s)',
+                      id: 'Duration',
+                      accessor: row => row.ffProbeData.streams[0]["duration"] != undefined ?  parseFloat((row.ffProbeData.streams[0]["duration"])) : 0
+                    },
+
+
+                    {
+                      Header: 'Bump',
+                      id: 'Bump',
+                      width: 'Bump'.length*10,
+                      accessor: row => this.renderBumpButton(row.file),
+                      
+                    },
+
+                    {
+                      Header: 'Create sample',
+                      id: 'Create sample',
+                      width: 'Create sample'.length*10,
+                      accessor: row => this.renderCreateSampleButton(row.file),
+                     
+                    },
+
+                    {
+                      Header: 'Transcode',
+                      id: 'Transcode',
+                      width: 'Transcode'.length*10,
+                      accessor: row => row.TranscodeDecisionMaker == "Queued" ? "Queued("+row.tPosition+")" : this.renderRedoButton(row.file, 'TranscodeDecisionMaker')
+                    },
+
+                    {
+                      Header: 'Health check',
+                      id: 'Health check',
+                      width: 'Health check'.length*10,
+                      accessor: row => row.HealthCheck == "Queued" ? "Queued("+row.hPosition+")" : this.renderRedoButton(row.file, 'HealthCheck')
+                    },
+                    {
+                      Header: 'Info',
+                      id: 'Info',
+                      width: 'Info'.length*10,
+                      accessor: row => this.renderInfoButton(row)
+                    },
+
+           
+
+      
+                  ]
+      
+      
+                  function filterMethod(filter, row){
+
+                  //   console.log('---------------')
+                  //   console.log(filter)
+                  //   console.log(row)
+
+                  //  // console.log(row[filter.id].outerHTML)
+
+                  //  console.log(row[filter.id])
+                    
+                  //  console.log( renderToString(row[filter.id]))
+
+
+                   
+                    if(filter.id == "streams"){
+
+                      var text = renderToString(row[filter.id])
+
+                      
+                      if((text).toString().includes(filter.value)){
+                        return true
+                    }
+
+
+                    }else{
+
+                      if((row[filter.id]).toString().includes(filter.value)){
+                        return true
+                    }
+
+
+                    }
+
+                  
+                  }
+      
+      
+                  render(<div>
+
+                    <br/>
+                   
+                      <center><p>Tip: Use the table headers to sort & filter files</p></center>
+
+                      <br/>
+                 
+
+                      <ReactTable
+                          data={data}
+                          columns={columns}
+                          defaultPageSize={data.length}
+                          pageSizeOptions={[10, 100, 1000]}
+                          filterable={true}
+                          defaultFilterMethod ={(filter, row) => filterMethod(filter, row)}
+                      />
+                  </div>, document.getElementById('searchResults'));
+
+
+
+
+
+
+
+
+
+}
+
+
+///////
+
+
+      //console.log(result)
+
+//       if (result.length == 0) {
+
+//         render(<center>No results</center>, document.getElementById('searchResults'));
+//       } else {
+
+
+//         var results = result.map((row, i) => {
+
+//           if(row.file_size != undefined){
+//             var file_size =  parseFloat((row.file_size/1000).toPrecision(4))
+//           }else{
+//             var file_size = "-"
+//           }
+
+//          return <tr>
+//             <td>{row.file}</td><td>{row.video_codec_name}</td><td>{row.video_resolution}</td><td>{file_size}</td> <td> {this.renderBumpButton(row.file)}</td><td>{this.renderCreateSampleButton(row.file)}</td> <td>{this.renderRedoButton(row.file, 'TranscodeDecisionMaker')}</td> <td>{this.renderRedoButton(row.file, 'HealthCheck')}</td><td>{this.renderInfoButton(row)}</td>
+//           </tr>
+
+//         });
+
+//         render(
+
+//           <table className="pluginTable">   <tbody>
+
+// <tr>
+//   Count:{results.length}
+// </tr>
+
+//             <tr>
+//               <th>File</th>
+             
+//               <th>Codec</th>
+//                 <th>Resolution</th>
+//                 <th>Size (GB)</th>
+//                 <th>Bump</th>
+//               <th>Create sample</th>
+//               <th>Transcode</th>
+//               <th>Health check</th>
+//               <th>Info</th>
+
+
+//             </tr>
+
+//             {results}
+
+//           </tbody></table>
+
+
+//           , document.getElementById('searchResults'));
+
+//       }
 
     })
 
@@ -304,7 +529,7 @@ class App extends Component {
         </form>
 
 
-
+        <div id="searchResults1" ref="searchResults1"></div>
 
         <div id="searchResults" ref="searchResults"></div>
 
