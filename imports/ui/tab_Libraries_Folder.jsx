@@ -367,12 +367,6 @@ class Folder extends Component {
 
 
     }
-
-
-
-
-
-
   }
 
   renderPlugins() {
@@ -1190,53 +1184,53 @@ class Folder extends Component {
       <tbody>
         <tr>
           <td>Day</td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(0,24,"Hour")}  >00</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(1,24,"Hour")}  >01</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(2,24,"Hour")}  >02</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(3,24,"Hour")}  >03</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(4,24,"Hour")}  >04</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(5,24,"Hour")}  >05</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(6,24,"Hour")}  >06</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(7,24,"Hour")}  >07</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(8,24,"Hour")}  >08</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(9,24,"Hour")}  >09</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(10,24,"Hour")} >10</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(11,24,"Hour")} >11</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(12,24,"Hour")} >12</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(13,24,"Hour")} >13</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(14,24,"Hour")} >14</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(15,24,"Hour")} >15</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(16,24,"Hour")} >16</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(17,24,"Hour")} >17</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(18,24,"Hour")} >18</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(19,24,"Hour")} >19</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(20,24,"Hour")} >20</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(21,24,"Hour")} >21</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(22,24,"Hour")} >22</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(23,24,"Hour")} >23</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(0, 24, "Hour")}  >00</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(1, 24, "Hour")}  >01</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(2, 24, "Hour")}  >02</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(3, 24, "Hour")}  >03</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(4, 24, "Hour")}  >04</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(5, 24, "Hour")}  >05</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(6, 24, "Hour")}  >06</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(7, 24, "Hour")}  >07</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(8, 24, "Hour")}  >08</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(9, 24, "Hour")}  >09</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(10, 24, "Hour")} >10</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(11, 24, "Hour")} >11</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(12, 24, "Hour")} >12</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(13, 24, "Hour")} >13</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(14, 24, "Hour")} >14</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(15, 24, "Hour")} >15</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(16, 24, "Hour")} >16</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(17, 24, "Hour")} >17</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(18, 24, "Hour")} >18</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(19, 24, "Hour")} >19</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(20, 24, "Hour")} >20</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(21, 24, "Hour")} >21</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(22, 24, "Hour")} >22</Button></td>
+          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(23, 24, "Hour")} >23</Button></td>
 
         </tr>
 
-        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(0,24)}  >Sun</Button></td> {row1}  </tr>
-        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(24,48)}  >Mon</Button></td> {row2}  </tr>
-        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(48,72)}  >Tue</Button></td> {row3}  </tr>
-        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(72,96)}  >Wed</Button></td> {row4}  </tr>
-        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(96,120)}  >Thur</Button></td> {row5}  </tr>
-        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(120,144)}  >Fri</Button></td> {row6}  </tr>
-        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(144,168)}  >Sat</Button></td> {row7}  </tr>
+        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(0, 24)}  >Sun</Button></td> {row1}  </tr>
+        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(24, 48)}  >Mon</Button></td> {row2}  </tr>
+        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(48, 72)}  >Tue</Button></td> {row3}  </tr>
+        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(72, 96)}  >Wed</Button></td> {row4}  </tr>
+        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(96, 120)}  >Thur</Button></td> {row5}  </tr>
+        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(120, 144)}  >Fri</Button></td> {row6}  </tr>
+        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(144, 168)}  >Sat</Button></td> {row7}  </tr>
 
 
       </tbody>
     </table>
   }
 
-  toggleSchedule(start,end,type){
+  toggleSchedule(start, end, type) {
 
-    Meteor.call('toggleSchedule', this.props.libraryItem._id, this.state.scheduleAll, start, end,type, function (error, result) { })
+    Meteor.call('toggleSchedule', this.props.libraryItem._id, this.state.scheduleAll, start, end, type, function (error, result) { })
 
-this.setState({
-  scheduleAll: !this.state.scheduleAll,
-})
+    this.setState({
+      scheduleAll: !this.state.scheduleAll,
+    })
 
 
 
@@ -1245,8 +1239,6 @@ this.setState({
 
 
   showHideSettings(event) {
-
-
 
     SettingsDB.upsert(
 
@@ -1268,9 +1260,19 @@ this.setState({
 
   }
 
-  scanFiles(mode) {
+  scanFiles = (mode) => {
 
+    if (mode == 1) {
+      if (confirm('Are you sure you want to run a fresh scan on all files? All files will be-rescanned and placed into the transcode and health check queues.')) {
+        this.scanFilesRun(mode)
+      }
+    } else {
 
+      this.scanFilesRun(mode)
+    }
+  }
+
+  scanFilesRun = (mode) => {
 
     SettingsDB.upsert(
 
@@ -1282,15 +1284,13 @@ this.setState({
       }
     );
 
-
     var obj = {
-      HealthCheck:"Queued",
-      TranscodeDecisionMaker:"Queued",
-      cliLog:"",
+      HealthCheck: "Queued",
+      TranscodeDecisionMaker: "Queued",
+      cliLog: "",
     }
 
-    Meteor.call('scanFiles', this.props.libraryItem._id, this.props.libraryItem.folder, 1, mode, obj, function (error, result) {});
-
+    Meteor.call('scanFiles', this.props.libraryItem._id, this.props.libraryItem.folder, 1, mode, obj, function (error, result) { });
 
 
   }
@@ -1302,8 +1302,6 @@ this.setState({
       Meteor.call('resetAllStatus', mode, function (error, result) { })
 
     }
-
-
   }
 
 
@@ -1313,14 +1311,8 @@ this.setState({
 
     event.preventDefault();
 
-
-
-    // Find the text field via the React ref
-    const text = ReactDOM.findDOMNode(this.refs.addPluginText).value.trim();
-    //using this to validate user
+    const text = ReactDOM.findDOMNode(this.refs.addPluginText).value.trim(); 
     Meteor.call('addPluginInclude', this.props.libraryItem._id, text, function (error, result) { });
-
-
     ReactDOM.findDOMNode(this.refs.addPluginText).value = '';
   }
 
@@ -1331,12 +1323,10 @@ this.setState({
 
     event.preventDefault();
 
-    // Find the text field via the React ref
+    
     const text = ReactDOM.findDOMNode(this.refs.addVideoCodecExcludeText).value.trim();
-    //using this to validate user
+
     Meteor.call('addVideoCodecExclude', this.props.libraryItem._id, text, function (error, result) { });
-
-
     ReactDOM.findDOMNode(this.refs.addVideoCodecExcludeText).value = '';
   }
 
@@ -1344,11 +1334,11 @@ this.setState({
 
     event.preventDefault();
 
-    // Find the text field via the React ref
+    
     const text = ReactDOM.findDOMNode(this.refs.addAudioCodecExcludeText).value.trim();
 
 
-    //using this to validate user
+    
     Meteor.call('addAudioCodecExclude', this.props.libraryItem._id, text, function (error, result) { });
 
 
@@ -1398,7 +1388,7 @@ this.setState({
               <Dropdown>
                 <Dropdown.Toggle variant="outline-success" id="dropdown-basic">
                   Options
-  </Dropdown.Toggle>
+                </Dropdown.Toggle>
 
                 <Dropdown.Menu>
 
@@ -1463,8 +1453,8 @@ this.setState({
                 Source folder:{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'} Folder watch:
         <div style={libButtonStyle}>
                   <ToggleButton
-      thumbStyle={borderRadiusStyle}
-      trackStyle={borderRadiusStyle}
+                    thumbStyle={borderRadiusStyle}
+                    trackStyle={borderRadiusStyle}
 
                     name="folderWatching"
                     value={!!this.props.libraryItem.folderWatching || false}
@@ -1493,15 +1483,15 @@ this.setState({
                 {'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}Process Library:
                 <div style={libButtonStyle}>
                   <ToggleButton
-      thumbStyle={borderRadiusStyle}
-      trackStyle={borderRadiusStyle}
-                  
+                    thumbStyle={borderRadiusStyle}
+                    trackStyle={borderRadiusStyle}
+
 
 
                     value={this.props.libraryItem.processLibrary === undefined ? true : !!this.props.libraryItem.processLibrary}
                     onToggle={() => {
 
-                      
+
 
                       SettingsDB.upsert(
 
@@ -1525,9 +1515,9 @@ this.setState({
                 {'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}Scan on start:
                 <div style={libButtonStyle}>
                   <ToggleButton
-      thumbStyle={borderRadiusStyle}
-      trackStyle={borderRadiusStyle}
-                  
+                    thumbStyle={borderRadiusStyle}
+                    trackStyle={borderRadiusStyle}
+
                     value={this.props.libraryItem.scanOnStart === undefined ? true : !!this.props.libraryItem.scanOnStart}
                     onToggle={() => {
 
@@ -1652,8 +1642,8 @@ this.setState({
               <center>
 
                 Plugin: <div style={libButtonStyle}><ToggleButton
-      thumbStyle={borderRadiusStyle}
-      trackStyle={borderRadiusStyle}
+                  thumbStyle={borderRadiusStyle}
+                  trackStyle={borderRadiusStyle}
 
                   value={!!this.props.libraryItem.decisionMaker.pluginFilter}
                   onToggle={() => {
@@ -1694,8 +1684,8 @@ this.setState({
                 /></div>{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}
 
                 Video library: <div style={libButtonStyle}><ToggleButton
-      thumbStyle={borderRadiusStyle}
-      trackStyle={borderRadiusStyle}
+                  thumbStyle={borderRadiusStyle}
+                  trackStyle={borderRadiusStyle}
 
                   value={!!this.props.libraryItem.decisionMaker.videoFilter}
                   onToggle={() => {
@@ -1733,8 +1723,8 @@ this.setState({
 
                 Audio library:
 <div style={libButtonStyle}> <ToggleButton
-      thumbStyle={borderRadiusStyle}
-      trackStyle={borderRadiusStyle}
+                  thumbStyle={borderRadiusStyle}
+                  trackStyle={borderRadiusStyle}
 
                   value={!!this.props.libraryItem.decisionMaker.audioFilter}
                   onToggle={() => {
@@ -2030,15 +2020,15 @@ this.setState({
 
               <Button variant="outline-dark" onClick={() => {
 
-Meteor.call('toggleSchedule', this.props.libraryItem._id, this.state.scheduleAll, 0, 168, function (error, result) { })
+                Meteor.call('toggleSchedule', this.props.libraryItem._id, this.state.scheduleAll, 0, 168, function (error, result) { })
 
-this.setState({
-  scheduleAll: !this.state.scheduleAll,
-})
+                this.setState({
+                  scheduleAll: !this.state.scheduleAll,
+                })
 
 
 
-}}  >Toggle all</Button>
+              }}  >Toggle all</Button>
 
               <div className="scheduleContainer">
 
