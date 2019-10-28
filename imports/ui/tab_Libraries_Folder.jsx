@@ -1211,13 +1211,13 @@ class Folder extends Component {
 
         </tr>
 
-        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(0, 24)}  >Sun</Button></td> {row1}  </tr>
-        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(24, 48)}  >Mon</Button></td> {row2}  </tr>
-        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(48, 72)}  >Tue</Button></td> {row3}  </tr>
-        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(72, 96)}  >Wed</Button></td> {row4}  </tr>
-        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(96, 120)}  >Thur</Button></td> {row5}  </tr>
-        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(120, 144)}  >Fri</Button></td> {row6}  </tr>
-        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(144, 168)}  >Sat</Button></td> {row7}  </tr>
+        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(0, 24)}  block>Sun</Button></td> {row1}  </tr>
+        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(24, 48)}  block>Mon</Button></td> {row2}  </tr>
+        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(48, 72)}  block>Tue</Button></td> {row3}  </tr>
+        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(72, 96)}  block>Wed</Button></td> {row4}  </tr>
+        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(96, 120)}  block>Thur</Button></td> {row5}  </tr>
+        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(120, 144)}  block>Fri</Button></td> {row6}  </tr>
+        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(144, 168)}  block>Sat</Button></td> {row7}  </tr>
 
 
       </tbody>
