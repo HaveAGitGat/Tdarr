@@ -653,9 +653,6 @@ function addFileToDB(filePath, FileObject,obj) {
     FileObject.file = filePath
     FileObject.DB = DB_id
 
-
-    // FileObject.HealthCheck = HealthCheck
-    // FileObject.TranscodeDecisionMaker = TranscodeDecisionMaker
     FileObject.processingStatus = false
     FileObject.createdAt = new Date()
 
@@ -678,7 +675,7 @@ function addFileToDB(filePath, FileObject,obj) {
             scannerID,
             "updateScanFound",
             DB_id,
-            "Processing:" + foundCounter,
+            "Processing:" + foundCounter+"/"+filesToScan.length,
 
         ];
         process.send(message);
