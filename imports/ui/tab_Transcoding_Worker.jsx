@@ -209,6 +209,8 @@ export default class Worker extends Component {
 
             <table className="workerDetailTable">
               <tbody>
+
+              <tr><td>Path:</td><td>{this.props.worker.file}</td></tr>
                 <tr><td>CLI:</td><td>{this.props.worker.CLIType}</td></tr>
 
                 <tr><td>Preset:</td><td>{this.props.worker.preset}</td></tr>
