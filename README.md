@@ -94,8 +94,9 @@ For unRAID please see the following screenshots for the MongoDB and Tdarr contai
         
 2. Create a TdarrDB docker volume else skip this step and replace 'TdarrDB' in the step below with any folder on your host machine where you want the MongoDB data to be kept.
 
-        docker volume create TdarrData
-  
+        docker volume create TdarrDB
+        
+
 3. Run the container (change the '8265' on the left to your preferred port and add required volumes)
          
          docker run -ti --rm \
