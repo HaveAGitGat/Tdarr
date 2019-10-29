@@ -384,6 +384,9 @@ process.on('message', (m) => {
         }
 
 
+        console.log(workerCommand)
+
+
         if (mode == "transcode") {
 
             if (fs.existsSync(currentDestinationLine)) {
@@ -441,7 +444,6 @@ process.on('message', (m) => {
                 //log console output to text file
 
                 var str = "" + data;
-
 
 
 
@@ -521,6 +523,7 @@ process.on('message', (m) => {
                 errorLogFull += data + "\r\n";
 
                 var str = "" + data;
+
 
                 if (handBrakeMode == true) {
 
@@ -979,7 +982,8 @@ function workerNotEncounteredError() {
                   lastTranscodeDate: new Date(),
                   cliLog:cliLog,
                   oldSize: currentFileObject.oldSize ? currentFileObject.oldSize : sourcefileSizeInGbytes,
-                  newSize:destfileSizeInGbytes
+                  newSize:destfileSizeInGbytes,
+                  bumped: new Date(),
                 }
       
               } else {
@@ -990,7 +994,8 @@ function workerNotEncounteredError() {
                   lastTranscodeDate: new Date(),
                   cliLog:cliLog,
                   oldSize: currentFileObject.oldSize ? currentFileObject.oldSize : sourcefileSizeInGbytes,
-                  newSize:destfileSizeInGbytes
+                  newSize:destfileSizeInGbytes,
+                  bumped:false,
                 }
               }
 

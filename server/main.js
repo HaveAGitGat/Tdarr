@@ -262,15 +262,37 @@ if (!Array.isArray(count) || !count.length) {
         generalWorkerLimit: 0,
         transcodeWorkerLimit: 0,
         healthcheckWorkerLimit: 0,
-
+        queueSortType:"sortDateNewest",
         verboseLogs: false,
       }
     }
   );
+}else{
+//init steps
+
+if(count[0].queueSortType == undefined){
+
+  GlobalSettingsDB.upsert(
+    "globalsettings",
+    {
+      $set: {
+        queueSortType:"sortDateNewest",
+      }
+    }
+  );
+
+}
+
 
 
 
 }
+
+
+
+
+
+
 
 GlobalSettingsDB.upsert('globalsettings',
   {
@@ -431,7 +453,7 @@ Meteor.methods({
 
   },
 
-  'searchPlugins'(string) {
+  'searchPlugins'(string,pluginType) {
 
     //  console.log(string)
 
@@ -441,11 +463,11 @@ Meteor.methods({
       var plugins = []
 
 
-      fs.readdirSync(homePath + '/Tdarr/Plugins/Community').forEach(file => {
+      fs.readdirSync(homePath + `/Tdarr/Plugins/${pluginType}`).forEach(file => {
         // console.log(homePath + '/Tdarr/Plugins/Community/'+file);
         //  var temp = require(homePath + '/Tdarr/Plugins/Community/' + file);
 
-        var hwSource = fs.readFileSync(homePath + '/Tdarr/Plugins/Community/' + file, 'utf8');
+        var hwSource = fs.readFileSync(homePath + `/Tdarr/Plugins/${pluginType}/` + file, 'utf8');
         var hwFunc = new Function('module', hwSource);
         var hwModule = { exports: {} };
         hwFunc(hwModule)
@@ -1190,7 +1212,10 @@ Meteor.methods({
     var outputFileUnix = outputFile.replace(/'/g, '\'\"\'\"\'');
     var ffmpegPathUnix = ffmpegPath.replace(/'/g, '\'\"\'\"\'');
 
-    var preset = "-ss 1 -t 30 -acodec copy -vcodec copy"
+    //var preset1 = "-ss 1 -t 30 -acodec copy -vcodec copy"
+
+    var preset1 = "-ss 1 -t 30"
+    var preset2 = "-codec copy"
 
     if (fs.existsSync(outputFile)) {
       fs.unlinkSync(outputFile)
@@ -1198,18 +1223,20 @@ Meteor.methods({
 
 
     if (process.platform == 'win32') {
-      workerCommand = ffmpegPath + " -i \"" + inputFile + "\" " + preset + " \"" + outputFile + "\" "
+      workerCommand = ffmpegPath + " " + preset1 + " -i \"" + inputFile + "\" " + preset2 + " \"" + outputFile + "\" "
     }
 
     if (process.platform == 'linux' || process.platform == 'darwin') {
 
-      workerCommand = ffmpegPathUnix + " -i '" + inputFileUnix + "' " + preset + " '" + outputFileUnix + "' "
+      workerCommand = ffmpegPathUnix + " " + preset1 + " -i '" + inputFileUnix + "' " + preset2 + " '" + outputFileUnix + "' "
     }
 
     var shellWorker = shell.exec(workerCommand, function (code, stdout, stderr, stdin) {
 
       console.log('Exit code:', code);
     });
+
+
 
 
 
@@ -1247,6 +1274,7 @@ for (var i = 0; i < settingsInit.length; i++) {
       HealthCheck:"Queued",
       TranscodeDecisionMaker:"Queued",
       cliLog:"",
+      bumped:false,
     }
 
     Meteor.call('scanFiles', settingsInit[i]._id, settingsInit[i].folder, 1, 0, obj, function (error, result) {});
@@ -1280,6 +1308,7 @@ function runScheduledManualScan(){
         HealthCheck:"Queued",
         TranscodeDecisionMaker:"Queued",
         cliLog:"",
+        bumped:false,
       }
   
       Meteor.call('scanFiles', settingsInit[i]._id, settingsInit[i].folder, 1, 0, obj, function (error, result) {});
@@ -1869,7 +1898,7 @@ function launchWorkerModule(workerType) {
                     handBrakeMode = ''
                     FFmpegMode = ''
                     reQueueAfter = ''
-                    cliLogAdd += 'No plugins selected!  \n'
+                    cliLogAdd += '☒No plugins selected!  \n'
 
 
 
@@ -1934,7 +1963,7 @@ function launchWorkerModule(workerType) {
                         handBrakeMode = ''
                         FFmpegMode = ''
                         reQueueAfter = ''
-                        cliLogAdd += 'Plugin does not exist!  \n'
+                        cliLogAdd += '☒Plugin does not exist!  \n'
 
 
                       }
@@ -1960,7 +1989,7 @@ function launchWorkerModule(workerType) {
 
                     console.log("File is not video")
 
-                    cliLogAdd += "File is not video \n"
+                    cliLogAdd += "☒File is not video \n"
 
                     processFile = false;
                   } else {
@@ -1979,19 +2008,19 @@ function launchWorkerModule(workerType) {
 
                       console.log("File video already in required codec")
 
-                      cliLogAdd += "File already in required codec  \n"
+                      cliLogAdd += "☑File already in required codec  \n"
 
                       processFile = false;
 
                     } else {
-                      cliLogAdd += "File video not in required codec  \n"
+                      cliLogAdd += "☒File video not in required codec  \n"
 
                     }
 
                     if (firstItem.file_size >= settings[0].decisionMaker.video_size_range_include.max || firstItem.file_size <= settings[0].decisionMaker.video_size_range_include.min) {
                       console.log("File not in video size range")
 
-                      cliLogAdd += "File not in video size range  \n"
+                      cliLogAdd += "☒File not in video size range  \n"
 
                       processFile = false;
                     } else {
@@ -2001,7 +2030,7 @@ function launchWorkerModule(workerType) {
                     if (firstItem.ffProbeData.streams[0]["height"] >= settings[0].decisionMaker.video_height_range_include.max || firstItem.ffProbeData.streams[0]["height"] <= settings[0].decisionMaker.video_height_range_include.min) {
                       console.log("File not in video height range")
 
-                      cliLogAdd += "File not in video height range  \n"
+                      cliLogAdd += "☒File not in video height range  \n"
 
                       processFile = false;
                     } else {
@@ -2010,7 +2039,7 @@ function launchWorkerModule(workerType) {
 
                     if (firstItem.ffProbeData.streams[0]["width"] >= settings[0].decisionMaker.video_width_range_include.max || firstItem.ffProbeData.streams[0]["width"] <= settings[0].decisionMaker.video_width_range_include.min) {
                       console.log("File not in video width range")
-                      cliLogAdd += "File not in video width range  \n"
+                      cliLogAdd += "☒File not in video width range  \n"
 
                       processFile = false;
                     } else {
@@ -2020,12 +2049,16 @@ function launchWorkerModule(workerType) {
 
                   }
 
+
+
+
+
                 } else if (settings[0].decisionMaker.audioFilter == true) {
 
                   if (firstItem.fileMedium !== "audio") {
 
                     console.log("File is not audio")
-                    cliLogAdd += "File is not audio  \n"
+                    cliLogAdd += "☒File is not audio  \n"
 
                     processFile = false;
                   } else {
@@ -2041,12 +2074,12 @@ function launchWorkerModule(workerType) {
                     if (audio_codec_names_exclude.includes(firstItem.ffProbeData.streams[0]["codec_name"]) && typeof firstItem.ffProbeData.streams[0]["codec_name"] !== 'undefined') {
 
                       console.log("File already in required codec")
-                      cliLogAdd += "File already in required codec  \n"
+                      cliLogAdd += "☑File already in required codec  \n"
 
                       processFile = false;
 
                     } else {
-                      cliLogAdd += "File audio not in required codec  \n"
+                      cliLogAdd += "☒File audio not in required codec  \n"
 
                     }
 
@@ -2054,7 +2087,7 @@ function launchWorkerModule(workerType) {
 
                       console.log("File not in audio size range")
 
-                      cliLogAdd += "File not in audio size range  \n"
+                      cliLogAdd += "☒File not in audio size range  \n"
 
                       processFile = false;
                     } else {
@@ -2067,7 +2100,7 @@ function launchWorkerModule(workerType) {
 
                 } else {
 
-                  cliLogAdd += "No library settings selected.  \n"
+                  cliLogAdd += "☒No library settings selected.  \n"
                   processFile = false;
 
 
@@ -2123,6 +2156,7 @@ function launchWorkerModule(workerType) {
                       processingStatus: false,
                       cliLog: cliLogAdd,
                       lastTranscodeDate: new Date(),
+                      bumped:false,
 
                     }
                   }
@@ -2744,6 +2778,7 @@ function createFolderWatch(Folder, DB_id) {
         HealthCheck: "Queued",
         TranscodeDecisionMaker: "Queued",
         cliLog: "",
+        bumped:false,
       }
 
       Meteor.call('scanFiles', DB_id, filesToProcess, 0, 3, obj, function (error, result) { });
@@ -2845,7 +2880,6 @@ function dbUpdatePush() {
         break
 
       } else {
-
         try {
 
 
@@ -2871,11 +2905,7 @@ function dbUpdatePush() {
         i--
 
       }
-
-
     }
-
-
   } catch (err) {
     console.log(err.stack)
    }
@@ -2901,7 +2931,6 @@ var DBPollPeriod = 4000
 
 
 var addFilesToDB = true
-
 
 
 var doTablesUpdate = true
@@ -2931,9 +2960,46 @@ function tablesUpdate() {
 
       var startDate = new Date();
 
-      allFilesPulledTable = allFilesPulledTable.sort(function (a, b) {
-        return new Date(b.createdAt) - new Date(a.createdAt);
-      });
+
+
+      //sort queues based on user preference
+      var globalSettings = GlobalSettingsDB.find({}, {}).fetch()
+
+      if (globalSettings[0].queueSortType == "sortDateOldest") {
+
+ 
+
+        allFilesPulledTable = allFilesPulledTable.sort(function (a, b) {
+          return new Date(a.createdAt) - new Date(b.createdAt);
+        });
+
+
+      } else if (globalSettings[0].queueSortType == "sortDateNewest") {
+
+
+        allFilesPulledTable = allFilesPulledTable.sort(function (a, b) {
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        });
+
+      } else if (globalSettings[0].queueSortType == "sortSizeSmallest") {
+
+        allFilesPulledTable = allFilesPulledTable.sort(function (a, b) {
+          return a.file_size - b.file_size;
+        });
+
+
+      } else if (globalSettings[0].queueSortType == "sortSizeLargest") {
+
+
+        allFilesPulledTable = allFilesPulledTable.sort(function (a, b) {
+          return b.file_size - a.file_size;
+        });
+
+      }
+
+      newSortType = globalSettings[0].queueSortType
+
+
 
 
 
@@ -2972,6 +3038,31 @@ function tablesUpdate() {
       newArr = []
 
       //
+
+      //push bumped files to top of queue
+
+      var bumpedFiles = []
+
+      for (var i = 0; i < allFilesPulledTable.length; i++) {
+
+        if(allFilesPulledTable[i].bumped instanceof Date){
+
+        bumpedFiles.push(allFilesPulledTable[i])
+        allFilesPulledTable.splice(i, 1)
+        i--
+        }
+      }
+
+
+      bumpedFiles = bumpedFiles.sort(function (a, b) {
+        return new Date(b.bumped) - new Date(a.bumped);
+      });
+
+      allFilesPulledTable = bumpedFiles.concat(allFilesPulledTable)
+
+
+
+
 
       var table1data = allFilesPulledTable.filter(row => (row.TranscodeDecisionMaker == "Queued" && row.processingStatus == false));
 

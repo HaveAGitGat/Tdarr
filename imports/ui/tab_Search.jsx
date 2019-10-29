@@ -168,28 +168,37 @@ class App extends Component {
                       Header: 'Streams',
                       id: 'streams',
                       accessor: row => {
+
+                        if(row.ffProbeData && row.ffProbeData.streams){
                         var streams = row.ffProbeData.streams
                         streams = streams.map((row) => {
                              return <tr>
-                                <td>{row.index}</td>
-                                <td>{row.codec_type}</td>
+                              
                                 <td>{row.codec_name}</td>
+                                <td>{row.codec_type}</td>
                                 <td>{row.bit_rate != undefined ?  parseFloat((row.bit_rate / 1000000).toPrecision(4))+" Mbs" : "-"}</td>
                                 <td>{ row.tags != undefined && row.tags.language != undefined ?  row.tags.language : "-"}</td>
+                                <td>{ row.tags != undefined && row.tags.title != undefined ?  row.tags.title : "-"}</td>
+                               
+                                
                               </tr>
                         })
                 
                         return <table className="searchResultsTable">
                             <tbody>
 
-                              <th>Index</th>
-                              <th>Type</th>
                               <th>Codec</th>
+                              <th>Type</th>
                               <th>Bitrate</th>
                               <th>Lang</th>
+                              <th>Name</th>
                             {streams}
                             </tbody>
                           </table>
+
+}else{
+  return null
+}
                 
                       }
                       
@@ -219,7 +228,7 @@ class App extends Component {
                     {
                       Header: 'Duration (s)',
                       id: 'Duration',
-                      accessor: row => row.ffProbeData.streams[0]["duration"] != undefined ?  parseFloat((row.ffProbeData.streams[0]["duration"])) : 0
+                      accessor: row =>  row.ffProbeData && row.ffProbeData.streams[0]["duration"] ?  parseFloat((row.ffProbeData.streams[0]["duration"])) : 0
                     },
 
 
@@ -227,7 +236,7 @@ class App extends Component {
                       Header: 'Bump',
                       id: 'Bump',
                       width: 'Bump'.length*10,
-                      accessor: row => this.renderBumpButton(row.file),
+                      accessor: row => !(row.bumped instanceof Date) ? this.renderBumpButton(row.file):this.renderCancelBumpButton(row.file),
                       
                     },
 
@@ -315,7 +324,7 @@ class App extends Component {
                           data={data}
                           columns={columns}
                           defaultPageSize={data.length}
-                          pageSizeOptions={[10, 100, 1000]}
+                          pageSizeOptions={[100, 1000, 10000]}
                           filterable={true}
                           defaultFilterMethod ={(filter, row) => filterMethod(filter, row)}
                       />
@@ -402,12 +411,17 @@ class App extends Component {
 
   renderBumpButton(file) {
     var obj = {
-      createdAt: new Date()
+      bumped: new Date(),
     }
-
-
     return <ItemButton file={file} obj={obj} symbol={'↑'} type="updateDBAction" />
 
+  }
+
+  renderCancelBumpButton(file) {
+    var obj = {
+      bumped: false,
+    }
+    return <ItemButton file={file} obj={obj} symbol={'X'} type="updateDBAction" />
   }
 
   renderCreateSampleButton(file){

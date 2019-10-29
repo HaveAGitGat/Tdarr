@@ -22,6 +22,7 @@ import Slider from 'react-input-slider';
 import ItemButton from './item_Button.jsx'
 
 import ClipLoader from 'react-spinners/ClipLoader';
+import Checkbox from '@material-ui/core/Checkbox';
 
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
@@ -214,6 +215,16 @@ class App extends Component {
     ));
   }
 
+  renderSortBox(type){
+
+    return this.props.globalSettings.map((item, i) => (
+
+      <Checkbox name={type} checked={item.queueSortType == type ? true : false} onChange={this.setSort} />
+
+    ));
+
+  }
+
 
 
 
@@ -305,9 +316,10 @@ class App extends Component {
           var file_size = "-"
         }
 
+        // <td>{row.bumped ? row.bumped.toISOString() : "-"}</td>
 
        return <tr key={row._id}>
-          <td>{i + 1}</td><td>{row.file}</td><td>{row.video_codec_name}</td><td>{row.video_resolution}</td><td>{file_size}</td><td>{this.renderBumpButton(row.file)}</td>
+          <td>{i + 1}</td><td>{row.file}</td><td>{row.video_codec_name}</td><td>{row.video_resolution}</td><td>{file_size}</td><td>{ !(row.bumped instanceof Date) ? this.renderBumpButton(row.file):this.renderCancelBumpButton(row.file) }</td>
           </tr>
 
       }
@@ -319,7 +331,7 @@ class App extends Component {
       return data.map((row, i) => {
 
        return <tr key={row._id}>
-          <td>{i + 1}</td><td>{row.file}</td><td>{this.renderBumpButton(row.file)}</td>
+          <td>{i + 1}</td><td>{row.file}</td><td>{!(row.bumped instanceof Date) ? this.renderBumpButton(row.file):this.renderCancelBumpButton(row.file) }</td>
           </tr>
 
       }
@@ -447,12 +459,16 @@ class App extends Component {
 
   renderBumpButton(file) {
     var obj = {
-      createdAt: new Date()
+      bumped: new Date(),
     }
-
-
     return <ItemButton file={file} obj={obj} symbol={'↑'} type="updateDBAction" />
+  }
 
+  renderCancelBumpButton(file) {
+    var obj = {
+      bumped: false,
+    }
+    return <ItemButton file={file} obj={obj} symbol={'X'} type="updateDBAction" />
   }
 
   renderRedoButton(file, mode) {
@@ -507,6 +523,23 @@ class App extends Component {
 
     }
 
+  }
+
+  setSort(event) {
+
+    if (event.target.checked == true) {
+
+      GlobalSettingsDB.upsert(
+        "globalsettings",
+        {
+          $set: {
+            queueSortType: event.target.name,
+          }
+        }
+      );
+
+
+    }
   }
 
 
@@ -763,6 +796,23 @@ class App extends Component {
     </div>
   </div>
     </Modal>
+
+
+
+
+<p>Sort queue by: </p>
+                  <p>Oldest:
+{this.renderSortBox('sortDateOldest')}
+                    Newest:
+{this.renderSortBox('sortDateNewest')}
+              
+                Smallest:
+{this.renderSortBox('sortSizeSmallest')}
+                    Largest:
+{this.renderSortBox('sortSizeLargest')}
+                  </p>
+
+            
 
         <Tabs>
     <TabList>

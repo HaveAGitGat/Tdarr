@@ -178,6 +178,7 @@ if (arrayOrPathSwitch == 1) {
 
     var filesToScan = []
 
+    
 
 
     traverseDir(arrayOrPath)

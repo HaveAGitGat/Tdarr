@@ -1288,6 +1288,7 @@ class Folder extends Component {
       HealthCheck: "Queued",
       TranscodeDecisionMaker: "Queued",
       cliLog: "",
+      bumped:false,
     }
 
     Meteor.call('scanFiles', this.props.libraryItem._id, this.props.libraryItem.folder, 1, mode, obj, function (error, result) { });

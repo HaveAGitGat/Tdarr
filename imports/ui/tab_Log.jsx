@@ -205,7 +205,7 @@ try{
                     data={data}
                     columns={columns}
                     defaultPageSize={1000}
-                    pageSizeOptions={[10, 100, 1000]}
+                    pageSizeOptions={[100, 1000, 10000]}
                     filterable={true}
                     defaultFilterMethod ={(filter, row) => filterMethod(filter, row)}
                 />
