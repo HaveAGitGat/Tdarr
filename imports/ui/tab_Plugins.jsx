@@ -11,6 +11,8 @@ import Modal from "reactjs-popup";
 import ClipLoader from 'react-spinners/ClipLoader';
 import { GlobalSettingsDB } from '../api/tasks.js';
 
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+
 
 
 
@@ -29,7 +31,9 @@ class App extends Component {
 
   componentDidMount() {
 
-    this.searchPlugins()
+    //this.searchPlugins()
+
+    this.searchPlugins(event,'Community')
 
   }
 
@@ -46,26 +50,12 @@ class App extends Component {
 
 
 
-    Meteor.call('updatePlugins', ReactDOM.findDOMNode(this.refs.searchString).value.trim(), (error, result) => {
-
-
-
-      //this.searchPlugins()
-
-
-      setTimeout(this.searchPlugins, 5000);
-
+    Meteor.call('updatePlugins', ReactDOM.findDOMNode(this.refs.searchStringCommunity).value.trim(), (error, result) => {
+      setTimeout((event) => this.searchPlugins(event,'Community'), 5000);
     })
-
-
-
   }
 
-  renderSearchButtons() {
-
-
-
-
+  renderSearchButtons(pluginType) {
 
     return this.props.globalSettings.map((item, i) => {
 
@@ -83,15 +73,16 @@ class App extends Component {
 
         return <div>
 
-          <Button variant="outline-dark" className="addFolderButton" onClick={this.searchPlugins} style={ButtonStyle}>Search</Button>
+          <Button variant="outline-dark" className="addFolderButton" onClick={(event) => this.searchPlugins(event,pluginType)} style={ButtonStyle}>Search</Button>
           <Button variant="outline-dark" className="addFolderButton" onClick={() => {
 
-            render('', document.getElementById('searchResults'));
+            render('', document.getElementById('searchResults'+pluginType));
           }}  style={ButtonStyle}>Clear</Button>
 
 
-
-      <Button variant="outline-dark" className="addFolderButton" onClick={this.updatePlugins} style={ButtonStyle}>Update community plugins</Button>
+        {pluginType =="Community"?<Button variant="outline-dark" className="addFolderButton" onClick={this.updatePlugins} style={ButtonStyle}>Update community plugins</Button>:null}
+    
+      
       <Button variant="outline-dark" className="addFolderButton" onClick={()=> window.open("https://github.com/HaveAGitGat/Tdarr_Plugins", "_blank")} style={ButtonStyle}>Create a plugin</Button>
           
           
@@ -124,12 +115,11 @@ class App extends Component {
 
 
 
-  searchPlugins = (event) => {
+  searchPlugins = (event,pluginType) => {
 
     if (event) {
       event.preventDefault();
     }
-
 
 
     GlobalSettingsDB.upsert('globalsettings',
@@ -140,20 +130,19 @@ class App extends Component {
       }
     );
 
-    Meteor.call('searchPlugins', ReactDOM.findDOMNode(this.refs.searchString).value.trim(), (error, result) => {
+    var string = "searchString"+pluginType
+
+    Meteor.call('searchPlugins', ReactDOM.findDOMNode(this.refs[string]).value.trim(),pluginType, (error, result) => {
 
   
 
-      if (result.length == 0) {
+      if (result[0].length == 0) {
 
-        render(<center>No results</center>, document.getElementById('searchResults'));
+        render(<center>No results</center>, document.getElementById('searchResults'+result[1]));
       } else {
 
 
-        var data = result
-
-
-
+        var data = result[0]
 
         const columns = [{
           Header: 'id',
@@ -240,7 +229,7 @@ class App extends Component {
             defaultPageSize={10}
             pageSizeOptions={[10, 100, 1000]}
           />
-        </div>, document.getElementById('searchResults'));
+        </div>, document.getElementById('searchResults'+result[1]));
 
 
 
@@ -248,14 +237,6 @@ class App extends Component {
       }
 
     })
-
-
-
-
-
-
-
-
   }
 
 
@@ -265,49 +246,85 @@ class App extends Component {
     return (
       <div className="containerGeneral">
 
-<center>
-        <header>
-          <h1>Community Plugins</h1>
-        </header>
 
-</center>
-
+    <Tabs>
+    <TabList>
+      <Tab>Community</Tab>
+      <Tab>Local</Tab>
 
 
-       
-        <p></p>
+    </TabList>
 
+    <TabPanel>
       
+    <p></p>
 
-        <form onSubmit={this.searchPlugins}  >
-        <center>
-
-
-          <input type="text" className="searchBar" ref="searchString" placeholder="Search for plugins by any property. E.g.  h264,mp4"></input>
-
-          </center>
-
-          <p></p>
-        
-          <center>
-          {this.renderSearchButtons()}
-          </center>
-
-        </form>
+    
+<form onSubmit={(event) => this.searchPlugins(event,'Community')}  >
+<center>
 
 
+  <input type="text" className="searchBar" ref="searchStringCommunity" placeholder="Search for plugins by any property. E.g.  h264,mp4"></input>
 
+  </center>
 
+  <p></p>
 
-        <p></p>
-        <p></p>
+  <center>
+  {this.renderSearchButtons('Community')}
+  </center>
+
+</form>
+
+<p></p>
+<p></p>
 
 
 
-        <div id="searchResults">
+<div id="searchResultsCommunity">
+</div>
 
 
-        </div>
+    </TabPanel>
+
+    <TabPanel>
+    <p></p>
+
+    
+<form onSubmit={(event) => this.searchPlugins(event,'Local')}  >
+<center>
+
+
+  <input type="text" className="searchBar" ref="searchStringLocal" placeholder="Search for plugins by any property. E.g.  h264,mp4"></input>
+
+  </center>
+
+  <p></p>
+
+  <center>
+  {this.renderSearchButtons('Local')}
+  </center>
+
+</form>
+
+<p></p>
+<p></p>
+
+
+
+<div id="searchResultsLocal">
+</div>
+
+    </TabPanel>
+
+   
+  </Tabs> 
+
+
+
+
+
+  
 
 
 

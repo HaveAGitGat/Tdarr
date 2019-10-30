@@ -527,7 +527,7 @@ Meteor.methods({
     );
 
 
-    return plugins
+    return [plugins,pluginType]
 
   }, 'verifyPlugin'(pluginID, DB_id, community) {
 
