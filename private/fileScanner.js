@@ -588,19 +588,19 @@ function ffprobeLaunch(filesToScan) {
 
 
 
-                if (vidWidth >= 642 && vidWidth <= 792 && vidHeight >= 432 && vidHeight <= 528) {
+                if (vidWidth >= 642 && vidWidth <= 792 && vidHeight >= 100 && vidHeight <= 528) {
                     videoResolution = "480p"
-                } else if (vidWidth >= 648 && vidWidth <= 792 && vidHeight >= 518 && vidHeight <= 634) {
+                } else if (vidWidth >= 648 && vidWidth <= 792 && vidHeight >= 100 && vidHeight <= 634) {
                     videoResolution = "576p"
-                } else if (vidWidth >= 864 && vidWidth <= 1408 && vidHeight >= 648 && vidHeight <= 792) {
+                } else if (vidWidth >= 100 && vidWidth <= 1408 && vidHeight >= 100 && vidHeight <= 792) {
                     videoResolution = "720p"
-                } else if (vidWidth >= 1728 && vidWidth <= 2112 && vidHeight >= 972 && vidHeight <= 1188) {
+                } else if (vidWidth >= 100  && vidWidth <= 2112 && vidHeight >= 100 && vidHeight <= 1188) {
                     videoResolution = "1080p"
-                } else if (vidWidth >= 3456 && vidWidth <= 4224 && vidHeight >= 1944 && vidHeight <= 2376) {
+                } else if (vidWidth >= 100  && vidWidth <= 4224 && vidHeight >= 100  && vidHeight <= 2376) {
                     videoResolution = "4KUHD"
-                } else if (vidWidth >= 3686 && vidWidth <= 4506 && vidHeight >= 1944 && vidHeight <= 2376) {
+                } else if (vidWidth >= 100  && vidWidth <= 4506 && vidHeight >= 100  && vidHeight <= 2376) {
                     videoResolution = "DCI4K"
-                } else if (vidWidth >= 6912 && vidWidth <= 8448 && vidHeight >= 3888 && vidHeight <= 5752) {
+                } else if (vidWidth >= 100  && vidWidth <= 8448 && vidHeight >= 100  && vidHeight <= 5752) {
                     videoResolution = "8KUHD"
                 } else {
                     videoResolution = "Other"
