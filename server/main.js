@@ -3036,7 +3036,6 @@ function tablesUpdate() {
 
       addFilesToDB = false
 
-      allFilesPulledTable = []
       allFilesPulledTable = FileDB.find({}).fetch()
 
 
