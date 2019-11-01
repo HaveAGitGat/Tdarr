@@ -15,7 +15,7 @@ import { PieChart, Pie, Sector, Cell, Tooltip, Label,ResponsiveContainer} from '
 
 
 
-let renderLabel = function (entry) {
+var renderLabel = function (entry) {
 
 
 return entry.name;

@@ -189,7 +189,7 @@ if (arrayOrPathSwitch == 1) {
 
         fs.readdirSync(inputPathStem).forEach(file => {
 
-            let fullPath = (path.join(inputPathStem, file)).replace(/\\/g, "/");
+            var fullPath = (path.join(inputPathStem, file)).replace(/\\/g, "/");
 
             try {
                 if (fs.lstatSync(fullPath).isDirectory()) {
@@ -545,7 +545,7 @@ function ffprobeLaunch(filesToScan) {
 
         } catch (err) {
 
-
+           
         }
 
         try {
@@ -553,6 +553,8 @@ function ffprobeLaunch(filesToScan) {
             thisFileObject.bit_rate = bit_rate
 
         } catch (err) {
+
+          
 
             updateConsole(scannerID, `Tagging bitrate data failed:${filepath}`)
 
@@ -567,8 +569,7 @@ function ffprobeLaunch(filesToScan) {
 
             try {
 
-                // var vidWidth = jsonData.streams[0]["width"]
-                // var vidHeight = jsonData.streams[0]["height"]
+            
 
                 var vidWidth = thisFileObject.ffProbeData.streams[0]["width"]
                 var vidHeight = thisFileObject.ffProbeData.streams[0]["height"]
@@ -658,6 +659,14 @@ function addFileToDB(filePath, FileObject, obj) {
 
     FileObject.processingStatus = false
     FileObject.createdAt = new Date()
+
+    if(FileObject.file_size == undefined){
+        FileObject.file_size = 0;
+    }
+
+    if(FileObject.bit_rate == undefined){
+        FileObject.bit_rate = 0;
+    }
 
     obj.history += addHistory(FileObject)
 

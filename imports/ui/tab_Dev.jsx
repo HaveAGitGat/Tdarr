@@ -125,6 +125,7 @@ export default class App extends Component {
   <br/>No breaking changes.
   <br/>Changes:
   <br/>-[New] UI overhaul (Dark theme)
+  <br/>-[New] Hardware transcoding using tdarr_aio container + HandBrake
   <br/>-[New] Improved bump-file system
   <br/>-[New] Improved plugin/transcode formatting
   <br/>-[New] File history

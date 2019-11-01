@@ -46,17 +46,17 @@ if (result.length == 0) {
         
   }
 
-  const getColumnWidth = (rows, accessor, headerText) => {
-    const maxWidth = 400
-    const magicSpacing = 10
-    const cellLength = Math.max(
+  var getColumnWidth = (rows, accessor, headerText) => {
+    var maxWidth = 400
+    var magicSpacing = 10
+    var cellLength = Math.max(
       ...rows.map(row => (`${row[accessor]}` || '').length),
       headerText.length,
     )
     return Math.min(maxWidth, cellLength * magicSpacing)
   }
   
-              const columns = [
+              var columns = [
                 
                 {
                   Header: () => (
@@ -501,13 +501,18 @@ renderBumpButton(file) {
   renderHistoryButton(row) {
 
 
-    var result = row.history
+    if(row.history == undefined){
+      result =""
+      
+    }else{
 
-   result = result.split("\n")
-    result = result.map((row, i) => (
-
-        <Markup content={row} />
-      ));
+      var result = row.history
+      result = result.split("\n")
+       result = result.map((row, i) => (
+   
+           <Markup content={row} />
+         ));
+    }
 
 
     return <Modal

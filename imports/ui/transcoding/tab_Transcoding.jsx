@@ -572,13 +572,21 @@ class App extends Component {
   renderHistoryButton(row) {
 
 
-    var result = row.history
+    if(row.history == undefined){
+      result =""
+      
+    }else{
 
-   result = result.split("\n")
-    result = result.map((row, i) => (
+      var result = row.history
+      result = result.split("\n")
+       result = result.map((row, i) => (
+   
+           <Markup content={row} />
+         ));
+   
 
-        <Markup content={row} />
-      ));
+
+    } 
 
 
     return <Modal
@@ -923,6 +931,7 @@ class App extends Component {
                 <th><p>New size (GB)</p></th>
                 <th><p><Button variant="outline-light" onClick={() => this.resetAllStatus('TranscodeDecisionMaker')} ><span className="buttonTextSize">Re-queue</span></Button></p></th>
                 <th><p>Info</p></th>
+                <th><p>History</p></th>
 
 
               </tr>

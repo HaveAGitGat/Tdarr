@@ -149,10 +149,7 @@ class Nav extends Component {
 
 
 
-    let tabs = this.state.tabs
-
-
-
+    var tabs = this.state.tabs
 
     tabs.map((tab, index) => {
       if (index !== tabIndex) {

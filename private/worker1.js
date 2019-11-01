@@ -1161,7 +1161,7 @@ function updateETA(perc) {
 
                     progAVG.push(eta)
 
-                    // let values = [2, 56, 3, 41, 0, 4, 100, 23];
+                    // var values = [2, 56, 3, 41, 0, 4, 100, 23];
                     var sum = progAVG.reduce((previous, current) => current += previous);
                     var avg = sum / progAVG.length;
 

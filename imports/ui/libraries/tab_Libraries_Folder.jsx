@@ -378,7 +378,7 @@ class Folder extends Component {
 
   renderPlugins() {
 
-    let plugins = this.props.settings;
+    var plugins = this.props.settings;
 
     plugins = plugins.filter(setting => setting._id == this.props.libraryItem._id);
     plugins = plugins[0].pluginIDs
@@ -404,7 +404,7 @@ class Folder extends Component {
 
   renderVideoCodecsExclude() {
 
-    let videoCodecsExclude = this.props.settings;
+    var videoCodecsExclude = this.props.settings;
 
     videoCodecsExclude = videoCodecsExclude.filter(setting => setting._id == this.props.libraryItem._id);
     videoCodecsExclude = videoCodecsExclude[0].decisionMaker.video_codec_names_exclude
@@ -428,7 +428,7 @@ class Folder extends Component {
 
   renderAudioCodecsExclude() {
 
-    let audioCodecsExclude = this.props.settings;
+    var audioCodecsExclude = this.props.settings;
     audioCodecsExclude = audioCodecsExclude.filter(setting => setting._id == this.props.libraryItem._id);
     audioCodecsExclude = audioCodecsExclude[0].decisionMaker.audio_codec_names_exclude
 
@@ -453,7 +453,7 @@ class Folder extends Component {
   renderScheduleBlocks = () => {
 
 
-    let blocks = this.props.settings;
+    var blocks = this.props.settings;
     blocks = blocks.filter(setting => setting._id == this.props.libraryItem._id);
     blocks = blocks[0].schedule
 

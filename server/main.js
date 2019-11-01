@@ -1480,7 +1480,7 @@ function scheduledCacheClean() {
       try {
         fs.readdirSync(inputPathStem).forEach(file => {
 
-          let fullPath = (path.join(inputPathStem, file)).replace(/\\/g, "/");
+          var fullPath = (path.join(inputPathStem, file)).replace(/\\/g, "/");
 
           try {
 
@@ -3548,7 +3548,7 @@ function setProcessPriority() {
     var shell = require('shelljs');
 
 
-    let globalSettings = GlobalSettingsDB.find({}, {}).fetch()
+    var globalSettings = GlobalSettingsDB.find({}, {}).fetch()
 
     //console.log(globalSettings)
 
