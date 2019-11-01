@@ -54,7 +54,7 @@ export default class App extends Component {
       return (
 
         <div>
-          {this.state.isShowState && <Button variant="outline-dark" onClick={() => {
+          {this.state.isShowState && <Button variant="outline-light" onClick={() => {
 
 
             this.triggerLoadState();
@@ -65,13 +65,13 @@ export default class App extends Component {
               });
 
 
-          }}>{this.props.symbol}</Button>}
+          }}><span className="buttonTextSize">{this.props.symbol}</span></Button>}
 
           {this.state.isLoadState && <ClipLoader
 
             sizeUnit={"px"}
             size={25}
-            color={'#000000'}
+            color={'white'}
             loading={true}
           />}
 
@@ -90,7 +90,7 @@ export default class App extends Component {
       return (
 
         <div>
-          {this.state.isShowState && <Button variant="outline-dark" onClick={() => {
+          {this.state.isShowState && <Button variant="outline-light" onClick={() => {
 
 
             this.triggerLoadState();
@@ -100,13 +100,13 @@ export default class App extends Component {
            Meteor.call('createSample', this.props.file, (error, result) => {})
 
 
-          }}>{this.props.symbol}</Button>}
+          }}><span className="buttonTextSize">{this.props.symbol}</span></Button>}
 
           {this.state.isLoadState && <ClipLoader
 
             sizeUnit={"px"}
             size={25}
-            color={'#000000'}
+            color={'white'}
             loading={true}
           />}
 

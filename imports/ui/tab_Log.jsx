@@ -138,54 +138,42 @@ try{
 
             const columns = [{
                 id: 'createdAt',
-                Header: 'Date',
+                Header: () => (
+                    <div className="pluginTableHeader">  
+                    <p>Date</p>
+                    </div>
+                  ),
                 width: 200,
-                // accessor: d => d.createdAt.toString()
-                accessor: d => dateFormat(d.createdAt, "isoDateTime")
-
+        
+                accessor: d => dateFormat(d.createdAt, "isoDateTime"),
+                getProps: (state, rowInfo, column) => {
+                    return {
+                      style: {
+                        color:"#e1e1e1",
+                        fontSize  :"14px",
+                      },
+                    }
+                  }
 
 
             }, {
                 //id
-                Header: 'Text',
+                Header: () => (
+                    <div className="pluginTableHeader">  
+                    <p>Text</p>
+                    </div>
+                  ),
                 accessor: 'text',
-                //  getProps: (state, rowInfo, column) => {
-                //      return {
-                //          style: {
-                //              background: rowInfo && rowInfo.row.text.includes("Error") ? 'red' : null,
-                //          },
-                //      }
-                //  }
+                getProps: (state, rowInfo, column) => {
+                    return {
+                      style: {
+                        color:"#e1e1e1",
+                        fontSize  :"14px",
+                      },
+                    }
+                  }
             }
-                // , {
-                //     id: 'nodeMem1',
-                //     Header: 'Core memory rss',
-                //     accessor: d => (d.nodeMem.rss / 1000000) + " MB"
-
-                // }, {
-                //     id: 'nodeMem2',
-                //     Header: 'Core memory heapTotal',
-                //     accessor: d => (d.nodeMem.heapTotal / 1000000) + " MB"
-
-                // }, {
-                //     id: 'nodeMem3',
-                //     Header: 'Core memory heapUsed',
-                //     accessor: d => (d.nodeMem.heapUsed / 1000000) + " MB"
-
-                // }, {
-                //     Header: 'Total used system memory',
-                //     accessor: 'systemUsedMem',
-                // },
-                // {
-                //     Header: 'Total free system memory',
-                //     accessor: 'systemFreeMem',
-                // },
-                // {
-                //     Header: 'CPU usage',
-                //     accessor: 'systemCPUPercentage',
-                // },
-
-
+          
 
 
             ]
@@ -385,7 +373,7 @@ try{
 
                     sizeUnit={"px"}
                     size={25}
-                    color={'#000000'}
+                    color={'white'}
                     loading={true}
                 />
 
@@ -393,9 +381,9 @@ try{
 
                 return <div>
 
-                    <Button variant="outline-dark" onClick={() => this.renderLogDB()}  >Load</Button>
-                    <Button variant="outline-dark" onClick={() => this.renderRaw()}  >RAW</Button>
-                    <Button variant="outline-dark" onClick={() => this.clearLogDB()}  >Delete</Button>
+                    <Button variant="outline-light" onClick={() => this.renderLogDB()}  ><span className="buttonTextSize">Load</span></Button>{'\u00A0'}
+                    <Button variant="outline-light" onClick={() => this.renderRaw()}  ><span className="buttonTextSize">RAW</span></Button>{'\u00A0'}
+                    <Button variant="outline-light" onClick={() => this.clearLogDB()}  ><span className="buttonTextSize">Delete</span></Button>
 
                 </div>
 
@@ -428,7 +416,7 @@ try{
 
                 <center>
                <div  style={ButtonStyle}>
-               Verbose logs (large size, debug only):
+               <p>Verbose logs (large size, debug only):</p>
 
 {this.renderVerboseLogsButton()}
 
@@ -444,14 +432,14 @@ try{
                 </center>
 
 
+                <div className="libraryContainer" >
+                <p><div id="rawLog">
+                </div></p>
 
-                <div id="rawLog">
-                </div>
-
-
+              
                 <div id="logDiv">
                 </div>
-
+                </div>
                 <div className="memGraph" id="memGraphDiv">
                 </div>
 

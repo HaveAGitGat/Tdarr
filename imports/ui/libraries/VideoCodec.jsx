@@ -42,7 +42,7 @@ export default class VideoCodec extends Component {
         </td>
 
         <td>
-          {this.props.videocodec.codec}
+         <p> {this.props.videocodec.codec}</p>
         </td>
 
 

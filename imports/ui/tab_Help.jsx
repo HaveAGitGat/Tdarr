@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { Button } from 'react-bootstrap';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import 'react-tabs/style/react-tabs.css';
+
 
 import { render } from 'react-dom';
 import ReactDOM from 'react-dom'
@@ -43,8 +43,8 @@ export default class App extends Component {
 
     Meteor.call('readHelpCommandText', function (error, result) {
 
-      var ffmpegText = result[0].split("\n").map(row => <span>{row}<br /></span>)
-      var handbrakeText = result[1].split("\n").map(row => <span>{row}<br /></span>)
+      var ffmpegText = result[0].split("\n").map(row => <span><p>{row}</p><br /></span>)
+      var handbrakeText = result[1].split("\n").map(row => <span><p>{row}</p><br /></span>)
 
       try {
         render(ffmpegText, document.getElementById('FFmpegHelp'));
@@ -139,14 +139,16 @@ export default class App extends Component {
 
         <br />
 
-Terminal:
+        <div className="tabWrap" >
+
+<p>Terminal:</p>
         <Tabs>
           <TabList>
-            <Tab>FFmpeg</Tab>
-            <Tab>HandBrake</Tab>
+            <Tab><p>FFmpeg</p></Tab>
+            <Tab><p>HandBrake</p></Tab>
           </TabList>
 
-          <TabPanel>
+          <TabPanel><div className="tabContainer" >
 
 
 
@@ -159,9 +161,9 @@ Terminal:
 
               <center>
 
-                ffmpeg<input type="text" className="folderPaths" ref="ffmpegCommand" defaultValue={"--help"}></input>
+              <p>FFmpeg</p><input type="text" className="folderPaths" ref="ffmpegCommand" defaultValue={"--help"}></input>
                 <p></p>
-                <Button variant="outline-dark" onClick={() => this.runHelpCommand("ffmpeg", "ffmpegCommand")} >Run</Button>
+                <Button variant="outline-light" onClick={() => this.runHelpCommand("ffmpeg", "ffmpegCommand")} ><span className="buttonTextSize">Run</span></Button>
               </center>
 
 
@@ -170,8 +172,8 @@ Terminal:
 
 
             <div id="FFmpegHelp"></div>
-          </TabPanel>
-          <TabPanel>
+         </div> </TabPanel>
+          <TabPanel><div className="tabContainer" >
 
 
             <form onSubmit={() => {
@@ -179,9 +181,9 @@ Terminal:
               this.runHelpCommand("handbrake", "handbrakeCommand")}}  >
 
               <center>
-                HandBrakeCLI<input type="text" className="folderPaths" ref="handbrakeCommand" defaultValue={"--help"}></input>
+              <p>HandBrakeCLI</p><input type="text" className="folderPaths" ref="handbrakeCommand" defaultValue={"--help"}></input>
                 <p></p>
-                <Button variant="outline-dark" onClick={() => this.runHelpCommand("handbrake", "handbrakeCommand")} >Run</Button>
+                <Button variant="outline-light" onClick={() => this.runHelpCommand("handbrake", "handbrakeCommand")} ><span className="buttonTextSize">Run</span></Button>
 
               </center>
 
@@ -189,8 +191,9 @@ Terminal:
 
             <div id="HandBrakeHelp"></div>
 
-          </TabPanel>
+         </div> </TabPanel>
         </Tabs>
+        </div>
 
 
 

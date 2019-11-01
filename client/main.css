@@ -17,7 +17,7 @@ html, body {
   width:100%;
 
   font-family: "Segoe UI", sans-serif;
-  background: white;
+  background:  #121212;
   color:black;
 
 
@@ -28,15 +28,26 @@ html, body {
 h1 {
     margin: 0 0 0px 0;
 
-    color: black;
+    color: #e1e1e1;
 }
 
 p {
 
     margin-top: 10px;
     /* color: rgba(255, 255, 255, 0.4); */
-    color: black;
+    color: #e1e1e1;
     font-size: 14px;
+}
+
+.pluginTableHeader{
+  background:#373737;
+}
+.dataKeyFormat{
+
+}
+
+.dataKeyFormat p{
+  font-size: 14px;
 }
 
 
@@ -73,25 +84,29 @@ p {
 
   .folderPaths {
 
-    width: 90%;
+    width: 100%;
     padding: 12px 20px;
-    margin: 0% 5%;
     display: inline-block;
     border: 1px solid black;
     border-radius: 4px;
     box-sizing: border-box;
-    
+    background-color:grey;
+    color: #e1e1e1;
+    size:14px;
     }
 
     .folderPaths2 {
 
       width: 40%;
       padding: 12px 20px;
-      margin: 0% 30%;
+      margin: 0% 0%;;
       display: inline-block;
       border: 1px solid black;
       border-radius: 4px;
       box-sizing: border-box;
+      background-color:grey;
+      color: #e1e1e1;
+      size:14px;
       
       }
 
@@ -99,11 +114,14 @@ p {
 
         width: 20%;
         padding: 12px 20px;
-        margin: 0% 40%;
+        margin: 0% 0%;
         display: inline-block;
         border: 1px solid black;
         border-radius: 4px;
         box-sizing: border-box;
+        background-color:grey;
+        color: #e1e1e1;
+        size:14px;
         
         }
     .libraryTitle {
@@ -118,8 +136,7 @@ p {
       text-align: center; 
       border: 0;
       outline: 0;
-      text-decoration: underline;
-      
+      color: #e1e1e1;
       }
     
 
@@ -132,7 +149,7 @@ p {
 
     .intro{
       /*  */
-      background: white;
+      background: #121212;
       /* padding-top: 20px; */
       height: 1000px;
       width:100%;
@@ -289,7 +306,7 @@ p {
 }
 
 .allWorkersContainer{
-  background-color: #ffffff;
+ 
   /* Green */
 
   color: black;
@@ -323,48 +340,61 @@ p {
   display: 'inline-block';
 
   border-radius: 5px;
-
-
-  
-  margin:0.5em; 
-
-
 }
+
 .borderStyleGeneral{
   border: 2px solid black;
   border-radius: 5px;
+  background-color:#373737;
+  margin:1em;
+  padding:1em;
 
 }
 .borderStyleTranscode{
   border: 2px solid #66ccff;
   border-radius: 5px;
+  background-color:#373737;
+  margin:1em;
+  padding:1em;
   
 }
 .borderStyleHealthCheck{
   border: 2px solid #4CAF50;
   border-radius: 5px;
+  background-color:#373737;
+  margin:1em;
+  padding:1em;
   
 }
 
-.workerContainerItems{
-
-  margin: 0 1em;
 
 
-}
     .libraryContainer{
 
       border: 1px solid black;
       border-radius: 5px;
       margin:2em;
-    
+      background:#373737;
+      padding:0em 0em 2em 0em;
+
+    }
+
+    .libraryContainer2{
+      
+      margin:0em 4em;
+
     }
 
     .libraryContainerItems{
 
-     margin:0.5em 0.5em
+     margin:0.5em 0.5em;
+     background:#373737;
+
     
     }
+
+
+
 
     input[type=text], select {
 
@@ -459,7 +489,7 @@ p {
       position: relative;
       width: 100%; }
     
-    /*# sourceMappingURL=index.css.map */
+   
 
     .noBreak{
       display: 'inline-block';
@@ -509,11 +539,21 @@ p {
 
       border: 2px solid black;
       border-radius: 5px;
-
+      background:#373737;
       margin:2em;
-
-
     }
+
+
+
+    .statsContainer{
+
+      border: 2px solid black;
+      border-radius: 5px;
+      background:#373737;
+      margin:2em;
+    }
+
+
 
     .piegrid-container {
       display: grid;
@@ -553,14 +593,25 @@ p {
       width: 100%;
     }
 
+    
+    .pieStatContainer{
+      border: 2px solid black;
+      border-radius: 5px;
+      background:#373737;
+      margin:2em;
+    
+      height:100%;
+
+    }
+
     .invalidFolder{
 
-      color:red;
+      color:#bb86fc;
     }
 
     .deleteCodecButton{
 
-      color:red;
+      color:#bb86fc;
       border:none;
       background: transparent;
       border: none;
@@ -573,7 +624,7 @@ p {
       border: 2px solid black;
       border-radius: 5px;
 
-      margin:1em;
+      padding:2em;
 
 
     }
@@ -655,7 +706,7 @@ td.dbStatusContainer {
 
 
 table.itemTable th {
-  background-color: white;
+  background-color: #373737;;
   color: black;
 }
 
@@ -673,16 +724,16 @@ table-layout: fixed;  */
 
 
 table.itemTable tr:nth-child(even) {
-  background-color: white;
+  /* background-color: white; */
 }
 
 table.itemTable tr:nth-child(odd) {
-  background-color: white;
+  /* background-color: white; */
 }
 
 
 table.itemTable tr:hover {
-  background-color: rgb(202, 202, 202);
+  /* background-color: rgb(202, 202, 202); */
 }
 
 table.itemTable {
@@ -736,7 +787,7 @@ table.pluginTable {
 
 .containerGeneral{
 
-
+  background:  #121212;
   position:absolute;
   width: 100%;
   height:100%;
@@ -758,17 +809,7 @@ table.pluginTable {
   overflow-y: auto;
 }
 
-.folderResults{
 
-  padding-left: 5%;
-
-
-}
-
-.folderResults p{
-  color:gray;
-
-}
 
 
 table.sliderTable th {
@@ -809,13 +850,20 @@ table.searchResultsTable td {
 }
 
 .iconContainer {
-  background-color: white;
+  background-color: grey;
   display: inline-block;
-  padding:1em
+  padding:0.5em;
+  border: 1px solid grey;
+  border-radius: 45px;
 
 }
 .iconContainer img:hover {
   opacity: .5;
+}
+
+.optionsDropdown{
+
+  background-color: #383838;
 }
 
 .dropdownScan{
@@ -831,6 +879,8 @@ table.searchResultsTable td {
 .sliderGrid-container {
   display: grid;
   grid-template-columns: auto 90% auto;
+  padding:2em;
+  margin:2em;
 }
 
 .sliderGrid-item {
@@ -846,6 +896,30 @@ table.searchResultsTable td {
   margin: 1em 0 0 0.5em;
 
 }
+
+
+.libraryGrid-container {
+  display: grid;
+  grid-template-columns: auto 80%;
+  width:100%;
+  height:100%;
+}
+
+.libraryGrid-itemLeft {
+
+  width:100%;
+  border-right: 1px solid black;
+
+}
+
+
+.libraryGrid-itemRight {
+
+  width:100%;
+  padding: 0 0 0 2em
+
+}
+
 
 
 
@@ -874,11 +948,149 @@ table.workerDetailTable td {
   text-align: left;
 }
 
+.modalContainer{
+
+  border: 2px solid black;
+  border-radius: 5px;
+  background:#373737;
+  width:100%;
+  height:100%;
+}
+
+
 .modalText{
 
   padding-right: 10%;
   padding-left: 10%;
   text-align: left;
 }
+
+.buttonTextSize{
+  color: #e1e1e1;
+  font-size: 14px;
+}
+
+.scheduleButton{
+  color: #e1e1e1;
+}
+
+.selectedNav{
+
+  color:#bb86fc;
+}
+
+
+table.streamsTable th {
+
+
+  border: 1px solid white;
+  color: black;
+
+}
+
+table.streamsTable td {
+
+  border: 1px solid white;
+  color: black;
+
+}
+
+table.streamsTable tr {
+
+  width:200px
+
+}
+
+
+
+
+
+
+
+
+
+/* Tabs */
+
+.react-tabs {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.react-tabs__tab-list {
+  border-bottom: 1px solid black;
+  margin: 0 0 0px;
+  padding: 0;
+}
+
+.react-tabs__tab {
+  display: inline-block;
+  border: 1px solid transparent;
+  border-bottom: none;
+  bottom: -1px;
+  position: relative;
+  list-style: none;
+  padding: 6px 12px;
+  cursor: pointer;
+  background:  #222222;
+  border-bottom: 1px solid black;
+}
+
+.react-tabs__tab--selected {
+  background: #373737;
+  border-color: #04dac5;
+  color: black;
+  border-radius: 5px 5px 0 0;
+  border-bottom: 1px solid #373737;
+}
+
+.react-tabs__tab--disabled {
+  color: GrayText;
+  cursor: default;
+ 
+}
+
+.react-tabs__tab:focus {
+  box-shadow: 0 0 5px hsl(208, 99%, 50%);
+  border-color: hsl(208, 99%, 50%);
+  outline: none;
+}
+
+.react-tabs__tab:focus:after {
+  content: "";
+  position: absolute;
+  height: 5px;
+  left: -4px;
+  right: -4px;
+  bottom: -5px;
+  background: #bb86fc;
+}
+
+.react-tabs__tab-panel {
+  display: none;
+}
+
+.react-tabs__tab-panel--selected {
+  display: block;
+}
+
+.tabWrap{
+  border: 1px solid black;
+  border-radius: 5px;
+  margin:2em;
+  background:#222222;
+  padding:0em 0em 2em 0em;
+
+}
+
+.tabContainer{
+  background:#373737;
+}
+
+
+
+
+
+
+
+
 
 

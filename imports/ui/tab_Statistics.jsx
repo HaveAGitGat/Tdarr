@@ -7,14 +7,22 @@ import { Button } from 'react-bootstrap';
 import Modal from "reactjs-popup";
 import ItemButton from './item_Button.jsx'
 import { render } from 'react-dom';
+import SearchResults from './searchResults.jsx'
+
 
 
 import { PieChart, Pie, Sector, Cell, Tooltip, Label,ResponsiveContainer} from 'recharts';
 
 
+
 let renderLabel = function (entry) {
-  return entry.name;
+
+
+return entry.name;
+
+
 }
+
 
 
 
@@ -41,7 +49,7 @@ class App extends Component {
 
       sizeUnit={"px"}
       size={15}
-      color={'#000000'}
+      color={'white'}
       loading={true}
   />
 
@@ -83,7 +91,7 @@ try{
     }
 
 
-    const COLORS = ['#000000','#7d7d7d','#bdbdbd'];
+    const COLORS = ['#bb86fc','#04dac5','#bdbdbd'];
 
 
 
@@ -92,17 +100,18 @@ try{
           <PieChart onMouseEnter={this.onPieEnter}>
             <Pie
               data={data}
-          
+              stroke="none"
               innerRadius={60}
               outerRadius={80}
-              fill="#8884d8"
+             
               paddingAngle={5}
-              dataKey={"value"}
+             
               label={renderLabel}
-
+              
             >
               {
-                data.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]}  onClick={() => {
+                data.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} 
+                onClick={() => {
                  
                   
                   if (confirm('Are you sure you want to load all files from this pie segment?')) {
@@ -113,47 +122,26 @@ try{
 
           sizeUnit={"px"}
           size={25}
-          color={'#000000'}
+          color={'white'}
           loading={true}
         /></center>, document.getElementById('searchResults'));
 
 
                     Meteor.call('returnPieFiles',property, fileMedium,entry.name, (error, result) => {
 
+
+                     
+
+
                       this.setState({
                         resultsShow: true,
                       })
 
-                      if (result.length == 0) {
 
-                        render(<center>No results</center>, document.getElementById('searchResults'));
-                      } else {
                 
+                        render(<SearchResults results={result}  />, document.getElementById('searchResults'));
                 
-                        var results = result.map((row, i) => (
-                
-                          <tr>
-                            <td>{row.file}</td> <td>{this.renderBumpButton(row.file)}</td> <td>{this.renderRedoButton(row.file, 'TranscodeDecisionMaker')}</td> <td>{this.renderRedoButton(row.file, 'HealthCheck')}</td><td>{this.renderInfoButton(row)}</td>
-                          </tr>
-                
-                        ));
-                
-                        render(
-                          <table className="pluginTable">   <tbody>
-                            <tr><th>File</th>
-                              <th>Bump</th>
-                              <th>Transcode</th>
-                              <th>Health check</th>
-                              <th>Info</th></tr>
-                
-                            {results}
-                
-                          </tbody></table>
-                
-                
-                          , document.getElementById('searchResults'));
-                
-                      }
+                      
           
                      });
 
@@ -174,119 +162,52 @@ try{
 
 }
 
-renderBumpButton(file) {
-  var obj = {
-    createdAt: new Date()
-  }
 
-
-  return <ItemButton file={file} obj={obj} symbol={'↑'} type="updateDBAction" />
-
-}
-
-renderRedoButton(file, mode) {
-
-
-  var obj = {
-    [mode]: "Queued",
-    processingStatus: false,
-    createdAt: new Date(),
-  }
-
-
-  return <ItemButton file={file} obj={obj} symbol={'↻'}  type="updateDBAction"/>
-}
-
-renderIgnoreButton(file, mode) {
-
-  var obj = {
-    [mode]: "Ignored",
-    processingStatus: false,
-    createdAt: new Date(),
-  }
-  return <ItemButton file={file} obj={obj} symbol={'Ignore'} type="updateDBAction" />
-
-
-}
-
-renderInfoButton(row) {
-
-
-
-  var result = []
-
-  eachRecursive(row)
-
-
-  function eachRecursive(obj) {
-    for (var k in obj) {
-      if (typeof obj[k] == "object" && obj[k] !== null) {
-        eachRecursive(obj[k]);
-      } else {
-
-        result.push(k + ":" + obj[k])
-
-
-      }
-    }
-  }
-
-  // Object.keys(row).forEach(function (key) {
-
-  //   result.push(`${[key]}:${row[key]}`)
-
-  // });
-
-  result = result.map((row, i) => (
-
-    <p>{row}</p>
-
-  ));
-
-  return <Modal
-    trigger={<Button variant="outline-dark" >i</Button>}
-    modal
-    closeOnDocumentClick
-  >
-    <div className="frame">
-      <div className="scroll">
-        {result}
-
-      </div>
-    </div>
-  </Modal>
-
-
-
-}
 
 
 
   render() {
-
-
-
-
     return (
 
 
       <div className="containerGeneral">
+
+<div className="statsContainer">
           <center>
       <header>
           <h1>Stats</h1>
       </header>
       </center>
 
-       <center><p><b>Total files in DB</b>: {this.renderStat('totalFileCount')}</p></center> 
 
-       <center><p><b>Total number of transcodes</b>: {this.renderStat('totalTranscodeCount')}</p></center> 
-       <center><p><b>Space saved</b>: {this.renderStat('sizeDiff')} GB</p></center> 
+      <center>
+      <table>
 
-       <center><p><b>Total number of health checks</b>: {this.renderStat('totalHealthCheckCount')}</p></center> 
+      <tbody>
+
+      <tr><td><p><b>Total files in DB</b></p></td><td><p>{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{this.renderStat('totalFileCount')}</p></td></tr>
+
+      <tr><td><p><b>Total number of transcodes</b></p></td><td><p>{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{this.renderStat('totalTranscodeCount')}</p></td></tr>
+      <tr><td><p><b>Space saved</b></p></td><td><p>{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{this.renderStat('sizeDiff')} GB</p></td></tr>
+      <tr><td><p><b>Total number of health checks</b></p></td><td> <p>{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{this.renderStat('totalHealthCheckCount')}</p></td></tr>
+
+      <tr></tr>
+
+      <tr></tr>
+
+
+      </tbody>
+
+
+      </table>
+      </center>
+
+
+       </div>
 
        <div className={this.state.resultsShow ? '' : 'hidden'}>
        <center>
-       <Button variant="outline-dark" onClick={() => {
+       <Button variant="outline-light" onClick={() => {
           this.setState({
             resultsShow: false,
           })
@@ -295,14 +216,16 @@ renderInfoButton(row) {
 
 
 
-       }} >Clear</Button>
+       }} ><span className="buttonTextSize">Clear</span></Button>
    </center>
 
+   <div className="libraryContainer" >
 <div id="searchResults" ref="searchResults"></div>
+</div>
 
 </div>
 
-<p>Click on pie segments to load respective files</p>
+<center><p>Click on pie segments to load respective files</p></center>
 
 
 
@@ -313,12 +236,12 @@ renderInfoButton(row) {
   <div className="pieaudiogrid-container">
 
   <div className="pieaudiogrid-item-title">
-  <center><b>Transcode</b>{this.renderStat('tdarrScore')}%</center>
+  <center><p><b>Transcode </b>{this.renderStat('tdarrScore')}%</p></center>
   </div>
 
   
   <div className="pieaudiogrid-item-title">
-  <center><b>Health</b>{this.renderStat('healthCheckScore')}%</center>
+  <center><p><b>Health </b>{this.renderStat('healthCheckScore')}%</p></center>
 
   </div>
 
@@ -358,16 +281,16 @@ renderInfoButton(row) {
         <div className="piegrid-container">
 
         <div className="piegrid-item-title">
-        <center><b>Codecs</b></center>
+        <center><p><b>Codecs</b></p></center>
         </div>
 
         <div className="piegrid-item-title">
-        <center><b>Containers</b></center>
+        <center><p><b>Containers</b></p></center>
 
         </div>
 
         <div className="piegrid-item-title">
-        <center><b>Resolutions</b></center>
+        <center><p><b>Resolutions</b></p></center>
         </div>
         
 
@@ -417,12 +340,12 @@ renderInfoButton(row) {
   <div className="pieaudiogrid-container">
 
   <div className="pieaudiogrid-item-title">
-  <center><b>Codecs</b></center>
+  <center><p><b>Codecs</b></p></center>
   </div>
 
   
   <div className="pieaudiogrid-item-title">
-  <center><b>Containers</b></center>
+  <center><p><b>Containers</b></p></center>
 
   </div>
 

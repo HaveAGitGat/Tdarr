@@ -40,7 +40,7 @@ export default class AudioCodec extends Component {
           </td>
 
           <td>
-        {this.props.audiocodec.codec}
+        <p>{this.props.audiocodec.codec}</p>
         </td>
 
         <td>

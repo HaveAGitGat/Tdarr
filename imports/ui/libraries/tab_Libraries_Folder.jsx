@@ -5,13 +5,13 @@ import ToggleButton from 'react-toggle-button'
 
 import { render } from 'react-dom';
 
-import { SettingsDB } from '../api/tasks.js';
+import { SettingsDB, GlobalSettingsDB } from '../../api/tasks.js';
 
 import { withTracker } from 'meteor/react-meteor-data';
 
 import VideoCodec from './VideoCodec.jsx';
 import AudioCodec from './AudioCodec.jsx';
-import Plugin from './Plugin.jsx';
+import Plugin from '../Plugin.jsx';
 import ScheduleBlock from './ScheduleBlock.jsx';
 import ReactDOM from 'react-dom';
 import InputRange from 'react-input-range';
@@ -19,6 +19,10 @@ import InputRange from 'react-input-range';
 import Checkbox from '@material-ui/core/Checkbox';
 
 import { Button, Dropdown } from 'react-bootstrap';
+
+
+
+
 
 
 import { css } from '@emotion/core';
@@ -37,6 +41,7 @@ var libButtonStyle = {
 
 
 
+
 const override = css`
 
 `;
@@ -49,7 +54,9 @@ class Folder extends Component {
     this.state = {
       scheduleAll: false,
       folderBrowser: false,
-      cacheBrowser: false
+      cacheBrowser: false,
+      navItemSelected: "navSourceFolder",
+
 
     };
 
@@ -93,7 +100,7 @@ class Folder extends Component {
       } else if (result.length == 0) {
 
         render(
-          <Button variant="outline-dark" onClick={() => {
+          <Button variant="outline-light" onClick={() => {
 
             var temp = ReactDOM.findDOMNode(this.refs[refType]).value
             temp = temp.replace(/\\/g, "/");
@@ -131,7 +138,7 @@ class Folder extends Component {
           return <tr><td><p>{row.folder}</p></td>
 
 
-            <td> <Button variant="outline-dark" onClick={() => {
+            <td> <Button variant="outline-light" onClick={() => {
 
               SettingsDB.upsert(
 
@@ -148,7 +155,7 @@ class Folder extends Component {
               this.verifyFolder((row.fullPath).replace(/\\/g, "/"), type, refType)
 
 
-            }}  >-></Button></td>
+            }}  >→</Button></td>
 
 
 
@@ -159,7 +166,7 @@ class Folder extends Component {
         render(
           <div>
 
-            <Button variant="outline-dark" onClick={() => {
+            <Button variant="outline-light" onClick={() => {
 
               var temp = ReactDOM.findDOMNode(this.refs[refType]).value
               temp = temp.replace(/\\/g, "/");
@@ -1183,41 +1190,41 @@ class Folder extends Component {
     return <table className="scheduleTable">
       <tbody>
         <tr>
-          <td>Day</td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(0, 24, "Hour")}  >00</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(1, 24, "Hour")}  >01</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(2, 24, "Hour")}  >02</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(3, 24, "Hour")}  >03</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(4, 24, "Hour")}  >04</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(5, 24, "Hour")}  >05</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(6, 24, "Hour")}  >06</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(7, 24, "Hour")}  >07</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(8, 24, "Hour")}  >08</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(9, 24, "Hour")}  >09</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(10, 24, "Hour")} >10</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(11, 24, "Hour")} >11</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(12, 24, "Hour")} >12</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(13, 24, "Hour")} >13</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(14, 24, "Hour")} >14</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(15, 24, "Hour")} >15</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(16, 24, "Hour")} >16</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(17, 24, "Hour")} >17</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(18, 24, "Hour")} >18</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(19, 24, "Hour")} >19</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(20, 24, "Hour")} >20</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(21, 24, "Hour")} >21</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(22, 24, "Hour")} >22</Button></td>
-          <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(23, 24, "Hour")} >23</Button></td>
+          <td><span className="scheduleButton">Day</span></td>
+          <td><Button variant="outline-light" onClick={() => this.toggleSchedule(0, 24, "Hour")}  ><span className="scheduleButton">00</span></Button></td>
+          <td><Button variant="outline-light" onClick={() => this.toggleSchedule(1, 24, "Hour")}  ><span className="scheduleButton">01</span></Button></td>
+          <td><Button variant="outline-light" onClick={() => this.toggleSchedule(2, 24, "Hour")}  ><span className="scheduleButton">02</span></Button></td>
+          <td><Button variant="outline-light" onClick={() => this.toggleSchedule(3, 24, "Hour")}  ><span className="scheduleButton">03</span></Button></td>
+          <td><Button variant="outline-light" onClick={() => this.toggleSchedule(4, 24, "Hour")}  ><span className="scheduleButton">04</span></Button></td>
+          <td><Button variant="outline-light" onClick={() => this.toggleSchedule(5, 24, "Hour")}  ><span className="scheduleButton">05</span></Button></td>
+          <td><Button variant="outline-light" onClick={() => this.toggleSchedule(6, 24, "Hour")}  ><span className="scheduleButton">06</span></Button></td>
+          <td><Button variant="outline-light" onClick={() => this.toggleSchedule(7, 24, "Hour")}  ><span className="scheduleButton">07</span></Button></td>
+          <td><Button variant="outline-light" onClick={() => this.toggleSchedule(8, 24, "Hour")}  ><span className="scheduleButton">08</span></Button></td>
+          <td><Button variant="outline-light" onClick={() => this.toggleSchedule(9, 24, "Hour")}  ><span className="scheduleButton">09</span></Button></td>
+          <td><Button variant="outline-light" onClick={() => this.toggleSchedule(10, 24, "Hour")} ><span className="scheduleButton">10</span></Button></td>
+          <td><Button variant="outline-light" onClick={() => this.toggleSchedule(11, 24, "Hour")} ><span className="scheduleButton">11</span></Button></td>
+          <td><Button variant="outline-light" onClick={() => this.toggleSchedule(12, 24, "Hour")} ><span className="scheduleButton">12</span></Button></td>
+          <td><Button variant="outline-light" onClick={() => this.toggleSchedule(13, 24, "Hour")} ><span className="scheduleButton">13</span></Button></td>
+          <td><Button variant="outline-light" onClick={() => this.toggleSchedule(14, 24, "Hour")} ><span className="scheduleButton">14</span></Button></td>
+          <td><Button variant="outline-light" onClick={() => this.toggleSchedule(15, 24, "Hour")} ><span className="scheduleButton">15</span></Button></td>
+          <td><Button variant="outline-light" onClick={() => this.toggleSchedule(16, 24, "Hour")} ><span className="scheduleButton">16</span></Button></td>
+          <td><Button variant="outline-light" onClick={() => this.toggleSchedule(17, 24, "Hour")} ><span className="scheduleButton">17</span></Button></td>
+          <td><Button variant="outline-light" onClick={() => this.toggleSchedule(18, 24, "Hour")} ><span className="scheduleButton">18</span></Button></td>
+          <td><Button variant="outline-light" onClick={() => this.toggleSchedule(19, 24, "Hour")} ><span className="scheduleButton">19</span></Button></td>
+          <td><Button variant="outline-light" onClick={() => this.toggleSchedule(20, 24, "Hour")} ><span className="scheduleButton">20</span></Button></td>
+          <td><Button variant="outline-light" onClick={() => this.toggleSchedule(21, 24, "Hour")} ><span className="scheduleButton">21</span></Button></td>
+          <td><Button variant="outline-light" onClick={() => this.toggleSchedule(22, 24, "Hour")} ><span className="scheduleButton">22</span></Button></td>
+          <td><Button variant="outline-light" onClick={() => this.toggleSchedule(23, 24, "Hour")} ><span className="scheduleButton">23</span></Button></td>
 
         </tr>
 
-        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(0, 24)}  block>Sun</Button></td> {row1}  </tr>
-        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(24, 48)}  block>Mon</Button></td> {row2}  </tr>
-        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(48, 72)}  block>Tue</Button></td> {row3}  </tr>
-        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(72, 96)}  block>Wed</Button></td> {row4}  </tr>
-        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(96, 120)}  block>Thur</Button></td> {row5}  </tr>
-        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(120, 144)}  block>Fri</Button></td> {row6}  </tr>
-        <tr> <td><Button variant="outline-dark" onClick={() => this.toggleSchedule(144, 168)}  block>Sat</Button></td> {row7}  </tr>
+        <tr> <td><Button variant="outline-light" onClick={() => this.toggleSchedule(0, 24)} block><span className="scheduleButton">Sun</span></Button></td> {row1}  </tr>
+        <tr> <td><Button variant="outline-light" onClick={() => this.toggleSchedule(24, 48)} block><span className="scheduleButton">Mon</span></Button></td> {row2}  </tr>
+        <tr> <td><Button variant="outline-light" onClick={() => this.toggleSchedule(48, 72)} block><span className="scheduleButton">Tue</span></Button></td> {row3}  </tr>
+        <tr> <td><Button variant="outline-light" onClick={() => this.toggleSchedule(72, 96)} block><span className="scheduleButton">Wed</span></Button></td> {row4}  </tr>
+        <tr> <td><Button variant="outline-light" onClick={() => this.toggleSchedule(96, 120)} block><span className="scheduleButton">Thur</span></Button></td> {row5}  </tr>
+        <tr> <td><Button variant="outline-light" onClick={() => this.toggleSchedule(120, 144)} block><span className="scheduleButton">Fri</span></Button></td> {row6}  </tr>
+        <tr> <td><Button variant="outline-light" onClick={() => this.toggleSchedule(144, 168)} block><span className="scheduleButton">Sat</span></Button></td> {row7}  </tr>
 
 
       </tbody>
@@ -1288,7 +1295,8 @@ class Folder extends Component {
       HealthCheck: "Queued",
       TranscodeDecisionMaker: "Queued",
       cliLog: "",
-      bumped:false,
+      bumped: false,
+      history: ""
     }
 
     Meteor.call('scanFiles', this.props.libraryItem._id, this.props.libraryItem.folder, 1, mode, obj, function (error, result) { });
@@ -1312,7 +1320,7 @@ class Folder extends Component {
 
     event.preventDefault();
 
-    const text = ReactDOM.findDOMNode(this.refs.addPluginText).value.trim(); 
+    const text = ReactDOM.findDOMNode(this.refs.addPluginText).value.trim();
     Meteor.call('addPluginInclude', this.props.libraryItem._id, text, function (error, result) { });
     ReactDOM.findDOMNode(this.refs.addPluginText).value = '';
   }
@@ -1324,7 +1332,7 @@ class Folder extends Component {
 
     event.preventDefault();
 
-    
+
     const text = ReactDOM.findDOMNode(this.refs.addVideoCodecExcludeText).value.trim();
 
     Meteor.call('addVideoCodecExclude', this.props.libraryItem._id, text, function (error, result) { });
@@ -1335,11 +1343,11 @@ class Folder extends Component {
 
     event.preventDefault();
 
-    
+
     const text = ReactDOM.findDOMNode(this.refs.addAudioCodecExcludeText).value.trim();
 
 
-    
+
     Meteor.call('addAudioCodecExclude', this.props.libraryItem._id, text, function (error, result) { });
 
 
@@ -1351,6 +1359,41 @@ class Folder extends Component {
 
     if (confirm('Are you sure you want to delete this library? Your files will not be affected.')) {
 
+      var libraries = this.props.settings
+
+      for (var i = 0; i < libraries.length; i++) {
+
+        if (libraries[i].priority > this.props.libraryItem.priority) {
+
+          SettingsDB.upsert(
+            libraries[i]._id,
+            {
+              $set: {
+                priority: libraries[i].priority - 1,
+              }
+            }
+          );
+        }
+      }
+
+      if (this.props.libraryItem.priority == libraries.length - 1 && this.props.libraryItem.priority !== 0) {
+
+        GlobalSettingsDB.upsert('globalsettings',
+          {
+            $set: {
+              selectedLibrary: this.props.libraryItem.priority - 1,
+            }
+          }
+        );
+      }
+
+
+
+
+
+
+
+
       SettingsDB.remove(this.props.libraryItem._id);
 
       Meteor.call('removelibrary', this.props.libraryItem._id, function (error, result) { });
@@ -1359,7 +1402,12 @@ class Folder extends Component {
 
     }
 
+
+
+
   }
+
+
 
 
 
@@ -1370,232 +1418,372 @@ class Folder extends Component {
       backgroundColor: this.props.backgroundColour,
     }
 
+
+
     return (
-      <span>
-
-        <div className="libraryContainer" style={{ backgroundColor: this.props.backgroundColour }}>
-
-          <div className="libraryContainerItems">
-            <center>
+      <div className="libraryContainer2">
 
 
-              {/* UpdateMigration */}
-              <input type="text" className="libraryTitle" name="name" defaultValue={this.props.libraryItem.name !== undefined ? this.props.libraryItem.name : "Library Title"} onChange={this.handleChange}></input>
+                <br/>
+                <br/>
 
-              <br />
-              <br />
+        <center>
 
 
-              <Dropdown>
-                <Dropdown.Toggle variant="outline-success" id="dropdown-basic">
-                  Options
+          {/* UpdateMigration */}
+          <input type="text" className="libraryTitle" name="name" defaultValue={this.props.libraryItem.name !== undefined ? this.props.libraryItem.name : "Library Title"} onChange={this.handleChange}></input>
+
+          <br />
+          <br />
+
+
+          <Dropdown >
+            <Dropdown.Toggle variant="outline-success" id="dropdown-basic" >
+              Options
                 </Dropdown.Toggle>
 
-                <Dropdown.Menu>
+            <Dropdown.Menu >
 
-                  <div className={this.props.libraryItem.scanButtons ? '' : 'hidden'} style={libButtonStyle}>
-                    <Dropdown.Item style={{ color: 'green' }} onClick={() => this.scanFiles(0)} >Scan (Find new)</Dropdown.Item>
-                    <Dropdown.Item style={{ color: 'green' }} onClick={() => this.scanFiles(1)} >Scan (Fresh)</Dropdown.Item>
-
-
-                    <Dropdown.Item onClick={() => this.resetAllStatus('TranscodeDecisionMaker')}>Requeue all items (transcode)</Dropdown.Item>
-                    <Dropdown.Item onClick={() => this.resetAllStatus('HealthCheck')}>Requeue all items (health check)</Dropdown.Item>
+              <div className={this.props.libraryItem.scanButtons ? '' : 'hidden'} className="optionsDropdown">
+                <Dropdown.Item style={{ color: 'green', fontSize:'14px' }} onClick={() => this.scanFiles(0)} >Scan (Find new)</Dropdown.Item>
+                <Dropdown.Item style={{ color: 'green', fontSize:'14px' }} onClick={() => this.scanFiles(1)} >Scan (Fresh)</Dropdown.Item>
 
 
+                <Dropdown.Item onClick={() => this.resetAllStatus('TranscodeDecisionMaker')}><p>Requeue all items (transcode)</p></Dropdown.Item>
+                <Dropdown.Item onClick={() => this.resetAllStatus('HealthCheck')}><p>Requeue all items (health check)</p></Dropdown.Item>
 
-                    <Dropdown.Item style={{ color: 'red' }} onClick={() => {
 
-                      if (confirm('Are you sure you want to clear this library? Your files will not be affected.')) {
-                        this.removeLibrary(this.props.libraryItem._id)
+
+                <Dropdown.Item style={{ color: '#bb86fc',fontSize:'14px' }} onClick={() => {
+
+                  if (confirm('Are you sure you want to clear this library? Your files will not be affected.')) {
+                    this.removeLibrary(this.props.libraryItem._id)
+                  }
+                }
+
+                }>Clear library</Dropdown.Item>
+
+
+                <Dropdown.Item style={{ color: '#bb86fc',fontSize:'14px' }} onClick={this.deleteThisLibrary.bind(this)}>Delete library</Dropdown.Item>
+
+
+              </div>
+
+
+            </Dropdown.Menu>
+          </Dropdown>
+
+          <p>
+
+                <br/>
+                <br/>
+
+            <Button variant="outline-light" onClick={() => {
+
+              var libraries = this.props.settings
+
+              if (this.props.libraryItem.priority == 0) {
+
+
+              } else {
+
+                GlobalSettingsDB.upsert('globalsettings',
+                  {
+                    $set: {
+                      selectedLibrary: this.props.libraryItem.priority - 1,
+                    }
+                  }
+                );
+
+                SettingsDB.upsert(
+                  this.props.libraryItem._id,
+                  {
+                    $set: {
+                      priority: (this.props.libraryItem.priority - 1),
+                    }
+                  }
+                );
+
+                SettingsDB.upsert(
+                  libraries[this.props.libraryItem.priority - 1]._id,
+                  {
+                    $set: {
+                      priority: (this.props.libraryItem.priority),
+                    }
+                  }
+                );
+              }
+
+
+            }} ><span className="buttonTextSize">←</span></Button>
+
+{'\u00A0'}{'\u00A0'}Priority:{this.props.libraryItem.priority + 1} {'\u00A0'}{'\u00A0'}
+
+            <Button variant="outline-light" onClick={() => {
+
+              var libraries = this.props.settings
+
+              if (this.props.libraryItem.priority == libraries.length - 1) {
+
+
+              } else {
+
+                GlobalSettingsDB.upsert('globalsettings',
+                  {
+                    $set: {
+                      selectedLibrary: this.props.libraryItem.priority + 1,
+                    }
+                  }
+                );
+
+                SettingsDB.upsert(
+                  this.props.libraryItem._id,
+                  {
+                    $set: {
+                      priority: (this.props.libraryItem.priority + 1),
+                    }
+                  }
+                );
+
+                SettingsDB.upsert(
+                  libraries[this.props.libraryItem.priority + 1]._id,
+                  {
+                    $set: {
+                      priority: (this.props.libraryItem.priority),
+                    }
+                  }
+                );
+              }
+
+
+            }} ><span className="buttonTextSize">→</span></Button>
+          </p>
+
+
+
+
+
+          <div className={this.props.libraryItem.scanButtons ? 'hidden' : ''} style={libButtonStyle}>
+            <span><p>{this.props.libraryItem.scanFound}</p></span>
+
+            <div className='sweet-loading'>
+              <ScaleLoader
+                css={override}
+                sizeUnit={"px"}
+                size={15}
+                color={'white'}
+                loading={true}
+              />
+            </div>
+          </div>
+
+
+
+
+
+        </center>
+
+
+<br/>
+<br/>
+<br/>
+<br/>
+        <div className="libraryGrid-container">
+
+          <div className="libraryGrid-itemLeft">
+
+
+
+            <p onClick={() => {
+              this.setState({
+                navItemSelected: "navSourceFolder",
+              })
+            }} className={this.state.navItemSelected == "navSourceFolder" ? 'selectedNav' : ''}>Source</p>
+
+            <p onClick={() => {
+              this.setState({
+                navItemSelected: "navCacheFolder",
+              })
+            }} className={this.state.navItemSelected == "navCacheFolder" ? 'selectedNav' : ''}>Transcode cache</p>
+
+            <p onClick={() => {
+              this.setState({
+                navItemSelected: "navContainers",
+              })
+            }} className={this.state.navItemSelected == "navContainers" ? 'selectedNav' : ''}>Containers</p>
+
+
+            <p onClick={() => {
+              this.setState({
+                navItemSelected: "navTranscode",
+              })
+            }} className={this.state.navItemSelected == "navTranscode" ? 'selectedNav' : ''}>Transcode</p>
+
+            <p onClick={() => {
+              this.setState({
+                navItemSelected: "navHealthCheck",
+              })
+            }} className={this.state.navItemSelected == "navHealthCheck" ? 'selectedNav' : ''}>Health check</p>
+
+            <p onClick={() => {
+              this.setState({
+                navItemSelected: "navSchedule",
+              })
+            }} className={this.state.navItemSelected == "navSchedule" ? 'selectedNav' : ''}>Schedule</p>
+
+
+
+          </div>
+
+
+
+
+          <div className="libraryGrid-itemRight">
+
+            
+    
+
+
+
+            <div className={this.state.navItemSelected == "navSourceFolder" ? '' : 'hidden'}>
+            <div style={libButtonStyle}>
+            <span className="buttonTextSize"></span>{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'} <span className="buttonTextSize">Folder watch:</span>
+            <div style={libButtonStyle}>
+              <ToggleButton
+                thumbStyle={borderRadiusStyle}
+                trackStyle={borderRadiusStyle}
+
+                name="folderWatching"
+                value={!!this.props.libraryItem.folderWatching || false}
+                onToggle={() => {
+
+                  SettingsDB.upsert(
+
+                    this.props.libraryItem._id,
+                    {
+                      $set: {
+                        folderWatching: !this.props.libraryItem.folderWatching,
                       }
                     }
-
-                    }>Clear library</Dropdown.Item>
-
-
-                    <Dropdown.Item style={{ color: 'red' }} onClick={this.deleteThisLibrary.bind(this)}>Delete library</Dropdown.Item>
+                  );
 
 
-                  </div>
+                  Meteor.call('toggleFolderWatch', this.props.libraryItem.folder, this.props.libraryItem._id, !this.props.libraryItem.folderWatching, function (error, result) { })
+                }
 
-
-                </Dropdown.Menu>
-              </Dropdown>
+                }
+              />
+            </div>
 
 
 
-              <div className={this.props.libraryItem.scanButtons ? 'hidden' : ''} style={libButtonStyle}>
-                <span> {this.props.libraryItem.scanFound}</span>
+            {'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}<span className="buttonTextSize">Process Library:</span>
+            <div style={libButtonStyle}>
+              <ToggleButton
+                thumbStyle={borderRadiusStyle}
+                trackStyle={borderRadiusStyle}
 
-                <div className='sweet-loading'>
-                  <ScaleLoader
-                    css={override}
-                    sizeUnit={"px"}
-                    size={15}
-                    color={'#000000'}
-                    loading={true}
-                  />
-                </div>
+
+
+                value={this.props.libraryItem.processLibrary === undefined ? true : !!this.props.libraryItem.processLibrary}
+                onToggle={() => {
+
+
+
+                  SettingsDB.upsert(
+
+                    this.props.libraryItem._id,
+                    {
+                      $set: {
+                        processLibrary: !this.props.libraryItem.processLibrary,
+                      }
+                    }
+                  );
+                }
+
+                }
+              />
+            </div>
+
+
+
+
+
+            {'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}<span className="buttonTextSize">Scan on start:</span>
+            <div style={libButtonStyle}>
+              <ToggleButton
+                thumbStyle={borderRadiusStyle}
+                trackStyle={borderRadiusStyle}
+
+                value={this.props.libraryItem.scanOnStart === undefined ? true : !!this.props.libraryItem.scanOnStart}
+                onToggle={() => {
+
+                  SettingsDB.upsert(
+
+                    this.props.libraryItem._id,
+                    {
+                      $set: {
+                        scanOnStart: !this.props.libraryItem.scanOnStart,
+                      }
+                    }
+                  );
+                }
+
+                }
+              />
+            </div>
+
+          </div>
+
+   
+   <br/> <br/> <br/>
+
+              <p>Source:</p>
+
+              <input type="text" className="folderPaths" ref={this.props.libraryItem._id + 'f'} name="folder" defaultValue={this.props.libraryItem.folder} onChange={this.handleChange}></input>
+
+
+
+
+              <div className={this.props.libraryItem.folderValid ? 'hidden' : ''}>
+                <span className="invalidFolder" ><center> Invalid folder </center></span>
+              </div>
+
+              <br/>
+              <br/>
+
+              <div className="folderResults">
+
+                <Button variant="outline-light" onClick={() => {
+
+                  this.setState({
+                    folderBrowser: !this.state.folderBrowser,
+                  })
+
+
+                }} ><span className="buttonTextSize">{this.state.folderBrowser ? 'Hide' : 'Show'} browser</span></Button>
+
+                <br/>
+                <br/>
+
+              </div>
+
+              <div className={this.state.folderBrowser ? '' : 'hidden'}>
+                <div id={this.props.libraryItem._id + 'fResults'} className="folderResults"></div>
               </div>
 
 
 
-
-
-            </center>
-
-
-            {/* <span > <strong>{this.props.libraryItem.folder}</strong>  </span> */}
-
-
-            <p> </p>
-            <center>
-              <div style={libButtonStyle}>
-                Source folder:{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'} Folder watch:
-        <div style={libButtonStyle}>
-                  <ToggleButton
-                    thumbStyle={borderRadiusStyle}
-                    trackStyle={borderRadiusStyle}
-
-                    name="folderWatching"
-                    value={!!this.props.libraryItem.folderWatching || false}
-                    onToggle={() => {
-
-                      SettingsDB.upsert(
-
-                        this.props.libraryItem._id,
-                        {
-                          $set: {
-                            folderWatching: !this.props.libraryItem.folderWatching,
-                          }
-                        }
-                      );
-
-
-                      Meteor.call('toggleFolderWatch', this.props.libraryItem.folder, this.props.libraryItem._id, !this.props.libraryItem.folderWatching, function (error, result) { })
-                    }
-
-                    }
-                  />
-                </div>
-
-
-
-                {'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}Process Library:
-                <div style={libButtonStyle}>
-                  <ToggleButton
-                    thumbStyle={borderRadiusStyle}
-                    trackStyle={borderRadiusStyle}
-
-
-
-                    value={this.props.libraryItem.processLibrary === undefined ? true : !!this.props.libraryItem.processLibrary}
-                    onToggle={() => {
-
-
-
-                      SettingsDB.upsert(
-
-                        this.props.libraryItem._id,
-                        {
-                          $set: {
-                            processLibrary: !this.props.libraryItem.processLibrary,
-                          }
-                        }
-                      );
-                    }
-
-                    }
-                  />
-                </div>
-
-
-
-
-
-                {'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}Scan on start:
-                <div style={libButtonStyle}>
-                  <ToggleButton
-                    thumbStyle={borderRadiusStyle}
-                    trackStyle={borderRadiusStyle}
-
-                    value={this.props.libraryItem.scanOnStart === undefined ? true : !!this.props.libraryItem.scanOnStart}
-                    onToggle={() => {
-
-                      SettingsDB.upsert(
-
-                        this.props.libraryItem._id,
-                        {
-                          $set: {
-                            scanOnStart: !this.props.libraryItem.scanOnStart,
-                          }
-                        }
-                      );
-                    }
-
-                    }
-                  />
-                </div>
-
-
-
-
-
-
-
-
-
-
-
-
+              <div id="folderList">
 
               </div>
 
-            </center>
-
-
-            <input type="text" className="folderPaths" ref={this.props.libraryItem._id + 'f'} name="folder" defaultValue={this.props.libraryItem.folder} onChange={this.handleChange}></input>
-
-
-
-
-            <div className={this.props.libraryItem.folderValid ? 'hidden' : ''}>
-              <span className="invalidFolder" ><center> Invalid folder </center></span>
-            </div>
-
-            <div className="folderResults">
-
-              <Button variant="outline-dark" onClick={() => {
-
-                this.setState({
-                  folderBrowser: !this.state.folderBrowser,
-                })
-
-
-              }} >{this.state.folderBrowser ? 'Hide' : 'Show'} browser</Button>
 
             </div>
 
-            <div className={this.state.folderBrowser ? '' : 'hidden'}>
-              <div id={this.props.libraryItem._id + 'fResults'} className="folderResults"></div>
-            </div>
+            <div className={this.state.navItemSelected == "navCacheFolder" ? '' : 'hidden'}>
 
-
-
-            <div id="folderList">
-
-            </div>
-
-
-            <p></p>
-            <center>  <Button variant="outline-info" onClick={this.showHideSettings} >{this.props.libraryItem.expanded ? 'Hide' : 'Show'} settings</Button> </center>
-
-            <div className={this.props.libraryItem.expanded ? '' : 'hidden'}>
-
-              <p></p>
-              <p></p>
-
-              <center>  <p> Transcode cache folder:</p>  </center>
+              <p> Transcode cache:</p>
 
               <input type="text" className="folderPaths" ref={this.props.libraryItem._id + 'c'} name="cache" defaultValue={this.props.libraryItem.cache} onChange={this.handleChange}></input>
 
@@ -1605,18 +1793,23 @@ class Folder extends Component {
 
               </div>
 
+              <br/>
+              <br/>
 
 
               <div className="folderResults">
 
-                <Button variant="outline-dark" onClick={() => {
+                <Button variant="outline-light" onClick={() => {
 
                   this.setState({
                     cacheBrowser: !this.state.cacheBrowser,
                   })
 
 
-                }} >{this.state.cacheBrowser ? 'Hide' : 'Show'} browser</Button>
+                }} ><span className="buttonTextSize">{this.state.cacheBrowser ? 'Hide' : 'Show'} browser</span></Button>
+
+                <br/>
+                <br/>
 
               </div>
 
@@ -1624,25 +1817,26 @@ class Folder extends Component {
 
                 <div id={this.props.libraryItem._id + 'cResults'} className="folderResults"></div>
               </div>
+            </div>
 
-              <p></p>
-              <p></p>
 
-              <center>  <p>Container types to scan for:</p>  </center>
+            <div className={this.state.navItemSelected == "navContainers" ? '' : 'hidden'} >
+
+              <p>Container types to scan for:</p>
 
               <input type="text" className="folderPaths2" name="containerFilter" defaultValue={this.props.libraryItem.containerFilter} onChange={this.handleChange}></input>
 
 
+            </div>
 
-              <p></p>
-              <p></p>
+            <div className={this.state.navItemSelected == "navTranscode" ? '' : 'hidden'} >
 
-              <center> <p>Transcode Decision Maker</p>  </center>
 
+             <p>Transcode Decision Maker</p> 
 
               <center>
 
-                Plugin: <div style={libButtonStyle}><ToggleButton
+                <span className="buttonTextSize">Plugin:</span> <div style={libButtonStyle}><ToggleButton
                   thumbStyle={borderRadiusStyle}
                   trackStyle={borderRadiusStyle}
 
@@ -1684,7 +1878,7 @@ class Folder extends Component {
                   }
                 /></div>{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}
 
-                Video library: <div style={libButtonStyle}><ToggleButton
+                <span className="buttonTextSize">Video library:</span> <div style={libButtonStyle}><ToggleButton
                   thumbStyle={borderRadiusStyle}
                   trackStyle={borderRadiusStyle}
 
@@ -1722,8 +1916,8 @@ class Folder extends Component {
                 /></div>{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}
 
 
-                Audio library:
-<div style={libButtonStyle}> <ToggleButton
+                <span className="buttonTextSize">Audio library:</span>
+                <div style={libButtonStyle}> <ToggleButton
                   thumbStyle={borderRadiusStyle}
                   trackStyle={borderRadiusStyle}
 
@@ -1764,7 +1958,10 @@ class Folder extends Component {
                   }
                 /></div>
 
-              </center>
+</center>
+
+
+            
 
               <div className={!!this.props.libraryItem.decisionMaker.pluginFilter ? '' : 'hidden'}>
 
@@ -1776,9 +1973,9 @@ class Folder extends Component {
                   </p>
                 </center>
 
-                <center>
+               
                   <p>Plugin ID:</p>
-                </center>
+            
 
 
 
@@ -1824,7 +2021,13 @@ class Folder extends Component {
 
               <div className={!!this.props.libraryItem.decisionMaker.pluginFilter ? 'hidden' : !!this.props.libraryItem.decisionMaker.videoFilter ? '' : !!this.props.libraryItem.decisionMaker.audioFilter ? '' : 'hidden'}>
 
-                <center><p>Output file container: </p>  </center>
+<br/>
+<br/>
+<br/>
+<br/>
+
+
+                <p>Output file container: </p>  
 
                 <input type="text" name="container" className="folderPaths3" defaultValue={this.props.libraryItem.container} onChange={this.handleChange}></input>
 
@@ -1836,7 +2039,7 @@ class Folder extends Component {
 <Checkbox name="ffmpeg" checked={!!this.props.libraryItem.ffmpeg} onChange={this.handleChangeChkBx} />
                 </p>  </center>
 
-                <center><p>CLI arguments/preset: </p>  </center>
+                <p>CLI arguments/preset: </p>  
                 <input type="text" name="preset" className="folderPaths" defaultValue={this.props.libraryItem.preset} onChange={this.handleChange}></input>
 
 
@@ -1846,27 +2049,13 @@ class Folder extends Component {
 
               </div>
 
-              <div className={!!this.props.libraryItem.decisionMaker.audioFilter ? 'hidden' : ''}>
 
-
-                <p></p>
-                <p></p>
-
-
-                <center><p>Health check type:</p>
-                  <p>Quick:
-        <Checkbox name="handbrakescan" checked={!!this.props.libraryItem.handbrakescan} onChange={this.handleChangeChkBx} />
-                    Thorough:
-        <Checkbox name="ffmpegscan" checked={!!this.props.libraryItem.ffmpegscan} onChange={this.handleChangeChkBx} />
-                  </p>  </center>
-
-              </div>
               <div className={!!this.props.libraryItem.decisionMaker.videoFilter ? '' : 'hidden'}>
 
 
                 <p></p>
                 <p></p>
-                <center>  <p>Don't transcode videos already in these codecs:</p>  </center>
+            <p>Don't transcode videos already in these codecs:</p> 
 
 
                 <form onSubmit={this.addVideoCodecExclude.bind(this)} >
@@ -1968,7 +2157,7 @@ class Folder extends Component {
               <div className={!!this.props.libraryItem.decisionMaker.audioFilter ? '' : 'hidden'}>
                 <p></p>
                 <p></p>
-                <center> <p>Don't transcode audio already in these codecs:</p>  </center>
+                <p>Don't transcode audio already in these codecs:</p>
 
                 <form onSubmit={this.addAudioCodecExclude.bind(this)} >
                   <input
@@ -2016,10 +2205,24 @@ class Folder extends Component {
 
               </div>
 
+            </div>
 
-              <center><p>Schedule:  </p>  </center>
+            <div className={this.state.navItemSelected == "navHealthCheck" ? '' : 'hidden'} >
 
-              <Button variant="outline-dark" onClick={() => {
+              <p>Health check type:</p>
+                <p>Quick:
+        <Checkbox name="handbrakescan" checked={!!this.props.libraryItem.handbrakescan} onChange={this.handleChangeChkBx} />
+                  Thorough:
+        <Checkbox name="ffmpegscan" checked={!!this.props.libraryItem.ffmpegscan} onChange={this.handleChangeChkBx} />
+                </p>  
+
+            </div>
+
+            <div className={this.state.navItemSelected == "navSchedule" ? '' : 'hidden'} >
+
+             <p>Schedule:  </p>
+
+              <Button variant="outline-light" onClick={() => {
 
                 Meteor.call('toggleSchedule', this.props.libraryItem._id, this.state.scheduleAll, 0, 168, function (error, result) { })
 
@@ -2031,24 +2234,17 @@ class Folder extends Component {
 
               }}  >Toggle all</Button>
 
+              <br/>
+              <br/>
+              <br/>
+
               <div className="scheduleContainer">
-
-
-
-
                 {this.renderScheduleBlocks()}
-
-
               </div>
-
-
-
-
             </div>
           </div>
-
         </div>
-      </span>
+      </div>
     );
   }
 }
@@ -2059,7 +2255,7 @@ export default withTracker(() => {
 
 
   return {
-    settings: SettingsDB.find({}, {}).fetch(),
+    settings: SettingsDB.find({}, { sort: { priority: 1 } }).fetch(),
 
   };
 })(Folder);

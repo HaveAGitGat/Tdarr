@@ -4,12 +4,15 @@ import ReactDOM from 'react-dom';
 import { render } from 'react-dom';
 
 
-import { SettingsDB } from '../api/tasks.js';
+import { SettingsDB ,GlobalSettingsDB} from '../../api/tasks.js';
 
 import Folder from './tab_Libraries_Folder.jsx';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { Button } from 'react-bootstrap';
 import Modal from "reactjs-popup";
+
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+
 
 
 
@@ -33,7 +36,15 @@ class App extends Component {
     //use {} to remove all docs, else none will be removed
 
     if (confirm('Are you sure you want to delete all libraries?')) {
-    Meteor.call('remove', function (error, result) {});
+      Meteor.call('remove', function (error, result) { });
+
+      GlobalSettingsDB.upsert('globalsettings',
+        {
+          $set: {
+            selectedLibrary: 0,
+          }
+        }
+      );
 
     }
 
@@ -41,10 +52,14 @@ class App extends Component {
 
 
 
-  addFolder(){
+  addFolder = () => {
+
+    var count = this.props.libraries.length
+
 
     SettingsDB.insert({
       name:"Library Name",
+      priority:count,
       folder:"Path to your media files. Input a base folder and the folder browser below will show subfolders to navigate.",
       folderValid:true,
       cache:"Path to your transcode cache. Input a base folder and the folder browser below will show subfolders to navigate.",
@@ -616,6 +631,15 @@ class App extends Component {
       ]
     });
 
+    GlobalSettingsDB.upsert('globalsettings',
+    {
+      $set: {
+        selectedLibrary: count,
+      }
+    }
+  );
+
+
 
   }
 
@@ -627,7 +651,7 @@ class App extends Component {
 
       sizeUnit={"px"}
       size={25}
-      color={'#000000'}
+      color={'white'}
       loading={true}
   /></center>, document.getElementById('status'));
 
@@ -651,6 +675,29 @@ class App extends Component {
 
    });
 
+   //
+
+   Meteor.subscribe('SettingsDB', function(){
+
+
+    var res = SettingsDB.find({}).fetch()
+
+    if(res.length == 0){
+
+
+      render(<center><p>No libraries</p></center>, document.getElementById('status'));
+      
+
+  
+    }else{
+    render('', document.getElementById('status'));
+    }
+
+
+ });
+
+
+   
 
   }
 
@@ -660,30 +707,62 @@ class App extends Component {
 
 
 
-  renderLibraries() {
+  renderLibraries= () => {
 
+  
+    try{
 
       if(this.props.libraries.length == 0){
 
 
       }else{
 
-        const COLORS = ['white','#e3e3e3'];
+        const COLORS = ['white','white'];
   
-      return this.props.libraries.map((item, i) => (
+      var tabTitles = this.props.libraries.map((item, i) => (
 
-        <Folder
-          key={item._id}
-          libraryItem={item}
-          backgroundColour={COLORS[(i+1) % 2]}         
-        />
-       
-
+        <Tab><p>{item.name}</p></Tab>
       
         ));
 
+        var tabPanels = this.props.libraries.map((item, i) => (
+
+          <TabPanel><div className="tabContainer" >
+          <Folder
+            key={item._id}
+            libraryItem={item}
+            backgroundColour={COLORS[(i+1) % 2]}         
+          />
+           </div></TabPanel>
+         
+  
+        
+          ));
+
+        
+    return  <div className="tabWrap" > <Tabs selectedIndex={ this.props.globalSettings[0].selectedLibrary != undefined ? this.props.globalSettings[0].selectedLibrary : 0} onSelect={tabIndex => {
+
+      GlobalSettingsDB.upsert('globalsettings',
+      {
+        $set: {
+          selectedLibrary: tabIndex,
+        }
+      }
+    );
+    }}>
+    <TabList>
+
+    {tabTitles}
+    </TabList>
+
+ 
+    {tabPanels}
+
+  </Tabs> </div>
+
       }
 
+    }catch(err){}
   }
 
   render() {
@@ -699,13 +778,14 @@ class App extends Component {
       
       <center>
 
-        <Button variant="outline-dark"  onClick={this.addFolder} >Library +</Button>
-        <Button variant="outline-danger"  onClick={this.clearFiles} >Delete all libraries</Button>
+        <Button variant="outline-light"  onClick={this.addFolder} ><span className="buttonTextSize">Library +</span></Button>{'\u00A0'}
+        <Button variant="outline-danger"  onClick={this.clearFiles} ><span className="buttonTextSize">Delete all libraries</span></Button>{'\u00A0'}
         <Modal
-          trigger={<Button variant="outline-dark" >i</Button>}
+          trigger={<Button variant="outline-light" ><span className="buttonTextSize">i</span></Button>}
           modal
           closeOnDocumentClick
         >
+           <div className="modalContainer">
           <div className="frame">
             <div className="scroll">
 
@@ -745,15 +825,15 @@ class App extends Component {
 
 <p>You can learn more about HandBrake presets here:</p>
 
-<a href="" onClick={() => window.open("https://handbrake.fr/docs/en/latest/technical/official-presets.html", "_blank")}>HandBrake presets</a>
+<p><a href="" onClick={(e) => { window.open("https://handbrake.fr/docs/en/latest/technical/official-presets.html", "_blank")}}>HandBrake presets</a></p>
 
 <p>Please see the following tools for help with creating FFmpeg commands:</p>
 
-<p><a href="" onClick={() => window.open("http://rodrigopolo.com/ffmpeg/", "_blank")}>http://rodrigopolo.com/ffmpeg/</a></p>
-<p><a href="" onClick={() => window.open("http://www.mackinger.at/ffmpeg/", "_blank")}>http://www.mackinger.at/ffmpeg/</a></p>
-<p><a href="" onClick={() => window.open("https://axiomui.github.io/", "_blank")}>Axiom</a></p>
+<p><a href="" onClick={(e) => { window.open("http://rodrigopolo.com/ffmpeg/", "_blank")}}>http://rodrigopolo.com/ffmpeg/</a></p>
+<p><a href="" onClick={(e) => { window.open("http://www.mackinger.at/ffmpeg/", "_blank")}}>http://www.mackinger.at/ffmpeg/</a></p>
+<p><a href="" onClick={(e) => { window.open("https://axiomui.github.io/", "_blank")}}>Axiom</a></p>
 
-<p>If you're having trouble with custom HandBrake json presets, it may be due to a known bug with the HandBrakeCLI (will be fixed in next HandBrakeCLI release).<a href="" onClick={() => window.open("https://github.com/HandBrake/HandBrake/issues/2047", "_blank")}>Please see this for a temporary solution.</a></p>
+<p>If you're having trouble with custom HandBrake json presets, it may be due to a known bug with the HandBrakeCLI (will be fixed in next HandBrakeCLI release).<a href="" onClick={(e) => { window.open("https://github.com/HandBrake/HandBrake/issues/2047", "_blank")}}>Please see this for a temporary solution.</a></p>
 <p></p>
 <p>Regarding the transcode filter settings, these are applied when the items are being processed in the transcode queue. If files do not meet the transcode requirements then they will be marked as 'Transcode:Not required'.</p>
 
@@ -769,6 +849,7 @@ class App extends Component {
 </div>  
 
             </div>
+          </div>
           </div>
         </Modal>
         </center>
@@ -787,10 +868,15 @@ class App extends Component {
 }
 
  export default withTracker(() => {
+  Meteor.subscribe('GlobalSettingsDB');
   Meteor.subscribe('SettingsDB');
+  
+  
   return {
       
-    libraries: SettingsDB.find({}, { sort: { createdAt: 1 } }).fetch(),
+    
+    globalSettings: GlobalSettingsDB.find({}, {}).fetch(),
+    libraries: SettingsDB.find({}, { sort: { priority: 1 } }).fetch(),
 
 
   };

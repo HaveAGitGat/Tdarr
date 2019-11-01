@@ -12,20 +12,22 @@ import { Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.css';
 
 
-import { StatisticsDB, FileDB, GlobalSettingsDB, ClientDB } from '../api/tasks.js';
+import { StatisticsDB, FileDB, GlobalSettingsDB, ClientDB } from '../../api/tasks.js';
 
-import Workers from '../ui/tab_Transcoding_Worker.jsx';
+import Workers from './tab_Transcoding_Worker.jsx';
 import ReactTable from "react-table";
 
 import Slider from 'react-input-slider';
 
-import ItemButton from './item_Button.jsx'
+import ItemButton from '../item_Button.jsx'
 
 import ClipLoader from 'react-spinners/ClipLoader';
 import Checkbox from '@material-ui/core/Checkbox';
 
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import 'react-tabs/style/react-tabs.css';
+
+import { Markup } from 'interweave';
+
 
 
 
@@ -109,7 +111,7 @@ class App extends Component {
       <span className="sliderWidth">
 
 
-        <center> {title}({item[slider]})</center>
+        <center> <p>{title}({item[slider]})</p></center>
       
         <Slider
           axis="x"
@@ -172,7 +174,7 @@ class App extends Component {
 
         sizeUnit={"px"}
         size={10}
-        color={'#000000'}
+        color={'white'}
         loading={true}
         style={ButtonStyle}
       /></center>
@@ -220,6 +222,44 @@ class App extends Component {
     return this.props.globalSettings.map((item, i) => (
 
       <Checkbox name={type} checked={item.queueSortType == type ? true : false} onChange={this.setSort} />
+
+    ));
+
+  }
+
+  setSort(event) {
+
+    if (event.target.checked == true) {
+
+      GlobalSettingsDB.upsert(
+        "globalsettings",
+        {
+          $set: {
+            queueSortType: event.target.name,
+          }
+        }
+      );
+
+
+    }
+  }
+
+  renderCheckBox = (type) => {
+
+    return this.props.globalSettings.map((item, i) => (
+
+      <Checkbox name={type} checked={item[type]} onChange={(event) => {
+
+        GlobalSettingsDB.upsert(
+          "globalsettings",
+          {
+            $set: {
+              [type]: event.target.checked,
+            }
+          }
+        );
+
+      }} />
 
     ));
 
@@ -288,7 +328,7 @@ class App extends Component {
 
             sizeUnit={"px"}
             size={25}
-            color={'#000000'}
+            color={'white'}
             loading={true}
           /></td>
         </tr>
@@ -319,7 +359,7 @@ class App extends Component {
         // <td>{row.bumped ? row.bumped.toISOString() : "-"}</td>
 
        return <tr key={row._id}>
-          <td>{i + 1}</td><td>{row.file}</td><td>{row.video_codec_name}</td><td>{row.video_resolution}</td><td>{file_size}</td><td>{ !(row.bumped instanceof Date) ? this.renderBumpButton(row.file):this.renderCancelBumpButton(row.file) }</td>
+          <td><p>{i + 1}</p></td><td><p>{row.file}</p></td><td><p>{row.video_codec_name}</p></td><td><p>{row.video_resolution}</p></td><td><p>{file_size}</p></td><td><p>{ !(row.bumped instanceof Date) ? this.renderBumpButton(row.file):this.renderCancelBumpButton(row.file) }</p></td>
           </tr>
 
       }
@@ -331,7 +371,7 @@ class App extends Component {
       return data.map((row, i) => {
 
        return <tr key={row._id}>
-          <td>{i + 1}</td><td>{row.file}</td><td>{!(row.bumped instanceof Date) ? this.renderBumpButton(row.file):this.renderCancelBumpButton(row.file) }</td>
+          <td><p>{i + 1}</p></td><td><p>{row.file}</p></td><td><p>{!(row.bumped instanceof Date) ? this.renderBumpButton(row.file):this.renderCancelBumpButton(row.file) }</p></td>
           </tr>
 
       }
@@ -371,7 +411,7 @@ class App extends Component {
    
 
          return <tr key={row._id}>
-            <td>{i + 1}</td><td>{lastTranscodeDate}</td><td>{row.file}</td><td>{row.video_codec_name}</td><td>{row.video_resolution}</td><td>{row.TranscodeDecisionMaker}</td><td>{oldSize}</td><td>{newSize}</td><td>{this.renderRedoButton(row.file, mode)}</td><td>{this.renderInfoButton(row.cliLog)}</td>
+            <td><p>{i + 1}</p></td><td><p>{lastTranscodeDate}</p></td><td><p>{row.file}</p></td><td><p>{row.video_codec_name}</p></td><td><p>{row.video_resolution}</p></td><td><p>{row.TranscodeDecisionMaker}</p></td><td><p>{oldSize}</p></td><td><p>{newSize}</p></td><td><p>{this.renderRedoButton(row.file, mode)}</p></td><td><p>{this.renderInfoButton(row.cliLog)}</p></td><td><p>{this.renderHistoryButton(row)}</p></td>
           </tr>
 
 
@@ -388,7 +428,7 @@ class App extends Component {
           }
   
          return <tr key={row._id}>
-            <td>{i + 1}</td><td>{lastHealthCheckDate}</td><td>{row.file}</td><td>{this.renderRedoButton(row.file, mode)}</td><td>{this.renderInfoButton(row.cliLog)}</td>
+            <td><p>{i + 1}</p></td><td><p>{lastHealthCheckDate}</p></td><td><p>{row.file}</p></td><td><p>{this.renderRedoButton(row.file, mode)}</p></td><td><p>{this.renderInfoButton(row.cliLog)}</p></td>
           </tr>
 
 
@@ -412,7 +452,7 @@ class App extends Component {
 
 
        return <tr key={row._id}>
-          <td>{i + 1}</td><td>{lastTranscodeDate}</td><td>{row.file}</td><td>{this.renderRedoButton(row.file, mode)}</td><td>{this.renderIgnoreButton(row.file, mode)}</td><td>{this.renderInfoButton(row.cliLog)}</td>
+          <td><p>{i + 1}</p></td><td><p>{lastTranscodeDate}</p></td><td><p>{row.file}</p></td><td><p>{this.renderRedoButton(row.file, mode)}</p></td><td><p>{this.renderIgnoreButton(row.file, mode)}</p></td><td><p>{this.renderInfoButton(row.cliLog)}</p></td>
         </tr>
 
 
@@ -430,7 +470,7 @@ class App extends Component {
         }
 
          return <tr key={row._id}>
-            <td>{i + 1}</td><td>{lastHealthCheckDate}</td><td>{row.file}</td><td>{this.renderRedoButton(row.file, mode)}</td><td>{this.renderIgnoreButton(row.file, mode)}</td><td>{this.renderInfoButton(row.cliLog)}</td>
+            <td><p>{i + 1}</p></td><td><p>{lastHealthCheckDate}</p></td><td><p>{row.file}</p></td><td><p>{this.renderRedoButton(row.file, mode)}</p></td><td><p>{this.renderIgnoreButton(row.file, mode)}</p></td><td><p>{this.renderInfoButton(row.cliLog)}</p></td>
           </tr>
   
   
@@ -505,15 +545,19 @@ class App extends Component {
     cliLog = cliLog.map( row => <p>{row}</p> )
 
     return <Modal
-      trigger={<Button variant="outline-dark" >i</Button>}
+      trigger={<Button variant="outline-light" ><span className="buttonTextSize">i</span></Button>}
       modal
       closeOnDocumentClick
     >
+       <div className="modalContainer">
        <div className="frame">
     <div className="scroll"> 
+    <div className="modalText">
    {cliLog}
       
     </div>
+  </div>
+  </div>
   </div>
     </Modal>
 
@@ -525,22 +569,38 @@ class App extends Component {
 
   }
 
-  setSort(event) {
-
-    if (event.target.checked == true) {
-
-      GlobalSettingsDB.upsert(
-        "globalsettings",
-        {
-          $set: {
-            queueSortType: event.target.name,
-          }
-        }
-      );
+  renderHistoryButton(row) {
 
 
-    }
+    var result = row.history
+
+   result = result.split("\n")
+    result = result.map((row, i) => (
+
+        <Markup content={row} />
+      ));
+
+
+    return <Modal
+      trigger={<Button variant="outline-light" ><span className="buttonTextSize">H</span></Button>}
+      modal
+      closeOnDocumentClick
+    >
+      <div className="modalContainer">
+      <div className="frame">
+        <div className="scroll">
+        <div className="modalText">
+          {result}
+
+          </div>
+        </div>
+      </div>
+      </div>
+    </Modal>
   }
+
+
+
 
 
   resetAllStatus(mode) {
@@ -562,7 +622,7 @@ class App extends Component {
     return (
 
 
-      <span >
+      <div className="containerGeneral">
         {/* <h1>Td</h1> */}
 
 
@@ -572,12 +632,12 @@ class App extends Component {
             <tbody>
               <tr>
 
-                <td><b>DB</b></td>
-                <td>{'\u00A0'}<b>Poll period</b>:{this.renderStat('DBPollPeriod')}</td>
-                <td>{'\u00A0'}<b>Fetch time</b>: {this.renderStat('DBFetchTime')}</td>
-                <td>{'\u00A0'}<b>Total</b>: {this.renderStat('DBTotalTime')}</td>
-                <td>{'\u00A0'}<b>Backlog</b>: {this.renderStat('DBQueue')}</td>
-                <td>{'\u00A0'}<b>Load</b>: {this.renderStat('DBLoadStatus')}</td>
+                <td><p><b>DB</b></p></td>
+                <td>{'\u00A0'}<p><b>Poll period</b>:{this.renderStat('DBPollPeriod')}</p></td>
+                <td>{'\u00A0'}<p><b>Fetch time</b>: {this.renderStat('DBFetchTime')}</p></td>
+                <td>{'\u00A0'}<p><b>Total</b>: {this.renderStat('DBTotalTime')}</p></td>
+                <td>{'\u00A0'}<p><b>Backlog</b>: {this.renderStat('DBQueue')}</p></td>
+                <td>{'\u00A0'}<p><b>Load</b>: {this.renderStat('DBLoadStatus')}</p></td>
 
               </tr>
 
@@ -610,12 +670,13 @@ class App extends Component {
         <div className="container">
 
 
-
+        <div className="libraryContainer" >
 <center><Modal
-      trigger={<Button variant="outline-dark" >i</Button>}
+      trigger={<Button variant="outline-light" ><span className="buttonTextSize">i</span></Button>}
       modal
       closeOnDocumentClick
     >
+       <div className="modalContainer">
        <div className="frame">
     <div className="scroll"> 
 
@@ -638,33 +699,27 @@ class App extends Component {
       
     </div>
   </div>
+  </div>
+
     </Modal></center>
 
-        <center>Workers:</center>
-
-
-
-
-
-
-
-
+        <center><p>Workers:</p></center>
 <div className="sliderGrid-container">
 
 <div className="sliderGrid-item2">
-<Button   variant="outline-dark" onClick={() => this.alterWorkerLimit("decrease","generalWorkerLimit")} >-</Button>
+<Button   variant="outline-light" onClick={() => this.alterWorkerLimit("decrease","generalWorkerLimit")} ><span className="buttonTextSize">-</span></Button>
 </div>
 
 <div className="sliderGrid-item">
 {this.renderSlider('generalWorkerLimit','black','#808080')}
 </div>
 <div className="sliderGrid-item3">
-<Button   variant="outline-dark" onClick={() => this.alterWorkerLimit("increase","generalWorkerLimit")} >+</Button>
+<Button   variant="outline-light" onClick={() => this.alterWorkerLimit("increase","generalWorkerLimit")} ><span className="buttonTextSize">+</span></Button>
 </div>
 
 
 <div className="sliderGrid-item2">
-<Button   variant="outline-dark" onClick={() => this.alterWorkerLimit("decrease","transcodeWorkerLimit")} >-</Button>
+<Button   variant="outline-light" onClick={() => this.alterWorkerLimit("decrease","transcodeWorkerLimit")} ><span className="buttonTextSize">-</span></Button>
 </div>
 
 <div className="sliderGrid-item">
@@ -672,12 +727,12 @@ class App extends Component {
 </div>
 
 <div className="sliderGrid-item3">
-<Button   variant="outline-dark" onClick={() => this.alterWorkerLimit("increase","transcodeWorkerLimit")} >+</Button>
+<Button   variant="outline-light" onClick={() => this.alterWorkerLimit("increase","transcodeWorkerLimit")} ><span className="buttonTextSize">+</span></Button>
 </div>
 
 
 <div className="sliderGrid-item2">
-<Button   variant="outline-dark" onClick={() => this.alterWorkerLimit("decrease","healthcheckWorkerLimit")} >-</Button>
+<Button   variant="outline-light" onClick={() => this.alterWorkerLimit("decrease","healthcheckWorkerLimit")} ><span className="buttonTextSize">-</span></Button>
 </div>
 
 <div className="sliderGrid-item">
@@ -685,12 +740,11 @@ class App extends Component {
 </div>
 
 <div className="sliderGrid-item3">
-<Button   variant="outline-dark" onClick={() => this.alterWorkerLimit("increase","healthcheckWorkerLimit")} >+</Button>
+<Button   variant="outline-light" onClick={() => this.alterWorkerLimit("increase","healthcheckWorkerLimit")} ><span className="buttonTextSize">+</span></Button>
 </div>
 
 
 </div>
-
 
 
           <p></p>
@@ -727,12 +781,12 @@ class App extends Component {
 
               }
             }
-            } >Cancel all workers</Button>
+            } ><span className="buttonTextSize">Cancel all workers</span></Button>
 
 {'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}
 
             <div style={ButtonStyle}>
-              <span >Low CPU priority:<div style={ButtonStyle}>
+            <span className="buttonTextSize">Low CPU priority:<div style={ButtonStyle}>
 
                 {this.renderLowCPUButton()}
 
@@ -744,6 +798,7 @@ class App extends Component {
           </div>
           </center>
 
+          </div>
 
           <p></p>
           <br/>
@@ -760,11 +815,14 @@ class App extends Component {
     <p></p>
     <p></p>
 
+    <div className="tabWrap" >     
+
         <Modal
-      trigger={<Button variant="outline-dark" >i</Button>}
+      trigger={<Button variant="outline-light" ><span className="buttonTextSize">i</span></Button>}
       modal
       closeOnDocumentClick
     >
+       <div className="modalContainer">
        <div className="frame">
     <div className="scroll"> 
 
@@ -795,6 +853,7 @@ class App extends Component {
       
     </div>
   </div>
+  </div>
     </Modal>
 
 
@@ -812,33 +871,36 @@ class App extends Component {
 {this.renderSortBox('sortSizeLargest')}
                   </p>
 
+ <p>Library prioritisation: {this.renderCheckBox('prioritiseLibraries')}</p>
+
+
             
 
+               
         <Tabs>
     <TabList>
-      <Tab>Transcode queue ({this.renderStat('table1Count')})</Tab>
-      <Tab>Transcode: Success/Not required ({this.renderStat('table2Count')})</Tab>
-      <Tab>Transcode: Error/Cancelled ({this.renderStat('table3Count')})</Tab>
+      <Tab><p>Transcode queue ({this.renderStat('table1Count')})</p></Tab>
+      <Tab><p>Transcode: Success/Not required ({this.renderStat('table2Count')})</p></Tab>
+      <Tab><p>Transcode: Error/Cancelled ({this.renderStat('table3Count')})</p></Tab>
 
 
 
-      <Tab>Health check queue ({this.renderStat('table4Count')})</Tab>
-      <Tab>Health check: Healthy ({this.renderStat('table5Count')})</Tab>
-      <Tab>Health check: Error/Cancelled ({this.renderStat('table6Count')})</Tab>
+      <Tab><p>Health check queue ({this.renderStat('table4Count')})</p></Tab>
+      <Tab><p>Health check: Healthy ({this.renderStat('table5Count')})</p></Tab>
+      <Tab><p>Health check: Error/Cancelled ({this.renderStat('table6Count')})</p></Tab>
 
     </TabList>
 
-    <TabPanel>
-      
-
+    <TabPanel> <div className="tabContainer" >
+  
     <table className="itemTable">   <tbody>
               <tr>
-                <th>No.</th>
-                <th>File</th>
-                <th>Codec</th>
-                <th>Resolution</th>
-                <th>Size (GB)</th>
-                <th>Bump</th>
+                <th><p>No.</p></th>
+                <th><p>File</p></th>
+                <th><p>Codec</p></th>
+                <th><p>Resolution</p></th>
+                <th><p>Size (GB)</p></th>
+                <th><p>Bump</p></th>
 
               </tr>
               {this.renderTable('table1', 'queue','TranscodeDecisionMaker')}
@@ -847,38 +909,38 @@ class App extends Component {
 
 
 
-    </TabPanel>
-    <TabPanel>
+    </div></TabPanel>
+    <TabPanel> <div className="tabContainer" >
     <table className="itemTable"><tbody>
               <tr>
-                <th>No.</th>
-                <th>Time</th>
-                <th>File</th>
-                <th>Codec</th>
-                <th>Resolution</th>
-                <th>Transcode</th>
-                <th>Old size (GB)</th>
-                <th>New size (GB)</th>
-                <th><Button variant="outline-dark" onClick={() => this.resetAllStatus('TranscodeDecisionMaker')} >Re-queue</Button></th>
-                <th>Info</th>
+                <th><p>No.</p></th>
+                <th><p>Time</p></th>
+                <th><p>File</p></th>
+                <th><p>Codec</p></th>
+                <th><p>Resolution</p></th>
+                <th><p>Transcode</p></th>
+                <th><p>Old size (GB)</p></th>
+                <th><p>New size (GB)</p></th>
+                <th><p><Button variant="outline-light" onClick={() => this.resetAllStatus('TranscodeDecisionMaker')} ><span className="buttonTextSize">Re-queue</span></Button></p></th>
+                <th><p>Info</p></th>
 
 
               </tr>
               {this.renderTable('table2', 'success', 'TranscodeDecisionMaker')}
 
             </tbody></table>
-    </TabPanel>
+    </div></TabPanel>
 
-    <TabPanel>
+    <TabPanel> <div className="tabContainer" >
 
     <table className="itemTable">   <tbody>
               <tr>
-                <th>No.</th>
-                <th>Time</th>
-                <th>File</th>
-                <th><Button variant="outline-dark" onClick={() => this.resetAllStatus('TranscodeDecisionMaker')} >Re-queue</Button></th>
-                <th>Ignore</th>
-                <th>Info</th>
+                <th><p>No.</p></th>
+                <th><p>Time</p></th>
+                <th><p>File</p></th>
+                <th><p><Button variant="outline-light" onClick={() => this.resetAllStatus('TranscodeDecisionMaker')} ><span className="buttonTextSize">Re-queue</span></Button></p></th>
+                <th><p>Ignore</p></th>
+                <th><p>Info</p></th>
 
 
               </tr>
@@ -890,15 +952,15 @@ class App extends Component {
             </tbody></table>
 
 
-    </TabPanel>
+    </div></TabPanel>
 
-    <TabPanel>
+    <TabPanel> <div className="tabContainer" >
 
     <table className="itemTable">   <tbody>
               <tr>
-                <th>No.</th>
-                <th>File</th>
-                <th>Bump</th>
+                <th><p>No.</p></th>
+                <th><p>File</p></th>
+                <th><p>Bump</p></th>
 
               </tr>
               {this.renderTable('table4', 'queue','HealthCheck')}
@@ -906,17 +968,17 @@ class App extends Component {
             </tbody></table>
 
 
-    </TabPanel>
+    </div></TabPanel>
 
-    <TabPanel>
+    <TabPanel> <div className="tabContainer" >
 
     <table className="itemTable">   <tbody>
               <tr>
-                <th>No.</th>
-                <th>Time</th>
-                <th>File</th>
-                <th><Button   variant="outline-dark" onClick={() => this.resetAllStatus('HealthCheck')} >Re-queue</Button></th>
-                <th>Info</th>
+                <th><p>No.</p></th>
+                <th><p>Time</p></th>
+                <th><p>File</p></th>
+                <th><p><Button   variant="outline-light" onClick={() => this.resetAllStatus('HealthCheck')} ><span className="buttonTextSize">Re-queue</span></Button></p></th>
+                <th><p>Info</p></th>
               </tr>
 
 
@@ -927,17 +989,17 @@ class App extends Component {
             </tbody></table>
 
 
-    </TabPanel>
+    </div></TabPanel>
 
-    <TabPanel>
+    <TabPanel> <div className="tabContainer" >
     <table className="itemTable">   <tbody>
               <tr>
-                <th>No.</th>
-                <th>Time</th>
-                <th>File</th>
-                <th><Button   variant="outline-dark" onClick={() => this.resetAllStatus('HealthCheck')} >Re-queue</Button></th>
-                <th>Ignore</th>
-                <th>Info</th>
+                <th><p>No.</p></th>
+                <th><p>Time</p></th>
+                <th><p>File</p></th>
+                <th><p><Button   variant="outline-light" onClick={() => this.resetAllStatus('HealthCheck')} ><span className="buttonTextSize">Re-queue</span></Button></p></th>
+                <th><p>Ignore</p></th>
+                <th><p>Info</p></th>
 
 
               </tr>
@@ -949,10 +1011,11 @@ class App extends Component {
 
             </tbody></table>
 
-    </TabPanel>
+    </div></TabPanel>
   </Tabs> 
+  </div>
+  </div>
 
-      </span>
     );
   }
 }

@@ -47,12 +47,17 @@ export default class App extends Component {
 
 
 
-      <div className="containerGeneral">
+
+<div className="containerGeneral">
+
+<div className="libraryContainer">
 
         <center>
 
           <p align="center">
-            <img src="https://i.imgur.com/M0ikBYL.png" />
+          
+            <img src="https://i.imgur.com/s8ZbOsT.png" />
+           
           </p>
 
           <header>
@@ -61,6 +66,7 @@ export default class App extends Component {
 
         </center>
 
+        
         <p></p>
         <p></p>
         <p></p>
@@ -72,7 +78,7 @@ export default class App extends Component {
 
 
           <div className="introText">
-            <p>Make sure to use the <Button variant="outline-dark">i</Button> buttons on each tab to learn more about how Tdarr operates.</p>
+            <p>Make sure to use the <Button variant="outline-light"><span className="buttonTextSize">i</span></Button> buttons on each tab to learn more about how Tdarr operates.</p>
           </div>
 
           <p></p>
@@ -97,7 +103,7 @@ export default class App extends Component {
             <p>If things aren't working as expected, it may be necessary to clear the database using the following button. Your files will not be affected. Please restart Tdarr after doing so.</p>
 
             <center>
-            <Button variant="outline-danger" onClick={() => this.clearDB()} >Clear database</Button>
+            <Button variant="outline-danger" onClick={() => this.clearDB()} ><span className="buttonTextSize">Clear database</span></Button>
             </center>
             <p></p>
             <p></p>
@@ -114,6 +120,36 @@ export default class App extends Component {
             <p></p>
 
             <p>Change log</p>
+
+  <p>v1.005 release [1st Nov 19]:
+  <br/>No breaking changes.
+  <br/>Changes:
+  <br/>-[New] UI overhaul (Dark theme)
+  <br/>-[New] Improved bump-file system
+  <br/>-[New] Improved plugin/transcode formatting
+  <br/>-[New] File history
+  <br/>-[New] Search tab shows queue position, streams, file history + more
+  <br/>-[New] Sort and filter search results
+  <br/>-[New] Prioritise libraries
+  <br/>-[New] Sort queues by size/date created
+  <br/>-[New] Full file path shown on workers
+  <br/>-[New] Total file count shown when files being scanned/processed
+  <br/>-[New] Search local plugins
+  <br/>-[New] Set base URL with env variable
+  <br/>-[New] Requeue-all buttons added to Tdarr tab
+  <br/>-[Fix] Library requeue buttons requeue only specified library
+  <br/>-[Fix] Ubuntu container permissions
+  <br/>-[Fix] File scanner logs
+  <br/>-[Fix] Video height boundaries reduced for 720p,180p etc
+  <br/>-[Fix] Bigger font through-out
+
+
+  <br/>
+  <br/>
+  <br/>
+
+
+  </p>
 
 
 <p>v1.004 release [23rd Oct 19]:
@@ -168,6 +204,7 @@ export default class App extends Component {
 
 
 
+        </div>
 
 
 

@@ -29,7 +29,7 @@ process.on('uncaughtException', function (err) {
 
     }
 
-  //  process.exit();
+    //  process.exit();
 });
 
 
@@ -82,15 +82,15 @@ if (mode == 0) {
 
         var filesInDB = fs.readFileSync("/temp/" + scannerID + ".txt", 'utf8')
         fs.unlinkSync("/temp/" + scannerID + ".txt")
-    }else{
+    } else {
 
         var filesInDB = fs.readFileSync(homePath + "/Tdarr/Data/" + scannerID + ".txt", 'utf8')
         fs.unlinkSync(homePath + "/Tdarr/Data/" + scannerID + ".txt")
     }
 
-   
 
-   
+
+
 
     filesInDB = filesInDB.split('\r\n')
 
@@ -99,13 +99,13 @@ if (mode == 0) {
     if (isDocker()) {
         arrayOrPath = fs.readFileSync("/temp/" + scannerID + ".txt", 'utf8')
         fs.unlinkSync("/temp/" + scannerID + ".txt")
-   
-    }else{
+
+    } else {
         arrayOrPath = fs.readFileSync(homePath + "/Tdarr/Data/" + scannerID + ".txt", 'utf8')
         fs.unlinkSync(homePath + "/Tdarr/Data/" + scannerID + ".txt")
     }
 
-   
+
     arrayOrPath = arrayOrPath.split('\r\n')
 
 
@@ -178,7 +178,7 @@ if (arrayOrPathSwitch == 1) {
 
     var filesToScan = []
 
-    
+
 
 
     traverseDir(arrayOrPath)
@@ -494,10 +494,10 @@ function ffprobeLaunch(filesToScan) {
         updateConsole(scannerID, `FFprobe was unable to extract data from this file:${filepath}`)
 
         var obj = {
-            HealthCheck:"Error",
-            TranscodeDecisionMaker:"Transcode error",
-            lastHealthCheckDate:new Date(),
-            lastTranscodeDate:new Date(),
+            HealthCheck: "Error",
+            TranscodeDecisionMaker: "Transcode error",
+            lastHealthCheckDate: new Date(),
+            lastTranscodeDate: new Date(),
         }
 
         addFileToDB(filepath, thisFileObject, obj)
@@ -545,17 +545,17 @@ function ffprobeLaunch(filesToScan) {
 
         } catch (err) {
 
-          
+
         }
 
-        try{
+        try {
             var bit_rate = (8 * singleFileSize) / parseFloat(thisFileObject.ffProbeData.streams[0]["duration"])
             thisFileObject.bit_rate = bit_rate
-           
-        }catch(err){
-            
+
+        } catch (err) {
+
             updateConsole(scannerID, `Tagging bitrate data failed:${filepath}`)
-           
+
         }
 
 
@@ -594,13 +594,13 @@ function ffprobeLaunch(filesToScan) {
                     videoResolution = "576p"
                 } else if (vidWidth >= 100 && vidWidth <= 1408 && vidHeight >= 100 && vidHeight <= 792) {
                     videoResolution = "720p"
-                } else if (vidWidth >= 100  && vidWidth <= 2112 && vidHeight >= 100 && vidHeight <= 1188) {
+                } else if (vidWidth >= 100 && vidWidth <= 2112 && vidHeight >= 100 && vidHeight <= 1188) {
                     videoResolution = "1080p"
-                } else if (vidWidth >= 100  && vidWidth <= 4224 && vidHeight >= 100  && vidHeight <= 2376) {
+                } else if (vidWidth >= 100 && vidWidth <= 4224 && vidHeight >= 100 && vidHeight <= 2376) {
                     videoResolution = "4KUHD"
-                } else if (vidWidth >= 100  && vidWidth <= 4506 && vidHeight >= 100  && vidHeight <= 2376) {
+                } else if (vidWidth >= 100 && vidWidth <= 4506 && vidHeight >= 100 && vidHeight <= 2376) {
                     videoResolution = "DCI4K"
-                } else if (vidWidth >= 100  && vidWidth <= 8448 && vidHeight >= 100  && vidHeight <= 5752) {
+                } else if (vidWidth >= 100 && vidWidth <= 8448 && vidHeight >= 100 && vidHeight <= 5752) {
                     videoResolution = "8KUHD"
                 } else {
                     videoResolution = "Other"
@@ -630,25 +630,27 @@ function ffprobeLaunch(filesToScan) {
         }
 
 
-     //   thisFileObject.cliLog = "No info"
+        //   thisFileObject.cliLog = "No info"
 
-            filePropertiesToAdd.cliLog += "\n"
+        filePropertiesToAdd.cliLog += "\n"
 
         // console.log(JSON.stringify(thisFileObject))
 
 
-        addFileToDB(filepath, thisFileObject,filePropertiesToAdd)
+        addFileToDB(filepath, thisFileObject, filePropertiesToAdd)
 
     }
 }
 
 
-function addFileToDB(filePath, FileObject,obj) {
+function addFileToDB(filePath, FileObject, obj) {
 
     updateConsole(scannerID, `Sending add file to DB:${filePath}`)
 
-    
+
     //
+
+    var obj = JSON.parse(JSON.stringify(obj));
 
     FileObject._id = filePath
     FileObject.file = filePath
@@ -657,7 +659,53 @@ function addFileToDB(filePath, FileObject,obj) {
     FileObject.processingStatus = false
     FileObject.createdAt = new Date()
 
-    FileObject = {...FileObject, ...obj};
+    obj.history += addHistory(FileObject)
+
+    function addHistory(row) {
+
+        var histoyString = "-------------------------------------\n"
+
+        histoyString += `Date:${row.createdAt.toISOString()}\n`
+        histoyString += `Size:${row.file_size != undefined ? parseFloat((row.file_size / 1000).toPrecision(4)) : 0}GB\n`
+
+        histoyString += "Streams:\n"
+
+        if (row.ffProbeData && row.ffProbeData.streams) {
+            var streams = row.ffProbeData.streams
+            streams = streams.map((row) => {
+
+                var arr = []
+
+
+                return  `<tr><td><p>${row.codec_name}</p></td>`
+                +`<td><p>${row.codec_type}</p></td>`+""
+                +`<td><p>${row.bit_rate != undefined ? parseFloat((row.bit_rate / 1000000).toPrecision(4)) + " Mbs" : "-"}</p></td>`+""
+                +`<td><p>${row.tags != undefined && row.tags.language != undefined ? row.tags.language : "-"}</p></td>`+""
+                +`<td><p>${row.tags != undefined && row.tags.title != undefined ? row.tags.title : "-"}</p></td></tr>`
+
+
+            })
+            streams = streams.join("")
+
+            streams = `<table className="streamsTable"><tbody>${streams}</tbody></table>`
+
+            histoyString += streams
+
+            
+               
+
+            return histoyString
+
+        } else {
+            return "None"
+        }
+
+
+    }
+
+
+
+    FileObject = { ...FileObject, ...obj };
 
 
     //
@@ -676,7 +724,7 @@ function addFileToDB(filePath, FileObject,obj) {
             scannerID,
             "updateScanFound",
             DB_id,
-            "Processing:" + foundCounter+"/"+filesToScan.length,
+            "Processing:" + foundCounter + "/" + filesToScan.length,
 
         ];
         process.send(message);

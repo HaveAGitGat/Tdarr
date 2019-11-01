@@ -9,7 +9,7 @@ import { Button } from 'react-bootstrap';
 import Modal from "reactjs-popup";
 
 import ClipLoader from 'react-spinners/ClipLoader';
-import { GlobalSettingsDB } from '../api/tasks.js';
+import { GlobalSettingsDB } from '../../api/tasks.js';
 
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 
@@ -65,7 +65,7 @@ class App extends Component {
 
           sizeUnit={"px"}
           size={25}
-          color={'#000000'}
+          color={'white'}
           loading={true}
         />
 
@@ -73,27 +73,29 @@ class App extends Component {
 
         return <div>
 
-          <Button variant="outline-dark" className="addFolderButton" onClick={(event) => this.searchPlugins(event,pluginType)} style={ButtonStyle}>Search</Button>
-          <Button variant="outline-dark" className="addFolderButton" onClick={() => {
+          <Button variant="outline-light" className="addFolderButton" onClick={(event) => this.searchPlugins(event,pluginType)} style={ButtonStyle}><span className="buttonTextSize">Search</span></Button>
+          <Button variant="outline-light" className="addFolderButton" onClick={() => {
 
             render('', document.getElementById('searchResults'+pluginType));
-          }}  style={ButtonStyle}>Clear</Button>
+          }}  style={ButtonStyle}><span className="buttonTextSize">Clear</span></Button>
 
 
-        {pluginType =="Community"?<Button variant="outline-dark" className="addFolderButton" onClick={this.updatePlugins} style={ButtonStyle}>Update community plugins</Button>:null}
+        {pluginType =="Community"?<Button variant="outline-light" className="addFolderButton" onClick={this.updatePlugins} style={ButtonStyle}><span className="buttonTextSize">Update community plugins</span></Button>:null}
     
       
-      <Button variant="outline-dark" className="addFolderButton" onClick={()=> window.open("https://github.com/HaveAGitGat/Tdarr_Plugins", "_blank")} style={ButtonStyle}>Create a plugin</Button>
+      <Button variant="outline-light" className="addFolderButton" onClick={()=> window.open("https://github.com/HaveAGitGat/Tdarr_Plugins", "_blank")} style={ButtonStyle}><span className="buttonTextSize">Create a plugin</span></Button>
           
           
           <Modal
-          trigger={<Button variant="outline-dark" >i</Button>}
+          trigger={<Button variant="outline-light" ><span className="buttonTextSize">i</span></Button>}
           modal
           closeOnDocumentClick
         >
+          <div className="modalContainer">
           <div className="frame">
             <div className="scroll">
 
+            
             <div className="modalText">
         <p></p>
         <p>Copy a community plugin id into the 'Plugin ID:' section of one of your libraries. Make sure the 'Community' checkbox is selected.</p>
@@ -101,6 +103,7 @@ class App extends Component {
         <p></p>
 
         <p>For information on creating community and local plugins, have a look at:https://github.com/HaveAGitGat/Tdarr_Plugins</p>
+        </div>
         </div>
             </div>
           </div>
@@ -145,30 +148,62 @@ class App extends Component {
         var data = result[0]
 
         const columns = [{
-          Header: 'id',
+          Header: () => (
+            <div className="pluginTableHeader">  
+            <p>id</p>
+            </div>
+          ),
           accessor: 'id',
           id: 'id',
           width: 70,
           accessor: d => <CopyToClipboard text={d.id}>
-            <Button variant="outline-dark" >Copy id</Button>
-          </CopyToClipboard>
-
+            <Button variant="outline-light" ><span className="buttonTextSize">Copy id</span></Button>
+          </CopyToClipboard>,
+          
 
         }, {
 
-          Header: 'Name',
+          Header: () => (
+            <div className="pluginTableHeader">  
+            <p>Name</p>
+            </div>
+          ),
           accessor: 'Name',
           width: 200,
+          getProps: (state, rowInfo, column) => {
+            return {
+              style: {
+                color:"#e1e1e1",
+                fontSize  :"14px",
+              },
+            }
+          }
 
         }, {
 
-          Header: 'Type',
+          Header: () => (
+            <div className="pluginTableHeader">  
+            <p>Type</p>
+            </div>
+          ),
           accessor: 'Type',
           width: 100,
+          getProps: (state, rowInfo, column) => {
+            return {
+              style: {
+                color:"#e1e1e1",
+                fontSize  :"14px",
+              },
+            }
+          }
 
         }, {
 
-          Header: 'Description',
+          Header: () => (
+            <div className="pluginTableHeader">  
+            <p>Description</p>
+            </div>
+          ),
           accessor: 'Description',
           
           id: 'Description',
@@ -189,33 +224,73 @@ class App extends Component {
 
 
           getProps: (state, rowInfo, column) => {
-
             return {
-             
-
               style: {
-                background: rowInfo && rowInfo.row.Description.includes("BUG") ? 'red' : null,
+                color:"#e1e1e1",
+                fontSize  :"14px",
+                background: rowInfo && rowInfo.row.Description.includes("BUG") ? '#c72c53' : null,
               },
             }
           }
 
         }, {
 
-          Header: 'Version',
+          Header: () => (
+            <div className="pluginTableHeader">  
+            <p>Version</p>
+            </div>
+          ),
           accessor: 'Version',
           width: 100,
 
+          getProps: (state, rowInfo, column) => {
+            return {
+              style: {
+                color:"#e1e1e1",
+                fontSize  :"14px",
+              },
+            }
+          }
+
         }, {
 
-          Header: 'Stars',
+          Header: () => (
+            <div className="pluginTableHeader">  
+            <p>Stars</p>
+            </div>
+          ),
           accessor: 'Stars',
           width: 100,
+          getProps: (state, rowInfo, column) => {
+            return {
+              style: {
+                color:"#e1e1e1",
+                fontSize  :"14px",
+              },
+            }
+          }
 
         }, {
 
-          Header: 'Link',
-          accessor: 'Link',
+          Header: () => (
+            <div className="pluginTableHeader">  
+            <p>Link</p>
+            </div>
+          ),
+          id:'Link',
+          accessor: row => <p><a href="" onClick={(e) => {
+            e.preventDefault();
+            window.open(row.Link, "_blank")
+          }}>{row.Link}</a></p>,
           width: 100,
+          getProps: (state, rowInfo, column) => {
+            return {
+              style: {
+                color:"#e1e1e1",
+                fontSize  :"14px",
+              },
+            }
+          }
 
         }
 
@@ -226,7 +301,7 @@ class App extends Component {
           <ReactTable
             data={data}
             columns={columns}
-            defaultPageSize={10}
+            defaultPageSize={100}
             pageSizeOptions={[10, 100, 1000]}
           />
         </div>, document.getElementById('searchResults'+result[1]));
@@ -244,20 +319,23 @@ class App extends Component {
 
   render() {
     return (
+
       <div className="containerGeneral">
+      <div className="tabWrap" >     
 
 
     <Tabs>
     <TabList>
-      <Tab>Community</Tab>
-      <Tab>Local</Tab>
+      <Tab><p>Community</p></Tab>
+      <Tab><p>Local</p></Tab>
 
 
     </TabList>
 
-    <TabPanel>
+    <TabPanel><div className="tabContainer" >
       
-    <p></p>
+   <br/>
+   <br/>
 
     
 <form onSubmit={(event) => this.searchPlugins(event,'Community')}  >
@@ -280,15 +358,16 @@ class App extends Component {
 <p></p>
 
 
-
+<div className="libraryContainer" >
 <div id="searchResultsCommunity">
 </div>
+</div>
 
+    </div></TabPanel>
 
-    </TabPanel>
-
-    <TabPanel>
-    <p></p>
+    <TabPanel><div className="tabContainer" >
+    <br/>
+   <br/>
 
     
 <form onSubmit={(event) => this.searchPlugins(event,'Local')}  >
@@ -311,11 +390,13 @@ class App extends Component {
 <p></p>
 
 
-
+<div className="libraryContainer" >
 <div id="searchResultsLocal">
 </div>
+</div>
 
-    </TabPanel>
+
+    </div></TabPanel>
 
    
   </Tabs> 
@@ -329,6 +410,7 @@ class App extends Component {
 
 
 
+      </div>
       </div>
     );
   }

@@ -984,6 +984,7 @@ function workerNotEncounteredError() {
                   oldSize: currentFileObject.oldSize ? currentFileObject.oldSize : sourcefileSizeInGbytes,
                   newSize:destfileSizeInGbytes,
                   bumped: new Date(),
+                  history:currentFileObject.history == undefined ? "" : currentFileObject.history
                 }
       
               } else {
@@ -996,6 +997,7 @@ function workerNotEncounteredError() {
                   oldSize: currentFileObject.oldSize ? currentFileObject.oldSize : sourcefileSizeInGbytes,
                   newSize:destfileSizeInGbytes,
                   bumped:false,
+                  history:currentFileObject.history == undefined ? "" : currentFileObject.history
                 }
               }
 

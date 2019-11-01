@@ -39,7 +39,7 @@ export default class Plugin extends Component {
          </td>
 
          <td>
-        {this.props.pluginItem._id}
+         <span className="buttonTextSize">{this.props.pluginItem._id}</span>
         </td>
         
         <td>

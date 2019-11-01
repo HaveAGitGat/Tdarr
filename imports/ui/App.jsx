@@ -4,17 +4,19 @@ import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import {withRouter} from 'react-router-dom';
 
+import {GlobalSettingsDB} from '../api/tasks.js';
 
 
 
-import TabTranscoding from '../ui/tab_Transcoding.jsx';
-import TabSearch from '../ui/tab_Search.jsx';
+
+import TabTranscoding from './transcoding/tab_Transcoding.jsx';
+import TabSearch from './plugins/tab_Search.jsx';
 import TabStatistics from '../ui/tab_Statistics.jsx';
 
 
-import TabLibraries from './tab_Libraries.jsx';
+import TabLibraries from './libraries/tab_Libraries.jsx';
 
-import TabPlugins from '../ui/tab_Plugins.jsx';
+import TabPlugins from './plugins/tab_Plugins.jsx';
 import TabLog from '../ui/tab_Log.jsx';
 import TabHelp from '../ui/tab_Help.jsx';
 import TabDev from '../ui/tab_Dev.jsx';
@@ -23,6 +25,8 @@ import TabDev from '../ui/tab_Dev.jsx';
 import ReactDOM from 'react-dom';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group'; // ES6
 import ReactLoading from 'react-loading';
+
+import { render } from 'react-dom';
 
 
 
@@ -107,7 +111,35 @@ class Nav extends Component {
    
   }
 
-  componentDidMount() {
+  componentDidMount = () => {
+
+    
+   Meteor.subscribe('GlobalSettingsDB', () => {
+
+
+    var res = GlobalSettingsDB.find({}).fetch()
+    var basePath =res[0].basePath
+
+    this.setState({
+
+     tabs: [
+      { tab: { active: false, path: basePath+"/tdarr/", text: "Tdarr" }},
+      { tab: {active: false, path: basePath+"/search", text: "Search"} },
+      { tab: {active: false, path: basePath+"/stats", text: "Stats"} },
+      { tab: { active: false, path: basePath+"/settings/", text: "Libraries" } },
+      { tab: { active: false, path: basePath+"/plugins/", text: "Plugins" } },
+      { tab: { active: false, path: basePath+"/logs/", text: "Logs" } },
+      { tab: { active: false, path: basePath+"/help/", text: "Help" } },
+      { tab: {active: false, path: basePath+"/", text: "Dev"} },
+    ],
+    })
+
+
+         
+
+
+ });
+
 
   }
 
@@ -173,24 +205,19 @@ class Nav extends Component {
             }
 
  <div className="versionInfo">
-         Tdarr Alpha 1.004
+         Tdarr Alpha 1.005
           </div>
           </div>
 
-           {/* <p><ShowTheLocationWithRouter/></p> */}
 
-           <Route path="/tdarr/" component={Transcoding} />
-
-           <Route path="/stats/" exact component={Stats} />
-           <Route path="/search/" exact component={Search} />
-
-            <Route path="/" exact component={Dev} />
-
-
-          <Route path="/settings/" component={Settings} />
-          <Route path="/plugins/" component={Plugins} />
-          <Route path="/logs/" component={Logs} />
-          <Route path="/help/" component={Help} /> 
+            <Route path={this.state.tabs[0].tab.path} component={Transcoding} />
+            <Route path={this.state.tabs[1].tab.path} exact component={Search} />
+            <Route path={this.state.tabs[2].tab.path} exact component={Stats} />
+            <Route path={this.state.tabs[3].tab.path} component={Settings} />
+            <Route path={this.state.tabs[4].tab.path} component={Plugins} />
+           <Route path={this.state.tabs[5].tab.path} component={Logs} />
+           <Route path={this.state.tabs[6].tab.path} component={Help} /> 
+           <Route path={this.state.tabs[7].tab.path} exact component={Dev} />
          
         </div>
 

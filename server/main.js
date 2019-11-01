@@ -82,8 +82,43 @@ if (process.env.NODE_ENV == 'production') {
     var homePath = home + '/Documents'
   }
 
+
+  if (process.env.BASE) {
+
+    GlobalSettingsDB.upsert(
+      "globalsettings",
+      {
+        $set: {
+          basePath:process.env.BASE,
+        }
+      }
+    );
+
+  } else {
+
+    GlobalSettingsDB.upsert(
+      "globalsettings",
+      {
+        $set: {
+          basePath:"",
+        }
+      }
+    );
+  }
+
+
+
 } else {
   var homePath = home + '/Documents'
+
+  GlobalSettingsDB.upsert(
+    "globalsettings",
+    {
+      $set: {
+        basePath:"",
+      }
+    }
+  );
 }
 
 console.log("Tdarr documents folder:"+ homePath)
@@ -120,6 +155,7 @@ if (!fs.existsSync(homePath + "/Tdarr")) {
   fs.mkdirSync(homePath + "/Tdarr");
 
 }
+
 
 
 if (!fs.existsSync(homePath + "/Tdarr/Plugins")) {
@@ -268,7 +304,7 @@ if (!Array.isArray(count) || !count.length) {
     }
   );
 }else{
-//init steps
+//init sort vars
 
 if(count[0].queueSortType == undefined){
 
@@ -283,24 +319,55 @@ if(count[0].queueSortType == undefined){
 
 }
 
+if(count[0].prioritiseLibraries == undefined){
 
-
+  GlobalSettingsDB.upsert(
+    "globalsettings",
+    {
+      $set: {
+        prioritiseLibraries:false,
+      }
+    }
+  );
 
 }
 
-
-
-
-
-
+}
 
 GlobalSettingsDB.upsert('globalsettings',
   {
     $set: {
       logsLoading: false,
+      selectedLibrary: 0,
     }
   }
 );
+
+//configure libraries
+
+var count = SettingsDB.find({}, { sort: { createdAt: 1 } }).fetch()
+
+if (Array.isArray(count) || count.length) {
+
+
+  if(count[0] != undefined && count[0].priority == undefined){
+
+    for(var i = 0 ; i < count.length; i++){
+
+      SettingsDB.upsert(
+        count[i]._id,
+        {
+          $set: {
+            priority : i,
+          }
+        }
+      );
+
+    }
+  }
+}
+
+
 
 
 
@@ -1109,7 +1176,19 @@ Meteor.methods({
     }
 
 
-    return allFilesWithProp.filter(row => row[property] == detail)
+
+
+
+    allFilesWithProp = allFilesWithProp.filter(row => row[property] == detail)
+
+    for (var i = 0; i < allFilesWithProp.length; i++) {
+      var tFiles = transcodeFiles.map(row => row.file )
+      var hFiles = healthcheckFiles.map(row => row.file )
+      allFilesWithProp[i].tPosition =  tFiles.indexOf(allFilesWithProp[i].file)+1
+      allFilesWithProp[i].hPosition =  hFiles.indexOf(allFilesWithProp[i].file)+1
+    }
+
+    return allFilesWithProp
 
 
 
@@ -1275,6 +1354,7 @@ for (var i = 0; i < settingsInit.length; i++) {
       TranscodeDecisionMaker:"Queued",
       cliLog:"",
       bumped:false,
+      history:""
     }
 
     Meteor.call('scanFiles', settingsInit[i]._id, settingsInit[i].folder, 1, 0, obj, function (error, result) {});
@@ -1309,6 +1389,7 @@ function runScheduledManualScan(){
         TranscodeDecisionMaker:"Queued",
         cliLog:"",
         bumped:false,
+        history:""
       }
   
       Meteor.call('scanFiles', settingsInit[i]._id, settingsInit[i].folder, 1, 0, obj, function (error, result) {});
@@ -2779,6 +2860,7 @@ function createFolderWatch(Folder, DB_id) {
         TranscodeDecisionMaker: "Queued",
         cliLog: "",
         bumped:false,
+        history:""
       }
 
       Meteor.call('scanFiles', DB_id, filesToProcess, 0, 3, obj, function (error, result) { });
@@ -3003,7 +3085,7 @@ function tablesUpdate() {
 
 
 
-      var settings = SettingsDB.find({}, { sort: { createdAt: 1 } }).fetch()
+      var settings = SettingsDB.find({}, { sort: { priority: 1 } }).fetch()
 
 
 
@@ -3012,32 +3094,68 @@ function tablesUpdate() {
 
       //Alternating libraries in queue
 
-      var step = settings.length
-      var idxHolder = {}
-      var newArr = []
 
-      for (var i = 0; i < settings.length; i++) {
 
-        idxHolder[settings[i]._id] = i
+      // prioritise libraries based on order
+
+      if (globalSettings[0].prioritiseLibraries == true) {
+
+
+
+        for (var i = 0; i < settings.length; i++) {
+          var length = allFilesPulledTable.length
+          var count = 0
+          for (var j = 0; j < allFilesPulledTable.length; j++) {
+
+            if(allFilesPulledTable[j].DB === settings[i]._id){
+
+              allFilesPulledTable.push(allFilesPulledTable[j])
+              allFilesPulledTable.splice(j, 1)
+              j--
+              count++
+              
+              if(count == length){
+                break
+              }
+
+
+            }
+          }
+        }
+
+      }else{
+
+        var step = settings.length
+        var idxHolder = {}
+        var newArr = []
+  
+        for (var i = 0; i < settings.length; i++) {
+  
+          idxHolder[settings[i]._id] = i
+  
+        }
+  
+        for (var i = 0; i < allFilesPulledTable.length; i++) {
+  
+          newArr[idxHolder[allFilesPulledTable[i].DB]] = allFilesPulledTable[i]
+          idxHolder[allFilesPulledTable[i].DB] += step
+  
+        }
+  
+        newArr = newArr.filter(function (el) {
+          return el != null;
+        });
+  
+  
+        allFilesPulledTable = newArr.slice()
+        newArr = []
 
       }
 
-      for (var i = 0; i < allFilesPulledTable.length; i++) {
-
-        newArr[idxHolder[allFilesPulledTable[i].DB]] = allFilesPulledTable[i]
-        idxHolder[allFilesPulledTable[i].DB] += step
-
-      }
-
-      newArr = newArr.filter(function (el) {
-        return el != null;
-      });
 
 
-      allFilesPulledTable = newArr.slice()
-      newArr = []
 
-      //
+
 
       //push bumped files to top of queue
 
@@ -3065,7 +3183,6 @@ function tablesUpdate() {
 
 
       var table1data = allFilesPulledTable.filter(row => (row.TranscodeDecisionMaker == "Queued" && row.processingStatus == false));
-
       var table2data = allFilesPulledTable.filter(row => ((row.TranscodeDecisionMaker == "Transcode success" || row.TranscodeDecisionMaker == "Not required") && row.processingStatus == false));
       var table3data = allFilesPulledTable.filter(row => ((row.TranscodeDecisionMaker == "Transcode error" || row.TranscodeDecisionMaker == "Transcode cancelled") && row.processingStatus == false));
       var table4data = allFilesPulledTable.filter(row => (row.HealthCheck == "Queued" && row.fileMedium !== "audio" && row.processingStatus == false));
