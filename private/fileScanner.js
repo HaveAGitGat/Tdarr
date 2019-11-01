@@ -489,6 +489,18 @@ function ffprobeLaunch(filesToScan) {
 
         thisFileObject.ffProbeRead = "error"
 
+        try {
+            var singleFileSize = fs.statSync(filepath)
+            var singleFileSize = singleFileSize.size
+
+            var fileSizeInMbytes = singleFileSize / 1000000.0;
+            thisFileObject.file_size = fileSizeInMbytes
+
+
+
+
+        } catch (err) { }
+
         thisFileObject.cliLog = "FFprobe was unable to extract data from this file. It is highly likely that the file is corrupt."
 
         updateConsole(scannerID, `FFprobe was unable to extract data from this file:${filepath}`)
@@ -543,10 +555,7 @@ function ffprobeLaunch(filesToScan) {
 
 
 
-        } catch (err) {
-
-           
-        }
+        } catch (err) { }
 
         try {
             var bit_rate = (8 * singleFileSize) / parseFloat(thisFileObject.ffProbeData.streams[0]["duration"])

@@ -653,7 +653,7 @@ Meteor.methods({
 
     clone("https://github.com/HaveAGitGat/Tdarr_Plugins/", homePath + '/Tdarr/Plugins/temp/', Meteor.bindEnvironment(function (err, result) {
 
-
+    console.log(err)
 
       try {
         fsextra.copySync(homePath + '/Tdarr/Plugins/temp/Community', homePath + "/Tdarr/Plugins/Community", { overwrite: true })
@@ -3065,8 +3065,12 @@ function tablesUpdate() {
 
       } else if (globalSettings[0].queueSortType == "sortSizeSmallest") {
 
+
+
         allFilesPulledTable = allFilesPulledTable.sort(function (a, b) {
-          return a.file_size - b.file_size;
+          var one = b.file_size ? b.file_size : 0
+          var two = a.file_size ? a.file_size : 0
+          return two - one;
         });
 
 
@@ -3074,7 +3078,11 @@ function tablesUpdate() {
 
 
         allFilesPulledTable = allFilesPulledTable.sort(function (a, b) {
-          return b.file_size - a.file_size;
+
+          var one = b.file_size ? b.file_size : 0
+          var two = a.file_size ? a.file_size : 0
+          return one - two;
+
         });
 
       }
