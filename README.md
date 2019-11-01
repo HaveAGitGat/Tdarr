@@ -33,11 +33,11 @@ Currently in Alpha but looking for feedback/suggestions.
 </p>
 
 
-![Screenshot](https://i.imgur.com/8iqpGQk.png)
+![Screenshot](https://i.imgur.com/zofsBP5.png)
 
 ---------------------------------------------------------------------------------------
 
-![Screenshot](https://i.imgur.com/DIcTee2.png)
+![Screenshot](https://i.imgur.com/8vEmI7d.png)
 
 
 Requirements (MongoDB + NodeJS 8.x)
