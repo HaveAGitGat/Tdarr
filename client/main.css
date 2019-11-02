@@ -50,37 +50,9 @@ p {
   font-size: 14px;
 }
 
-
-
-/* Add a black background color to the top navigation */
-.topnav {
-    background-color: #202424;
-    overflow: hidden;
-  }
-  
-  /* Style the links inside the navigation bar */
-  .topnav a {
-    float: left;
-    color: #f2f2f2;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-    font-size: large;
-  }
-  
-  /* Change the color of links on hover */
-  .topnav a:hover {
-    background-color: #ddd;
-    color: black;
-  }
-  
-  /* Add a color to the active/current link */
-  .topnav a.active {
-    background-color: #66ccff;
-    color: white;
-  }
-
-
+.navbar::before, .navbar::after {
+  content: none;
+}
 
   .folderPaths {
 
@@ -373,7 +345,6 @@ p {
 
       border: 1px solid black;
       border-radius: 5px;
-      margin:2em;
       background:#373737;
       padding:0em 0em 2em 0em;
 
