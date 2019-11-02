@@ -1,6 +1,12 @@
+html, body {
+  height: 100%;
+  width:100%;
 
-
-
+  font-family: "Segoe UI", sans-serif;
+  font-size: 1em;
+  background-color: #343a40 !important;
+  color:black;
+}
 
 textarea {
     border: 0 none white;
@@ -8,22 +14,7 @@ textarea {
     outline: none;
     background-color: #D0D0D0;
     color:black
-
 }
-
-
-html, body {
-  height: 100%;
-  width:100%;
-
-  font-family: "Segoe UI", sans-serif;
-  background:  #121212;
-  color:black;
-
-
-
-}
-
 
 h1 {
     margin: 0 0 0px 0;
@@ -32,7 +23,6 @@ h1 {
 }
 
 p {
-
     margin-top: 10px;
     /* color: rgba(255, 255, 255, 0.4); */
     color: #e1e1e1;
@@ -41,9 +31,6 @@ p {
 
 .pluginTableHeader{
   background:#373737;
-}
-.dataKeyFormat{
-
 }
 
 .dataKeyFormat p{

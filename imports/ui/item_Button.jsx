@@ -54,7 +54,7 @@ export default class App extends Component {
       return (
 
         <div>
-          {this.state.isShowState && <Button variant="outline-light" onClick={() => {
+          {this.state.isShowState && <Button variant="secondary" onClick={() => {
 
 
             this.triggerLoadState();
@@ -90,7 +90,7 @@ export default class App extends Component {
       return (
 
         <div>
-          {this.state.isShowState && <Button variant="outline-light" onClick={() => {
+          {this.state.isShowState && <Button variant="secondary" onClick={() => {
 
 
             this.triggerLoadState();
