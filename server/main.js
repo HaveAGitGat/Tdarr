@@ -332,6 +332,21 @@ if(count[0].prioritiseLibraries == undefined){
 
 }
 
+if(count[0].alternateLibraries == undefined){
+
+  GlobalSettingsDB.upsert(
+    "globalsettings",
+    {
+      $set: {
+        alternateLibraries:true,
+      }
+    }
+  );
+
+}
+
+
+
 }
 
 GlobalSettingsDB.upsert('globalsettings',
@@ -3067,8 +3082,8 @@ function tablesUpdate() {
 
 
         allFilesPulledTable = allFilesPulledTable.sort(function (a, b) {
-          var one = b.file_size ? b.file_size : 0
-          var two = a.file_size ? a.file_size : 0
+          var one = !isNaN( b.file_size) ? b.file_size : 0
+          var two = !isNaN(a.file_size) ? a.file_size : 0
           return two - one;
         });
 
@@ -3078,8 +3093,8 @@ function tablesUpdate() {
 
         allFilesPulledTable = allFilesPulledTable.sort(function (a, b) {
 
-          var one = b.file_size ? b.file_size : 0
-          var two = a.file_size ? a.file_size : 0
+          var one = !isNaN( b.file_size) ? b.file_size : 0
+          var two = !isNaN(a.file_size) ? a.file_size : 0
           return one - two;
 
         });
@@ -3119,18 +3134,20 @@ function tablesUpdate() {
               allFilesPulledTable.push(allFilesPulledTable[j])
               allFilesPulledTable.splice(j, 1)
               j--
-              count++
-              
+          
               if(count == length){
                 break
               }
 
 
             }
+            count++
           }
         }
 
-      }else{
+      }else  if (globalSettings[0].alternateLibraries == true) {
+
+        //alternate libraries
 
         var step = settings.length
         var idxHolder = {}
