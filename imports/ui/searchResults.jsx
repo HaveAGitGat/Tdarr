@@ -393,8 +393,8 @@ return null
                   <ReactTable
                       data={data}
                       columns={columns}
-                      defaultPageSize={data.length}
-                      pageSizeOptions={[100, 1000, 10000]}
+                      defaultPageSize={20}
+                      pageSizeOptions={[5, 10, 20, 25, 50, 100]}
                       filterable={true}
                       defaultFilterMethod ={(filter, row) => filterMethod(filter, row)}
                   />
