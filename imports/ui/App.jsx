@@ -37,7 +37,7 @@ const AppRouter = () => {
 
   return (
     <Router>
-      <Navbar className="mb-0 rounded-0 d-flex justify-content-between" collapseOnSelect expand="md" bg="dark" variant="dark" style={{content: 'none'}}>
+      <Navbar className="mb-0 rounded-0 d-flex justify-content-between" collapseOnSelect expand="md" bg="dark" variant="dark">
         <Navbar.Brand className="p-2" href="#home"><img className="h-100" src="https://i.imgur.com/s8ZbOsT.png" /></Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav ">
