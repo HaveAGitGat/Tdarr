@@ -24,6 +24,7 @@ const tabs = [
   { path: '/', text: 'Dev', component: TabDev },
 ];
 
+
 const AppRouter = () => {
   const [basePath, setBasePath] = React.useState('');
 

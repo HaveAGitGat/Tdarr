@@ -246,9 +246,35 @@ class App extends Component {
 
   renderCheckBox = (type) => {
 
+
+
     return this.props.globalSettings.map((item, i) => (
 
       <Checkbox name={type} checked={item[type]} onChange={(event) => {
+
+        if(type == `alternateLibraries` && event.target.checked){
+
+          GlobalSettingsDB.upsert(
+            "globalsettings",
+            {
+              $set: {
+                prioritiseLibraries: false,
+              }
+            }
+          );
+        }
+    
+        if(type == `prioritiseLibraries` && event.target.checked){
+    
+          GlobalSettingsDB.upsert(
+            "globalsettings",
+            {
+              $set: {
+               alternateLibraries: false,
+              }
+            }
+          );
+        }
 
         GlobalSettingsDB.upsert(
           "globalsettings",
@@ -879,7 +905,11 @@ class App extends Component {
 {this.renderSortBox('sortSizeLargest')}
                   </p>
 
+
+<p>Library alternation: {this.renderCheckBox('alternateLibraries')}</p>
  <p>Library prioritisation: {this.renderCheckBox('prioritiseLibraries')}</p>
+
+
 
 
             

@@ -357,6 +357,8 @@ return null
   
               function filterMethod(filter, row){
 
+                try{
+
                
                 if(filter.id == "streams"){
 
@@ -377,6 +379,12 @@ return null
 
                 }
 
+              }catch(err){
+
+                return false
+
+              }
+
               
               }
   
@@ -393,8 +401,8 @@ return null
                   <ReactTable
                       data={data}
                       columns={columns}
-                      defaultPageSize={data.length}
-                      pageSizeOptions={[100, 1000, 10000]}
+                      defaultPageSize={100}
+                      pageSizeOptions={[10,100, 1000, 10000]}
                       filterable={true}
                       defaultFilterMethod ={(filter, row) => filterMethod(filter, row)}
                   />
