@@ -29,7 +29,7 @@ const AppRouter = () => {
 
   React.useEffect(() => {
       Meteor.subscribe('GlobalSettingsDB', () => {
-        const updatedBasePath = GlobalSettingsDB.find({}).fetch().res[0].basePath;
+        const updatedBasePath = GlobalSettingsDB.find({}).fetch()[0].basePath;
 
         setBasePath(updatedBasePath);
     });
