@@ -5,9 +5,7 @@
     "start": "meteor run",
     "test": "meteor test --once --driver-package meteortesting:mocha",
     "test-app": "TEST_WATCH=1 meteor test --full-app --driver-package meteortesting:mocha",
-    "visualize": "meteor --production --extra-packages bundle-visualizer",
-    "lint": "eslint {imports,tests}/**/* --ext .{{t,j}s{,x}}",
-    "lint:fix": "eslint {imports,tests}/**/* --ext .{{t,j}s{,x}} --fix"
+    "visualize": "meteor --production --extra-packages bundle-visualizer"
   },
   "dependencies": {
     "@babel/runtime": "^7.3.4",
@@ -60,21 +58,5 @@
       "server": "server/main.js"
     },
     "testModule": "tests/main.js"
-  },
-  "devDependencies": {
-    "babel-eslint": "^10.0.3",
-    "eslint": "^6.6.0",
-    "eslint-config-prettier": "^6.5.0",
-    "eslint-config-standard": "^14.1.0",
-    "eslint-import-resolver-meteor": "^0.4.0",
-    "eslint-plugin-import": "^2.18.2",
-    "eslint-plugin-node": "^10.0.0",
-    "eslint-plugin-prettier": "^3.1.1",
-    "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-react": "^7.16.0",
-    "eslint-plugin-react-hooks": "^2.2.0",
-    "eslint-plugin-simple-import-sort": "^4.0.0",
-    "eslint-plugin-standard": "^4.0.1",
-    "prettier": "^1.18.2"
   }
 }
