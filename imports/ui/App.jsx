@@ -45,7 +45,9 @@ const AppRouter = () => {
           <Nav style={{ fontSize: '1.5em' }}>
             {tabs.map(t => <NavLink className="ml-4 nav-link" to={`${basePath}${t.path}`} exact={t.path === '/'}>{t.text}</NavLink>)}
           </Nav>
+         
         </Navbar.Collapse>
+        <div className="versionNumber"><p>v1.0054</p></div>
       </Navbar>
   
       <link rel="icon" sizes="16x16 32x32" href="/favicon.png?v=2" />
