@@ -68,6 +68,9 @@ const AppRouter = () => {
               ))}
             </Nav>
           </Navbar.Collapse>
+          <div className="versionNumber">
+            <p>v1.0054</p>
+          </div>
         </Navbar>
 
         <link rel="icon" sizes="16x16 32x32" href="/favicon.png?v=2" />
