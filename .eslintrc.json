@@ -1,0 +1,61 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true,
+    "node": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:prettier/recommended",
+    "plugin:import/warnings",
+    "plugin:import/errors",
+    "plugin:prettier/recommended",
+    "prettier/react",
+    "plugin:react/recommended"
+  ],
+  "globals": {
+    "Atomics": "readonly",
+    "SharedArrayBuffer": "readonly"
+  },
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 2018,
+    "sourceType": "module"
+  },
+  "plugins": [
+    "react",
+    "react-hooks",
+    "simple-import-sort",
+    "prettier"
+  ],
+  "rules": {
+    "import/prefer-default-export": "off",
+    "no-undef": "off",
+    "react/prop-types": "off",
+    "no-unused-expressions": [
+      "warn",
+      {
+        "allowShortCircuit": true,
+        "allowTernary": true
+      }
+    ],
+    "prettier/prettier": "error",
+    "simple-import-sort/sort": "error",
+    "sort-imports": "off",
+    "import/order": "off",
+    "react/no-unescaped-entities": "off",
+
+    // should remove these two when we have time
+    "react/no-string-refs": "off",
+    "react/no-find-dom-node": "off"
+  },
+  "settings": {
+    "import/resolver": "meteor",
+    "react": {
+      "version": "detect"
+    }
+  }
+}
