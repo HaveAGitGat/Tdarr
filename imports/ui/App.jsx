@@ -50,7 +50,7 @@ const AppRouter = () => {
           bg="dark"
           variant="dark"
         >
-          <Navbar.Brand className="p-2" href="#home">
+          <Navbar.Brand className="p-2" href={`${basePath}/tdarr`}>
             <img className="h-100" src="https://i.imgur.com/s8ZbOsT.png" />
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
