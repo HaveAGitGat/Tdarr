@@ -1380,7 +1380,8 @@ for (var i = 0; i < settingsInit.length; i++) {
 
 //runScheduledManualScan()
 
-setTimeout(Meteor.bindEnvironment(runScheduledManualScan), 3600000);
+//Disabled while investigating bug
+//setTimeout(Meteor.bindEnvironment(runScheduledManualScan), 3600000);
 
 function runScheduledManualScan(){
 
@@ -1413,6 +1414,7 @@ function runScheduledManualScan(){
   }
 
 
+  
 }catch(err){
 
   console.log(err.stack)
