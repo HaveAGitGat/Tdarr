@@ -110,16 +110,33 @@ export default class App extends Component {
             <p></p>
             <p>Credits:</p>
 
+
             <p></p>
             <p>@Roxedus for a slimline container.</p>
             <p></p>
             <p>@GilbN and @Drawmonster for support and debugging.</p>
 
             <p></p>
+            <p>@jonocairns for development help.</p>
             <p></p>
             <p></p>
 
             <p>Change log</p>
+
+  <p>v1.0054 mini-release [3rd Nov 19]:
+
+  <br/>No breaking changes.
+  <br/>Changes:
+  <br/>-[New] Navgiation bar UI
+  <br/>-[New] Queue library alternation option
+  <br/>-[Fix] Library prioritisation sort
+  <br/>-[Fix] Reduced search result number for quicker render
+  <br/>-[Disabled] Hourly file scanner (investigating bug, normal folder watch still enabled)
+  <br/>
+  <br/>
+  <br/>
+ 
+  </p>
 
   <p>v1.005 release [1st Nov 19]:
   <br/>No breaking changes.
@@ -165,10 +182,6 @@ export default class App extends Component {
   <br/>
   <br/>
   <br/>
-  <br/>
-  <br/>
-  <br/>
-  <br/>
   </p>
             <p>v1.003 release [10th Oct 19]:
   <br/>No breaking changes.
@@ -185,10 +198,6 @@ export default class App extends Component {
   <br/>-Create a sample button added to items in Search results. Clicking the button will create a 30 second sample of the selected file and output it in the new 'Samples' folder in the Tdarr data folder. Use the sample to test plugins/transcode settings and to help when reporting bugs.
   <br/>-Additional schedule buttons added so you can bulk change daily hour slots.
   <br/>-Reduced 720p boundaries so now 960*720 video files will show up in the 720p category instead of just 1280*720 files.
-  <br/>
-  <br/>
-  <br/>
-  <br/>
   <br/>
   <br/>
   <br/>
