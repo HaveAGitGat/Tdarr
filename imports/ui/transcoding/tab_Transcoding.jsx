@@ -199,12 +199,14 @@ class App extends Component {
 
   renderWorkers = () => {
     Meteor.call('getWorkers', result => {
-      var workers = result.map(worker => (
-        <Workers key={worker._id} worker={worker} />
-      ));
-
       try {
-        render(workers, document.getElementById('allWorkersContainerID'));
+        if (result) {
+          var workers = result.map(worker => (
+            <Workers key={worker._id} worker={worker} />
+          ));
+
+          render(workers, document.getElementById('allWorkersContainerID'));
+        }
       } catch (err) {
         console.log(err);
       }

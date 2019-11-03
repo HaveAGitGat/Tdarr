@@ -287,7 +287,7 @@ class App extends Component {
   }
 
   renderVerboseLogsButton() {
-    return this.props.globalSettings.map(item => (
+    return this.props.globalSettings.map((item, i) => (
       <ToggleButton
         key={`verbose-log-${i}`}
         thumbStyle={borderRadiusStyle}

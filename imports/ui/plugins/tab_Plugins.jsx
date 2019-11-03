@@ -2,7 +2,7 @@ import {withTracker} from 'meteor/react-meteor-data';
 import React, {Component} from 'react';
 import {Button} from 'react-bootstrap';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
-import {render} from 'react-dom';
+import ReactDOM, {render} from 'react-dom';
 import ClipLoader from 'react-spinners/ClipLoader';
 import ReactTable from 'react-table';
 import {Tab, TabList, TabPanel, Tabs} from 'react-tabs';
@@ -246,10 +246,6 @@ class App extends Component {
                   style: {
                     color: '#e1e1e1',
                     fontSize: '14px',
-                    background:
-                      rowInfo && rowInfo.row.Description.includes('BUG')
-                        ? '#c72c53'
-                        : null,
                   },
                 };
               },

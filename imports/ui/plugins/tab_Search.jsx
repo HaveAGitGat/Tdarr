@@ -1,7 +1,7 @@
 import {withTracker} from 'meteor/react-meteor-data';
 import React, {Component} from 'react';
 import {Button} from 'react-bootstrap';
-import {render} from 'react-dom';
+import ReactDOM, {render} from 'react-dom';
 import ClipLoader from 'react-spinners/ClipLoader';
 import Modal from 'reactjs-popup';
 

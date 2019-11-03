@@ -12,6 +12,7 @@ import TabDev from '../ui/tab_Dev.jsx';
 import TabHelp from '../ui/tab_Help.jsx';
 import TabLog from '../ui/tab_Log.jsx';
 import TabStatistics from '../ui/tab_Statistics.jsx';
+import {ErrorBoundary} from './ErrorBoundary.jsx';
 import TabLibraries from './libraries/tab_Libraries.jsx';
 import TabPlugins from './plugins/tab_Plugins.jsx';
 import TabSearch from './plugins/tab_Search.jsx';
@@ -40,45 +41,47 @@ const AppRouter = () => {
   });
 
   return (
-    <Router>
-      <Navbar
-        className="mb-0 rounded-0 d-flex justify-content-between"
-        collapseOnSelect
-        expand="md"
-        bg="dark"
-        variant="dark"
-      >
-        <Navbar.Brand className="p-2" href="#home">
-          <img className="h-100" src="https://i.imgur.com/s8ZbOsT.png" />
-        </Navbar.Brand>
-        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-        <Navbar.Collapse id="responsive-navbar-nav ">
-          <Nav style={{fontSize: '1.5em'}}>
-            {tabs.map(t => (
-              <NavLink
-                key={`navlink-${t.path}`}
-                className="ml-4 nav-link"
-                to={`${basePath}${t.path}`}
-                exact={t.path === '/'}
-              >
-                {t.text}
-              </NavLink>
-            ))}
-          </Nav>
-        </Navbar.Collapse>
-      </Navbar>
+    <ErrorBoundary>
+      <Router>
+        <Navbar
+          className="mb-0 rounded-0 d-flex justify-content-between"
+          collapseOnSelect
+          expand="md"
+          bg="dark"
+          variant="dark"
+        >
+          <Navbar.Brand className="p-2" href="#home">
+            <img className="h-100" src="https://i.imgur.com/s8ZbOsT.png" />
+          </Navbar.Brand>
+          <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+          <Navbar.Collapse id="responsive-navbar-nav ">
+            <Nav style={{fontSize: '1.5em'}}>
+              {tabs.map(t => (
+                <NavLink
+                  key={`navlink-${t.path}`}
+                  className="ml-4 nav-link"
+                  to={`${basePath}${t.path}`}
+                  exact={t.path === '/'}
+                >
+                  {t.text}
+                </NavLink>
+              ))}
+            </Nav>
+          </Navbar.Collapse>
+        </Navbar>
 
-      <link rel="icon" sizes="16x16 32x32" href="/favicon.png?v=2" />
-      <Switch>
-        {tabs.map(t => (
-          <Route
-            key={`nav-route-${t.path}`}
-            path={`${basePath}${t.path}`}
-            component={t.component}
-          />
-        ))}
-      </Switch>
-    </Router>
+        <link rel="icon" sizes="16x16 32x32" href="/favicon.png?v=2" />
+        <Switch>
+          {tabs.map(t => (
+            <Route
+              key={`nav-route-${t.path}`}
+              path={`${basePath}${t.path}`}
+              component={t.component}
+            />
+          ))}
+        </Switch>
+      </Router>
+    </ErrorBoundary>
   );
 };
 

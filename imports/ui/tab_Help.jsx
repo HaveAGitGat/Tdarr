@@ -16,7 +16,7 @@ export default class App extends Component {
   loadText = () => {
     Meteor.call('readHelpCommandText', function(error, result) {
       var ffmpegText = result[0].split('\n').map(row => (
-        <span key={`readHelpCommandText-${row}`}>
+        <span key={Math.random() * 9999}>
           <p>{row}</p>
           <br />
         </span>
@@ -29,13 +29,15 @@ export default class App extends Component {
       ));
 
       try {
-        render(ffmpegText, document.getElementById('FFmpegHelp'));
+        document.getElementById('FFmpegHelp') &&
+          render(ffmpegText, document.getElementById('FFmpegHelp'));
       } catch (err) {
         console.log(err);
       }
 
       try {
-        render(handbrakeText, document.getElementById('HandBrakeHelp'));
+        document.getElementById('HandBrakeHelp') &&
+          render(handbrakeText, document.getElementById('HandBrakeHelp'));
       } catch (err) {
         console.log(err);
       }
