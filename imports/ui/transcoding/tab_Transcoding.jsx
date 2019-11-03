@@ -585,26 +585,31 @@ class App extends Component {
                   </p>
                 </td>
                 <td>
+                  {'\u00A0'}
                   <p>
                     <b>Poll period</b>:{this.renderStat('DBPollPeriod')}
                   </p>
                 </td>
                 <td>
+                  {'\u00A0'}
                   <p>
                     <b>Fetch time</b>: {this.renderStat('DBFetchTime')}
                   </p>
                 </td>
                 <td>
+                  {'\u00A0'}
                   <p>
                     <b>Total</b>: {this.renderStat('DBTotalTime')}
                   </p>
                 </td>
                 <td>
+                  {'\u00A0'}
                   <p>
                     <b>Backlog</b>: {this.renderStat('DBQueue')}
                   </p>
                 </td>
                 <td>
+                  {'\u00A0'}
                   <p>
                     <b>Load</b>: {this.renderStat('DBLoadStatus')}
                   </p>
@@ -614,6 +619,20 @@ class App extends Component {
           </table>
         </div>
 
+        {/* 
+        <div className="textSizeContainer">
+
+        <select>
+    <option>Size</option>
+
+    <option  onClick={() => console.log("here1")}>Test1</option>
+
+
+
+    <option  onClick={() => console.log("here2")}>Test2</option>
+    </select>
+
+        </div> */}
 
         <p></p>
 
