@@ -118,6 +118,17 @@ export default class App extends Component {
 
               <p>Change log</p>
 
+            <p>v1.0055 mini-release [4th Nov 19]:
+            
+            <br />No breaking changes.
+            <br />Changes:
+
+            <br />-[Fix] 'Re-queue' buttons on 'Tdarr' tab.
+            <br />-[Fix]  Prevent find-new/fresh scans occuring on a library at the same time. Hourly find-new scan re-enabled for libraries with folder watch ON.
+            <br />
+            <br />
+            </p>
+
               <p>v1.0054 mini-release [3rd Nov 19]:
             
   <br />No breaking changes.
