@@ -637,11 +637,10 @@ class App extends Component {
 
 
 
-  resetAllStatus(mode) {
+  resetAllStatus(mode,table) {
 
     if (confirm('Are you sure you want to re-queue all files?')) {
-
-      Meteor.call('resetAllStatus', 'all', mode, function (error, result) { })
+      Meteor.call('resetAllStatus', 'all', mode,table, function (error, result) { })
 
     }
   }
@@ -667,11 +666,11 @@ class App extends Component {
               <tr>
 
                 <td><p><b>DB</b></p></td>
-                <td>{'\u00A0'}<p><b>Poll period</b>:{this.renderStat('DBPollPeriod')}</p></td>
-                <td>{'\u00A0'}<p><b>Fetch time</b>: {this.renderStat('DBFetchTime')}</p></td>
-                <td>{'\u00A0'}<p><b>Total</b>: {this.renderStat('DBTotalTime')}</p></td>
-                <td>{'\u00A0'}<p><b>Backlog</b>: {this.renderStat('DBQueue')}</p></td>
-                <td>{'\u00A0'}<p><b>Load</b>: {this.renderStat('DBLoadStatus')}</p></td>
+                <td><p><b>Poll period</b>:{this.renderStat('DBPollPeriod')}</p></td>
+                <td><p><b>Fetch time</b>: {this.renderStat('DBFetchTime')}</p></td>
+                <td><p><b>Total</b>: {this.renderStat('DBTotalTime')}</p></td>
+                <td><p><b>Backlog</b>: {this.renderStat('DBQueue')}</p></td>
+                <td><p><b>Load</b>: {this.renderStat('DBLoadStatus')}</p></td>
 
               </tr>
 
@@ -679,24 +678,6 @@ class App extends Component {
             </tbody>
           </table>
         </div>
-
-
-{/* 
-        <div className="textSizeContainer">
-
-        <select>
-    <option>Size</option>
-
-    <option  onClick={() => console.log("here1")}>Test1</option>
-
-
-
-    <option  onClick={() => console.log("here2")}>Test2</option>
-    </select>
-
-        </div> */}
-
-
 
 
         <p></p>
@@ -959,7 +940,7 @@ class App extends Component {
                 <th><p>Transcode</p></th>
                 <th><p>Old size (GB)</p></th>
                 <th><p>New size (GB)</p></th>
-                <th><p><Button variant="outline-light" onClick={() => this.resetAllStatus('TranscodeDecisionMaker')} ><span className="buttonTextSize">Re-queue</span></Button></p></th>
+                <th><p><Button variant="outline-light" onClick={() => this.resetAllStatus('TranscodeDecisionMaker','table2')} ><span className="buttonTextSize">Re-queue</span></Button></p></th>
                 <th><p>Info</p></th>
                 <th><p>History</p></th>
 
@@ -977,7 +958,7 @@ class App extends Component {
                 <th><p>No.</p></th>
                 <th><p>Time</p></th>
                 <th><p>File</p></th>
-                <th><p><Button variant="outline-light" onClick={() => this.resetAllStatus('TranscodeDecisionMaker')} ><span className="buttonTextSize">Re-queue</span></Button></p></th>
+                <th><p><Button variant="outline-light" onClick={() => this.resetAllStatus('TranscodeDecisionMaker','table3')} ><span className="buttonTextSize">Re-queue</span></Button></p></th>
                 <th><p>Ignore</p></th>
                 <th><p>Info</p></th>
 
@@ -1016,7 +997,7 @@ class App extends Component {
                 <th><p>No.</p></th>
                 <th><p>Time</p></th>
                 <th><p>File</p></th>
-                <th><p><Button   variant="outline-light" onClick={() => this.resetAllStatus('HealthCheck')} ><span className="buttonTextSize">Re-queue</span></Button></p></th>
+                <th><p><Button   variant="outline-light" onClick={() => this.resetAllStatus('HealthCheck','table5')} ><span className="buttonTextSize">Re-queue</span></Button></p></th>
                 <th><p>Info</p></th>
               </tr>
 
@@ -1036,7 +1017,7 @@ class App extends Component {
                 <th><p>No.</p></th>
                 <th><p>Time</p></th>
                 <th><p>File</p></th>
-                <th><p><Button   variant="outline-light" onClick={() => this.resetAllStatus('HealthCheck')} ><span className="buttonTextSize">Re-queue</span></Button></p></th>
+                <th><p><Button   variant="outline-light" onClick={() => this.resetAllStatus('HealthCheck','table6')} ><span className="buttonTextSize">Re-queue</span></Button></p></th>
                 <th><p>Ignore</p></th>
                 <th><p>Info</p></th>
 

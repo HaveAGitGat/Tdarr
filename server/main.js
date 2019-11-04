@@ -37,6 +37,7 @@ var fileScanners = {}
 //var fileScannersData = {}
 var verboseLogs
 var folderWatchers = {}
+var runningScans = []
 
 // var workerDB = [{
 //   _id:"test",
@@ -702,12 +703,31 @@ Meteor.methods({
 
 
 
-  }, 'resetAllStatus'(DB_id,mode) {
+  }, 'resetAllStatus'(DB_id,mode,table) {
+
+    //Files transcode/health check status is reset from either the library 'Options' or from the table 'Re-qeueue' button
 
 
-    var allFiles = allFilesPulledTable
+    var allFiles
+    //from table requeue buttons
 
+    if(DB_id == "all"){
+
+      if(table == "table2"){
+        allFiles = table2data
+      }else if(table == "table3"){
+        allFiles = table3data
+      } if(table == "table5"){
+        allFiles = table5data
+      } if(table == "table6"){
+        allFiles = table6data
+      }
+
+    }else
+
+    //from library options
     if(DB_id != "all"){
+      allFiles = allFilesPulledTable
       allFiles =  allFiles.filter(row => row.DB == DB_id);
     }
     
@@ -925,7 +945,27 @@ Meteor.methods({
 
   }, 'scanFiles'(DB_id, arrayOrPath, arrayOrPathSwitch, mode, filePropertiesToAdd) {
 
+    //arrayOrPath: array or string
+    //arrayOrPathSwitch:   0 (array) or 1 (path)
+    //mode: 0 (scan for new files only) or 1 (full fresh scan) or 2 (array of files coming in from folder watcher)
+    //filePropertiesToAdd: obj of properties to add to newly scanned files
 
+
+    //prevent multiple scans being done on same library (if not folder watcher files)
+    if(runningScans.includes(DB_id) && (mode == 0 || mode == 1)){
+
+      console.log('Scan is already running on library')
+      updateConsole("Scan is already running on library", false)
+
+    }else{
+    
+      
+      if(mode == 0 || mode == 1){
+        runningScans.push(DB_id)
+      }
+
+      
+   
 
     var scannerID = shortid.generate()
 
@@ -1143,6 +1183,13 @@ Meteor.methods({
 
         updateConsole("Scanner " + message[0] + ":Finished", false);
 
+        var indexEle = runningScans.indexOf(message[2])
+        runningScans.splice(indexEle, 1)
+
+        
+
+
+
         SettingsDB.upsert(message[2],
           {
             $set: {
@@ -1170,6 +1217,8 @@ Meteor.methods({
 
 
     }));
+
+  }
 
 
 
@@ -1379,12 +1428,12 @@ for (var i = 0; i < settingsInit.length; i++) {
 
 
 //runScheduledManualScan()
-
+//run find-new scan every hour
 setTimeout(Meteor.bindEnvironment(runScheduledManualScan), 3600000);
 
 function runScheduledManualScan(){
 
-  console.log("scanning!")
+  console.log("Running hourly scan!")
 
   try{
 
@@ -1413,6 +1462,7 @@ function runScheduledManualScan(){
   }
 
 
+  
 }catch(err){
 
   console.log(err.stack)
@@ -3019,6 +3069,13 @@ var generalFiles
 var transcodeFiles
 var healthcheckFiles
 
+var table1data
+var table2data
+var table3data
+var table4data
+var table5data
+var table6data
+
 
 var filesToAddToDBLengthNew = 0
 var filesToAddToDBLengthOld = 0
@@ -3206,12 +3263,12 @@ function tablesUpdate() {
 
 
 
-      var table1data = allFilesPulledTable.filter(row => (row.TranscodeDecisionMaker == "Queued" && row.processingStatus == false));
-      var table2data = allFilesPulledTable.filter(row => ((row.TranscodeDecisionMaker == "Transcode success" || row.TranscodeDecisionMaker == "Not required") && row.processingStatus == false));
-      var table3data = allFilesPulledTable.filter(row => ((row.TranscodeDecisionMaker == "Transcode error" || row.TranscodeDecisionMaker == "Transcode cancelled") && row.processingStatus == false));
-      var table4data = allFilesPulledTable.filter(row => (row.HealthCheck == "Queued" && row.fileMedium !== "audio" && row.processingStatus == false));
-      var table5data = allFilesPulledTable.filter(row => (row.HealthCheck == "Success" && row.processingStatus == false));
-      var table6data = allFilesPulledTable.filter(row => ((row.HealthCheck == "Error" || row.HealthCheck == "Cancelled") && row.processingStatus == false));
+      table1data = allFilesPulledTable.filter(row => (row.TranscodeDecisionMaker == "Queued" && row.processingStatus == false));
+      table2data = allFilesPulledTable.filter(row => ((row.TranscodeDecisionMaker == "Transcode success" || row.TranscodeDecisionMaker == "Not required") && row.processingStatus == false));
+      table3data = allFilesPulledTable.filter(row => ((row.TranscodeDecisionMaker == "Transcode error" || row.TranscodeDecisionMaker == "Transcode cancelled") && row.processingStatus == false));
+      table4data = allFilesPulledTable.filter(row => (row.HealthCheck == "Queued" && row.fileMedium !== "audio" && row.processingStatus == false));
+      table5data = allFilesPulledTable.filter(row => (row.HealthCheck == "Success" && row.processingStatus == false));
+      table6data = allFilesPulledTable.filter(row => ((row.HealthCheck == "Error" || row.HealthCheck == "Cancelled") && row.processingStatus == false));
 
       table2data = sortTable(table2data, "lastTranscodeDate")
       table3data = sortTable(table3data, "lastTranscodeDate")
@@ -3290,11 +3347,11 @@ function tablesUpdate() {
             transcodeFiles = transcodeFiles.filter(row => row.DB != settings[i]._id);
             healthcheckFiles = healthcheckFiles.filter(row => row.DB != settings[i]._id);
             table1data = table1data.filter(row => row.DB != settings[i]._id);
-            table2data = table2data.filter(row => row.DB != settings[i]._id);
-            table3data = table3data.filter(row => row.DB != settings[i]._id);
+            // table2data = table2data.filter(row => row.DB != settings[i]._id);
+            // table3data = table3data.filter(row => row.DB != settings[i]._id);
             table4data = table4data.filter(row => row.DB != settings[i]._id);
-            table5data = table5data.filter(row => row.DB != settings[i]._id);
-            table6data = table6data.filter(row => row.DB != settings[i]._id);
+            // table5data = table5data.filter(row => row.DB != settings[i]._id);
+            // table6data = table6data.filter(row => row.DB != settings[i]._id);
 
           }
         } catch (err) { console.log(err.stack) }
@@ -3308,12 +3365,12 @@ function tablesUpdate() {
 
       //
 
-      table1data = table1data.slice(0, 20)
-      table2data = table2data.slice(0, 20)
-      table3data = table3data.slice(0, 20)
-      table4data = table4data.slice(0, 20)
-      table5data = table5data.slice(0, 20)
-      table6data = table6data.slice(0, 20)
+      table1dataSlice = table1data.slice(0, 20)
+      table2dataSlice = table2data.slice(0, 20)
+      table3dataSlice = table3data.slice(0, 20)
+      table4dataSlice = table4data.slice(0, 20)
+      table5dataSlice = table5data.slice(0, 20)
+      table6dataSlice = table6data.slice(0, 20)
 
 
 
@@ -3342,24 +3399,18 @@ function tablesUpdate() {
       ClientDB.upsert("client",
         {
           $set: {
-            table1: table1data,
-            table2: table2data,
-            table3: table3data,
-            table4: table4data,
-            table5: table5data,
-            table6: table6data,
+            table1: table1dataSlice,
+            table2: table2dataSlice,
+            table3: table3dataSlice,
+            table4: table4dataSlice,
+            table5: table5dataSlice,
+            table6: table6dataSlice,
           }
         }
       );
 
 
-      //   ClientDB.upsert("client",
-      //   {
-      //       $set: {
-      //           table1:table1data,
-      //         }
-      //   }
-      // );
+
 
 
 
