@@ -16,7 +16,7 @@ export class ErrorBoundary extends React.Component {
   }
 
   render() {
-    if (!this.state.hasError) {
+    if (this.state.hasError) {
       return (
         <center className="bg-dark pt-5" style={{height: '100vh'}}>
           <h1>Oops! Something went wrong.</h1>
