@@ -37,6 +37,7 @@ var fileScanners = {}
 //var fileScannersData = {}
 var verboseLogs
 var folderWatchers = {}
+var runningScans = []
 
 // var workerDB = [{
 //   _id:"test",
@@ -944,7 +945,27 @@ Meteor.methods({
 
   }, 'scanFiles'(DB_id, arrayOrPath, arrayOrPathSwitch, mode, filePropertiesToAdd) {
 
+    //arrayOrPath: array or string
+    //arrayOrPathSwitch:   0 (array) or 1 (path)
+    //mode: 0 (scan for new files only) or 1 (full fresh scan) or 2 (array of files coming in from folder watcher)
+    //filePropertiesToAdd: obj of properties to add to newly scanned files
 
+
+    //prevent multiple scans being done on same library (if not folder watcher files)
+    if(runningScans.includes(DB_id) && (mode == 0 || mode == 1)){
+
+      console.log('Scan is already running on library')
+      updateConsole("Scan is already running on library", false)
+
+    }else{
+    
+      
+      if(mode == 0 || mode == 1){
+        runningScans.push(DB_id)
+      }
+
+      
+   
 
     var scannerID = shortid.generate()
 
@@ -1162,6 +1183,13 @@ Meteor.methods({
 
         updateConsole("Scanner " + message[0] + ":Finished", false);
 
+        var indexEle = runningScans.indexOf(message[2])
+        runningScans.splice(indexEle, 1)
+
+        
+
+
+
         SettingsDB.upsert(message[2],
           {
             $set: {
@@ -1189,6 +1217,8 @@ Meteor.methods({
 
 
     }));
+
+  }
 
 
 
@@ -1398,13 +1428,12 @@ for (var i = 0; i < settingsInit.length; i++) {
 
 
 //runScheduledManualScan()
-
-//Disabled while investigating bug
-//setTimeout(Meteor.bindEnvironment(runScheduledManualScan), 3600000);
+//run find-new scan every hour
+setTimeout(Meteor.bindEnvironment(runScheduledManualScan), 3600000);
 
 function runScheduledManualScan(){
 
-  console.log("scanning!")
+  console.log("Running hourly scan!")
 
   try{
 
