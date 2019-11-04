@@ -42,8 +42,16 @@ const AppRouter = () => {
 
   return (
     <Router>
-      <Navbar className="mb-0 rounded-0 d-flex justify-content-between" collapseOnSelect expand="md" bg="dark" variant="dark">
-        <Navbar.Brand className="p-2" href={`${basePath}/tdarr`}><img className="h-100" src="https://i.imgur.com/s8ZbOsT.png" /></Navbar.Brand>
+      <Navbar
+        className="mb-0 rounded-0 d-flex justify-content-between"
+        collapseOnSelect
+        expand="md"
+        bg="dark"
+        variant="dark"
+      >
+        <Navbar.Brand className="p-2" href={`${basePath}/tdarr`}>
+          <img className="h-100" src="https://i.imgur.com/s8ZbOsT.png" />
+        </Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav ">
           <Nav style={{fontSize: '1.5em'}}>
@@ -58,9 +66,10 @@ const AppRouter = () => {
               </NavLink>
             ))}
           </Nav>
-
         </Navbar.Collapse>
-        <div className="versionNumber"><p>v1.0055</p></div>
+        <div className="versionNumber">
+          <p>v1.0055</p>
+        </div>
       </Navbar>
 
       <link rel="icon" sizes="16x16 32x32" href="/favicon.png?v=2" />
