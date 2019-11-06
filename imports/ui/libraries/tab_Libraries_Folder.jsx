@@ -11,7 +11,7 @@ import { withTracker } from 'meteor/react-meteor-data';
 
 import VideoCodec from './VideoCodec.jsx';
 import AudioCodec from './AudioCodec.jsx';
-import Plugin from '../Plugin.jsx';
+import Plugin from './Plugin.jsx';
 import ScheduleBlock from './ScheduleBlock.jsx';
 import ReactDOM from 'react-dom';
 import InputRange from 'react-input-range';

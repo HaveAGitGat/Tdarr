@@ -442,9 +442,9 @@ renderStats = () => {
 <center><p>Click on pie segments to load respective files</p></center>
 
 
-<ul>
+
           {this.renderStats()}
-</ul>
+
 
 
 

@@ -863,9 +863,9 @@ class App extends Component {
   
       <div id="status"></div>
 
-        <ul>
+        
           {this.renderLibraries()}
-        </ul>
+        
       </div>
     );
   }
