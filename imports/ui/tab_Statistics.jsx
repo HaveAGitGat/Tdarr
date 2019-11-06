@@ -384,7 +384,16 @@ renderStats = () => {
         ));
 
       
-  return  <div className="tabWrap" > <Tabs >
+  return  <div className="tabWrap" > <Tabs selectedIndex={ this.props.globalSettings[0].selectedStatTab != undefined ? this.props.globalSettings[0].selectedStatTab : 0} onSelect={tabIndex => {
+
+    GlobalSettingsDB.upsert('globalsettings',
+    {
+      $set: {
+        selectedStatTab: tabIndex,
+      }
+    }
+  );
+  }}>
   <TabList>
 
   {tabTitles}
@@ -463,20 +472,13 @@ renderStats = () => {
 
 export default withTracker(() => {
 
-
+  Meteor.subscribe('GlobalSettingsDB');
   Meteor.subscribe('StatisticsDB');
 
   return {
 
     statistics:StatisticsDB.find({}).fetch(),
-
-
-
-
-
-
-
-
+    globalSettings: GlobalSettingsDB.find({}, {}).fetch(),
 
   };
 })(App);

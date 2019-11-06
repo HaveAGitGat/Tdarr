@@ -120,6 +120,8 @@ class App extends Component {
 
   searchPlugins = (event,pluginType) => {
 
+    try{
+
     if (event) {
       event.preventDefault();
     }
@@ -297,7 +299,7 @@ class App extends Component {
 
         ]
 
-        render(<div>
+        render(<div className="libraryContainer" >
           <ReactTable
             data={data}
             columns={columns}
@@ -312,6 +314,15 @@ class App extends Component {
       }
 
     })
+  }catch(err){
+    GlobalSettingsDB.upsert('globalsettings',
+    {
+      $set: {
+        pluginSearchLoading: false,
+      }
+    }
+  );
+  }
   }
 
 
@@ -324,7 +335,16 @@ class App extends Component {
       <div className="tabWrap" >     
 
 
-    <Tabs>
+      <Tabs selectedIndex={ this.props.globalSettings != undefined &&  this.props.globalSettings[0] != undefined && this.props.globalSettings[0].selectedPluginTab != undefined ? this.props.globalSettings[0].selectedPluginTab : 0} onSelect={tabIndex => {
+
+GlobalSettingsDB.upsert('globalsettings',
+{
+  $set: {
+    selectedPluginTab: tabIndex,
+  }
+}
+);
+}}>
     <TabList>
       <Tab><p>Community</p></Tab>
       <Tab><p>Local</p></Tab>
@@ -358,9 +378,9 @@ class App extends Component {
 <p></p>
 
 
-<div className="libraryContainer" >
+
 <div id="searchResultsCommunity">
-</div>
+
 </div>
 
     </div></TabPanel>
@@ -390,10 +410,10 @@ class App extends Component {
 <p></p>
 
 
-<div className="libraryContainer" >
+
 <div id="searchResultsLocal">
 </div>
-</div>
+
 
 
     </div></TabPanel>
