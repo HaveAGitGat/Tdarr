@@ -76,6 +76,7 @@ class App extends Component {
       scanButtons:true,
       scanFound:0,
       expanded:true,
+      navItemSelected:"navSourceFolder",
       pluginID:'',
       pluginIDs:[],
       pluginValid:false,

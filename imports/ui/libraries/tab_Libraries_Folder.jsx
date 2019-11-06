@@ -5,7 +5,7 @@ import ToggleButton from 'react-toggle-button'
 
 import { render } from 'react-dom';
 
-import {StatisticsDB, SettingsDB, GlobalSettingsDB } from '../../api/tasks.js';
+import { StatisticsDB, SettingsDB, GlobalSettingsDB } from '../../api/tasks.js';
 
 import { withTracker } from 'meteor/react-meteor-data';
 
@@ -1434,8 +1434,8 @@ class Folder extends Component {
       <div className="libraryContainer2">
 
 
-                <br/>
-                <br/>
+        <br />
+        <br />
 
         <center>
 
@@ -1455,56 +1455,56 @@ class Folder extends Component {
             <Dropdown.Menu >
 
               <div className={this.props.libraryItem.scanButtons ? '' : 'hidden'} className="optionsDropdown">
-                <Dropdown.Item style={{ color: 'green', fontSize:'14px' }} onClick={() => this.scanFiles(0)} >Scan (Find new)</Dropdown.Item>
-                <Dropdown.Item style={{ color: 'green', fontSize:'14px' }} onClick={() => this.scanFiles(1)} >Scan (Fresh)</Dropdown.Item>
+                <Dropdown.Item style={{ color: 'green', fontSize: '14px' }} onClick={() => this.scanFiles(0)} >Scan (Find new)</Dropdown.Item>
+                <Dropdown.Item style={{ color: 'green', fontSize: '14px' }} onClick={() => this.scanFiles(1)} >Scan (Fresh)</Dropdown.Item>
 
 
                 <Dropdown.Item onClick={() => this.resetAllStatus('TranscodeDecisionMaker')}><span className="buttonTextSize">Requeue all items (transcode)</span></Dropdown.Item>
                 <Dropdown.Item onClick={() => this.resetAllStatus('HealthCheck')}><span className="buttonTextSize">Requeue all items (health check)</span></Dropdown.Item>
 
-                <Dropdown.Item style={{ color: '#bb86fc',fontSize:'14px' }} onClick={() => {
+                <Dropdown.Item style={{ color: '#bb86fc', fontSize: '14px' }} onClick={() => {
 
-if (confirm("Are you sure you want to reset this library's stats?")) {
+                  if (confirm("Are you sure you want to reset this library's stats?")) {
 
-  SettingsDB.upsert(
-    this.props.libraryItem._id,
-    {
-      $set: {
-        totalTranscodeCount: 0,
-        sizeDiff: 0,
-        totalHealthCheckCount:0,
-      }
-    }
-  );
-  
-}
-}
+                    SettingsDB.upsert(
+                      this.props.libraryItem._id,
+                      {
+                        $set: {
+                          totalTranscodeCount: 0,
+                          sizeDiff: 0,
+                          totalHealthCheckCount: 0,
+                        }
+                      }
+                    );
 
-}>Reset stats: This library</Dropdown.Item>
+                  }
+                }
 
-<Dropdown.Item style={{ color: '#bb86fc',fontSize:'14px' }} onClick={() => {
+                }>Reset stats: This library</Dropdown.Item>
 
-if (confirm("Are you sure you want to reset all library stats?")) {
+                <Dropdown.Item style={{ color: '#bb86fc', fontSize: '14px' }} onClick={() => {
 
- StatisticsDB.upsert(
-  "statistics",
-    {
-      $set: {
-        totalTranscodeCount: 0,
-        sizeDiff: 0,
-        totalHealthCheckCount:0,
-      }
-    }
-  );
-  
-}
-}
+                  if (confirm("Are you sure you want to reset all library stats?")) {
 
-}>Reset stats: All</Dropdown.Item>
+                    StatisticsDB.upsert(
+                      "statistics",
+                      {
+                        $set: {
+                          totalTranscodeCount: 0,
+                          sizeDiff: 0,
+                          totalHealthCheckCount: 0,
+                        }
+                      }
+                    );
+
+                  }
+                }
+
+                }>Reset stats: All</Dropdown.Item>
 
 
 
-                <Dropdown.Item style={{ color: '#bb86fc',fontSize:'14px' }} onClick={() => {
+                <Dropdown.Item style={{ color: '#bb86fc', fontSize: '14px' }} onClick={() => {
 
                   if (confirm('Are you sure you want to clear this library? Your files will not be affected.')) {
                     this.removeLibrary(this.props.libraryItem._id)
@@ -1514,7 +1514,7 @@ if (confirm("Are you sure you want to reset all library stats?")) {
                 }>Clear library</Dropdown.Item>
 
 
-                <Dropdown.Item style={{ color: '#bb86fc',fontSize:'14px' }} onClick={this.deleteThisLibrary.bind(this)}>Delete library</Dropdown.Item>
+                <Dropdown.Item style={{ color: '#bb86fc', fontSize: '14px' }} onClick={this.deleteThisLibrary.bind(this)}>Delete library</Dropdown.Item>
 
 
               </div>
@@ -1525,8 +1525,8 @@ if (confirm("Are you sure you want to reset all library stats?")) {
 
           <p>
 
-                <br/>
-                <br/>
+            <br />
+            <br />
 
             <Button variant="outline-light" onClick={() => {
 
@@ -1567,7 +1567,7 @@ if (confirm("Are you sure you want to reset all library stats?")) {
 
             }} ><span className="buttonTextSize">←</span></Button>
 
-{'\u00A0'}{'\u00A0'}Priority:{this.props.libraryItem.priority + 1} {'\u00A0'}{'\u00A0'}
+            {'\u00A0'}{'\u00A0'}Priority:{this.props.libraryItem.priority + 1} {'\u00A0'}{'\u00A0'}
 
             <Button variant="outline-light" onClick={() => {
 
@@ -1634,10 +1634,10 @@ if (confirm("Are you sure you want to reset all library stats?")) {
         </center>
 
 
-<br/>
-<br/>
-<br/>
-<br/>
+        <br />
+        <br />
+        <br />
+        <br />
         <div className="libraryGrid-container">
 
           <div className="libraryGrid-itemLeft">
@@ -1645,49 +1645,75 @@ if (confirm("Are you sure you want to reset all library stats?")) {
 
 
             <p onClick={() => {
-              this.setState({
-                navItemSelected: "navSourceFolder",
-              })
-            }} className={this.state.navItemSelected == "navSourceFolder" ? 'selectedNav' : ''}>Source</p>
-
+              SettingsDB.upsert(
+                this.props.libraryItem._id,
+                {
+                  $set: {
+                    navItemSelected: "navSourceFolder",
+                  }
+                }
+              );
+            }} className={this.props.libraryItem.navItemSelected == "navSourceFolder" ? 'selectedNav' : ''}>Source</p>
             <p onClick={() => {
-              this.setState({
-                navItemSelected: "navCacheFolder",
-              })
-            }} className={this.state.navItemSelected == "navCacheFolder" ? 'selectedNav' : ''}>Transcode cache</p>
-
+              SettingsDB.upsert(
+                this.props.libraryItem._id,
+                {
+                  $set: {
+                    navItemSelected: "navCacheFolder",
+                  }
+                }
+              );
+            }} className={this.props.libraryItem.navItemSelected == "navCacheFolder" ? 'selectedNav' : ''}>Transcode cache</p>
             <p onClick={() => {
-              this.setState({
-                navItemSelected: "navOutputFolder",
-              })
-            }} className={this.state.navItemSelected == "navOutputFolder" ? 'selectedNav' : ''}>Output Folder</p>
-
-
-
+              SettingsDB.upsert(
+                this.props.libraryItem._id,
+                {
+                  $set: {
+                    navItemSelected: "navOutputFolder",
+                  }
+                }
+              );
+            }} className={this.props.libraryItem.navItemSelected == "navOutputFolder" ? 'selectedNav' : ''}>Output Folder</p>
             <p onClick={() => {
-              this.setState({
-                navItemSelected: "navContainers",
-              })
-            }} className={this.state.navItemSelected == "navContainers" ? 'selectedNav' : ''}>Containers</p>
-
-
+              SettingsDB.upsert(
+                this.props.libraryItem._id,
+                {
+                  $set: {
+                    navItemSelected: "navContainers",
+                  }
+                }
+              );
+            }} className={this.props.libraryItem.navItemSelected == "navContainers" ? 'selectedNav' : ''}>Containers</p>
             <p onClick={() => {
-              this.setState({
-                navItemSelected: "navTranscode",
-              })
-            }} className={this.state.navItemSelected == "navTranscode" ? 'selectedNav' : ''}>Transcode</p>
-
+              SettingsDB.upsert(
+                this.props.libraryItem._id,
+                {
+                  $set: {
+                    navItemSelected: "navTranscode",
+                  }
+                }
+              );
+            }} className={this.props.libraryItem.navItemSelected == "navTranscode" ? 'selectedNav' : ''}>Transcode</p>
             <p onClick={() => {
-              this.setState({
-                navItemSelected: "navHealthCheck",
-              })
-            }} className={this.state.navItemSelected == "navHealthCheck" ? 'selectedNav' : ''}>Health check</p>
-
+              SettingsDB.upsert(
+                this.props.libraryItem._id,
+                {
+                  $set: {
+                    navItemSelected: "navHealthCheck",
+                  }
+                }
+              );
+            }} className={this.props.libraryItem.navItemSelected == "navHealthCheck" ? 'selectedNav' : ''}>Health check</p>
             <p onClick={() => {
-              this.setState({
-                navItemSelected: "navSchedule",
-              })
-            }} className={this.state.navItemSelected == "navSchedule" ? 'selectedNav' : ''}>Schedule</p>
+              SettingsDB.upsert(
+                this.props.libraryItem._id,
+                {
+                  $set: {
+                    navItemSelected: "navSchedule",
+                  }
+                }
+              );
+            }} className={this.props.libraryItem.navItemSelected == "navSchedule" ? 'selectedNav' : ''}>Schedule</p>
 
 
 
@@ -1698,103 +1724,103 @@ if (confirm("Are you sure you want to reset all library stats?")) {
 
           <div className="libraryGrid-itemRight">
 
-            
-    
 
 
 
-            <div className={this.state.navItemSelected == "navSourceFolder" ? '' : 'hidden'}>
-            <div style={libButtonStyle}>
-            <span className="buttonTextSize"></span>{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'} <span className="buttonTextSize">Folder watch:</span>
-            <div style={libButtonStyle}>
-              <ToggleButton
-                thumbStyle={borderRadiusStyle}
-                trackStyle={borderRadiusStyle}
 
-                name="folderWatching"
-                value={!!this.props.libraryItem.folderWatching || false}
-                onToggle={() => {
 
-                  SettingsDB.upsert(
+            <div className={this.props.libraryItem.navItemSelected == "navSourceFolder" ? '' : 'hidden'}>
+              <div style={libButtonStyle}>
+                <span className="buttonTextSize"></span>{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'} <span className="buttonTextSize">Folder watch:</span>
+                <div style={libButtonStyle}>
+                  <ToggleButton
+                    thumbStyle={borderRadiusStyle}
+                    trackStyle={borderRadiusStyle}
 
-                    this.props.libraryItem._id,
-                    {
-                      $set: {
-                        folderWatching: !this.props.libraryItem.folderWatching,
-                      }
+                    name="folderWatching"
+                    value={!!this.props.libraryItem.folderWatching || false}
+                    onToggle={() => {
+
+                      SettingsDB.upsert(
+
+                        this.props.libraryItem._id,
+                        {
+                          $set: {
+                            folderWatching: !this.props.libraryItem.folderWatching,
+                          }
+                        }
+                      );
+
+
+                      Meteor.call('toggleFolderWatch', this.props.libraryItem.folder, this.props.libraryItem._id, !this.props.libraryItem.folderWatching, function (error, result) { })
                     }
-                  );
 
-
-                  Meteor.call('toggleFolderWatch', this.props.libraryItem.folder, this.props.libraryItem._id, !this.props.libraryItem.folderWatching, function (error, result) { })
-                }
-
-                }
-              />
-            </div>
-
-
-
-            {'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}<span className="buttonTextSize">Process Library:</span>
-            <div style={libButtonStyle}>
-              <ToggleButton
-                thumbStyle={borderRadiusStyle}
-                trackStyle={borderRadiusStyle}
-
-
-
-                value={this.props.libraryItem.processLibrary === undefined ? true : !!this.props.libraryItem.processLibrary}
-                onToggle={() => {
-
-
-
-                  SettingsDB.upsert(
-
-                    this.props.libraryItem._id,
-                    {
-                      $set: {
-                        processLibrary: !this.props.libraryItem.processLibrary,
-                      }
                     }
-                  );
-                }
-
-                }
-              />
-            </div>
+                  />
+                </div>
 
 
 
+                {'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}<span className="buttonTextSize">Process Library:</span>
+                <div style={libButtonStyle}>
+                  <ToggleButton
+                    thumbStyle={borderRadiusStyle}
+                    trackStyle={borderRadiusStyle}
 
 
-            {'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}<span className="buttonTextSize">Scan on start:</span>
-            <div style={libButtonStyle}>
-              <ToggleButton
-                thumbStyle={borderRadiusStyle}
-                trackStyle={borderRadiusStyle}
 
-                value={this.props.libraryItem.scanOnStart === undefined ? true : !!this.props.libraryItem.scanOnStart}
-                onToggle={() => {
+                    value={this.props.libraryItem.processLibrary === undefined ? true : !!this.props.libraryItem.processLibrary}
+                    onToggle={() => {
 
-                  SettingsDB.upsert(
 
-                    this.props.libraryItem._id,
-                    {
-                      $set: {
-                        scanOnStart: !this.props.libraryItem.scanOnStart,
-                      }
+
+                      SettingsDB.upsert(
+
+                        this.props.libraryItem._id,
+                        {
+                          $set: {
+                            processLibrary: !this.props.libraryItem.processLibrary,
+                          }
+                        }
+                      );
                     }
-                  );
-                }
 
-                }
-              />
-            </div>
+                    }
+                  />
+                </div>
 
-          </div>
 
-   
-   <br/> <br/> <br/>
+
+
+
+                {'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}<span className="buttonTextSize">Scan on start:</span>
+                <div style={libButtonStyle}>
+                  <ToggleButton
+                    thumbStyle={borderRadiusStyle}
+                    trackStyle={borderRadiusStyle}
+
+                    value={this.props.libraryItem.scanOnStart === undefined ? true : !!this.props.libraryItem.scanOnStart}
+                    onToggle={() => {
+
+                      SettingsDB.upsert(
+
+                        this.props.libraryItem._id,
+                        {
+                          $set: {
+                            scanOnStart: !this.props.libraryItem.scanOnStart,
+                          }
+                        }
+                      );
+                    }
+
+                    }
+                  />
+                </div>
+
+              </div>
+
+
+              <br /> <br /> <br />
 
               <p>Source:</p>
 
@@ -1807,8 +1833,8 @@ if (confirm("Are you sure you want to reset all library stats?")) {
                 <span className="invalidFolder" ><center> Invalid folder </center></span>
               </div>
 
-              <br/>
-              <br/>
+              <br />
+              <br />
 
               <div className="folderResults">
 
@@ -1821,8 +1847,8 @@ if (confirm("Are you sure you want to reset all library stats?")) {
 
                 }} ><span className="buttonTextSize">{this.state.folderBrowser ? 'Hide' : 'Show'} browser</span></Button>
 
-                <br/>
-                <br/>
+                <br />
+                <br />
 
               </div>
 
@@ -1839,7 +1865,7 @@ if (confirm("Are you sure you want to reset all library stats?")) {
 
             </div>
 
-            <div className={this.state.navItemSelected == "navCacheFolder" ? '' : 'hidden'}>
+            <div className={this.props.libraryItem.navItemSelected == "navCacheFolder" ? '' : 'hidden'}>
 
               <p> Transcode cache:</p>
 
@@ -1851,8 +1877,8 @@ if (confirm("Are you sure you want to reset all library stats?")) {
 
               </div>
 
-              <br/>
-              <br/>
+              <br />
+              <br />
 
 
               <div className="folderResults">
@@ -1866,8 +1892,8 @@ if (confirm("Are you sure you want to reset all library stats?")) {
 
                 }} ><span className="buttonTextSize">{this.state.cacheBrowser ? 'Hide' : 'Show'} browser</span></Button>
 
-                <br/>
-                <br/>
+                <br />
+                <br />
 
               </div>
 
@@ -1878,13 +1904,13 @@ if (confirm("Are you sure you want to reset all library stats?")) {
             </div>
 
 
-<div className={this.state.navItemSelected == "navOutputFolder" ? '' : 'hidden'}>
+            <div className={this.props.libraryItem.navItemSelected == "navOutputFolder" ? '' : 'hidden'}>
 
 
-<p>Under normal operation Tdarr is designed to work directly on your library, replacing original files. If you like you can enable folder-to-folder conversion below.  </p>
+              <p>Under normal operation Tdarr is designed to work directly on your library, replacing original files. If you like you can enable folder-to-folder conversion below.  </p>
 
 
-<p> Output Folder:              <ToggleButton
+              <p> Output Folder:              <ToggleButton
                 thumbStyle={borderRadiusStyle}
                 trackStyle={borderRadiusStyle}
 
@@ -1905,46 +1931,46 @@ if (confirm("Are you sure you want to reset all library stats?")) {
                 }
               /></p>
 
-<input type="text" className="folderPaths" ref={this.props.libraryItem._id + 'o'} name="output" defaultValue={this.props.libraryItem.output} onChange={this.handleChange}></input>
+              <input type="text" className="folderPaths" ref={this.props.libraryItem._id + 'o'} name="output" defaultValue={this.props.libraryItem.output} onChange={this.handleChange}></input>
 
-<div className={this.props.libraryItem.outputValid ? 'hidden' : ''}>
+              <div className={this.props.libraryItem.outputValid ? 'hidden' : ''}>
 
-  <span className="invalidFolder" ><center> Invalid folder </center></span>
+                <span className="invalidFolder" ><center> Invalid folder </center></span>
 
-</div>
+              </div>
 
-<br/>
-<br/>
-
-
-<div className="folderResults">
-
-  <Button variant="outline-light" onClick={() => {
-
-    this.setState({
-      outputBrowser: !this.state.outputBrowser,
-    })
+              <br />
+              <br />
 
 
-  }} ><span className="buttonTextSize">{this.state.outputBrowser ? 'Hide' : 'Show'} browser</span></Button>
+              <div className="folderResults">
 
-  <br/>
-  <br/>
+                <Button variant="outline-light" onClick={() => {
 
-</div>
-
-<div className={this.state.outputBrowser ? '' : 'hidden'}>
-
-  <div id={this.props.libraryItem._id + 'oResults'} className="folderResults"></div>
-</div>
-</div>
+                  this.setState({
+                    outputBrowser: !this.state.outputBrowser,
+                  })
 
 
+                }} ><span className="buttonTextSize">{this.state.outputBrowser ? 'Hide' : 'Show'} browser</span></Button>
+
+                <br />
+                <br />
+
+              </div>
+
+              <div className={this.state.outputBrowser ? '' : 'hidden'}>
+
+                <div id={this.props.libraryItem._id + 'oResults'} className="folderResults"></div>
+              </div>
+            </div>
 
 
 
 
-            <div className={this.state.navItemSelected == "navContainers" ? '' : 'hidden'} >
+
+
+            <div className={this.props.libraryItem.navItemSelected == "navContainers" ? '' : 'hidden'} >
 
               <p>Container types to scan for:</p>
 
@@ -1953,10 +1979,10 @@ if (confirm("Are you sure you want to reset all library stats?")) {
 
             </div>
 
-            <div className={this.state.navItemSelected == "navTranscode" ? '' : 'hidden'} >
+            <div className={this.props.libraryItem.navItemSelected == "navTranscode" ? '' : 'hidden'} >
 
 
-             <p>Transcode Decision Maker</p> 
+              <p>Transcode Decision Maker</p>
 
               <center>
 
@@ -2082,10 +2108,10 @@ if (confirm("Are you sure you want to reset all library stats?")) {
                   }
                 /></div>
 
-</center>
+              </center>
 
 
-            
+
 
               <div className={!!this.props.libraryItem.decisionMaker.pluginFilter ? '' : 'hidden'}>
 
@@ -2097,9 +2123,9 @@ if (confirm("Are you sure you want to reset all library stats?")) {
                   </p>
                 </center>
 
-               
-                  <p>Plugin ID:</p>
-            
+
+                <p>Plugin ID:</p>
+
 
 
 
@@ -2145,13 +2171,13 @@ if (confirm("Are you sure you want to reset all library stats?")) {
 
               <div className={!!this.props.libraryItem.decisionMaker.pluginFilter ? 'hidden' : !!this.props.libraryItem.decisionMaker.videoFilter ? '' : !!this.props.libraryItem.decisionMaker.audioFilter ? '' : 'hidden'}>
 
-<br/>
-<br/>
-<br/>
-<br/>
+                <br />
+                <br />
+                <br />
+                <br />
 
 
-                <p>Output file container: </p>  
+                <p>Output file container: </p>
 
                 <input type="text" name="container" className="folderPaths3" defaultValue={this.props.libraryItem.container} onChange={this.handleChange}></input>
 
@@ -2163,7 +2189,7 @@ if (confirm("Are you sure you want to reset all library stats?")) {
 <Checkbox name="ffmpeg" checked={!!this.props.libraryItem.ffmpeg} onChange={this.handleChangeChkBx} />
                 </p>  </center>
 
-                <p>CLI arguments/preset: </p>  
+                <p>CLI arguments/preset: </p>
                 <input type="text" name="preset" className="folderPaths" defaultValue={this.props.libraryItem.preset} onChange={this.handleChange}></input>
 
 
@@ -2179,7 +2205,7 @@ if (confirm("Are you sure you want to reset all library stats?")) {
 
                 <p></p>
                 <p></p>
-            <p>Don't transcode videos already in these codecs:</p> 
+                <p>Don't transcode videos already in these codecs:</p>
 
 
                 <form onSubmit={this.addVideoCodecExclude.bind(this)} >
@@ -2331,20 +2357,20 @@ if (confirm("Are you sure you want to reset all library stats?")) {
 
             </div>
 
-            <div className={this.state.navItemSelected == "navHealthCheck" ? '' : 'hidden'} >
+            <div className={this.props.libraryItem.navItemSelected == "navHealthCheck" ? '' : 'hidden'} >
 
               <p>Health check type:</p>
-                <p>Quick:
+              <p>Quick:
         <Checkbox name="handbrakescan" checked={!!this.props.libraryItem.handbrakescan} onChange={this.handleChangeChkBx} />
-                  Thorough:
+                Thorough:
         <Checkbox name="ffmpegscan" checked={!!this.props.libraryItem.ffmpegscan} onChange={this.handleChangeChkBx} />
-                </p>  
+              </p>
 
             </div>
 
-            <div className={this.state.navItemSelected == "navSchedule" ? '' : 'hidden'} >
+            <div className={this.props.libraryItem.navItemSelected == "navSchedule" ? '' : 'hidden'} >
 
-             <p>Schedule:  </p>
+              <p>Schedule:  </p>
 
               <Button variant="outline-light" onClick={() => {
 
@@ -2358,9 +2384,9 @@ if (confirm("Are you sure you want to reset all library stats?")) {
 
               }}  >Toggle all</Button>
 
-              <br/>
-              <br/>
-              <br/>
+              <br />
+              <br />
+              <br />
 
               <div className="scheduleContainer">
                 {this.renderScheduleBlocks()}
