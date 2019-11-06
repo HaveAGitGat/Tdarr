@@ -416,13 +416,7 @@ StatisticsDB.upsert("statistics",
       DBFetchTime: "1s",
       DBLoadStatus: "Stable",
       DBQueue: 0,
-      pie1: [{ name: "No data", value: 1 }],
-      pie2: [{ name: "No data", value: 1 }],
-      pie3: [{ name: "No data", value: 1 }],
-      pie4: [{ name: "No data", value: 1 }],
-      pie5: [{ name: "No data", value: 1 }],
-      pie6: [{ name: "No data", value: 1 }],
-      pie7: [{ name: "No data", value: 1 }],
+      pies:[]
 
     }
   }
@@ -1222,11 +1216,17 @@ Meteor.methods({
 
 
 
-  }, 'returnPieFiles'(property, fileMedium, detail) {
+  }, 'returnPieFiles'(property, fileMedium, detail,DB_id) {
 
 
 
     var allFilesWithProp = allFilesPulledTable
+
+    if(DB_id != "all"){
+
+      allFilesWithProp = allFilesWithProp.filter(row => row.DB == DB_id);
+  
+    }
 
 
     if (fileMedium == "video" || fileMedium == "audio") {
@@ -2514,6 +2514,13 @@ function launchWorkerModule(workerType) {
           }
         );
 
+        SettingsDB.update(
+          message[3],
+          {
+            $inc: { totalHealthCheckCount: 1 }
+          }
+        );
+
 
 
 
@@ -2535,6 +2542,16 @@ function launchWorkerModule(workerType) {
 
             }
 
+          }
+        );
+
+        SettingsDB.update(
+          message[3],
+          {
+            $inc: { 
+              totalTranscodeCount: 1,
+              sizeDiff: message[7]
+             }
           }
         );
 
@@ -3471,7 +3488,7 @@ function tablesUpdate() {
             DBFetchTime: (newFetchtime).toFixed(1) + "s",
             DBTotalTime: ((DBPollPeriod / 1000) + newFetchtime).toFixed(1) + "s",
             DBLoadStatus: DBLoadStatus,
-            DBQueue: filesToAddToDB.length + + logsToAddToDB.length
+            DBQueue: filesToAddToDB.length + logsToAddToDB.length
           }
         }
       );
@@ -3516,28 +3533,98 @@ function statisticsUpdate() {
     }
   );
 
+  var pieArray = []
+
+  var statistics = StatisticsDB.find({}, {}).fetch()[0]
 
 
-  updatePieStats("TranscodeDecisionMaker", '', 'pie1')
-  updatePieStats('HealthCheck', '', 'pie2')
+  // Create pies for 'All' tab
+  var pieSubArray = []
+  pieSubArray.push("All")
 
-  updatePieStats('video_codec_name', 'video', 'pie3')
-  updatePieStats('container', 'video', 'pie4')
-  updatePieStats('video_resolution', 'video', 'pie5')
+  pieSubArray.push("all"  )
 
-  updatePieStats('audio_codec_name', 'audio', 'pie6')
-  updatePieStats('container', 'audio', 'pie7')
+  pieSubArray.push(allFilesPulledTable.length )
+  pieSubArray.push(statistics.totalTranscodeCount  )
+  pieSubArray.push(statistics.sizeDiff )
+  pieSubArray.push(statistics.totalHealthCheckCount )
+
+  pieSubArray.push(updatePieStats("TranscodeDecisionMaker", '', 'all'))
+  pieSubArray.push(updatePieStats('HealthCheck', '', 'all'))
+
+  pieSubArray.push(updatePieStats('video_codec_name', 'video', 'all'))
+  pieSubArray.push(updatePieStats('container', 'video', 'all'))
+  pieSubArray.push(updatePieStats('video_resolution', 'video', 'all'))
+
+  pieSubArray.push(updatePieStats('audio_codec_name', 'audio', 'all'))
+  pieSubArray.push(updatePieStats('container', 'audio', 'all'))
+
+  pieArray.push(pieSubArray)
+
+
+
+  //Create pies for each library
+  var settings = SettingsDB.find({}, { sort: { priority: 1 } }).fetch()
+
+
+
+    for (var i = 0; i < settings.length; i++) {
+
+      var pieSubArray = []
+
+      pieSubArray.push(settings[i].name)
+
+      pieSubArray.push(settings[i]._id  )
+
+      pieSubArray.push(allFilesPulledTable.filter(row => row.DB == settings[i]._id).length )
+      pieSubArray.push(settings[i].totalTranscodeCount  )
+      pieSubArray.push(settings[i].sizeDiff )
+      pieSubArray.push(settings[i].totalHealthCheckCount )
+    
+      pieSubArray.push(updatePieStats("TranscodeDecisionMaker", '', settings[i]._id))
+      pieSubArray.push(updatePieStats('HealthCheck', '', settings[i]._id))
+    
+      pieSubArray.push(updatePieStats('video_codec_name', 'video', settings[i]._id))
+      pieSubArray.push(updatePieStats('container', 'video', settings[i]._id))
+      pieSubArray.push(updatePieStats('video_resolution', 'video', settings[i]._id))
+    
+      pieSubArray.push(updatePieStats('audio_codec_name', 'audio', settings[i]._id))
+      pieSubArray.push(updatePieStats('container', 'audio', settings[i]._id))
+    
+      pieArray.push(pieSubArray)
+
+    }
+
+
+
+
+  StatisticsDB.upsert("statistics",
+  {
+    $set: {
+      pies: pieArray
+    }
+  }
+);
+
+
+
 
 }
 
 
-function updatePieStats(property, fileMedium, pie) {
+function updatePieStats(property, fileMedium, DB_id) {
 
 
   const data = [];
 
   var allFilesWithProp = allFilesPulledTable
 
+  //Filter files
+  if(DB_id != "all"){
+
+    allFilesWithProp = allFilesWithProp.filter(row => row.DB == DB_id);
+
+  }
 
   if (fileMedium == "video" || fileMedium == "audio") {
 
@@ -3553,6 +3640,7 @@ function updatePieStats(property, fileMedium, pie) {
   var uniquePropArr = []
 
 
+  //Create unique value array
   for (var i = 0; i < allFilesWithProp.length; i++) {
 
     if (!(uniquePropArr.includes(allFilesWithProp[i][property]))) {
@@ -3570,13 +3658,8 @@ function updatePieStats(property, fileMedium, pie) {
 
   }
 
-  StatisticsDB.upsert("statistics",
-    {
-      $set: {
-        [pie]: data
-      }
-    }
-  );
+  return data
+
 
 
 }
