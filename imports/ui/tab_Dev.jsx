@@ -45,6 +45,8 @@ export default class App extends Component {
 
       <div className="containerGeneral">
 
+        <br/><br/>
+
         <div className="libraryContainer">
 
           <center>

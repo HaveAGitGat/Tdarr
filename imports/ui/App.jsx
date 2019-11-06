@@ -15,6 +15,7 @@ import TabStatistics from '../ui/tab_Statistics.jsx';
 import {ErrorBoundary} from './ErrorBoundary.jsx';
 import TabLibraries from './libraries/tab_Libraries.jsx';
 import TabPlugins from './plugins/tab_Plugins.jsx';
+import TabOptions from '../ui/tab_Options.jsx';
 import TabSearch from './plugins/tab_Search.jsx';
 import TabTranscoding from './transcoding/tab_Transcoding.jsx';
 
@@ -24,6 +25,7 @@ const tabs = [
   {path: '/stats', text: 'Stats', component: TabStatistics},
   {path: '/settings/', text: 'Libraries', component: TabLibraries},
   {path: '/plugins/', text: 'Plugins', component: TabPlugins},
+  {path: '/options/', text: 'Options', component: TabOptions},
   {path: '/logs/', text: 'Logs', component: TabLog},
   {path: '/help/', text: 'Help', component: TabHelp},
   {path: '/', text: 'Dev', component: TabDev},
