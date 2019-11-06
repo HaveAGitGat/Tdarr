@@ -145,6 +145,23 @@ return null
                     }
                   }
                   
+                },{
+                  Header: () => (
+                    <div className="pluginTableHeader">  
+                    <p>CC</p>
+                    </div>
+                  ),
+                  id: 'CC',
+                  accessor: row => row.hasClosedCaptions == true ? 'yes' : 'no',
+                  width: getColumnWidth(data, 'hasClosedCaptions', 'CC'),
+                  getProps: (state, rowInfo, column) => {
+                    return {
+                      style: {
+                        color:"#e1e1e1",
+                        fontSize  :"14px",
+                      },
+                    }
+                  }
                 },
                 {
                   Header: () => (
@@ -348,6 +365,24 @@ return null
                       }
                     }
                   },
+                  {
+                      Header: () => (
+                        <div className="pluginTableHeader">  
+                        <p>Remove</p>
+                        </div>
+                      ),
+                      id: 'Remove',
+                      width: 'Remove'.length*10,
+                      accessor: row => this.renderRemoveButton(row),
+                      getProps: (state, rowInfo, column) => {
+                        return {
+                          style: {
+                            color:"#e1e1e1",
+                            fontSize  :"14px",
+                          },
+                        }
+                      }
+                    },
 
        
 
@@ -539,6 +574,14 @@ renderBumpButton(file) {
       </div>
       </div>
     </Modal>
+  }
+
+  renderRemoveButton(file) {
+
+
+    return <ItemButton file={file}  symbol={'X'} type="removeFile" />
+
+
   }
 
 
