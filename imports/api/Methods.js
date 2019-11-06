@@ -100,20 +100,33 @@ Meteor.methods({
 
     'addVideoCodecExclude'(DB_id, ele) {
 
+        var settings = SettingsDB.find({}, { sort: { priority: 1 } }).fetch()
 
-        SettingsDB.update({
-            '_id': DB_id,
+        for(var i = 0; i < settings.length ; i++){
+
+            if(settings[i].decisionMaker.video_codec_names_exclude.filter(row => row.codec === ele).length == 0){
+
+                SettingsDB.update({
+                    '_id': settings[i]._id,
+        
+        
+                }, {
+                    $addToSet: {
+                        "decisionMaker.video_codec_names_exclude": {
+                            _id: shortid.generate(),
+                            codec: ele,
+                            checked: false,
+                        }
+                    }
+                })
 
 
-        }, {
-            $addToSet: {
-                "decisionMaker.video_codec_names_exclude": {
-                    _id: shortid.generate(),
-                    codec: ele,
-                    checked: false,
-                }
             }
-        })
+
+        }
+
+
+
 
 
 
@@ -145,22 +158,30 @@ Meteor.methods({
     },
     'addAudioCodecExclude'(DB_id, ele) {
 
+        var settings = SettingsDB.find({}, { sort: { priority: 1 } }).fetch()
 
-        SettingsDB.update({
-            '_id': DB_id,
+        for(var i = 0; i < settings.length ; i++){
+
+            if(settings[i].decisionMaker.audio_codec_names_exclude.filter(row => row.codec === ele).length == 0){
+
+                SettingsDB.update({
+                    '_id': settings[i]._id,
+        
+        
+                }, {
+                    $addToSet: {
+                        "decisionMaker.audio_codec_names_exclude": {
+                            _id: shortid.generate(),
+                            codec: ele,
+                            checked: false,
+                        }
+                    }
+                })
 
 
-        }, {
-            $addToSet: {
-                "decisionMaker.audio_codec_names_exclude": {
-                    _id: shortid.generate(),
-                    codec: ele,
-                    checked: false,
-                }
             }
-        })
 
-
+        }
 
     },
 
