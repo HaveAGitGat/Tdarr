@@ -385,7 +385,7 @@ class App extends Component {
         // <td>{row.bumped ? row.bumped.toISOString() : "-"}</td>
 
        return <tr key={row._id}>
-          <td><p>{i + 1}</p></td><td><p>{row.file}</p></td><td><p>{row.video_codec_name}</p></td><td><p>{row.video_resolution}</p></td><td><p>{file_size}</p></td><td><p>{ !(row.bumped instanceof Date) ? this.renderBumpButton(row.file):this.renderCancelBumpButton(row.file) }</p></td>
+          <td><p>{i + 1}</p></td><td><p>{row.file}</p></td><td><p>{row.video_codec_name}</p></td><td><p>{row.video_resolution}</p></td><td><p>{file_size}</p></td><td><p>{ !(row.bumped instanceof Date) ? this.renderBumpButton(row.file):this.renderCancelBumpButton(row.file) }</p></td><td><p>{this.renderSkipButton(row.file)}</p></td>
           </tr>
 
       }
@@ -528,6 +528,14 @@ class App extends Component {
       bumped: new Date(),
     }
     return <ItemButton file={file} obj={obj} symbol={'↑'} type="updateDBAction" />
+  }
+
+  renderSkipButton(file) {
+    var obj = {
+      TranscodeDecisionMaker:"Transcode success",
+      lastTranscodeDate: new Date(),
+    }
+    return <ItemButton file={file} obj={obj} symbol={'⤳'} type="updateDBAction" />
   }
 
   renderCancelBumpButton(file) {
@@ -920,6 +928,7 @@ class App extends Component {
                 <th><p>Resolution</p></th>
                 <th><p>Size (GB)</p></th>
                 <th><p>Bump</p></th>
+                <th><p>Skip</p></th>
 
               </tr>
               {this.renderTable('table1', 'queue','TranscodeDecisionMaker')}
