@@ -1959,6 +1959,8 @@ function launchWorkerModule(workerType) {
               var settingsDBIndex = firstItem.DB
               var inputFolderStem = (settings[0].folder).replace(/\\/g, "/");
               var outputFolder = (settings[0].cache).replace(/\\/g, "/");
+              var folderToFolderConversionEnabled = settings[0].folderToFolderConversion
+              var folderToFolderConversionFolder = (settings[0].output).replace(/\\/g, "/");
               var container = settings[0].container
               var preset = settings[0].preset
               var handBrakeMode = settings[0].handbrake
@@ -2279,6 +2281,8 @@ function launchWorkerModule(workerType) {
                   settingsDBIndex,
                   reQueueAfter,
                   firstItem,
+                  folderToFolderConversionEnabled,
+                  folderToFolderConversionFolder
 
 
                 ]

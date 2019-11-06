@@ -86,6 +86,8 @@ var oldProgress = ""
 var lastProgCheck = ""
 
 var currentFileObject
+var folderToFolderConversionEnabled
+var folderToFolderConversionFolder
 
 
 
@@ -231,6 +233,8 @@ process.on('message', (m) => {
         settingsDBIndex = m[10]
         reQueueAfter = m[11]
         currentFileObject = m[12]
+        folderToFolderConversionEnabled = m[13]
+        folderToFolderConversionFolder = m[14]
 
 
 
@@ -274,7 +278,33 @@ process.on('message', (m) => {
 
         updateConsole(workerNumber, "currentDestinationLine:" + currentDestinationLine)
 
-        finalFilePath = getOutputPath(currentDestinationLine, container, outputFolder, inputFolderStem)
+        if(folderToFolderConversionEnabled == true){
+
+            finalFilePath = getOutputPath(currentDestinationLine, container, outputFolder, folderToFolderConversionFolder)
+
+            var outputFolderPath = finalFilePath.substring(0, finalFilePath.lastIndexOf(stringProcessingSlash))
+
+            if (!fs.existsSync(outputFolderPath)){
+                try {
+    
+                    if (mode != "healthcheck") {
+                        shell.mkdir('-p', outputFolderPath);
+    
+                    }
+                } catch (err) {
+                    updateConsole(workerNumber, "Unable to create folder!")
+                }
+            }
+
+
+
+            
+        }else{
+            finalFilePath = getOutputPath(currentDestinationLine, container, outputFolder, inputFolderStem)
+
+        }
+
+       
 
         updateConsole(workerNumber, "finalFilePath:" + finalFilePath)
 
@@ -282,12 +312,7 @@ process.on('message', (m) => {
 
         var outputFolderPath = currentDestinationLine.substring(0, currentDestinationLine.lastIndexOf(stringProcessingSlash))
 
-        if (fs.existsSync(outputFolderPath)) {
-
-
-        } else {
-
-
+        if (!fs.existsSync(outputFolderPath)){
             try {
 
                 if (mode != "healthcheck") {
@@ -302,8 +327,10 @@ process.on('message', (m) => {
             } catch (err) {
                 updateConsole(workerNumber, "Unable to create folder!")
             }
-
         }
+
+
+
 
         if (fs.existsSync(path.join(process.cwd() + "/npm"))) {
 
@@ -898,22 +925,10 @@ function workerNotEncounteredError() {
 
 
 
-        // var message = [
-        //     workerNumber,
-        //     "fileSizes",
-        //     globalQueueNumber,
-        //     sourcefileSizeInGbytes,
-        //     destfileSizeInGbytes
-
-        // ];
-        // process.send(message);
-
-        //currentSourceLine
 
 
 
-        updateConsole(workerNumber, "Moving file:" + currentDestinationLine + " to " + finalFilePath)
-
+       
 
 
         try {
@@ -922,8 +937,60 @@ function workerNotEncounteredError() {
         
 
 
-          
+          if(folderToFolderConversionEnabled == true){
 
+            errorLogFull += "Attempting to move new file to output folder" + "\r\n"
+            updateConsole(workerNumber, "Attempting to move new file to output folder" + currentSourceLine)
+
+
+            var finalFilePathCopy = finalFilePath
+
+
+            finalFilePathCopy = finalFilePathCopy.split(".")
+
+
+            finalFilePathCopy[finalFilePathCopy.length - 2] = finalFilePathCopy[finalFilePathCopy.length - 2] + "-TdarrNew"
+            finalFilePathCopy = finalFilePathCopy.join(".")
+
+
+            fsextra.moveSync(currentDestinationLine, finalFilePathCopy, {
+                overwrite: true
+            })
+
+            errorLogFull += "Moving file successful:" + "\r\n"
+            updateConsole(workerNumber, "Moving file successful:" + currentDestinationLine + " to " + finalFilePathCopy)
+
+
+            // errorLogFull += "Attempting to delete original file" + "\r\n"
+            // updateConsole(workerNumber, "Attempting to delete original file" + currentSourceLine)
+
+
+
+            // fs.unlinkSync(currentSourceLine)
+            // errorLogFull += "Original file deleted" + "\r\n"
+            // updateConsole(workerNumber, "Original file deleted" + currentSourceLine)
+
+
+            errorLogFull += "Renaming new file:" + "\r\n"
+            updateConsole(workerNumber, "Renaming new file:" + finalFilePathCopy + " to " + finalFilePath)
+
+            fsextra.moveSync(finalFilePathCopy, finalFilePath, {
+                overwrite: true
+            })
+
+            errorLogFull += "Renaming new file success:" + "\r\n"
+            updateConsole(workerNumber, "Renaming new file success:" + finalFilePathCopy + " to " + finalFilePath)
+
+
+            var cliLog = "\n Original size GB:"+ sourcefileSizeInGbytes
+            cliLog += "\n New size GB:"+ destfileSizeInGbytes
+
+
+
+
+          }else{
+
+            updateConsole(workerNumber, "Moving file:" + currentDestinationLine + " to " + finalFilePath)
 
             errorLogFull += "Attempting to move new file to original folder" + "\r\n"
             updateConsole(workerNumber, "Attempting to move new file to original folder" + currentSourceLine)
@@ -969,6 +1036,11 @@ function workerNotEncounteredError() {
 
             var cliLog = "\n Original size GB:"+ sourcefileSizeInGbytes
             cliLog += "\n New size GB:"+ destfileSizeInGbytes
+
+
+          }
+
+
 
 
 

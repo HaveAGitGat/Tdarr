@@ -5,7 +5,7 @@ import ToggleButton from 'react-toggle-button'
 
 import { render } from 'react-dom';
 
-import { SettingsDB, GlobalSettingsDB } from '../../api/tasks.js';
+import {StatisticsDB, SettingsDB, GlobalSettingsDB } from '../../api/tasks.js';
 
 import { withTracker } from 'meteor/react-meteor-data';
 
@@ -55,6 +55,7 @@ class Folder extends Component {
       scheduleAll: false,
       folderBrowser: false,
       cacheBrowser: false,
+      outputBrowser: false,
       navItemSelected: "navSourceFolder",
 
 
@@ -78,6 +79,8 @@ class Folder extends Component {
     this.verifyFolder(ReactDOM.findDOMNode(this.refs[this.props.libraryItem._id + 'f']).value, 'folder', this.props.libraryItem._id + 'f')
 
     this.verifyFolder(ReactDOM.findDOMNode(this.refs[this.props.libraryItem._id + 'f']).value, 'cache', this.props.libraryItem._id + 'c')
+
+    this.verifyFolder(ReactDOM.findDOMNode(this.refs[this.props.libraryItem._id + 'o']).value, 'output', this.props.libraryItem._id + 'o')
 
 
   }
@@ -245,6 +248,13 @@ class Folder extends Component {
       this.verifyFolder(event.target.value, 'cache', this.props.libraryItem._id + 'c')
 
     }
+
+    if (event.target.name == "output") {
+
+      this.verifyFolder(event.target.value, 'output', this.props.libraryItem._id + 'o')
+
+    }
+
 
     if (event.target.name == "pluginID") {
 
@@ -1449,8 +1459,48 @@ class Folder extends Component {
                 <Dropdown.Item style={{ color: 'green', fontSize:'14px' }} onClick={() => this.scanFiles(1)} >Scan (Fresh)</Dropdown.Item>
 
 
-                <Dropdown.Item onClick={() => this.resetAllStatus('TranscodeDecisionMaker')}><p>Requeue all items (transcode)</p></Dropdown.Item>
-                <Dropdown.Item onClick={() => this.resetAllStatus('HealthCheck')}><p>Requeue all items (health check)</p></Dropdown.Item>
+                <Dropdown.Item onClick={() => this.resetAllStatus('TranscodeDecisionMaker')}><span className="buttonTextSize">Requeue all items (transcode)</span></Dropdown.Item>
+                <Dropdown.Item onClick={() => this.resetAllStatus('HealthCheck')}><span className="buttonTextSize">Requeue all items (health check)</span></Dropdown.Item>
+
+                <Dropdown.Item style={{ color: '#bb86fc',fontSize:'14px' }} onClick={() => {
+
+if (confirm("Are you sure you want to reset this library's stats?")) {
+
+  SettingsDB.upsert(
+    this.props.libraryItem._id,
+    {
+      $set: {
+        totalTranscodeCount: 0,
+        sizeDiff: 0,
+        totalHealthCheckCount:0,
+      }
+    }
+  );
+  
+}
+}
+
+}>Reset stats: This library</Dropdown.Item>
+
+<Dropdown.Item style={{ color: '#bb86fc',fontSize:'14px' }} onClick={() => {
+
+if (confirm("Are you sure you want to reset all library stats?")) {
+
+ StatisticsDB.upsert(
+  "statistics",
+    {
+      $set: {
+        totalTranscodeCount: 0,
+        sizeDiff: 0,
+        totalHealthCheckCount:0,
+      }
+    }
+  );
+  
+}
+}
+
+}>Reset stats: All</Dropdown.Item>
 
 
 
@@ -1605,6 +1655,14 @@ class Folder extends Component {
                 navItemSelected: "navCacheFolder",
               })
             }} className={this.state.navItemSelected == "navCacheFolder" ? 'selectedNav' : ''}>Transcode cache</p>
+
+            <p onClick={() => {
+              this.setState({
+                navItemSelected: "navOutputFolder",
+              })
+            }} className={this.state.navItemSelected == "navOutputFolder" ? 'selectedNav' : ''}>Output Folder</p>
+
+
 
             <p onClick={() => {
               this.setState({
@@ -1818,6 +1876,72 @@ class Folder extends Component {
                 <div id={this.props.libraryItem._id + 'cResults'} className="folderResults"></div>
               </div>
             </div>
+
+
+<div className={this.state.navItemSelected == "navOutputFolder" ? '' : 'hidden'}>
+
+
+<p>Under normal operation Tdarr is designed to work directly on your library, replacing original files. If you like you can enable folder-to-folder conversion below.  </p>
+
+
+<p> Output Folder:              <ToggleButton
+                thumbStyle={borderRadiusStyle}
+                trackStyle={borderRadiusStyle}
+
+                value={this.props.libraryItem.folderToFolderConversion === undefined ? true : !!this.props.libraryItem.folderToFolderConversion}
+                onToggle={() => {
+
+                  SettingsDB.upsert(
+
+                    this.props.libraryItem._id,
+                    {
+                      $set: {
+                        folderToFolderConversion: !this.props.libraryItem.folderToFolderConversion,
+                      }
+                    }
+                  );
+                }
+
+                }
+              /></p>
+
+<input type="text" className="folderPaths" ref={this.props.libraryItem._id + 'o'} name="output" defaultValue={this.props.libraryItem.output} onChange={this.handleChange}></input>
+
+<div className={this.props.libraryItem.outputValid ? 'hidden' : ''}>
+
+  <span className="invalidFolder" ><center> Invalid folder </center></span>
+
+</div>
+
+<br/>
+<br/>
+
+
+<div className="folderResults">
+
+  <Button variant="outline-light" onClick={() => {
+
+    this.setState({
+      outputBrowser: !this.state.outputBrowser,
+    })
+
+
+  }} ><span className="buttonTextSize">{this.state.outputBrowser ? 'Hide' : 'Show'} browser</span></Button>
+
+  <br/>
+  <br/>
+
+</div>
+
+<div className={this.state.outputBrowser ? '' : 'hidden'}>
+
+  <div id={this.props.libraryItem._id + 'oResults'} className="folderResults"></div>
+</div>
+</div>
+
+
+
+
 
 
             <div className={this.state.navItemSelected == "navContainers" ? '' : 'hidden'} >
