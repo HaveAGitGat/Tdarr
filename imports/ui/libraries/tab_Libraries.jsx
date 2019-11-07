@@ -89,6 +89,7 @@ class App extends Component {
       decisionMaker:{
         pluginFilter:true,
         videoFilter:false,
+        videoExcludeSwitch:true,
         video_codec_names_exclude:[
           {codec:"hevc",
           checked:false
@@ -104,6 +105,8 @@ class App extends Component {
         video_width_range_include:{min:0,max:4000},
 
         audioFilter:false,
+        audioExcludeSwitch:true,
+        
         audio_codec_names_exclude:[
           {codec:"mp3",
           checked:true

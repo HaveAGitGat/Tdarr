@@ -386,6 +386,52 @@ class Folder extends Component {
     }
   }
 
+  handleChangeChkBx2 = (event,type) => {
+
+
+    console.log(event.target.checked,type,event.target.name)
+
+    if(event.target.name == "ExcludeSwitch" && event.target.checked == true){
+
+      var key = "decisionMaker." + type + "ExcludeSwitch"
+
+      SettingsDB.upsert(
+
+        this.props.libraryItem._id,
+        {
+          $set: {
+            [key]: true,
+          }
+        }
+      );
+  
+  
+
+
+    }else if(event.target.name == "IncludeSwitch" && event.target.checked == true){
+
+      var key = "decisionMaker." + type + "ExcludeSwitch"
+
+      SettingsDB.upsert(
+
+        this.props.libraryItem._id,
+        {
+          $set: {
+            [key]: false,
+          }
+        }
+      );
+  
+
+
+    }
+
+
+
+
+  }
+
+
   renderPlugins() {
 
     var plugins = this.props.settings;
@@ -2205,7 +2251,7 @@ class Folder extends Component {
 
                 <p></p>
                 <p></p>
-                <p>Don't transcode videos already in these codecs:</p>
+                <p>Don't <Checkbox name="ExcludeSwitch" checked={this.props.libraryItem.decisionMaker.videoExcludeSwitch != undefined ? this.props.libraryItem.decisionMaker.videoExcludeSwitch : true} onChange={ event => this.handleChangeChkBx2(event,'video')} />/ Only<Checkbox name="IncludeSwitch" checked={this.props.libraryItem.decisionMaker.videoExcludeSwitch != undefined ? !this.props.libraryItem.decisionMaker.videoExcludeSwitch : false} onChange={event => this.handleChangeChkBx2(event,'video')} /> transcode videos in these codecs:</p>
 
 
                 <form onSubmit={this.addVideoCodecExclude.bind(this)} >
@@ -2307,7 +2353,7 @@ class Folder extends Component {
               <div className={!!this.props.libraryItem.decisionMaker.audioFilter ? '' : 'hidden'}>
                 <p></p>
                 <p></p>
-                <p>Don't transcode audio already in these codecs:</p>
+                <p>Don't <Checkbox name="ExcludeSwitch" checked={this.props.libraryItem.decisionMaker.audioExcludeSwitch != undefined ? this.props.libraryItem.decisionMaker.audioExcludeSwitch : true} onChange={ event => this.handleChangeChkBx2(event,'audio')} />/ Only<Checkbox name="IncludeSwitch" checked={this.props.libraryItem.decisionMaker.audioExcludeSwitch != undefined ? !this.props.libraryItem.decisionMaker.audioExcludeSwitch : false} onChange={event => this.handleChangeChkBx2(event,'audio')} /> transcode audio in these codecs:</p>
 
                 <form onSubmit={this.addAudioCodecExclude.bind(this)} >
                   <input

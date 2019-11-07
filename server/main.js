@@ -372,7 +372,7 @@ if (!Array.isArray(count) || !count.length) {
       }
     );
   }
-  
+
 
   if (count[0].basePath == undefined) {
 
@@ -2188,21 +2188,50 @@ function launchWorkerModule(workerType) {
                       }
                     })
 
+                    console.log("here")
 
-                    if (video_codec_names_exclude.includes(firstItem.ffProbeData.streams[0]["codec_name"]) && typeof firstItem.ffProbeData.streams[0]["codec_name"] !== 'undefined') {
+                    if(settings[0].decisionMaker.videoExcludeSwitch == false){
 
-                      console.log(video_codec_names_exclude + "   " + firstItem.video_codec_name)
+                      console.log("here2")
 
-                      console.log("File video already in required codec")
+                      if (video_codec_names_exclude.includes(firstItem.ffProbeData.streams[0]["codec_name"]) && typeof firstItem.ffProbeData.streams[0]["codec_name"] !== 'undefined') {
 
-                      cliLogAdd += "☑File already in required codec  \n"
+                        console.log(video_codec_names_exclude + "   " + firstItem.video_codec_name)
+  
+                        console.log("File codec included in transcode whitelist")
+  
+                        cliLogAdd += "☑File codec included in transcode whitelist  \n"
+  
+                     
+  
+                      } else {
+                        cliLogAdd += "☒File codec not included in transcode whitelist  \n"
+                        processFile = false;
+  
+                      }
 
-                      processFile = false;
 
-                    } else {
-                      cliLogAdd += "☒File video not in required codec  \n"
 
+                    }else{
+
+                      if (video_codec_names_exclude.includes(firstItem.ffProbeData.streams[0]["codec_name"]) && typeof firstItem.ffProbeData.streams[0]["codec_name"] !== 'undefined') {
+
+                        console.log(video_codec_names_exclude + "   " + firstItem.video_codec_name)
+  
+                        console.log("File video already in required codec")
+  
+                        cliLogAdd += "☑File already in required codec  \n"
+  
+                        processFile = false;
+  
+                      } else {
+                        cliLogAdd += "☒File video not in required codec  \n"
+  
+                      }
+  
                     }
+
+
 
                     if (firstItem.file_size >= settings[0].decisionMaker.video_size_range_include.max || firstItem.file_size <= settings[0].decisionMaker.video_size_range_include.min) {
                       console.log("File not in video size range")
@@ -2258,17 +2287,41 @@ function launchWorkerModule(workerType) {
                     })
 
 
+                    if(settings[0].decisionMaker.audioExcludeSwitch == false){
+
+
                     if (audio_codec_names_exclude.includes(firstItem.ffProbeData.streams[0]["codec_name"]) && typeof firstItem.ffProbeData.streams[0]["codec_name"] !== 'undefined') {
 
-                      console.log("File already in required codec")
-                      cliLogAdd += "☑File already in required codec  \n"
+                      console.log("File codec included in transcode whitelist")
+                      cliLogAdd += "☑File codec included in transcode whitelist  \n"
 
-                      processFile = false;
+
 
                     } else {
-                      cliLogAdd += "☒File audio not in required codec  \n"
+                      cliLogAdd += "☒File codec not included in transcode whitelist  \n"
+                      processFile = false;
 
                     }
+
+                    }else{
+
+
+                      if (audio_codec_names_exclude.includes(firstItem.ffProbeData.streams[0]["codec_name"]) && typeof firstItem.ffProbeData.streams[0]["codec_name"] !== 'undefined') {
+
+                        console.log("File already in required codec")
+                        cliLogAdd += "☑File already in required codec  \n"
+  
+                        processFile = false;
+  
+                      } else {
+                        cliLogAdd += "☒File audio not in required codec  \n"
+  
+                      }
+
+                    }
+
+
+
 
                     if (firstItem.file_size >= settings[0].decisionMaker.audio_size_range_include.max || firstItem.file_size <= settings[0].decisionMaker.audio_size_range_include.min) {
 
