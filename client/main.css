@@ -60,6 +60,11 @@ p {
   content: none;
 }
 
+input[type="text"]
+{
+    font-size:14px;
+}
+
   .folderPaths {
 
     width: 100%;
