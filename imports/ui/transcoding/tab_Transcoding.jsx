@@ -9,7 +9,6 @@ import Modal from "reactjs-popup";
 import { render } from 'react-dom';
 
 import { Button } from 'react-bootstrap';
-import 'bootstrap/dist/css/bootstrap.css';
 
 
 import { StatisticsDB, FileDB, GlobalSettingsDB, ClientDB } from '../../api/tasks.js';
