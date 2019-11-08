@@ -13,6 +13,8 @@ import SearchResults from './searchResults.jsx'
 
 import { PieChart, Pie, Sector, Cell, Tooltip, Label,ResponsiveContainer} from 'recharts';
 
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+
 
 
 var renderLabel = function (entry) {
@@ -73,7 +75,7 @@ try{
 
   }
 
-  renderPie(pie,property, fileMedium) {
+  renderPie(index,item,property, fileMedium,DB_id) {
 
 
 
@@ -86,7 +88,10 @@ try{
       var data = [{name:"Loading...",value:1}]
 
     }else {
-      var data = statistics[0][pie]
+      //var data = statistics[0][pie]
+
+      var data = statistics[0].pies[index][item]
+
 
     }
 
@@ -127,7 +132,7 @@ try{
         /></center>, document.getElementById('searchResults'));
 
 
-                    Meteor.call('returnPieFiles',property, fileMedium,entry.name, (error, result) => {
+                    Meteor.call('returnPieFiles',property, fileMedium,entry.name,DB_id, (error, result) => {
 
 
                      
@@ -163,21 +168,41 @@ try{
 }
 
 
+renderStats = () => {
+
+
+  // this.props.statistics.pies.map(row =>
+
+
+  try{
+
+    if(this.props.statistics.length == 0){
+
+
+    }else{
 
 
 
-  render() {
-    return (
+    var tabTitles = this.props.statistics[0].pies.map((item, i) => {
+
+    return  <Tab><p>{item[0]}</p></Tab>
+    
+    });
+
+      var tabPanels = this.props.statistics[0].pies.map((item, i) => (
+
+        <TabPanel>
 
 
-      <div className="containerGeneral">
 
-<div className="statsContainer">
-          <center>
-      <header>
-          <h1>Stats</h1>
-      </header>
-      </center>
+<div className="tabContainerStat" >
+
+<br/>
+<br/>
+
+
+<div className="videoStatsContainer">
+
 
 
       <center>
@@ -185,11 +210,11 @@ try{
 
       <tbody>
 
-      <tr><td><p><b>Total files in DB</b></p></td><td><p>{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{this.renderStat('totalFileCount')}</p></td></tr>
+      <tr><td><p><b>Files</b></p></td><td><p>{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{item[2]}</p></td></tr>
 
-      <tr><td><p><b>Total number of transcodes</b></p></td><td><p>{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{this.renderStat('totalTranscodeCount')}</p></td></tr>
-      <tr><td><p><b>Space saved</b></p></td><td><p>{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{this.renderStat('sizeDiff')} GB</p></td></tr>
-      <tr><td><p><b>Total number of health checks</b></p></td><td> <p>{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{this.renderStat('totalHealthCheckCount')}</p></td></tr>
+      <tr><td><p><b>Number of transcodes</b></p></td><td><p>{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{item[3]}</p></td></tr>
+      <tr><td><p><b>Space saved</b></p></td><td><p>{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{item[4] != undefined ? parseFloat(item[4].toPrecision(4)) : 0} GB</p></td></tr>
+      <tr><td><p><b>Number of health checks</b></p></td><td> <p>{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{item[5]}</p></td></tr>
 
       <tr></tr>
 
@@ -204,58 +229,34 @@ try{
 
 
        </div>
-
-       <div className={this.state.resultsShow ? '' : 'hidden'}>
-       <center>
-       <Button variant="outline-light" onClick={() => {
-          this.setState({
-            resultsShow: false,
-          })
-
-          render("", document.getElementById('searchResults'));
+<br/>
+<br/>
 
 
-
-       }} ><span className="buttonTextSize">Clear</span></Button>
-   </center>
-
-   <div className="libraryContainer" >
-<div id="searchResults" ref="searchResults"></div>
-</div>
-
-</div>
-
-<center><p>Click on pie segments to load respective files</p></center>
-
-
-
-       <div className="videoStatsContainer">
+  <div className="videoStatsContainer">
 
 <center><p><b>Tdarr status</b></p></center> 
 
   <div className="pieaudiogrid-container">
 
   <div className="pieaudiogrid-item-title">
-  <center><p><b>Transcode </b>{this.renderStat('tdarrScore')}%</p></center>
+  <center><p><b>Transcode </b></p></center>
+  {/* {this.renderStat('tdarrScore')}% */}
   </div>
 
   
   <div className="pieaudiogrid-item-title">
-  <center><p><b>Health </b>{this.renderStat('healthCheckScore')}%</p></center>
+  <center><p><b>Health </b></p></center>
+  {/* {this.renderStat('healthCheckScore')}% */}
 
   </div>
-
-
-
-
-
 
 
   <div className="pieaudiogrid-item">
 
  
 
-  {this.renderPie('pie1',"TranscodeDecisionMaker", '')}
+  {this.renderPie(i,7,"TranscodeDecisionMaker", '',item[1])}
 
     </div>
 
@@ -263,7 +264,7 @@ try{
 
     <div className="pieaudiogrid-item">
 
-    {this.renderPie('pie2','HealthCheck', '')}
+    {this.renderPie(i,7,'HealthCheck', '',item[1])}
 
 
 </div>
@@ -271,57 +272,52 @@ try{
 </div>
 </div>
 
-       
+<br/>
+<br/>
 
+<div className="videoStatsContainer">
 
-      <div className="videoStatsContainer">
+<center><p><b>Video files</b></p></center> 
 
-      <center><p><b>Video files</b></p></center> 
+  <div className="piegrid-container">
 
-        <div className="piegrid-container">
+  <div className="piegrid-item-title">
+  <center><p><b>Codecs</b></p></center>
+  </div>
 
-        <div className="piegrid-item-title">
-        <center><p><b>Codecs</b></p></center>
-        </div>
+  <div className="piegrid-item-title">
+  <center><p><b>Containers</b></p></center>
 
-        <div className="piegrid-item-title">
-        <center><p><b>Containers</b></p></center>
+  </div>
 
-        </div>
-
-        <div className="piegrid-item-title">
-        <center><p><b>Resolutions</b></p></center>
-        </div>
-        
-
-
-
+  <div className="piegrid-item-title">
+  <center><p><b>Resolutions</b></p></center>
+  </div>
+  
 
 
 
+  <div className="piegrid-item">
+    
+  {this.renderPie(i,8,"video_codec_name","video",item[1])}
+
+    </div>
 
 
-        <div className="piegrid-item">
-          
-        {this.renderPie('pie3',"video_codec_name","video")}
+    <div className="piegrid-item">
 
-          </div>
+    {this.renderPie(i,9,"container","video",item[1])}
 
+    </div>
+  
 
-          <div className="piegrid-item">
-     
-          {this.renderPie('pie4',"container","video")}
-
-          </div>
-        
-
-        <div className="piegrid-item">
+  <div className="piegrid-item">
 
 
-        {this.renderPie('pie5',"video_resolution","video")}
+  {this.renderPie(i,10,"video_resolution","video",item[1])}
 
 
-          </div>
+    </div>
 
 
 
@@ -329,9 +325,9 @@ try{
 
 </div>
 </div>
-   
 
-
+<br/>
+<br/>
 
 <div className="videoStatsContainer">
 
@@ -358,7 +354,7 @@ try{
   <div className="pieaudiogrid-item">
     
 
-  {this.renderPie('pie6','audio_codec_name', 'audio')}
+  {this.renderPie(i,11,'audio_codec_name', 'audio',item[1])}
 
     </div>
 
@@ -366,13 +362,100 @@ try{
 
     <div className="pieaudiogrid-item">
 
-    {this.renderPie('pie7','container', 'audio')}
+    {this.renderPie(i,12,'container', 'audio',item[1])}
 
 
 </div>
 
 </div>
 </div>
+
+<br/>
+<br/>
+
+ 
+   </div>
+
+          
+        </TabPanel>
+       
+
+      
+        ));
+
+      
+  return  <div className="tabWrap" > <Tabs selectedIndex={ this.props.globalSettings[0].selectedStatTab != undefined ? this.props.globalSettings[0].selectedStatTab : 0} onSelect={tabIndex => {
+
+    GlobalSettingsDB.upsert('globalsettings',
+    {
+      $set: {
+        selectedStatTab: tabIndex,
+      }
+    }
+  );
+  }}>
+  <TabList>
+
+  {tabTitles}
+  </TabList>
+
+
+  {tabPanels}
+
+</Tabs> </div>
+
+    }
+
+  }catch(err){}
+
+
+
+
+
+}
+
+
+
+
+
+  render() {
+    return (
+
+
+      <div className="containerGeneral">
+
+
+
+       <div className={this.state.resultsShow ? '' : 'hidden'}>
+       <center>
+       <Button variant="outline-light" onClick={() => {
+          this.setState({
+            resultsShow: false,
+          })
+
+          render("", document.getElementById('searchResults'));
+
+
+
+       }} ><span className="buttonTextSize">Clear</span></Button>
+   </center>
+
+   <div className="libraryContainer" >
+<div id="searchResults" ref="searchResults"></div>
+</div>
+
+</div>
+
+
+
+<center><p>Click on pie segments to load respective files</p></center>
+
+
+
+          {this.renderStats()}
+
+
+
 
 
 
@@ -389,20 +472,13 @@ try{
 
 export default withTracker(() => {
 
-
+  Meteor.subscribe('GlobalSettingsDB');
   Meteor.subscribe('StatisticsDB');
 
   return {
 
     statistics:StatisticsDB.find({}).fetch(),
-
-
-
-
-
-
-
-
+    globalSettings: GlobalSettingsDB.find({}, {}).fetch(),
 
   };
 })(App);

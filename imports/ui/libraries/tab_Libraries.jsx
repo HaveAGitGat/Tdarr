@@ -64,6 +64,9 @@ class App extends Component {
       folderValid:true,
       cache:"Path to your transcode cache. Input a base folder and the folder browser below will show subfolders to navigate.",
       cacheValid:true,
+      output:"Path to your transcode cache. Input a base folder and the folder browser below will show subfolders to navigate.",
+      outputValid:true,
+      folderToFolderConversion:false,
       container:".mkv",
       containerFilter:"mkv,mp4,mov,m4v,mpg,mpeg,avi,flv,webm,wmv,vob,evo,iso",
       createdAt: new Date(),
@@ -73,6 +76,7 @@ class App extends Component {
       scanButtons:true,
       scanFound:0,
       expanded:true,
+      navItemSelected:"navSourceFolder",
       pluginID:'',
       pluginIDs:[],
       pluginValid:false,
@@ -859,9 +863,9 @@ class App extends Component {
   
       <div id="status"></div>
 
-        <ul>
+        
           {this.renderLibraries()}
-        </ul>
+        
       </div>
     );
   }

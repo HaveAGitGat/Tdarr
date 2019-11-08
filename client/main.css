@@ -24,6 +24,12 @@ html, body {
 
 }
 
+.versionNumber{
+  text-align:right;
+  position: absolute;
+  right:5em;
+}
+
 
 h1 {
     margin: 0 0 0px 0;
@@ -364,6 +370,14 @@ p {
     
     }
 
+    .searchContainer{
+
+      border: 1px solid black;
+      border-radius: 5px;
+      background:#373737;
+
+    }
+
 
 
 
@@ -511,8 +525,28 @@ p {
       border: 2px solid black;
       border-radius: 5px;
       background:#373737;
-      margin:2em;
+      margin:0 1em;
     }
+
+    .tabWrapStat{
+      border: 1px solid black;
+      border-radius: 5px;
+      margin:2em;
+      background:#222222;
+      padding:0em 0em 0em 0em;
+    
+    }
+    
+    .tabContainerStat{
+      background:  #121212;
+    }
+
+    
+    .holder{
+      /* margin:2em; */
+    
+    }
+    
 
 
 
@@ -1054,6 +1088,11 @@ table.streamsTable tr {
 
 .tabContainer{
   background:#373737;
+}
+
+
+.optionsDiv{
+  margin:0 2em;
 }
 
 

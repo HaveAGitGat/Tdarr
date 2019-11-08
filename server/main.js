@@ -37,6 +37,7 @@ var fileScanners = {}
 //var fileScannersData = {}
 var verboseLogs
 var folderWatchers = {}
+var runningScans = []
 
 // var workerDB = [{
 //   _id:"test",
@@ -89,7 +90,7 @@ if (process.env.NODE_ENV == 'production') {
       "globalsettings",
       {
         $set: {
-          basePath:process.env.BASE,
+          basePath: process.env.BASE,
         }
       }
     );
@@ -100,7 +101,7 @@ if (process.env.NODE_ENV == 'production') {
       "globalsettings",
       {
         $set: {
-          basePath:"",
+          basePath: "",
         }
       }
     );
@@ -115,13 +116,16 @@ if (process.env.NODE_ENV == 'production') {
     "globalsettings",
     {
       $set: {
-        basePath:"",
+        basePath: "",
       }
     }
   );
 }
 
-console.log("Tdarr documents folder:"+ homePath)
+console.log("Tdarr documents folder:" + homePath)
+
+
+
 
 
 
@@ -134,9 +138,9 @@ if (isDocker()) {
   console.log('Running inside a Docker container');
   if (!fs.existsSync("/temp")) {
     fs.mkdirSync("/temp");
-  
+
   }
-}else{
+} else {
   console.log('Not running inside a Docker container');
 
 }
@@ -188,6 +192,31 @@ if (!fs.existsSync(homePath + "/Tdarr/Samples")) {
 }
 
 
+
+//READ  variables from json file
+if (fs.existsSync(homePath + "/Tdarr/Data/env.json")) {
+
+  try {
+
+    jsonConfig = JSON.parse(fs.readFileSync(homePath + "/Tdarr/Data/env.json", 'utf8'))
+    GlobalSettingsDB.upsert(
+      "globalsettings",
+      {
+        $set: {
+          basePath: jsonConfig.BASE,
+        }
+      }
+    );
+
+  } catch (err) {
+    console.log("Unable to load configuration file")
+  }
+
+}
+
+
+
+
 //Test
 //console.log("homePath:"+homePath)
 //fs.writeFileSync(homePath + "/Tdarr/Data/test.txt", "Hello", 'utf8');
@@ -203,7 +232,7 @@ allFilesPulledTable = FileDB.find({}).fetch()
 
 for (var i = 0; i < allFilesPulledTable.length; i++) {
 
-  console.log("Checking file:"+(i+1))
+  console.log("Checking file:" + (i + 1))
 
   if (allFilesPulledTable[i].TranscodeDecisionMaker == "Not attempted") {
 
@@ -298,54 +327,64 @@ if (!Array.isArray(count) || !count.length) {
         generalWorkerLimit: 0,
         transcodeWorkerLimit: 0,
         healthcheckWorkerLimit: 0,
-        queueSortType:"sortDateNewest",
+        queueSortType: "sortDateNewest",
         verboseLogs: false,
       }
     }
   );
-}else{
-//init sort vars
+} else {
+  //init sort vars
 
-if(count[0].queueSortType == undefined){
+  if (count[0].queueSortType == undefined) {
 
-  GlobalSettingsDB.upsert(
-    "globalsettings",
-    {
-      $set: {
-        queueSortType:"sortDateNewest",
+    GlobalSettingsDB.upsert(
+      "globalsettings",
+      {
+        $set: {
+          queueSortType: "sortDateNewest",
+        }
       }
-    }
-  );
+    );
 
-}
+  }
 
-if(count[0].prioritiseLibraries == undefined){
+  if (count[0].prioritiseLibraries == undefined) {
 
-  GlobalSettingsDB.upsert(
-    "globalsettings",
-    {
-      $set: {
-        prioritiseLibraries:false,
+    GlobalSettingsDB.upsert(
+      "globalsettings",
+      {
+        $set: {
+          prioritiseLibraries: false,
+        }
       }
-    }
-  );
+    );
 
-}
+  }
 
-if(count[0].alternateLibraries == undefined){
+  if (count[0].alternateLibraries == undefined) {
 
-  GlobalSettingsDB.upsert(
-    "globalsettings",
-    {
-      $set: {
-        alternateLibraries:true,
+    GlobalSettingsDB.upsert(
+      "globalsettings",
+      {
+        $set: {
+          alternateLibraries: true,
+        }
       }
-    }
-  );
+    );
+  }
+  
 
-}
+  if (count[0].basePath == undefined) {
 
-
+    GlobalSettingsDB.upsert(
+      "globalsettings",
+      {
+        $set: {
+          basePath: "",
+        }
+      }
+    );
+  }
 
 }
 
@@ -365,15 +404,15 @@ var count = SettingsDB.find({}, { sort: { createdAt: 1 } }).fetch()
 if (Array.isArray(count) || count.length) {
 
 
-  if(count[0] != undefined && count[0].priority == undefined){
+  if (count[0] != undefined && count[0].priority == undefined) {
 
-    for(var i = 0 ; i < count.length; i++){
+    for (var i = 0; i < count.length; i++) {
 
       SettingsDB.upsert(
         count[i]._id,
         {
           $set: {
-            priority : i,
+            priority: i,
           }
         }
       );
@@ -415,13 +454,7 @@ StatisticsDB.upsert("statistics",
       DBFetchTime: "1s",
       DBLoadStatus: "Stable",
       DBQueue: 0,
-      pie1: [{ name: "No data", value: 1 }],
-      pie2: [{ name: "No data", value: 1 }],
-      pie3: [{ name: "No data", value: 1 }],
-      pie4: [{ name: "No data", value: 1 }],
-      pie5: [{ name: "No data", value: 1 }],
-      pie6: [{ name: "No data", value: 1 }],
-      pie7: [{ name: "No data", value: 1 }],
+      pies: []
 
     }
   }
@@ -475,33 +508,33 @@ Meteor.methods({
 
           var match = []
 
-          if(string[i].charAt(0) == "!"){
+          if (string[i].charAt(0) == "!") {
 
-           var subString = string[i].substring(1)
+            var subString = string[i].substring(1)
 
             if ((JSON.stringify(row)).toLowerCase().includes(subString.toLowerCase())) {
-             // match.push(true)
-             return false
+              // match.push(true)
+              return false
             }
 
 
-          }else{
+          } else {
 
             if (!(JSON.stringify(row)).toLowerCase().includes(string[i].toLowerCase())) {
-            //  match.push(false)
-            return false
+              //  match.push(false)
+              return false
             }
           }
 
 
 
-         
+
         }
 
         return true
 
       } catch (err) {
-         console.log(err.stack)
+        console.log(err.stack)
       }
 
 
@@ -514,10 +547,10 @@ Meteor.methods({
     //Add queue positions to search results
 
     for (var i = 0; i < allFiles.length; i++) {
-      var tFiles = transcodeFiles.map(row => row.file )
-      var hFiles = healthcheckFiles.map(row => row.file )
-      allFiles[i].tPosition =  tFiles.indexOf(allFiles[i].file)+1
-      allFiles[i].hPosition =  hFiles.indexOf(allFiles[i].file)+1
+      var tFiles = transcodeFiles.map(row => row.file)
+      var hFiles = healthcheckFiles.map(row => row.file)
+      allFiles[i].tPosition = tFiles.indexOf(allFiles[i].file) + 1
+      allFiles[i].hPosition = hFiles.indexOf(allFiles[i].file) + 1
     }
 
 
@@ -535,7 +568,7 @@ Meteor.methods({
 
   },
 
-  'searchPlugins'(string,pluginType) {
+  'searchPlugins'(string, pluginType) {
 
     //  console.log(string)
 
@@ -609,7 +642,7 @@ Meteor.methods({
     );
 
 
-    return [plugins,pluginType]
+    return [plugins, pluginType]
 
   }, 'verifyPlugin'(pluginID, DB_id, community) {
 
@@ -660,7 +693,7 @@ Meteor.methods({
 
     try {
       fsextra.removeSync(homePath + '/Tdarr/Plugins/temp')
-    } catch (err) {  console.log(err.stack)}
+    } catch (err) { console.log(err.stack) }
 
     var clone = require('git-clone');
 
@@ -668,7 +701,7 @@ Meteor.methods({
 
     clone("https://github.com/HaveAGitGat/Tdarr_Plugins/", homePath + '/Tdarr/Plugins/temp/', Meteor.bindEnvironment(function (err, result) {
 
-    console.log(err)
+      console.log(err)
 
       try {
         fsextra.copySync(homePath + '/Tdarr/Plugins/temp/Community', homePath + "/Tdarr/Plugins/Community", { overwrite: true })
@@ -702,15 +735,34 @@ Meteor.methods({
 
 
 
-  }, 'resetAllStatus'(DB_id,mode) {
+  }, 'resetAllStatus'(DB_id, mode, table) {
+
+    //Files transcode/health check status is reset from either the library 'Options' or from the table 'Re-qeueue' button
 
 
-    var allFiles = allFilesPulledTable
+    var allFiles
+    //from table requeue buttons
 
-    if(DB_id != "all"){
-      allFiles =  allFiles.filter(row => row.DB == DB_id);
-    }
-    
+    if (DB_id == "all") {
+
+      if (table == "table2") {
+        allFiles = table2data
+      } else if (table == "table3") {
+        allFiles = table3data
+      } if (table == "table5") {
+        allFiles = table5data
+      } if (table == "table6") {
+        allFiles = table6data
+      }
+
+    } else
+
+      //from library options
+      if (DB_id != "all") {
+        allFiles = allFilesPulledTable
+        allFiles = allFiles.filter(row => row.DB == DB_id);
+      }
+
     for (var i = 0; i < allFiles.length; i++) {
 
       try {
@@ -724,7 +776,7 @@ Meteor.methods({
           }
         );
 
-      } catch (err) {  console.log(err.stack)}
+      } catch (err) { console.log(err.stack) }
     }
   },
 
@@ -925,259 +977,295 @@ Meteor.methods({
 
   }, 'scanFiles'(DB_id, arrayOrPath, arrayOrPathSwitch, mode, filePropertiesToAdd) {
 
+    //arrayOrPath: array or string
+    //arrayOrPathSwitch:   0 (array) or 1 (path)
+    //mode: 0 (scan for new files only) or 1 (full fresh scan) or 2 (array of files coming in from folder watcher)
+    //filePropertiesToAdd: obj of properties to add to newly scanned files
 
 
-    var scannerID = shortid.generate()
+    //prevent multiple scans being done on same library (if not folder watcher files)
+    if (runningScans.includes(DB_id) && (mode == 0 || mode == 1)) {
 
-    if (mode == 0) {
+      console.log('Scan is already running on library')
+      updateConsole("Scan is already running on library", false)
 
-
-
-      updateConsole("Commencing file update scan. Deleting non-existent files and adding new files.", false)
-
-
+    } else {
 
 
-  
-
-      var filesInDB = allFilesPulledTable
-
-      filesInDB = filesInDB.filter(row => row.DB == DB_id);
+      if (mode == 0 || mode == 1) {
+        runningScans.push(DB_id)
+      }
 
 
-      filesInDB2 = filesInDB.map(row => row._id + '\r\n')
-      filesInDB2 = filesInDB2.join("")
 
-      // fs.writeFileSync(homePath + "/Tdarr/Data/test.txt", filesInDB2, 'utf8');
 
-      filesInDB = filesInDB.map((file, i) => {
-        if (!(fs.existsSync(file.file))) {
-          //delete files in DBs if not exist anymore (cleanse)
-          console.log("File does not exist anymore, removing:" + file.file)
-          FileDB.remove(file.file)
-        } else {
-          return file.file
+      var scannerID = shortid.generate()
+
+      if (mode == 0) {
+
+
+
+        updateConsole("Commencing file update scan. Deleting non-existent files and adding new files.", false)
+
+
+
+
+
+
+        var filesInDB = allFilesPulledTable
+
+        filesInDB = filesInDB.filter(row => row.DB == DB_id);
+
+
+        filesInDB2 = filesInDB.map(row => row._id + '\r\n')
+        filesInDB2 = filesInDB2.join("")
+
+        // fs.writeFileSync(homePath + "/Tdarr/Data/test.txt", filesInDB2, 'utf8');
+
+        filesInDB = filesInDB.map((file, i) => {
+          if (!(fs.existsSync(file.file))) {
+            //delete files in DBs if not exist anymore (cleanse)
+            console.log("File does not exist anymore, removing:" + file.file)
+            FileDB.remove(file.file)
+          } else {
+            return file.file
+
+          }
+        });
+
+        filesInDB = filesInDB.map(row => row + '\r\n')
+        filesInDB = filesInDB.join("")
+
+        try {
+
+          if (isDocker()) {
+            fs.writeFileSync("/temp/" + scannerID + ".txt", filesInDB, 'utf8');
+          } else {
+            fs.writeFileSync(homePath + "/Tdarr/Data/" + scannerID + ".txt", filesInDB, 'utf8');
+          }
+
+
+        } catch (err) {
+          console.log(err.stack)
+          updateConsole("Error writing to file: " + err.stack, false)
 
         }
-      });
 
-      filesInDB = filesInDB.map(row => row + '\r\n')
-      filesInDB = filesInDB.join("")
 
-      try {
 
-        if (isDocker()) {
-          fs.writeFileSync("/temp/" + scannerID + ".txt", filesInDB, 'utf8');
-        }else{
-          fs.writeFileSync(homePath + "/Tdarr/Data/" + scannerID + ".txt", filesInDB, 'utf8');
+        filesInDB = []
+
+      } else if (mode == 1) {
+
+        updateConsole("Commencing fresh file scan.", false)
+
+
+
+        FileDB.remove({ DB: DB_id });
+
+        //  var filesInDB = []
+
+      } else if (mode == 3) {
+
+        // var filesInDB = []
+
+        arrayOrPath = arrayOrPath.map(row => row + '\r\n')
+        arrayOrPath = arrayOrPath.join("")
+
+
+        try {
+
+          if (isDocker()) {
+            fs.writeFileSync("/temp/" + scannerID + ".txt", arrayOrPath, 'utf8');
+          } else {
+            fs.writeFileSync(homePath + "/Tdarr/Data/" + scannerID + ".txt", arrayOrPath, 'utf8');
+          }
+
+
+
+
+        } catch (err) {
+          console.log(err.stack)
+          updateConsole("Error writing to file: " + err.stack, false)
         }
-       
 
-      } catch (err) {
-        console.log(err.stack)
-        updateConsole("Error writing to file: " + err.stack, false)
+        arrayOrPath = []
 
       }
 
 
 
-      filesInDB = []
+      if (mode == 0 || mode == 1) {
 
-    } else if (mode == 1) {
-
-      updateConsole("Commencing fresh file scan.", false)
-
-
-
-      FileDB.remove({ DB: DB_id });
-
-      //  var filesInDB = []
-
-    } else if (mode == 3) {
-
-      // var filesInDB = []
-
-      arrayOrPath = arrayOrPath.map(row => row + '\r\n')
-      arrayOrPath = arrayOrPath.join("")
-
-
-      try {
-
-        if (isDocker()) {
-          fs.writeFileSync("/temp/" + scannerID + ".txt", arrayOrPath, 'utf8');
-        }else{
-          fs.writeFileSync(homePath + "/Tdarr/Data/" + scannerID + ".txt", arrayOrPath, 'utf8');
-        }
-       
-
-
-
-      } catch (err) { console.log(err.stack)
-        updateConsole("Error writing to file: " + err.stack, false)
+        SettingsDB.upsert(DB_id,
+          {
+            $set: {
+              scanButtons: false,
+              scanFound: "Files found:" + 0,
+            }
+          }
+        );
       }
 
-      arrayOrPath = []
+
+
+
+      var allowedContainers = SettingsDB.find({ _id: DB_id }, { sort: { createdAt: 1 } }).fetch()
+      allowedContainers = allowedContainers[0].containerFilter
+      allowedContainers = allowedContainers.split(',');
+
+
+
+      var scannerPath = "assets/app/fileScanner.js"
+
+      var childProcess = require("child_process");
+      var child_argv = [
+        scannerID,
+        DB_id,
+        arrayOrPath,
+        arrayOrPathSwitch,
+        allowedContainers,
+        mode,
+        JSON.stringify(filePropertiesToAdd),
+        homePath,
+      ]
+
+      fileScanners[scannerID] = childProcess.fork(scannerPath, child_argv);
+      updateConsole("" + "Scanner " + scannerID + " launched" + "", false)
+
+
+      fileScanners[scannerID].on("exit", Meteor.bindEnvironment(function (code, signal) {
+
+        updateConsole("" + "File scanner exited" + "", false)
+
+
+
+      }));
+
+      fileScanners[scannerID].on("error", console.error.bind(console));
+
+
+
+
+
+
+      fileScanners[scannerID].on('message', Meteor.bindEnvironment(function (message) {
+
+        if (message[1] == "pathRequest") {
+
+          // var messageOut = [
+          //   "initInfo",
+
+          // ];
+
+          // fileScanners[message[0]].send(messageOut);
+
+
+
+        }
+
+        if (message[1] == "addFileToDB") {
+
+
+          //  console.log("Queueing file to be added to DB")
+
+          var jsonData = JSON.parse(message[2]);
+
+          if (jsonData.createdAt) {
+            jsonData.createdAt = new Date(jsonData.createdAt);
+          }
+          if (jsonData.lastHealthCheckDate) {
+            jsonData.lastHealthCheckDate = new Date(jsonData.lastHealthCheckDate);
+          }
+          if (jsonData.lastTranscodeDate) {
+            jsonData.lastTranscodeDate = new Date(jsonData.lastTranscodeDate);
+          }
+
+
+
+
+
+          if (typeof jsonData === 'object' && jsonData !== null) {
+            //  console.log("jsonData is object")
+          } else {
+            //   console.log("jsonData isn't object")
+          }
+
+          updateConsole(`Add file to DB request received for: ${jsonData._id}. Queueing`, true)
+
+          filesToAddToDB.push(jsonData)
+
+
+
+        }
+
+        if (message[1] == "updateScanFound") {
+
+          SettingsDB.upsert(message[2],
+            {
+              $set: {
+                scanFound: message[3],
+              }
+            }
+          );
+
+
+        }
+
+        if (message[1] == "finishScan") {
+
+          updateConsole("Scanner " + message[0] + ":Finished", false);
+
+          var indexEle = runningScans.indexOf(message[2])
+          runningScans.splice(indexEle, 1)
+
+
+
+
+
+          SettingsDB.upsert(message[2],
+            {
+              $set: {
+                scanButtons: true,
+              }
+            }
+          );
+
+
+        }
+
+
+        if (message[1] == "consoleMessage") {
+
+          //  if(message[2].includes("File received:")){
+
+          updateConsole("Scanner " + message[0] + ":" + message[2] + "", true);
+
+
+
+          //  }
+
+
+        }
+
+
+      }));
 
     }
 
 
 
-    if (mode == 0 || mode == 1) {
-
-      SettingsDB.upsert(DB_id,
-        {
-          $set: {
-            scanButtons: false,
-            scanFound: "Files found:" + 0,
-          }
-        }
-      );
-    }
-
-
-
-
-    var allowedContainers = SettingsDB.find({ _id: DB_id }, { sort: { createdAt: 1 } }).fetch()
-    allowedContainers = allowedContainers[0].containerFilter
-    allowedContainers = allowedContainers.split(',');
-
-
-
-    var scannerPath = "assets/app/fileScanner.js"
-
-    var childProcess = require("child_process");
-    var child_argv = [
-      scannerID,
-      DB_id,
-      arrayOrPath,
-      arrayOrPathSwitch,
-      allowedContainers,
-      mode,
-      JSON.stringify(filePropertiesToAdd),
-      homePath,
-    ]
-
-    fileScanners[scannerID] = childProcess.fork(scannerPath, child_argv);
-    updateConsole("" + "Scanner " + scannerID + " launched" + "", false)
-
-
-    fileScanners[scannerID].on("exit", Meteor.bindEnvironment(function (code, signal) {
-
-      updateConsole("" + "File scanner exited" + "", false)
-
-
-
-    }));
-
-    fileScanners[scannerID].on("error", console.error.bind(console));
-
-
-
-
-
-
-    fileScanners[scannerID].on('message', Meteor.bindEnvironment(function (message) {
-
-      if (message[1] == "pathRequest") {
-
-        // var messageOut = [
-        //   "initInfo",
-
-        // ];
-
-        // fileScanners[message[0]].send(messageOut);
-
-
-
-      }
-
-      if (message[1] == "addFileToDB") {
-
-
-        //  console.log("Queueing file to be added to DB")
-
-        var jsonData = JSON.parse(message[2]);
-
-        if (jsonData.createdAt) {
-          jsonData.createdAt = new Date(jsonData.createdAt);
-        }
-        if (jsonData.lastHealthCheckDate) {
-          jsonData.lastHealthCheckDate = new Date(jsonData.lastHealthCheckDate);
-        }
-        if (jsonData.lastTranscodeDate) {
-          jsonData.lastTranscodeDate = new Date(jsonData.lastTranscodeDate);
-        }
-
-
-
-
-
-        if (typeof jsonData === 'object' && jsonData !== null) {
-          //  console.log("jsonData is object")
-        } else {
-          //   console.log("jsonData isn't object")
-        }
-
-        updateConsole(`Add file to DB request received for: ${jsonData._id}. Queueing`, true)
-
-        filesToAddToDB.push(jsonData)
-
-
-
-      }
-
-      if (message[1] == "updateScanFound") {
-
-        SettingsDB.upsert(message[2],
-          {
-            $set: {
-              scanFound: message[3],
-            }
-          }
-        );
-
-
-      }
-
-      if (message[1] == "finishScan") {
-
-        updateConsole("Scanner " + message[0] + ":Finished", false);
-
-        SettingsDB.upsert(message[2],
-          {
-            $set: {
-              scanButtons: true,
-            }
-          }
-        );
-
-
-      }
-
-
-      if (message[1] == "consoleMessage") {
-
-        //  if(message[2].includes("File received:")){
-
-        updateConsole("Scanner " + message[0] + ":" + message[2] + "", true);
-
-
-
-        //  }
-
-
-      }
-
-
-    }));
-
-
-
-  }, 'returnPieFiles'(property, fileMedium, detail) {
+  }, 'returnPieFiles'(property, fileMedium, detail, DB_id) {
 
 
 
     var allFilesWithProp = allFilesPulledTable
+
+    if (DB_id != "all") {
+
+      allFilesWithProp = allFilesWithProp.filter(row => row.DB == DB_id);
+
+    }
 
 
     if (fileMedium == "video" || fileMedium == "audio") {
@@ -1197,10 +1285,10 @@ Meteor.methods({
     allFilesWithProp = allFilesWithProp.filter(row => row[property] == detail)
 
     for (var i = 0; i < allFilesWithProp.length; i++) {
-      var tFiles = transcodeFiles.map(row => row.file )
-      var hFiles = healthcheckFiles.map(row => row.file )
-      allFilesWithProp[i].tPosition =  tFiles.indexOf(allFilesWithProp[i].file)+1
-      allFilesWithProp[i].hPosition =  hFiles.indexOf(allFilesWithProp[i].file)+1
+      var tFiles = transcodeFiles.map(row => row.file)
+      var hFiles = healthcheckFiles.map(row => row.file)
+      allFilesWithProp[i].tPosition = tFiles.indexOf(allFilesWithProp[i].file) + 1
+      allFilesWithProp[i].hPosition = hFiles.indexOf(allFilesWithProp[i].file) + 1
     }
 
     return allFilesWithProp
@@ -1241,17 +1329,17 @@ Meteor.methods({
 
 
     if (process.env.HWT == true) {
-    if (isDocker()) {
+      if (isDocker()) {
 
-    if (process.platform == 'linux' && mode == "handbrake") {
-      workerCommand = "/usr/local/bin/HandBrakeCLI " + text
-    } else if (process.platform == 'linux' && mode == "ffmpeg") {
+        if (process.platform == 'linux' && mode == "handbrake") {
+          workerCommand = "/usr/local/bin/HandBrakeCLI " + text
+        } else if (process.platform == 'linux' && mode == "ffmpeg") {
 
-      workerCommand = "/usr/local/bin/ffmpeg " + text
+          workerCommand = "/usr/local/bin/ffmpeg " + text
 
+        }
+      }
     }
-  }
-}
 
 
 
@@ -1275,7 +1363,7 @@ Meteor.methods({
 
     try {
       var ffmpegText = fs.readFileSync(homePath + "/Tdarr/Data/ffmpeg.txt", 'utf8')
-    } catch (err) { 
+    } catch (err) {
       console.log(err.stack)
       var ffmpegText = ''
     }
@@ -1359,67 +1447,68 @@ for (var i = 0; i < settingsInit.length; i++) {
     }
   );
 
-  if(settingsInit[i].scanOnStart !== false){
+  if (settingsInit[i].scanOnStart !== false) {
 
- 
+
     //fileDB
 
     var obj = {
-      HealthCheck:"Queued",
-      TranscodeDecisionMaker:"Queued",
-      cliLog:"",
-      bumped:false,
-      history:""
+      HealthCheck: "Queued",
+      TranscodeDecisionMaker: "Queued",
+      cliLog: "",
+      bumped: false,
+      history: ""
     }
 
-    Meteor.call('scanFiles', settingsInit[i]._id, settingsInit[i].folder, 1, 0, obj, function (error, result) {});
+    Meteor.call('scanFiles', settingsInit[i]._id, settingsInit[i].folder, 1, 0, obj, function (error, result) { });
 
   }
 }
 
 
 //runScheduledManualScan()
-
+//run find-new scan every hour
 setTimeout(Meteor.bindEnvironment(runScheduledManualScan), 3600000);
 
-function runScheduledManualScan(){
+function runScheduledManualScan() {
 
-  console.log("scanning!")
+  console.log("Running hourly scan!")
 
-  try{
-
-
-  var settingsInit = SettingsDB.find({}, {}).fetch()
-
-  // allFilesPulledTable = []
-  // allFilesPulledTable = FileDB.find({}).fetch()
+  try {
 
 
-  for (var i = 0; i < settingsInit.length; i++) {
-  
-    if(settingsInit[i].folderWatching == true && settingsInit[i].scanOnStart !== false){
+    var settingsInit = SettingsDB.find({}, {}).fetch()
 
-      var obj = {
-        HealthCheck:"Queued",
-        TranscodeDecisionMaker:"Queued",
-        cliLog:"",
-        bumped:false,
-        history:""
+    // allFilesPulledTable = []
+    // allFilesPulledTable = FileDB.find({}).fetch()
+
+
+    for (var i = 0; i < settingsInit.length; i++) {
+
+      if (settingsInit[i].folderWatching == true && settingsInit[i].scanOnStart !== false) {
+
+        var obj = {
+          HealthCheck: "Queued",
+          TranscodeDecisionMaker: "Queued",
+          cliLog: "",
+          bumped: false,
+          history: ""
+        }
+
+        Meteor.call('scanFiles', settingsInit[i]._id, settingsInit[i].folder, 1, 0, obj, function (error, result) { });
+
       }
-  
-      Meteor.call('scanFiles', settingsInit[i]._id, settingsInit[i].folder, 1, 0, obj, function (error, result) {});
-  
     }
+
+
+
+  } catch (err) {
+
+    console.log(err.stack)
   }
 
 
-}catch(err){
-
-  console.log(err.stack)
-}
-
-
-setTimeout(Meteor.bindEnvironment(runScheduledManualScan), 3600000);
+  setTimeout(Meteor.bindEnvironment(runScheduledManualScan), 3600000);
 
 }
 
@@ -1460,7 +1549,7 @@ function scheduledPluginUpdate() {
 
   } catch (err) {
     console.log(err.stack)
-   }
+  }
 
 
 
@@ -1484,7 +1573,7 @@ function scheduledCacheClean() {
         traverseDir(settings[i].cache)
       } catch (err) {
         console.log(err.stack)
-       }
+      }
     }
 
 
@@ -1548,7 +1637,7 @@ function scheduledCacheClean() {
     }
 
 
-  } catch (err) {  console.log(err.stack)}
+  } catch (err) { console.log(err.stack) }
 
   setTimeout(Meteor.bindEnvironment(scheduledCacheClean), 60000);
 }
@@ -1879,7 +1968,7 @@ function launchWorkerModule(workerType) {
                 }
               );
 
-            
+
 
 
               if (workerType == "general") {
@@ -1909,6 +1998,8 @@ function launchWorkerModule(workerType) {
               var settingsDBIndex = firstItem.DB
               var inputFolderStem = (settings[0].folder).replace(/\\/g, "/");
               var outputFolder = (settings[0].cache).replace(/\\/g, "/");
+              var folderToFolderConversionEnabled = settings[0].folderToFolderConversion
+              var folderToFolderConversionFolder = (settings[0].output).replace(/\\/g, "/");
               var container = settings[0].container
               var preset = settings[0].preset
               var handBrakeMode = settings[0].handbrake
@@ -2229,6 +2320,8 @@ function launchWorkerModule(workerType) {
                   settingsDBIndex,
                   reQueueAfter,
                   firstItem,
+                  folderToFolderConversionEnabled,
+                  folderToFolderConversionFolder
 
 
                 ]
@@ -2252,7 +2345,7 @@ function launchWorkerModule(workerType) {
                       processingStatus: false,
                       cliLog: cliLogAdd,
                       lastTranscodeDate: new Date(),
-                      bumped:false,
+                      bumped: false,
 
                     }
                   }
@@ -2464,6 +2557,13 @@ function launchWorkerModule(workerType) {
           }
         );
 
+        SettingsDB.update(
+          message[3],
+          {
+            $inc: { totalHealthCheckCount: 1 }
+          }
+        );
+
 
 
 
@@ -2485,6 +2585,16 @@ function launchWorkerModule(workerType) {
 
             }
 
+          }
+        );
+
+        SettingsDB.update(
+          message[3],
+          {
+            $inc: {
+              totalTranscodeCount: 1,
+              sizeDiff: message[7]
+            }
           }
         );
 
@@ -2550,7 +2660,7 @@ function launchWorkerModule(workerType) {
 
 
       }
-    } catch (err) {  console.log(err.stack)}
+    } catch (err) { console.log(err.stack) }
 
 
 
@@ -2874,8 +2984,8 @@ function createFolderWatch(Folder, DB_id) {
         HealthCheck: "Queued",
         TranscodeDecisionMaker: "Queued",
         cliLog: "",
-        bumped:false,
-        history:""
+        bumped: false,
+        history: ""
       }
 
       Meteor.call('scanFiles', DB_id, filesToProcess, 0, 3, obj, function (error, result) { });
@@ -3005,7 +3115,7 @@ function dbUpdatePush() {
     }
   } catch (err) {
     console.log(err.stack)
-   }
+  }
 
 
   setTimeout(Meteor.bindEnvironment(dbUpdatePush), 1000);
@@ -3018,6 +3128,13 @@ var allFilesPulledTable = []
 var generalFiles
 var transcodeFiles
 var healthcheckFiles
+
+var table1data
+var table2data
+var table3data
+var table4data
+var table5data
+var table6data
 
 
 var filesToAddToDBLengthNew = 0
@@ -3063,7 +3180,7 @@ function tablesUpdate() {
 
       if (globalSettings[0].queueSortType == "sortDateOldest") {
 
- 
+
 
         allFilesPulledTable = allFilesPulledTable.sort(function (a, b) {
           return new Date(a.createdAt) - new Date(b.createdAt);
@@ -3082,7 +3199,7 @@ function tablesUpdate() {
 
 
         allFilesPulledTable = allFilesPulledTable.sort(function (a, b) {
-          var one = !isNaN( b.file_size) ? b.file_size : 0
+          var one = !isNaN(b.file_size) ? b.file_size : 0
           var two = !isNaN(a.file_size) ? a.file_size : 0
           return two - one;
         });
@@ -3093,7 +3210,7 @@ function tablesUpdate() {
 
         allFilesPulledTable = allFilesPulledTable.sort(function (a, b) {
 
-          var one = !isNaN( b.file_size) ? b.file_size : 0
+          var one = !isNaN(b.file_size) ? b.file_size : 0
           var two = !isNaN(a.file_size) ? a.file_size : 0
           return one - two;
 
@@ -3129,13 +3246,13 @@ function tablesUpdate() {
           var count = 0
           for (var j = 0; j < allFilesPulledTable.length; j++) {
 
-            if(allFilesPulledTable[j].DB === settings[i]._id){
+            if (allFilesPulledTable[j].DB === settings[i]._id) {
 
               allFilesPulledTable.push(allFilesPulledTable[j])
               allFilesPulledTable.splice(j, 1)
               j--
-          
-              if(count == length){
+
+              if (count == length) {
                 break
               }
 
@@ -3145,32 +3262,32 @@ function tablesUpdate() {
           }
         }
 
-      }else  if (globalSettings[0].alternateLibraries == true) {
+      } else if (globalSettings[0].alternateLibraries == true) {
 
         //alternate libraries
 
         var step = settings.length
         var idxHolder = {}
         var newArr = []
-  
+
         for (var i = 0; i < settings.length; i++) {
-  
+
           idxHolder[settings[i]._id] = i
-  
+
         }
-  
+
         for (var i = 0; i < allFilesPulledTable.length; i++) {
-  
+
           newArr[idxHolder[allFilesPulledTable[i].DB]] = allFilesPulledTable[i]
           idxHolder[allFilesPulledTable[i].DB] += step
-  
+
         }
-  
+
         newArr = newArr.filter(function (el) {
           return el != null;
         });
-  
-  
+
+
         allFilesPulledTable = newArr.slice()
         newArr = []
 
@@ -3187,11 +3304,11 @@ function tablesUpdate() {
 
       for (var i = 0; i < allFilesPulledTable.length; i++) {
 
-        if(allFilesPulledTable[i].bumped instanceof Date){
+        if (allFilesPulledTable[i].bumped instanceof Date) {
 
-        bumpedFiles.push(allFilesPulledTable[i])
-        allFilesPulledTable.splice(i, 1)
-        i--
+          bumpedFiles.push(allFilesPulledTable[i])
+          allFilesPulledTable.splice(i, 1)
+          i--
         }
       }
 
@@ -3206,12 +3323,12 @@ function tablesUpdate() {
 
 
 
-      var table1data = allFilesPulledTable.filter(row => (row.TranscodeDecisionMaker == "Queued" && row.processingStatus == false));
-      var table2data = allFilesPulledTable.filter(row => ((row.TranscodeDecisionMaker == "Transcode success" || row.TranscodeDecisionMaker == "Not required") && row.processingStatus == false));
-      var table3data = allFilesPulledTable.filter(row => ((row.TranscodeDecisionMaker == "Transcode error" || row.TranscodeDecisionMaker == "Transcode cancelled") && row.processingStatus == false));
-      var table4data = allFilesPulledTable.filter(row => (row.HealthCheck == "Queued" && row.fileMedium !== "audio" && row.processingStatus == false));
-      var table5data = allFilesPulledTable.filter(row => (row.HealthCheck == "Success" && row.processingStatus == false));
-      var table6data = allFilesPulledTable.filter(row => ((row.HealthCheck == "Error" || row.HealthCheck == "Cancelled") && row.processingStatus == false));
+      table1data = allFilesPulledTable.filter(row => (row.TranscodeDecisionMaker == "Queued" && row.processingStatus == false));
+      table2data = allFilesPulledTable.filter(row => ((row.TranscodeDecisionMaker == "Transcode success" || row.TranscodeDecisionMaker == "Not required") && row.processingStatus == false));
+      table3data = allFilesPulledTable.filter(row => ((row.TranscodeDecisionMaker == "Transcode error" || row.TranscodeDecisionMaker == "Transcode cancelled") && row.processingStatus == false));
+      table4data = allFilesPulledTable.filter(row => (row.HealthCheck == "Queued" && row.fileMedium !== "audio" && row.processingStatus == false));
+      table5data = allFilesPulledTable.filter(row => (row.HealthCheck == "Success" && row.processingStatus == false));
+      table6data = allFilesPulledTable.filter(row => ((row.HealthCheck == "Error" || row.HealthCheck == "Cancelled") && row.processingStatus == false));
 
       table2data = sortTable(table2data, "lastTranscodeDate")
       table3data = sortTable(table3data, "lastTranscodeDate")
@@ -3290,11 +3407,11 @@ function tablesUpdate() {
             transcodeFiles = transcodeFiles.filter(row => row.DB != settings[i]._id);
             healthcheckFiles = healthcheckFiles.filter(row => row.DB != settings[i]._id);
             table1data = table1data.filter(row => row.DB != settings[i]._id);
-            table2data = table2data.filter(row => row.DB != settings[i]._id);
-            table3data = table3data.filter(row => row.DB != settings[i]._id);
+            // table2data = table2data.filter(row => row.DB != settings[i]._id);
+            // table3data = table3data.filter(row => row.DB != settings[i]._id);
             table4data = table4data.filter(row => row.DB != settings[i]._id);
-            table5data = table5data.filter(row => row.DB != settings[i]._id);
-            table6data = table6data.filter(row => row.DB != settings[i]._id);
+            // table5data = table5data.filter(row => row.DB != settings[i]._id);
+            // table6data = table6data.filter(row => row.DB != settings[i]._id);
 
           }
         } catch (err) { console.log(err.stack) }
@@ -3308,12 +3425,12 @@ function tablesUpdate() {
 
       //
 
-      table1data = table1data.slice(0, 20)
-      table2data = table2data.slice(0, 20)
-      table3data = table3data.slice(0, 20)
-      table4data = table4data.slice(0, 20)
-      table5data = table5data.slice(0, 20)
-      table6data = table6data.slice(0, 20)
+      table1dataSlice = table1data.slice(0, 20)
+      table2dataSlice = table2data.slice(0, 20)
+      table3dataSlice = table3data.slice(0, 20)
+      table4dataSlice = table4data.slice(0, 20)
+      table5dataSlice = table5data.slice(0, 20)
+      table6dataSlice = table6data.slice(0, 20)
 
 
 
@@ -3342,24 +3459,18 @@ function tablesUpdate() {
       ClientDB.upsert("client",
         {
           $set: {
-            table1: table1data,
-            table2: table2data,
-            table3: table3data,
-            table4: table4data,
-            table5: table5data,
-            table6: table6data,
+            table1: table1dataSlice,
+            table2: table2dataSlice,
+            table3: table3dataSlice,
+            table4: table4dataSlice,
+            table5: table5dataSlice,
+            table6: table6dataSlice,
           }
         }
       );
 
 
-      //   ClientDB.upsert("client",
-      //   {
-      //       $set: {
-      //           table1:table1data,
-      //         }
-      //   }
-      // );
+
 
 
 
@@ -3420,7 +3531,7 @@ function tablesUpdate() {
             DBFetchTime: (newFetchtime).toFixed(1) + "s",
             DBTotalTime: ((DBPollPeriod / 1000) + newFetchtime).toFixed(1) + "s",
             DBLoadStatus: DBLoadStatus,
-            DBQueue: filesToAddToDB.length + + logsToAddToDB.length
+            DBQueue: filesToAddToDB.length + logsToAddToDB.length
           }
         }
       );
@@ -3465,28 +3576,98 @@ function statisticsUpdate() {
     }
   );
 
+  var pieArray = []
+
+  var statistics = StatisticsDB.find({}, {}).fetch()[0]
 
 
-  updatePieStats("TranscodeDecisionMaker", '', 'pie1')
-  updatePieStats('HealthCheck', '', 'pie2')
+  // Create pies for 'All' tab
+  var pieSubArray = []
+  pieSubArray.push("All")
 
-  updatePieStats('video_codec_name', 'video', 'pie3')
-  updatePieStats('container', 'video', 'pie4')
-  updatePieStats('video_resolution', 'video', 'pie5')
+  pieSubArray.push("all")
 
-  updatePieStats('audio_codec_name', 'audio', 'pie6')
-  updatePieStats('container', 'audio', 'pie7')
+  pieSubArray.push(allFilesPulledTable.length)
+  pieSubArray.push(statistics.totalTranscodeCount)
+  pieSubArray.push(statistics.sizeDiff)
+  pieSubArray.push(statistics.totalHealthCheckCount)
+
+  pieSubArray.push(updatePieStats("TranscodeDecisionMaker", '', 'all'))
+  pieSubArray.push(updatePieStats('HealthCheck', '', 'all'))
+
+  pieSubArray.push(updatePieStats('video_codec_name', 'video', 'all'))
+  pieSubArray.push(updatePieStats('container', 'video', 'all'))
+  pieSubArray.push(updatePieStats('video_resolution', 'video', 'all'))
+
+  pieSubArray.push(updatePieStats('audio_codec_name', 'audio', 'all'))
+  pieSubArray.push(updatePieStats('container', 'audio', 'all'))
+
+  pieArray.push(pieSubArray)
+
+
+
+  //Create pies for each library
+  var settings = SettingsDB.find({}, { sort: { priority: 1 } }).fetch()
+
+
+
+  for (var i = 0; i < settings.length; i++) {
+
+    var pieSubArray = []
+
+    pieSubArray.push(settings[i].name)
+
+    pieSubArray.push(settings[i]._id)
+
+    pieSubArray.push(allFilesPulledTable.filter(row => row.DB == settings[i]._id).length)
+    pieSubArray.push(settings[i].totalTranscodeCount)
+    pieSubArray.push(settings[i].sizeDiff)
+    pieSubArray.push(settings[i].totalHealthCheckCount)
+
+    pieSubArray.push(updatePieStats("TranscodeDecisionMaker", '', settings[i]._id))
+    pieSubArray.push(updatePieStats('HealthCheck', '', settings[i]._id))
+
+    pieSubArray.push(updatePieStats('video_codec_name', 'video', settings[i]._id))
+    pieSubArray.push(updatePieStats('container', 'video', settings[i]._id))
+    pieSubArray.push(updatePieStats('video_resolution', 'video', settings[i]._id))
+
+    pieSubArray.push(updatePieStats('audio_codec_name', 'audio', settings[i]._id))
+    pieSubArray.push(updatePieStats('container', 'audio', settings[i]._id))
+
+    pieArray.push(pieSubArray)
+
+  }
+
+
+
+
+  StatisticsDB.upsert("statistics",
+    {
+      $set: {
+        pies: pieArray
+      }
+    }
+  );
+
+
+
 
 }
 
 
-function updatePieStats(property, fileMedium, pie) {
+function updatePieStats(property, fileMedium, DB_id) {
 
 
   const data = [];
 
   var allFilesWithProp = allFilesPulledTable
 
+  //Filter files
+  if (DB_id != "all") {
+
+    allFilesWithProp = allFilesWithProp.filter(row => row.DB == DB_id);
+
+  }
 
   if (fileMedium == "video" || fileMedium == "audio") {
 
@@ -3502,6 +3683,7 @@ function updatePieStats(property, fileMedium, pie) {
   var uniquePropArr = []
 
 
+  //Create unique value array
   for (var i = 0; i < allFilesWithProp.length; i++) {
 
     if (!(uniquePropArr.includes(allFilesWithProp[i][property]))) {
@@ -3519,13 +3701,8 @@ function updatePieStats(property, fileMedium, pie) {
 
   }
 
-  StatisticsDB.upsert("statistics",
-    {
-      $set: {
-        [pie]: data
-      }
-    }
-  );
+  return data
+
 
 
 }
@@ -3585,7 +3762,7 @@ function setProcessPriority() {
 
     }
 
-  } catch (err) { 
+  } catch (err) {
     console.log(err.stack)
   }
 

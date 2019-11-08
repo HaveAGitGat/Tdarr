@@ -88,7 +88,7 @@ class App extends Component {
 
             result = JSON.stringify(result)
             //console.log(result)
-            render(result, document.getElementById('rawLog'));
+            render( <div className="libraryContainer" >{result}</div>, document.getElementById('rawLog'));
 
         }catch(err){}
 
@@ -188,7 +188,7 @@ try{
 
 
 
-            render(<div>
+            render(<div className="libraryContainer" >
                 <ReactTable
                     data={data}
                     columns={columns}
@@ -432,14 +432,14 @@ try{
                 </center>
 
 
-                <div className="libraryContainer" >
+               
                 <p><div id="rawLog">
                 </div></p>
 
               
                 <div id="logDiv">
                 </div>
-                </div>
+                
                 <div className="memGraph" id="memGraphDiv">
                 </div>
 
