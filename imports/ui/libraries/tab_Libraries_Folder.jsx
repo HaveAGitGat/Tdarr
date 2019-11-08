@@ -1863,6 +1863,33 @@ class Folder extends Component {
                   />
                 </div>
 
+
+
+                
+                {'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}<span className="buttonTextSize">Closed caption scan (much slower -linux/tdarr_aio/win):</span>
+                <div style={libButtonStyle}>
+                  <ToggleButton
+                    thumbStyle={borderRadiusStyle}
+                    trackStyle={borderRadiusStyle}
+
+                    value={this.props.libraryItem.closedCaptionScan === undefined ? false : !!this.props.libraryItem.closedCaptionScan}
+                    onToggle={() => {
+
+                      SettingsDB.upsert(
+
+                        this.props.libraryItem._id,
+                        {
+                          $set: {
+                            closedCaptionScan: !this.props.libraryItem.closedCaptionScan,
+                          }
+                        }
+                      );
+                    }
+
+                    }
+                  />
+                </div>
+
               </div>
 
 

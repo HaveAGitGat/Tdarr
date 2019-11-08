@@ -167,7 +167,7 @@ return null
                     </div>
                   ),
                   id: 'CC',
-                  accessor: row => row.hasClosedCaptions == true ? 'yes' : 'no',
+                  accessor: row => row.hasClosedCaptions != undefined ? row.hasClosedCaptions == true ? 'yes' : 'no' : 'Not checked',
                   width: getColumnWidth(data, 'hasClosedCaptions', 'CC'),
                   getProps: (state, rowInfo, column) => {
                     return {

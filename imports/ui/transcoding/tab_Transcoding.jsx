@@ -374,6 +374,9 @@ class App extends Component {
       if (mode == "TranscodeDecisionMaker") {
 
 
+   
+       
+
       return data.map((row, i) => {
 
         if(row.file_size != undefined){
@@ -384,12 +387,18 @@ class App extends Component {
 
         // <td>{row.bumped ? row.bumped.toISOString() : "-"}</td>
 
+   
+
+        
+
        return <tr key={row._id}>
           <td><p>{i + 1}</p></td><td><p>{row.file}</p></td><td><p>{row.video_codec_name}</p></td><td><p>{row.video_resolution}</p></td><td><p>{file_size}</p></td><td><p>{ !(row.bumped instanceof Date) ? this.renderBumpButton(row.file):this.renderCancelBumpButton(row.file) }</p></td><td><p>{this.renderSkipButton(row.file)}</p></td>
           </tr>
 
       }
       );
+
+
 
 
     }else{
@@ -1052,6 +1061,7 @@ class App extends Component {
 export default withTracker(() => {
 
   Meteor.subscribe('GlobalSettingsDB');
+  Meteor.subscribe('SettingsDB');
   Meteor.subscribe('ClientDB');
   Meteor.subscribe('StatisticsDB');
 
@@ -1060,6 +1070,7 @@ export default withTracker(() => {
 
 
     globalSettings: GlobalSettingsDB.find({}, {}).fetch(),
+    settingsDB:GlobalSettingsDB.find({}, {}).fetch(),
 
     clientDB: ClientDB.find({}).fetch(),
     statistics: StatisticsDB.find({}).fetch(),

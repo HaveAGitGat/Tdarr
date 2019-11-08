@@ -1,4 +1,5 @@
 import '../imports/api/Methods.js';
+import '../imports/api/pluginCreatorMethods.js';
 import '../imports/api/Logger.js';
 import '../imports/api/tasks.js';
 
@@ -297,8 +298,21 @@ for (var i = 0; i < allFilesPulledTable.length; i++) {
     );
   }
 
+  if(!allFilesPulledTable[i].statSync){
 
+
+    FileDB.upsert(
+      allFilesPulledTable[i].file,
+      {
+        $set: {
+          statSync: fs.statSync(allFilesPulledTable[i].file),
+        }
+      }
+    );
+
+  }
 }
+
 
 
 
@@ -1110,9 +1124,11 @@ Meteor.methods({
 
 
 
-      var allowedContainers = SettingsDB.find({ _id: DB_id }, { sort: { createdAt: 1 } }).fetch()
-      allowedContainers = allowedContainers[0].containerFilter
+      var thisItemsLib = SettingsDB.find({ _id: DB_id }, { sort: { createdAt: 1 } }).fetch()
+      var allowedContainers = thisItemsLib[0].containerFilter
       allowedContainers = allowedContainers.split(',');
+
+      var closedCaptionScan = thisItemsLib[0].closedCaptionScan
 
 
 
@@ -1128,6 +1144,7 @@ Meteor.methods({
         mode,
         JSON.stringify(filePropertiesToAdd),
         homePath,
+        closedCaptionScan,
       ]
 
       fileScanners[scannerID] = childProcess.fork(scannerPath, child_argv);
@@ -2122,6 +2139,7 @@ function launchWorkerModule(workerType) {
                         }
 
 
+                        cliLogAdd += plugin.details().id+"\n"
 
                         var response = plugin.plugin(firstItem);
 
@@ -2135,7 +2153,16 @@ function launchWorkerModule(workerType) {
                         reQueueAfter = response.reQueueAfter
                         cliLogAdd += response.infoLog
 
-                        if (processFile == true) {
+
+                        if (processFile == true && plugin.details().Operation == "Filter"){
+
+                          //do nothing
+
+                        }else if (processFile == false && plugin.details().Operation == "Filter"){ 
+                          
+                          break 
+
+                        }else if (processFile == true) {
 
                           break
 
@@ -2151,6 +2178,8 @@ function launchWorkerModule(workerType) {
                         FFmpegMode = ''
                         reQueueAfter = ''
                         cliLogAdd += '☒Plugin does not exist!  \n'
+
+                        break
 
 
                       }
