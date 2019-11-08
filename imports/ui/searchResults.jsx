@@ -55,6 +55,21 @@ if (result.length == 0) {
     )
     return Math.min(maxWidth, cellLength * magicSpacing)
   }
+
+function fancyTimeFormat(time) {
+
+    var hrs = ~~(time / 3600);
+    var mins = ~~((time % 3600) / 60);
+    var secs = ~~time % 60;
+
+    var ret = "";
+    ret += "" + hrs + ":" + (mins < 10 ? "0" : "");
+    ret += "" + mins + ":" + (secs < 10 ? "0" : "");
+    ret += "" + secs;
+    return ret;
+  }
+
+
   
               var columns = [
                 
@@ -240,7 +255,7 @@ return null
                     </div>
                   ),
                   id: 'Duration',
-                  accessor: row =>  row.ffProbeData && row.ffProbeData.streams[0]["duration"] ?  parseFloat((row.ffProbeData.streams[0]["duration"])) : 0,
+                  accessor: row =>  row.ffProbeData && row.ffProbeData.streams[0]["duration"] ?  fancyTimeFormat(parseFloat((row.ffProbeData.streams[0]["duration"]))) : "00:00:00",
                   getProps: (state, rowInfo, column) => {
                     return {
                       style: {
