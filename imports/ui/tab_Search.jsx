@@ -3,7 +3,7 @@ import { withTracker } from 'meteor/react-meteor-data';
 import ReactDOM from 'react-dom';
 import { render } from 'react-dom';
 
-import SearchResults from '../searchResults.jsx'
+import SearchResults from './searchResults.jsx'
 
 
 import { Button } from 'react-bootstrap';
@@ -14,7 +14,7 @@ import Modal from "reactjs-popup";
 
 import ClipLoader from 'react-spinners/ClipLoader';
 
-import { GlobalSettingsDB } from '../../api/tasks.js';
+import { GlobalSettingsDB } from '../api/tasks.js';
 
 
 
