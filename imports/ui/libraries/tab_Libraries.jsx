@@ -786,7 +786,7 @@ class App extends Component {
       <center>
 
         <Button variant="outline-light"  onClick={this.addFolder} ><span className="buttonTextSize">Library +</span></Button>{'\u00A0'}
-        <Button variant="outline-danger"  onClick={this.clearFiles} ><span className="buttonTextSize">Delete all libraries</span></Button>{'\u00A0'}
+        {/* <Button variant="outline-danger"  onClick={this.clearFiles} ><span className="buttonTextSize">Delete all libraries</span></Button>{'\u00A0'} */}
         <Modal
           trigger={<Button variant="outline-light" ><span className="buttonTextSize">i</span></Button>}
           modal
