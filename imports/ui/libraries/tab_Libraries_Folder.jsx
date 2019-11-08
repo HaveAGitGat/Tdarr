@@ -1699,7 +1699,7 @@ class Folder extends Component {
                   }
                 }
               );
-            }} className={this.props.libraryItem.navItemSelected == "navSourceFolder" ? 'selectedNav' : ''}>Source</p>
+            }} className={this.props.libraryItem.navItemSelected == "navSourceFolder" ? 'selectedNav' : 'unselectedNav'}>Source</p>
             <p onClick={() => {
               SettingsDB.upsert(
                 this.props.libraryItem._id,
@@ -1709,7 +1709,7 @@ class Folder extends Component {
                   }
                 }
               );
-            }} className={this.props.libraryItem.navItemSelected == "navCacheFolder" ? 'selectedNav' : ''}>Transcode cache</p>
+            }} className={this.props.libraryItem.navItemSelected == "navCacheFolder" ? 'selectedNav' : 'unselectedNav'}>Transcode cache</p>
             <p onClick={() => {
               SettingsDB.upsert(
                 this.props.libraryItem._id,
@@ -1719,7 +1719,7 @@ class Folder extends Component {
                   }
                 }
               );
-            }} className={this.props.libraryItem.navItemSelected == "navOutputFolder" ? 'selectedNav' : ''}>Output Folder</p>
+            }} className={this.props.libraryItem.navItemSelected == "navOutputFolder" ? 'selectedNav' : 'unselectedNav'}>Output Folder</p>
             <p onClick={() => {
               SettingsDB.upsert(
                 this.props.libraryItem._id,
@@ -1729,7 +1729,7 @@ class Folder extends Component {
                   }
                 }
               );
-            }} className={this.props.libraryItem.navItemSelected == "navContainers" ? 'selectedNav' : ''}>Containers</p>
+            }} className={this.props.libraryItem.navItemSelected == "navContainers" ? 'selectedNav' : 'unselectedNav'}>Containers</p>
             <p onClick={() => {
               SettingsDB.upsert(
                 this.props.libraryItem._id,
@@ -1739,7 +1739,7 @@ class Folder extends Component {
                   }
                 }
               );
-            }} className={this.props.libraryItem.navItemSelected == "navTranscode" ? 'selectedNav' : ''}>Transcode</p>
+            }} className={this.props.libraryItem.navItemSelected == "navTranscode" ? 'selectedNav' : 'unselectedNav'}>Transcode</p>
             <p onClick={() => {
               SettingsDB.upsert(
                 this.props.libraryItem._id,
@@ -1749,7 +1749,7 @@ class Folder extends Component {
                   }
                 }
               );
-            }} className={this.props.libraryItem.navItemSelected == "navHealthCheck" ? 'selectedNav' : ''}>Health check</p>
+            }} className={this.props.libraryItem.navItemSelected == "navHealthCheck" ? 'selectedNav' : 'unselectedNav'}>Health check</p>
             <p onClick={() => {
               SettingsDB.upsert(
                 this.props.libraryItem._id,
@@ -1759,7 +1759,7 @@ class Folder extends Component {
                   }
                 }
               );
-            }} className={this.props.libraryItem.navItemSelected == "navSchedule" ? 'selectedNav' : ''}>Schedule</p>
+            }} className={this.props.libraryItem.navItemSelected == "navSchedule" ? 'selectedNav' : 'unselectedNav'}>Schedule</p>
 
 
 
