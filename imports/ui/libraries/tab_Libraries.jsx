@@ -823,22 +823,45 @@ class App extends Component {
 <p></p>
 <p></p>
 <p></p>
-<p>In the manual settings, if using FFmpeg, you need to separate the input and output parameters with a comma. Such as:  '-r 1,-r 24'. Here are some HandBrake preset examples:</p>
-<p>-e x264 -q 20 -B</p>
-<p>-Z "Very Fast 1080p30"</p>
-<p>-Z "Very Fast 480p30"</p>
-<p>--preset-import-file "C:\Users\HaveAGitGat\Desktop\testpreset.json" -Z "My Preset"</p>
 
+<p>When using FFmpeg, you need to separate the input and output parameters with a comma. FFmpeg Examples:</p>
 
-<p>You can learn more about HandBrake presets here:</p>
-
-<p><a href="" onClick={(e) => { window.open("https://handbrake.fr/docs/en/latest/technical/official-presets.html", "_blank")}}>HandBrake presets</a></p>
+<p>-r 1,-r 24</p>
+<p>,-sn -c:v copy -c:a copy</p>
+<p>,-c:v lib265 -crf 23 -ac 6 -c:a aac -preset veryfast</p>
+<p>,-map 0 -c copy -c:v libx265 -c:a aac</p>
+<p>-c:v h264_cuvid,-c:v hevc_nvenc -preset slow -c:a copy</p>
 
 <p>Please see the following tools for help with creating FFmpeg commands:</p>
 
-<p><a href="" onClick={(e) => { window.open("http://rodrigopolo.com/ffmpeg/", "_blank")}}>http://rodrigopolo.com/ffmpeg/</a></p>
-<p><a href="" onClick={(e) => { window.open("http://www.mackinger.at/ffmpeg/", "_blank")}}>http://www.mackinger.at/ffmpeg/</a></p>
-<p><a href="" onClick={(e) => { window.open("https://axiomui.github.io/", "_blank")}}>Axiom</a></p>
+<p><a href="" onClick={(e) => { e.preventDefault(); window.open("http://rodrigopolo.com/ffmpeg/", "_blank"); }}>http://rodrigopolo.com/ffmpeg/</a></p>
+<p><a href="" onClick={(e) => { e.preventDefault(); window.open("http://www.mackinger.at/ffmpeg/", "_blank"); }}>http://www.mackinger.at/ffmpeg/</a></p>
+<p><a href="" onClick={(e) => { e.preventDefault(); window.open("https://axiomui.github.io/", "_blank"); }}>Axiom</a></p>
+
+
+<br/>
+<br/>
+<br/>
+
+
+<p>HandBrake examples:</p>
+
+<p>-e x264 -q 20 -B</p>
+<p>-Z "Very Fast 1080p30"</p>
+<p>-Z "Fast 1080p30" -e nvenc_h265 </p>
+<p>-Z "Very Fast 1080p30" --all-subtitles --all-audio</p>       
+<p>-Z "Very Fast 480p30"</p>
+<p>--preset-import-file "C:\Users\HaveAGitGat\Desktop\testpreset.json" -Z "My Preset"</p>
+
+<p>You can learn more about HandBrake presets here:</p>
+
+<p><a href="" onClick={(e) => {e.preventDefault();  window.open("https://handbrake.fr/docs/en/latest/technical/official-presets.html", "_blank") }}>HandBrake presets</a></p>
+
+<br/>
+<br/>
+<br/>
+
+
 
 <p>If you're having trouble with custom HandBrake json presets, it may be due to a known bug with the HandBrakeCLI (will be fixed in next HandBrakeCLI release).<a href="" onClick={(e) => { window.open("https://github.com/HandBrake/HandBrake/issues/2047", "_blank")}}>Please see this for a temporary solution.</a></p>
 <p></p>
