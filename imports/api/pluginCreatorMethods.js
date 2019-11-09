@@ -118,7 +118,7 @@ module.exports.details = details;
 module.exports.plugin = plugin;
 
         `
-        fs.writeFileSync(`C:/Users/H/Documents/Tdarr/Plugins/Local/${ID}_FilterByCodec_${modeType}_${codecs}.js`, text, 'utf8');
+        fs.writeFileSync(process.env.homePath + `/Tdarr/Plugins/Local/${ID}_FilterByCodec_${modeType}_${codecs}.js`, text, 'utf8');
 
 
     },
@@ -191,7 +191,7 @@ module.exports.details = details;
 module.exports.plugin = plugin;
 
         `
-        fs.writeFileSync(`C:/Users/H/Documents/Tdarr/Plugins/Local/${ID}_FilterByMedium_Include_${type}.js`, text, 'utf8');
+        fs.writeFileSync(process.env.homePath + `/Tdarr/Plugins/Local/${ID}_FilterByMedium_Include_${type}.js`, text, 'utf8');
 
 
     },
@@ -271,7 +271,7 @@ module.exports.details = details;
 module.exports.plugin = plugin;
 
         `
-        fs.writeFileSync(`C:/Users/H/Documents/Tdarr/Plugins/Local/${ID}_FilterByDate_ExcludeOlderThan_${string}.js`, text, 'utf8');
+        fs.writeFileSync(process.env.homePath + `/Tdarr/Plugins/Local/${ID}_FilterByDate_ExcludeOlderThan_${string}.js`, text, 'utf8');
 
     },
 
@@ -379,7 +379,7 @@ module.exports.details = details;
 module.exports.plugin = plugin;
 
         `
-        fs.writeFileSync(`C:/Users/H/Documents/Tdarr/Plugins/Local/${ID}_FilterByResolution_${modeType}_${resolution}.js`, text, 'utf8');
+        fs.writeFileSync(process.env.homePath + `/Tdarr/Plugins/Local/${ID}_FilterByResolution_${modeType}_${resolution}.js`, text, 'utf8');
 
     },
 
@@ -451,7 +451,7 @@ module.exports.details = details;
 module.exports.plugin = plugin;
 
         `
-        fs.writeFileSync(`C:/Users/H/Documents/Tdarr/Plugins/Local/${ID}_FilterBySize_Include_${string}.js`, text, 'utf8');
+        fs.writeFileSync(process.env.homePath + `/Tdarr/Plugins/Local/${ID}_FilterBySize_Include_${string}.js`, text, 'utf8');
 
     },
 
@@ -519,7 +519,7 @@ module.exports.details = details;
 module.exports.plugin = plugin;
 
         `
-        fs.writeFileSync(`C:/Users/H/Documents/Tdarr/Plugins/Local/${ID}_Transcode_${CLI}.js`, text, 'utf8');
+        fs.writeFileSync(process.env.homePath + `/Tdarr/Plugins/Local/${ID}_Transcode_${CLI}.js`, text, 'utf8');
 
     },
 
@@ -597,7 +597,7 @@ module.exports.details = details;
 module.exports.plugin = plugin;
 
         `
-        fs.writeFileSync(`C:/Users/H/Documents/Tdarr/Plugins/Local/${ID}_RemuxContainer_${containerNoDot}.js`, text, 'utf8');
+        fs.writeFileSync(process.env.homePath + `/Tdarr/Plugins/Local/${ID}_RemuxContainer_${containerNoDot}.js`, text, 'utf8');
 
     },
 
