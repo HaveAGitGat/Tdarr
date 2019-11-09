@@ -34,11 +34,27 @@ RUN apt-get -y install handbrake-cli ffmpeg libavcodec-extra libdvdnav4 libdvdre
 RUN sudo mkdir -p /data/db
 RUN sudo apt install -y mongodb-server
 
+RUN sudo apt-get install -y gcc
+RUN sudo apt-get install -y libcurl4-gnutls-dev
+RUN sudo apt-get install -y tesseract-ocr
+RUN sudo apt-get install -y libleptonica-dev
+RUN sudo apt-get install -y libtesseract-dev
+
 USER Tdarr
 ENV HOME /home/Tdarr
 ADD Tdarr $HOME/Tdarr
 
 COPY ./mongodb /etc/init.d/mongodb
+
+RUN sudo chown -R $USER:$USER $HOME/Tdarr/bundle/programs/server/assets/app/ccextractor/ccextractor
+RUN sudo chmod +x $HOME/Tdarr/bundle/programs/server/assets/app/ccextractor/ccextractor
+RUN sudo chmod a+rwx $HOME/Tdarr/bundle/programs/server/assets/app/ccextractor/ccextractor
+
+
+RUN sudo chown -R $USER:$USER $HOME/Tdarr/bundle/programs/server/assets/app/ffmpeg/ffmpeg
+RUN sudo chmod +x $HOME/Tdarr/bundle/programs/server/assets/app/ffmpeg/ffmpeg
+RUN sudo chmod a+rwx $HOME/Tdarr/bundle/programs/server/assets/app/ffmpeg/ffmpeg
+
 
 CMD sudo service mongodb start && \
  echo "Mongo started, waiting 10 seconds" && \
