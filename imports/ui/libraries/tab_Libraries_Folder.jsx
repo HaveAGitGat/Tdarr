@@ -1421,6 +1421,21 @@ class Folder extends Component {
 
     event.preventDefault();
 
+    const text = ReactDOM.findDOMNode(this.refs.addPluginText).value.trim();
+
+    var thisLibraryPlugins = SettingsDB.find({ _id: this.props.libraryItem._id }, { sort: { createdAt: 1 } }).fetch()[0].pluginIDs
+
+    var arr = thisLibraryPlugins.map(row => row._id)
+
+    if(arr.includes(text)){
+
+      alert('Plugin is already in stack!')
+
+
+    }else{
+
+  
+
     var source
 
     if(this.props.libraryItem.pluginCommunity == true){
@@ -1433,13 +1448,13 @@ class Folder extends Component {
 
     }
 
-    const text = ReactDOM.findDOMNode(this.refs.addPluginText).value.trim();
+   
     Meteor.call('addPluginInclude', this.props.libraryItem._id, text,source,this.props.libraryItem.pluginIDs.length, function (error, result) { });
     ReactDOM.findDOMNode(this.refs.addPluginText).value = '';
   }
 
 
-
+}
 
   addVideoCodecExclude(event) {
 
