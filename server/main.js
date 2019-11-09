@@ -193,13 +193,18 @@ if (!fs.existsSync(homePath + "/Tdarr/Samples")) {
 }
 
 
-
 //READ  variables from json file
 if (fs.existsSync(homePath + "/Tdarr/Data/env.json")) {
 
   try {
 
     jsonConfig = JSON.parse(fs.readFileSync(homePath + "/Tdarr/Data/env.json", 'utf8'))
+
+    console.log(jsonConfig)
+
+    if(jsonConfig.BASE != undefined){
+
+  
     GlobalSettingsDB.upsert(
       "globalsettings",
       {
@@ -208,9 +213,20 @@ if (fs.existsSync(homePath + "/Tdarr/Data/env.json")) {
         }
       }
     );
+  }
+
+  if(jsonConfig.HWT != undefined){
+
+    process.env.HWT = jsonConfig.HWT
+
+    console.log(process.env.HWT)
+
+  }
 
   } catch (err) {
     console.log("Unable to load configuration file")
+
+    console.log(err.stack)
   }
 
 }
@@ -347,6 +363,23 @@ if (!Array.isArray(count) || !count.length) {
     }
   );
 } else {
+
+  if (count[0].generalWorkerLimit == undefined) {
+
+    GlobalSettingsDB.upsert('globalsettings',
+    {
+      $set: {
+        lowCPUPriority: false,
+        generalWorkerLimit: 0,
+        transcodeWorkerLimit: 0,
+        healthcheckWorkerLimit: 0,
+        queueSortType: "sortDateNewest",
+        verboseLogs: false,
+      }
+    }
+  );
+
+  }
   //init sort vars
 
   if (count[0].queueSortType == undefined) {
@@ -1363,7 +1396,11 @@ Meteor.methods({
     console.log(mode, text)
 
 
-
+    if (fs.existsSync(path.join(process.cwd() + "/npm"))) {
+      var ffmpegPathLinux = path.join(process.cwd() + '/assets/app/ffmpeg/ffmpeg')
+  } else {
+      var ffmpegPathLinux = path.join(process.cwd() + '/private/ffmpeg/ffmpeg')
+  }
 
 
 
@@ -1388,18 +1425,19 @@ Meteor.methods({
     }
 
 
-    if (process.env.HWT == true) {
-      if (isDocker()) {
+    if (process.env.HWT == "true") {
 
         if (process.platform == 'linux' && mode == "handbrake") {
           workerCommand = "/usr/local/bin/HandBrakeCLI " + text
         } else if (process.platform == 'linux' && mode == "ffmpeg") {
 
-          workerCommand = "/usr/local/bin/ffmpeg " + text
+          workerCommand = ffmpegPathLinux +" " + text
 
         }
-      }
+      
     }
+
+    console.log(workerCommand)
 
 
 

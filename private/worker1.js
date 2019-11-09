@@ -335,8 +335,10 @@ process.on('message', (m) => {
         if (fs.existsSync(path.join(process.cwd() + "/npm"))) {
 
             var handBrakeCLIPath = path.join(process.cwd() + '/assets/app/HandBrakeCLI.exe')
+            var ffmpegPathLinux = path.join(process.cwd() + '/assets/app/ffmpeg/ffmpeg')
         } else {
             var handBrakeCLIPath = path.join(process.cwd() + '/private/HandBrakeCLI.exe')
+            var ffmpegPathLinux = path.join(process.cwd() + '/private/ffmpeg/ffmpeg')
         }
 
 
@@ -345,6 +347,9 @@ process.on('message', (m) => {
 
 
         var ffmpegPath = getFFmpegCLIPath();
+
+        
+
 
 
 
@@ -383,7 +388,7 @@ process.on('message', (m) => {
 
         } else if (process.platform == 'linux' && FFmpegMode == true) {
 
-            workerCommand = ffmpegPathUnix + " " + preset0Unix + " -i '" + currentSourceLineUnix + "' " + preset1Unix + " '" + currentDestinationLineUnix + "' "
+            workerCommand =  ffmpegPathUnix + " " + preset0Unix + " -i '" + currentSourceLineUnix + "' " + preset1Unix + " '" + currentDestinationLineUnix + "' "
 
         }
 
@@ -397,17 +402,17 @@ process.on('message', (m) => {
         }
 
 
-        if (process.env.HWT == true) {
-        if (isDocker()) {
+        if (process.env.HWT == "true") {
 
-            console.log("Worker in Docker")
+
+            // console.log("Worker in Docker")
             if (process.platform == 'linux' && handBrakeMode == true) {
               workerCommand = "/usr/local/bin/HandBrakeCLI -i '" + currentSourceLineUnix + "' -o '" + currentDestinationLineUnix + "' " + presetUnix;
             } else if (process.platform == 'linux' && FFmpegMode == true) {
-              workerCommand = "/usr/local/bin/ffmpeg " + preset0Unix + " -i '" + currentSourceLineUnix + "' " + preset1Unix + " '" + currentDestinationLineUnix + "' "
+              workerCommand = ffmpegPathLinux + " " + preset0Unix + " -i '" + currentSourceLineUnix + "' " + preset1Unix + " '" + currentDestinationLineUnix + "' "
         
             }
-          }
+          
         }
 
 
