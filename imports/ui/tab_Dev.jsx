@@ -120,31 +120,40 @@ export default class App extends Component {
 
               <p>Change log</p>
 
-            <p>v1.0055 mini-release [4th Nov 19]:
+              <p>v1.006 release [9th Nov 19]:
             
             <br />No breaking changes.
             <br />Changes:
 
+            <br />-[New] NVENC for FFmpeg enabled (linux + tdarr_aio)
+            <br />-[New] Per library stat breakdown
+            <br />-[New] Plugin creator 
+            <br />-[New] Plugin creator option - Filter by codec
+            <br />-[New] Plugin creator option - Filter by date
+            <br />-[New] Plugin creator option - Filter by medium
+            <br />-[New] Plugin creator option - Filter by size
+            <br />-[New] Plugin creator option - Filter by resolution
+            <br />-[New] Plugin creator option - Transcode
+            <br />-[New] Plugin creator option - Remux container
+            <br />-[New] Option to detect closed captions (linux + tdarr_aio + windows)
+            <br />-[New] Community plugin - remove closed captions
+            <br />-[New] Configurable plugin stack (mix local and community plugins, re-order etc)
+            <br />-[New] Folder to folder conversion (feedback needed, test first)
+            <br />-[New] Skip transcoding button
+            <br />-[New] Options tab - set base URL
+            <br />-[New] Remove item from library button
+            <br />-[New] Exclude codec whitelist/blacklist
+            <br />-[New] Navgiation bar UI
+            <br />-[New] Queue library alternation option
             <br />-[Fix] 'Re-queue' buttons on 'Tdarr' tab.
-            <br />-[Fix]  Prevent find-new/fresh scans occuring on a library at the same time. Hourly find-new scan re-enabled for libraries with folder watch ON.
-            <br />
-            <br />
+            <br />-[Fix] Prevent find-new/fresh scans occuring on a library at the same time. Hourly find-new scan re-enabled for libraries with folder watch ON.
+            <br />-[Fix] Library prioritisation sort
+            <br />-[Fix] Reduced search result number for quicker render
+            <br />+ UI changes
             </p>
 
-              <p>v1.0054 mini-release [3rd Nov 19]:
-            
-  <br />No breaking changes.
-  <br />Changes:
-  <br />-[New] Navgiation bar UI
-  <br />-[New] Queue library alternation option
-  <br />-[Fix] Library prioritisation sort
-  <br />-[Fix] Reduced search result number for quicker render
-  <br />-[Disabled] Hourly file scanner (investigating bug, normal folder watch still enabled)
-  <br />
-                <br />
-                <br />
-
-              </p>
+            <br />
+            <br />
 
               <p>v1.005 release [1st Nov 19]:
   <br />No breaking changes.
@@ -188,9 +197,14 @@ export default class App extends Component {
   <br />-Temp scanner data written inside container (Should fix permission issues with host)
   <br />-tdarr_aio (All-in-one) Ubuntu container now available with MongoDB inside container.
   <br />
-                <br />
-                <br />
+                
               </p>
+
+              <br />
+                <br />
+
+
+
               <p>v1.003 release [10th Oct 19]:
   <br />No breaking changes.
   <br />Changes:
