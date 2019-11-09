@@ -315,7 +315,7 @@ return null
                   ),
                   id: 'Transcode',
                   width: 'Transcode'.length*10,
-                  accessor: row => row.TranscodeDecisionMaker == "Queued" ? "Queued("+row.tPosition+")" : this.renderRedoButton(row.file, 'TranscodeDecisionMaker'),
+                  accessor: row => row.TranscodeDecisionMaker == "Queued" ?  <span>Queued({row.tPosition}){this.renderSkipButton(row.file)}</span> : this.renderRedoButton(row.file, 'TranscodeDecisionMaker'),
                   getProps: (state, rowInfo, column) => {
                     return {
                       style: {
@@ -468,6 +468,14 @@ renderBumpButton(file) {
     }
     return <ItemButton file={file} obj={obj} symbol={'↑'} type="updateDBAction" />
 
+  }
+
+  renderSkipButton(file) {
+    var obj = {
+      TranscodeDecisionMaker:"Transcode success",
+      lastTranscodeDate: new Date(),
+    }
+    return <ItemButton file={file} obj={obj} symbol={'⤳'} type="updateDBAction" />
   }
 
   renderCancelBumpButton(file) {
