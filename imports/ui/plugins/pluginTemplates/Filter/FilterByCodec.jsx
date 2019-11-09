@@ -84,7 +84,7 @@ this.setState({
        <br/>
        <br/>
 
-       <input type="text" className="folderPaths" ref="codecs" name="codecs" defaultValue={"hevc,h265"}></input>
+       <input type="text" className="folderPaths" ref="codecs" name="codecs" defaultValue={"hevc,h264"}></input>
 
 
           <br/>
