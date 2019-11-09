@@ -1456,8 +1456,12 @@ Meteor.methods({
 
     //var preset1 = "-ss 1 -t 30 -acodec copy -vcodec copy"
 
-    var preset1 = "-ss 1 -t 30"
-    var preset2 = "-codec copy"
+    // var preset1 = "-ss 1 -t 30"
+    // var preset2 = "-codec copy"
+
+    
+    var preset1 = ""
+    var preset2 = "-ss 00:00:1 -codec copy -t 30"
 
     if (fs.existsSync(outputFile)) {
       fs.unlinkSync(outputFile)
