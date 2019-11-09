@@ -611,9 +611,6 @@ Meteor.methods({
 
       });
 
-
-
-
       string = string.split(',')
 
       plugins = plugins.filter(row => {
@@ -658,7 +655,53 @@ Meteor.methods({
 
     return [plugins, pluginType]
 
-  }, 'verifyPlugin'(pluginID, DB_id, community) {
+  },
+
+  'buildPluginStack'(plugins) {
+
+    //  console.log(string)
+
+
+    for (var i = 0; i < plugins.length; i++) {
+
+      try {
+
+        var hwSource = fs.readFileSync(homePath + `/Tdarr/Plugins/${plugins[i].source}/` + plugins[i]._id + ".js", 'utf8');
+        var hwFunc = new Function('module', hwSource);
+        var hwModule = { exports: {} };
+        hwFunc(hwModule)
+        var hw = hwModule.exports;
+
+        var obj = hw.details();
+
+        plugins[i] = { ...plugins[i], ...obj };
+
+
+        //  console.log(obj)
+
+
+      } catch (err) {
+
+        var obj = {
+          Name: "Read error",
+          Type: "Read error",
+          Operation: "Read error",
+          Description: 'Read error',
+          Version: "Read error",
+          Link: "Read error"
+        }
+
+        console.log(err.stack)
+
+        plugins[i] = { ...plugins[i], ...obj };
+
+      }
+    }
+    return plugins
+
+  },
+  
+  'verifyPlugin'(pluginID, DB_id, community) {
 
     if (community == true) {
 
@@ -1464,10 +1507,9 @@ for (var i = 0; i < settingsInit.length; i++) {
     }
   );
 
+  //Run scan on start if needed
   if (settingsInit[i].scanOnStart !== false) {
 
-
-    //fileDB
 
     var obj = {
       HealthCheck: "Queued",
@@ -1481,6 +1523,55 @@ for (var i = 0; i < settingsInit.length; i++) {
 
   }
 }
+
+//Plugin migration step
+
+
+  for (var i = 0; i < settingsInit.length; i++) {
+
+  if(settingsInit[i].pluginIDs && settingsInit[i].pluginIDs.length !== 0 && settingsInit[i].pluginIDs[0].priority == undefined){
+
+    var pluginIDs = settingsInit[i].pluginIDs
+
+    if(settingsInit[i].pluginCommunity == true){
+
+      var source = "Community"
+
+    }else{
+      var source = "Local"
+    }
+
+    pluginIDs = pluginIDs.map((row, i) => {
+
+      return { _id:row._id,
+              checked:row.checked,
+              priority:i,
+              source:source,
+
+      }
+
+    })
+
+    SettingsDB.upsert(
+      settingsInit[i]._id,
+      {
+        $set: {
+          pluginIDs: pluginIDs,
+        }
+      }
+    );
+
+
+
+
+  }
+
+}
+
+
+
+
+
 
 
 //runScheduledManualScan()
@@ -2119,26 +2210,16 @@ function launchWorkerModule(workerType) {
 
                         var plugin = ''
 
-                        if (settings[0].pluginCommunity == true) {
-                          // var plugin = require(homePath + '/Tdarr/Plugins/Community/' + pluginID + '.js');
+                        
 
-                          var hwSource = fs.readFileSync(homePath + '/Tdarr/Plugins/Community/' + pluginID + '.js', 'utf8');
+                          var hwSource = fs.readFileSync(homePath + `/Tdarr/Plugins/${pluginsSelected[i].source}/` + pluginID + '.js', 'utf8');
                           var hwFunc = new Function('module', hwSource);
                           var hwModule = { exports: {} };
                           hwFunc(hwModule)
                           var plugin = hwModule.exports;
 
 
-                        } else {
-                          // var plugin = require(homePath + '/Tdarr/Plugins/Local/' + pluginID + '.js');
-                          var hwSource = fs.readFileSync(homePath + '/Tdarr/Plugins/Local/' + pluginID + '.js', 'utf8');
-                          var hwFunc = new Function('module', hwSource);
-                          var hwModule = { exports: {} };
-                          hwFunc(hwModule)
-                          var plugin = hwModule.exports;
-                        }
-
-
+                        
                         cliLogAdd += plugin.details().id+"\n"
 
                         var response = plugin.plugin(firstItem);
