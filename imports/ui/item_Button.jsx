@@ -5,7 +5,6 @@ import { Button } from 'react-bootstrap';
 import ClipLoader from 'react-spinners/ClipLoader';
 
 
-
 import { FileDB } from '../api/tasks.js';
 
 
@@ -95,8 +94,6 @@ export default class App extends Component {
 
             this.triggerLoadState();
 
-           
-             
            Meteor.call('createSample', this.props.file, (error, result) => {})
 
 
@@ -119,6 +116,41 @@ export default class App extends Component {
       )
 
     }
+
+    if (this.props.type == "removeFile") {
+
+      return (
+
+        <div>
+          {this.state.isShowState && <Button variant="outline-light" onClick={() => {
+
+
+            this.triggerLoadState();
+
+            FileDB.remove({ _id: this.props.file._id });
+           
+
+          }}><span className="buttonTextSize">{this.props.symbol}</span></Button>}
+
+          {this.state.isLoadState && <ClipLoader
+
+            sizeUnit={"px"}
+            size={25}
+            color={'white'}
+            loading={true}
+          />}
+
+
+
+
+
+        </div>
+
+      )
+
+    }
+
+    
 
   }
 }

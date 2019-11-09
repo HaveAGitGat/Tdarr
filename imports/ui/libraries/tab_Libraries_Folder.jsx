@@ -5,13 +5,13 @@ import ToggleButton from 'react-toggle-button'
 
 import { render } from 'react-dom';
 
-import { SettingsDB, GlobalSettingsDB } from '../../api/tasks.js';
+import { StatisticsDB, SettingsDB, GlobalSettingsDB } from '../../api/tasks.js';
 
 import { withTracker } from 'meteor/react-meteor-data';
 
 import VideoCodec from './VideoCodec.jsx';
 import AudioCodec from './AudioCodec.jsx';
-import Plugin from '../Plugin.jsx';
+import Plugin from './Plugin.jsx';
 import ScheduleBlock from './ScheduleBlock.jsx';
 import ReactDOM from 'react-dom';
 import InputRange from 'react-input-range';
@@ -55,6 +55,7 @@ class Folder extends Component {
       scheduleAll: false,
       folderBrowser: false,
       cacheBrowser: false,
+      outputBrowser: false,
       navItemSelected: "navSourceFolder",
 
 
@@ -78,6 +79,8 @@ class Folder extends Component {
     this.verifyFolder(ReactDOM.findDOMNode(this.refs[this.props.libraryItem._id + 'f']).value, 'folder', this.props.libraryItem._id + 'f')
 
     this.verifyFolder(ReactDOM.findDOMNode(this.refs[this.props.libraryItem._id + 'f']).value, 'cache', this.props.libraryItem._id + 'c')
+
+    this.verifyFolder(ReactDOM.findDOMNode(this.refs[this.props.libraryItem._id + 'o']).value, 'output', this.props.libraryItem._id + 'o')
 
 
   }
@@ -246,6 +249,13 @@ class Folder extends Component {
 
     }
 
+    if (event.target.name == "output") {
+
+      this.verifyFolder(event.target.value, 'output', this.props.libraryItem._id + 'o')
+
+    }
+
+
     if (event.target.name == "pluginID") {
 
       Meteor.call('verifyPlugin', event.target.value, this.props.libraryItem._id, this.props.libraryItem.pluginCommunity, function (error, result) { })
@@ -376,26 +386,117 @@ class Folder extends Component {
     }
   }
 
-  renderPlugins() {
+  handleChangeChkBx2 = (event,type) => {
+
+
+    console.log(event.target.checked,type,event.target.name)
+
+    if(event.target.name == "ExcludeSwitch" && event.target.checked == true){
+
+      var key = "decisionMaker." + type + "ExcludeSwitch"
+
+      SettingsDB.upsert(
+
+        this.props.libraryItem._id,
+        {
+          $set: {
+            [key]: true,
+          }
+        }
+      );
+  
+  
+
+
+    }else if(event.target.name == "IncludeSwitch" && event.target.checked == true){
+
+      var key = "decisionMaker." + type + "ExcludeSwitch"
+
+      SettingsDB.upsert(
+
+        this.props.libraryItem._id,
+        {
+          $set: {
+            [key]: false,
+          }
+        }
+      );
+  
+
+
+    }
+
+
+
+
+  }
+
+
+  renderPlugins = () => {
 
     var plugins = this.props.settings;
 
     plugins = plugins.filter(setting => setting._id == this.props.libraryItem._id);
-    plugins = plugins[0].pluginIDs
-
-
-    return plugins.map((pluginItem) => {
-
-
-
-      return (
-        <Plugin
-          key={pluginItem._id}
-          pluginItem={pluginItem}
-          DB_id={this.props.libraryItem._id}
-        />
-      );
+    plugins = plugins[0].pluginIDs.sort(function (a, b) {
+      return b.Priority - a.Priority;
     });
+
+    Meteor.call('buildPluginStack', plugins, (error, result) => {
+
+
+      //console.log(result)
+
+         result = result.sort(function (a, b) {
+        return b.Priority - a.Priority;
+      });
+
+
+      var stack = result.map((pluginItem) => {
+
+        return (
+          <Plugin
+            key={pluginItem._id}
+            pluginItem={pluginItem}
+            DB_id={this.props.libraryItem._id}
+          />
+        );
+      });
+
+
+      render(
+        <table className="pluginStackTable"><tbody>
+
+        <tr>
+      <th><center><p>Source</p></center></th>
+      <th><center><p>Enabled</p></center></th>
+      <th><center><p>id</p></center></th>
+      <th><center><p>Type</p></center></th>
+      <th><center><p>Operation</p></center></th>
+      <th><center><p>Name</p></center></th>
+      <th><center><p>Description</p></center></th>
+      <th><center><p>Priority</p></center></th>
+      <th><center><p>Remove</p></center></th>
+
+
+    </tr>
+
+         {stack}
+
+        </tbody>
+        </table>
+
+
+
+
+        , document.getElementById(this.props.libraryItem._id+"PluginStack"));
+
+
+
+
+    })
+
+
+
 
 
   }
@@ -1321,12 +1422,39 @@ class Folder extends Component {
     event.preventDefault();
 
     const text = ReactDOM.findDOMNode(this.refs.addPluginText).value.trim();
-    Meteor.call('addPluginInclude', this.props.libraryItem._id, text, function (error, result) { });
+
+    var thisLibraryPlugins = SettingsDB.find({ _id: this.props.libraryItem._id }, { sort: { createdAt: 1 } }).fetch()[0].pluginIDs
+
+    var arr = thisLibraryPlugins.map(row => row._id)
+
+    if(arr.includes(text)){
+
+      alert('Plugin is already in stack!')
+
+
+    }else{
+
+  
+
+    var source
+
+    if(this.props.libraryItem.pluginCommunity == true){
+
+      source = "Community"
+
+    }else{
+
+      source = "Local"
+
+    }
+
+   
+    Meteor.call('addPluginInclude', this.props.libraryItem._id, text,source,this.props.libraryItem.pluginIDs.length, function (error, result) { });
     ReactDOM.findDOMNode(this.refs.addPluginText).value = '';
   }
 
 
-
+}
 
   addVideoCodecExclude(event) {
 
@@ -1424,8 +1552,8 @@ class Folder extends Component {
       <div className="libraryContainer2">
 
 
-                <br/>
-                <br/>
+        <br />
+        <br />
 
         <center>
 
@@ -1445,16 +1573,56 @@ class Folder extends Component {
             <Dropdown.Menu >
 
               <div className={this.props.libraryItem.scanButtons ? '' : 'hidden'} className="optionsDropdown">
-                <Dropdown.Item style={{ color: 'green', fontSize:'14px' }} onClick={() => this.scanFiles(0)} >Scan (Find new)</Dropdown.Item>
-                <Dropdown.Item style={{ color: 'green', fontSize:'14px' }} onClick={() => this.scanFiles(1)} >Scan (Fresh)</Dropdown.Item>
+                <Dropdown.Item style={{ color: 'green', fontSize: '14px' }} onClick={() => this.scanFiles(0)} >Scan (Find new)</Dropdown.Item>
+                <Dropdown.Item style={{ color: 'green', fontSize: '14px' }} onClick={() => this.scanFiles(1)} >Scan (Fresh)</Dropdown.Item>
 
 
-                <Dropdown.Item onClick={() => this.resetAllStatus('TranscodeDecisionMaker')}><p>Requeue all items (transcode)</p></Dropdown.Item>
-                <Dropdown.Item onClick={() => this.resetAllStatus('HealthCheck')}><p>Requeue all items (health check)</p></Dropdown.Item>
+                <Dropdown.Item onClick={() => this.resetAllStatus('TranscodeDecisionMaker')}><span className="buttonTextSize">Requeue all items (transcode)</span></Dropdown.Item>
+                <Dropdown.Item onClick={() => this.resetAllStatus('HealthCheck')}><span className="buttonTextSize">Requeue all items (health check)</span></Dropdown.Item>
+
+                <Dropdown.Item style={{ color: '#bb86fc', fontSize: '14px' }} onClick={() => {
+
+                  if (confirm("Are you sure you want to reset this library's stats?")) {
+
+                    SettingsDB.upsert(
+                      this.props.libraryItem._id,
+                      {
+                        $set: {
+                          totalTranscodeCount: 0,
+                          sizeDiff: 0,
+                          totalHealthCheckCount: 0,
+                        }
+                      }
+                    );
+
+                  }
+                }
+
+                }>Reset stats: This library</Dropdown.Item>
+
+                <Dropdown.Item style={{ color: '#bb86fc', fontSize: '14px' }} onClick={() => {
+
+                  if (confirm("Are you sure you want to reset all library stats?")) {
+
+                    StatisticsDB.upsert(
+                      "statistics",
+                      {
+                        $set: {
+                          totalTranscodeCount: 0,
+                          sizeDiff: 0,
+                          totalHealthCheckCount: 0,
+                        }
+                      }
+                    );
+
+                  }
+                }
+
+                }>Reset stats: All</Dropdown.Item>
 
 
 
-                <Dropdown.Item style={{ color: '#bb86fc',fontSize:'14px' }} onClick={() => {
+                <Dropdown.Item style={{ color: '#bb86fc', fontSize: '14px' }} onClick={() => {
 
                   if (confirm('Are you sure you want to clear this library? Your files will not be affected.')) {
                     this.removeLibrary(this.props.libraryItem._id)
@@ -1464,7 +1632,7 @@ class Folder extends Component {
                 }>Clear library</Dropdown.Item>
 
 
-                <Dropdown.Item style={{ color: '#bb86fc',fontSize:'14px' }} onClick={this.deleteThisLibrary.bind(this)}>Delete library</Dropdown.Item>
+                <Dropdown.Item style={{ color: '#bb86fc', fontSize: '14px' }} onClick={this.deleteThisLibrary.bind(this)}>Delete library</Dropdown.Item>
 
 
               </div>
@@ -1475,8 +1643,8 @@ class Folder extends Component {
 
           <p>
 
-                <br/>
-                <br/>
+            <br />
+            <br />
 
             <Button variant="outline-light" onClick={() => {
 
@@ -1517,7 +1685,7 @@ class Folder extends Component {
 
             }} ><span className="buttonTextSize">←</span></Button>
 
-{'\u00A0'}{'\u00A0'}Priority:{this.props.libraryItem.priority + 1} {'\u00A0'}{'\u00A0'}
+            {'\u00A0'}{'\u00A0'}Priority:{this.props.libraryItem.priority + 1} {'\u00A0'}{'\u00A0'}
 
             <Button variant="outline-light" onClick={() => {
 
@@ -1584,10 +1752,10 @@ class Folder extends Component {
         </center>
 
 
-<br/>
-<br/>
-<br/>
-<br/>
+        <br />
+        <br />
+        <br />
+        <br />
         <div className="libraryGrid-container">
 
           <div className="libraryGrid-itemLeft">
@@ -1595,41 +1763,75 @@ class Folder extends Component {
 
 
             <p onClick={() => {
-              this.setState({
-                navItemSelected: "navSourceFolder",
-              })
-            }} className={this.state.navItemSelected == "navSourceFolder" ? 'selectedNav' : ''}>Source</p>
-
+              SettingsDB.upsert(
+                this.props.libraryItem._id,
+                {
+                  $set: {
+                    navItemSelected: "navSourceFolder",
+                  }
+                }
+              );
+            }} className={this.props.libraryItem.navItemSelected == "navSourceFolder" ? 'selectedNav' : 'unselectedNav'}>Source</p>
             <p onClick={() => {
-              this.setState({
-                navItemSelected: "navCacheFolder",
-              })
-            }} className={this.state.navItemSelected == "navCacheFolder" ? 'selectedNav' : ''}>Transcode cache</p>
-
+              SettingsDB.upsert(
+                this.props.libraryItem._id,
+                {
+                  $set: {
+                    navItemSelected: "navCacheFolder",
+                  }
+                }
+              );
+            }} className={this.props.libraryItem.navItemSelected == "navCacheFolder" ? 'selectedNav' : 'unselectedNav'}>Transcode cache</p>
             <p onClick={() => {
-              this.setState({
-                navItemSelected: "navContainers",
-              })
-            }} className={this.state.navItemSelected == "navContainers" ? 'selectedNav' : ''}>Containers</p>
-
-
+              SettingsDB.upsert(
+                this.props.libraryItem._id,
+                {
+                  $set: {
+                    navItemSelected: "navOutputFolder",
+                  }
+                }
+              );
+            }} className={this.props.libraryItem.navItemSelected == "navOutputFolder" ? 'selectedNav' : 'unselectedNav'}>Output Folder</p>
             <p onClick={() => {
-              this.setState({
-                navItemSelected: "navTranscode",
-              })
-            }} className={this.state.navItemSelected == "navTranscode" ? 'selectedNav' : ''}>Transcode</p>
-
+              SettingsDB.upsert(
+                this.props.libraryItem._id,
+                {
+                  $set: {
+                    navItemSelected: "navContainers",
+                  }
+                }
+              );
+            }} className={this.props.libraryItem.navItemSelected == "navContainers" ? 'selectedNav' : 'unselectedNav'}>Containers</p>
             <p onClick={() => {
-              this.setState({
-                navItemSelected: "navHealthCheck",
-              })
-            }} className={this.state.navItemSelected == "navHealthCheck" ? 'selectedNav' : ''}>Health check</p>
-
+              SettingsDB.upsert(
+                this.props.libraryItem._id,
+                {
+                  $set: {
+                    navItemSelected: "navTranscode",
+                  }
+                }
+              );
+            }} className={this.props.libraryItem.navItemSelected == "navTranscode" ? 'selectedNav' : 'unselectedNav'}>Transcode</p>
             <p onClick={() => {
-              this.setState({
-                navItemSelected: "navSchedule",
-              })
-            }} className={this.state.navItemSelected == "navSchedule" ? 'selectedNav' : ''}>Schedule</p>
+              SettingsDB.upsert(
+                this.props.libraryItem._id,
+                {
+                  $set: {
+                    navItemSelected: "navHealthCheck",
+                  }
+                }
+              );
+            }} className={this.props.libraryItem.navItemSelected == "navHealthCheck" ? 'selectedNav' : 'unselectedNav'}>Health check</p>
+            <p onClick={() => {
+              SettingsDB.upsert(
+                this.props.libraryItem._id,
+                {
+                  $set: {
+                    navItemSelected: "navSchedule",
+                  }
+                }
+              );
+            }} className={this.props.libraryItem.navItemSelected == "navSchedule" ? 'selectedNav' : 'unselectedNav'}>Schedule</p>
 
 
 
@@ -1640,103 +1842,130 @@ class Folder extends Component {
 
           <div className="libraryGrid-itemRight">
 
-            
-    
 
 
 
-            <div className={this.state.navItemSelected == "navSourceFolder" ? '' : 'hidden'}>
-            <div style={libButtonStyle}>
-            <span className="buttonTextSize"></span>{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'} <span className="buttonTextSize">Folder watch:</span>
-            <div style={libButtonStyle}>
-              <ToggleButton
-                thumbStyle={borderRadiusStyle}
-                trackStyle={borderRadiusStyle}
 
-                name="folderWatching"
-                value={!!this.props.libraryItem.folderWatching || false}
-                onToggle={() => {
 
-                  SettingsDB.upsert(
+            <div className={this.props.libraryItem.navItemSelected == "navSourceFolder" ? '' : 'hidden'}>
+              <div style={libButtonStyle}>
+                <span className="buttonTextSize"></span>{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'} <span className="buttonTextSize">Folder watch:</span>
+                <div style={libButtonStyle}>
+                  <ToggleButton
+                    thumbStyle={borderRadiusStyle}
+                    trackStyle={borderRadiusStyle}
 
-                    this.props.libraryItem._id,
-                    {
-                      $set: {
-                        folderWatching: !this.props.libraryItem.folderWatching,
-                      }
+                    name="folderWatching"
+                    value={!!this.props.libraryItem.folderWatching || false}
+                    onToggle={() => {
+
+                      SettingsDB.upsert(
+
+                        this.props.libraryItem._id,
+                        {
+                          $set: {
+                            folderWatching: !this.props.libraryItem.folderWatching,
+                          }
+                        }
+                      );
+
+
+                      Meteor.call('toggleFolderWatch', this.props.libraryItem.folder, this.props.libraryItem._id, !this.props.libraryItem.folderWatching, function (error, result) { })
                     }
-                  );
 
-
-                  Meteor.call('toggleFolderWatch', this.props.libraryItem.folder, this.props.libraryItem._id, !this.props.libraryItem.folderWatching, function (error, result) { })
-                }
-
-                }
-              />
-            </div>
-
-
-
-            {'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}<span className="buttonTextSize">Process Library:</span>
-            <div style={libButtonStyle}>
-              <ToggleButton
-                thumbStyle={borderRadiusStyle}
-                trackStyle={borderRadiusStyle}
-
-
-
-                value={this.props.libraryItem.processLibrary === undefined ? true : !!this.props.libraryItem.processLibrary}
-                onToggle={() => {
-
-
-
-                  SettingsDB.upsert(
-
-                    this.props.libraryItem._id,
-                    {
-                      $set: {
-                        processLibrary: !this.props.libraryItem.processLibrary,
-                      }
                     }
-                  );
-                }
-
-                }
-              />
-            </div>
+                  />
+                </div>
 
 
 
+                {'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}<span className="buttonTextSize">Process Library:</span>
+                <div style={libButtonStyle}>
+                  <ToggleButton
+                    thumbStyle={borderRadiusStyle}
+                    trackStyle={borderRadiusStyle}
 
 
-            {'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}<span className="buttonTextSize">Scan on start:</span>
-            <div style={libButtonStyle}>
-              <ToggleButton
-                thumbStyle={borderRadiusStyle}
-                trackStyle={borderRadiusStyle}
 
-                value={this.props.libraryItem.scanOnStart === undefined ? true : !!this.props.libraryItem.scanOnStart}
-                onToggle={() => {
+                    value={this.props.libraryItem.processLibrary === undefined ? true : !!this.props.libraryItem.processLibrary}
+                    onToggle={() => {
 
-                  SettingsDB.upsert(
 
-                    this.props.libraryItem._id,
-                    {
-                      $set: {
-                        scanOnStart: !this.props.libraryItem.scanOnStart,
-                      }
+
+                      SettingsDB.upsert(
+
+                        this.props.libraryItem._id,
+                        {
+                          $set: {
+                            processLibrary: !this.props.libraryItem.processLibrary,
+                          }
+                        }
+                      );
                     }
-                  );
-                }
 
-                }
-              />
-            </div>
+                    }
+                  />
+                </div>
 
-          </div>
 
-   
-   <br/> <br/> <br/>
+
+
+
+                {'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}<span className="buttonTextSize">Scan on start:</span>
+                <div style={libButtonStyle}>
+                  <ToggleButton
+                    thumbStyle={borderRadiusStyle}
+                    trackStyle={borderRadiusStyle}
+
+                    value={this.props.libraryItem.scanOnStart === undefined ? true : !!this.props.libraryItem.scanOnStart}
+                    onToggle={() => {
+
+                      SettingsDB.upsert(
+
+                        this.props.libraryItem._id,
+                        {
+                          $set: {
+                            scanOnStart: !this.props.libraryItem.scanOnStart,
+                          }
+                        }
+                      );
+                    }
+
+                    }
+                  />
+                </div>
+
+
+
+                
+                {'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}<span className="buttonTextSize">Closed caption scan (much slower -linux/tdarr_aio/win):</span>
+                <div style={libButtonStyle}>
+                  <ToggleButton
+                    thumbStyle={borderRadiusStyle}
+                    trackStyle={borderRadiusStyle}
+
+                    value={this.props.libraryItem.closedCaptionScan === undefined ? false : !!this.props.libraryItem.closedCaptionScan}
+                    onToggle={() => {
+
+                      SettingsDB.upsert(
+
+                        this.props.libraryItem._id,
+                        {
+                          $set: {
+                            closedCaptionScan: !this.props.libraryItem.closedCaptionScan,
+                          }
+                        }
+                      );
+                    }
+
+                    }
+                  />
+                </div>
+
+              </div>
+
+
+              <br /> <br /> <br />
 
               <p>Source:</p>
 
@@ -1749,8 +1978,8 @@ class Folder extends Component {
                 <span className="invalidFolder" ><center> Invalid folder </center></span>
               </div>
 
-              <br/>
-              <br/>
+              <br />
+              <br />
 
               <div className="folderResults">
 
@@ -1763,8 +1992,8 @@ class Folder extends Component {
 
                 }} ><span className="buttonTextSize">{this.state.folderBrowser ? 'Hide' : 'Show'} browser</span></Button>
 
-                <br/>
-                <br/>
+                <br />
+                <br />
 
               </div>
 
@@ -1781,7 +2010,7 @@ class Folder extends Component {
 
             </div>
 
-            <div className={this.state.navItemSelected == "navCacheFolder" ? '' : 'hidden'}>
+            <div className={this.props.libraryItem.navItemSelected == "navCacheFolder" ? '' : 'hidden'}>
 
               <p> Transcode cache:</p>
 
@@ -1793,8 +2022,8 @@ class Folder extends Component {
 
               </div>
 
-              <br/>
-              <br/>
+              <br />
+              <br />
 
 
               <div className="folderResults">
@@ -1808,8 +2037,8 @@ class Folder extends Component {
 
                 }} ><span className="buttonTextSize">{this.state.cacheBrowser ? 'Hide' : 'Show'} browser</span></Button>
 
-                <br/>
-                <br/>
+                <br />
+                <br />
 
               </div>
 
@@ -1820,7 +2049,73 @@ class Folder extends Component {
             </div>
 
 
-            <div className={this.state.navItemSelected == "navContainers" ? '' : 'hidden'} >
+            <div className={this.props.libraryItem.navItemSelected == "navOutputFolder" ? '' : 'hidden'}>
+
+
+              <p>Under normal operation Tdarr is designed to work directly on your library, replacing original files. If you like you can enable folder-to-folder conversion below.  </p>
+
+
+              <p> Output Folder:              <ToggleButton
+                thumbStyle={borderRadiusStyle}
+                trackStyle={borderRadiusStyle}
+
+                value={this.props.libraryItem.folderToFolderConversion === undefined ? true : !!this.props.libraryItem.folderToFolderConversion}
+                onToggle={() => {
+
+                  SettingsDB.upsert(
+
+                    this.props.libraryItem._id,
+                    {
+                      $set: {
+                        folderToFolderConversion: !this.props.libraryItem.folderToFolderConversion,
+                      }
+                    }
+                  );
+                }
+
+                }
+              /></p>
+
+              <input type="text" className="folderPaths" ref={this.props.libraryItem._id + 'o'} name="output" defaultValue={this.props.libraryItem.output} onChange={this.handleChange}></input>
+
+              <div className={this.props.libraryItem.outputValid ? 'hidden' : ''}>
+
+                <span className="invalidFolder" ><center> Invalid folder </center></span>
+
+              </div>
+
+              <br />
+              <br />
+
+
+              <div className="folderResults">
+
+                <Button variant="outline-light" onClick={() => {
+
+                  this.setState({
+                    outputBrowser: !this.state.outputBrowser,
+                  })
+
+
+                }} ><span className="buttonTextSize">{this.state.outputBrowser ? 'Hide' : 'Show'} browser</span></Button>
+
+                <br />
+                <br />
+
+              </div>
+
+              <div className={this.state.outputBrowser ? '' : 'hidden'}>
+
+                <div id={this.props.libraryItem._id + 'oResults'} className="folderResults"></div>
+              </div>
+            </div>
+
+
+
+
+
+
+            <div className={this.props.libraryItem.navItemSelected == "navContainers" ? '' : 'hidden'} >
 
               <p>Container types to scan for:</p>
 
@@ -1829,14 +2124,14 @@ class Folder extends Component {
 
             </div>
 
-            <div className={this.state.navItemSelected == "navTranscode" ? '' : 'hidden'} >
+            <div className={this.props.libraryItem.navItemSelected == "navTranscode" ? '' : 'hidden'} >
 
 
-             <p>Transcode Decision Maker</p> 
+              <p>Transcode Decision Maker</p>
 
               <center>
 
-                <span className="buttonTextSize">Plugin:</span> <div style={libButtonStyle}><ToggleButton
+                <span className="buttonTextSize">Plugin Stack:</span> <div style={libButtonStyle}><ToggleButton
                   thumbStyle={borderRadiusStyle}
                   trackStyle={borderRadiusStyle}
 
@@ -1878,7 +2173,7 @@ class Folder extends Component {
                   }
                 /></div>{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}
 
-                <span className="buttonTextSize">Video library:</span> <div style={libButtonStyle}><ToggleButton
+                <span className="buttonTextSize">Video:</span> <div style={libButtonStyle}><ToggleButton
                   thumbStyle={borderRadiusStyle}
                   trackStyle={borderRadiusStyle}
 
@@ -1916,7 +2211,7 @@ class Folder extends Component {
                 /></div>{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}
 
 
-                <span className="buttonTextSize">Audio library:</span>
+                <span className="buttonTextSize">Audio:</span>
                 <div style={libButtonStyle}> <ToggleButton
                   thumbStyle={borderRadiusStyle}
                   trackStyle={borderRadiusStyle}
@@ -1958,24 +2253,26 @@ class Folder extends Component {
                   }
                 /></div>
 
-</center>
+              </center>
 
 
-            
+
 
               <div className={!!this.props.libraryItem.decisionMaker.pluginFilter ? '' : 'hidden'}>
 
-                <center>
-                  <p>Community:
-<Checkbox name="community" checked={!!this.props.libraryItem.pluginCommunity} onChange={this.handleChangeChkBx} />
-                    Local:
-<Checkbox name="local" checked={!this.props.libraryItem.pluginCommunity} onChange={this.handleChangeChkBx} />
-                  </p>
-                </center>
+              
+              <br/>
+              <br/>
+              <br/>
+              <br/>
+                 
 
-               
-                  <p>Plugin ID:</p>
-            
+
+                <p>Plugin ID:        {'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}Source:{'\u00A0'}{'\u00A0'}  Community
+<Checkbox name="community" checked={!!this.props.libraryItem.pluginCommunity} onChange={this.handleChangeChkBx} />
+{'\u00A0'}{'\u00A0'}Local
+<Checkbox name="local" checked={!this.props.libraryItem.pluginCommunity} onChange={this.handleChangeChkBx} /></p>
+
 
 
 
@@ -1983,7 +2280,7 @@ class Folder extends Component {
                   <input
                     type="text"
                     ref="addPluginText"
-                    placeholder="Add Plugin IDs(use Enter↵)"
+                    placeholder="Add Plugin ID (use Enter↵)"
                     className="folderPaths"
                     name="pluginID"
                     onChange={this.handleChange}
@@ -1999,13 +2296,27 @@ class Folder extends Component {
                 <p></p>
                 <p></p>
 
+               
+                
+
+
                 <center><p>Plugin Stack:</p>  </center>
+
+                
+                <p></p>
+                <p></p>
+
+                <center><p>See the 'Plugins' tab for help on creating a stack. Make sure to put 'Filter' plugins at top of stack</p></center>
+
+
+                <p></p>
+                <p></p>
+
                 <center>
 
-                  <table><tbody>
-                    {this.renderPlugins()}
-                  </tbody>
-                  </table>
+
+                   {this.renderPlugins()}
+                  <div id={this.props.libraryItem._id+"PluginStack"}></div>
 
                 </center>
 
@@ -2021,13 +2332,13 @@ class Folder extends Component {
 
               <div className={!!this.props.libraryItem.decisionMaker.pluginFilter ? 'hidden' : !!this.props.libraryItem.decisionMaker.videoFilter ? '' : !!this.props.libraryItem.decisionMaker.audioFilter ? '' : 'hidden'}>
 
-<br/>
-<br/>
-<br/>
-<br/>
+                <br />
+                <br />
+                <br />
+                <br />
 
 
-                <p>Output file container: </p>  
+                <p>Output file container: </p>
 
                 <input type="text" name="container" className="folderPaths3" defaultValue={this.props.libraryItem.container} onChange={this.handleChange}></input>
 
@@ -2039,7 +2350,7 @@ class Folder extends Component {
 <Checkbox name="ffmpeg" checked={!!this.props.libraryItem.ffmpeg} onChange={this.handleChangeChkBx} />
                 </p>  </center>
 
-                <p>CLI arguments/preset: </p>  
+                <p>CLI arguments/preset: </p>
                 <input type="text" name="preset" className="folderPaths" defaultValue={this.props.libraryItem.preset} onChange={this.handleChange}></input>
 
 
@@ -2055,7 +2366,7 @@ class Folder extends Component {
 
                 <p></p>
                 <p></p>
-            <p>Don't transcode videos already in these codecs:</p> 
+                <p>Don't <Checkbox name="ExcludeSwitch" checked={this.props.libraryItem.decisionMaker.videoExcludeSwitch != undefined ? this.props.libraryItem.decisionMaker.videoExcludeSwitch : true} onChange={ event => this.handleChangeChkBx2(event,'video')} />/ Only<Checkbox name="IncludeSwitch" checked={this.props.libraryItem.decisionMaker.videoExcludeSwitch != undefined ? !this.props.libraryItem.decisionMaker.videoExcludeSwitch : false} onChange={event => this.handleChangeChkBx2(event,'video')} /> transcode videos in these codecs:</p>
 
 
                 <form onSubmit={this.addVideoCodecExclude.bind(this)} >
@@ -2157,7 +2468,7 @@ class Folder extends Component {
               <div className={!!this.props.libraryItem.decisionMaker.audioFilter ? '' : 'hidden'}>
                 <p></p>
                 <p></p>
-                <p>Don't transcode audio already in these codecs:</p>
+                <p>Don't <Checkbox name="ExcludeSwitch" checked={this.props.libraryItem.decisionMaker.audioExcludeSwitch != undefined ? this.props.libraryItem.decisionMaker.audioExcludeSwitch : true} onChange={ event => this.handleChangeChkBx2(event,'audio')} />/ Only<Checkbox name="IncludeSwitch" checked={this.props.libraryItem.decisionMaker.audioExcludeSwitch != undefined ? !this.props.libraryItem.decisionMaker.audioExcludeSwitch : false} onChange={event => this.handleChangeChkBx2(event,'audio')} /> transcode audio in these codecs:</p>
 
                 <form onSubmit={this.addAudioCodecExclude.bind(this)} >
                   <input
@@ -2207,20 +2518,20 @@ class Folder extends Component {
 
             </div>
 
-            <div className={this.state.navItemSelected == "navHealthCheck" ? '' : 'hidden'} >
+            <div className={this.props.libraryItem.navItemSelected == "navHealthCheck" ? '' : 'hidden'} >
 
               <p>Health check type:</p>
-                <p>Quick:
+              <p>Quick:
         <Checkbox name="handbrakescan" checked={!!this.props.libraryItem.handbrakescan} onChange={this.handleChangeChkBx} />
-                  Thorough:
+                Thorough:
         <Checkbox name="ffmpegscan" checked={!!this.props.libraryItem.ffmpegscan} onChange={this.handleChangeChkBx} />
-                </p>  
+              </p>
 
             </div>
 
-            <div className={this.state.navItemSelected == "navSchedule" ? '' : 'hidden'} >
+            <div className={this.props.libraryItem.navItemSelected == "navSchedule" ? '' : 'hidden'} >
 
-             <p>Schedule:  </p>
+              <p>Schedule:  </p>
 
               <Button variant="outline-light" onClick={() => {
 
@@ -2234,9 +2545,9 @@ class Folder extends Component {
 
               }}  >Toggle all</Button>
 
-              <br/>
-              <br/>
-              <br/>
+              <br />
+              <br />
+              <br />
 
               <div className="scheduleContainer">
                 {this.renderScheduleBlocks()}
