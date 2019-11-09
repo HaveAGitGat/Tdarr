@@ -45,6 +45,7 @@ var ButtonStyle = {
 
 Meteor.call('createPluginTranscode', preset,container,this.state.handBrakeMode,this.state.FFmpegMode, function (error, result) { })
 
+alert('Local plugin created! It can be viewed on the Local plugins tab')
 
     }
 
@@ -72,7 +73,7 @@ Meteor.call('createPluginTranscode', preset,container,this.state.handBrakeMode,t
        <br/>
        <br/>
 
-       <p>HandBrake<Checkbox  checked={this.state.handBrakeMode} onChange={ event => {
+     <center>  <p>HandBrake<Checkbox  checked={this.state.handBrakeMode} onChange={ event => {
 
 this.setState({
   handBrakeMode: !this.state.handBrakeMode,
@@ -102,7 +103,7 @@ if(this.state.FFmpegMode == true){
         }
 
 
-       }} /></p>
+       }} /></p></center> 
 
         <br/>
         <br/>

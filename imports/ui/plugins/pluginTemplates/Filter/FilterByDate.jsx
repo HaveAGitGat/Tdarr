@@ -52,6 +52,7 @@ var ButtonStyle = {
 
 Meteor.call('createPluginFilterDate', totalSeconds, string, function (error, result) { })
 
+alert('Local plugin created! It can be viewed on the Local plugins tab')
 
     }
 

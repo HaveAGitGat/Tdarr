@@ -37,7 +37,8 @@ var ButtonStyle = {
  
       Meteor.call('createPluginFilterResolution', this.state.excludeResolutionSwitch, resolutions, function (error, result) { })
 
-
+      alert('Local plugin created! It can be viewed on the Local plugins tab')
+      
     }
 
 

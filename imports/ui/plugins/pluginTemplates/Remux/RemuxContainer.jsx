@@ -44,6 +44,7 @@ var ButtonStyle = {
 
 Meteor.call('createPluginRemuxContainer', container, function (error, result) { })
 
+alert('Local plugin created! It can be viewed on the Local plugins tab')
 
     }
 

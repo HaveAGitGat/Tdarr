@@ -44,6 +44,8 @@ var ButtonStyle = {
 
 Meteor.call('createPluginFilterSize', lowerBound,upperBound, string, function (error, result) { })
 
+alert('Local plugin created! It can be viewed on the Local plugins tab')
+
 
     }
 

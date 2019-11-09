@@ -37,6 +37,8 @@ console.log(codecs)
 Meteor.call('createPluginFilterCodec', this.state.excludeCodecSwitch, codecs, function (error, result) { })
 
 
+      alert('Local plugin created! It can be viewed on the Local plugins tab')
+
 
     }
 

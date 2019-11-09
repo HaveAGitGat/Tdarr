@@ -41,7 +41,7 @@ if(this.state.audio == true){
 
 Meteor.call('createPluginFilterMedium', type, function (error, result) { })
 
-
+alert('Local plugin created! It can be viewed on the Local plugins tab')
 
     }
 
