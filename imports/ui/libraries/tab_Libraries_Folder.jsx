@@ -2265,7 +2265,7 @@ class Folder extends Component {
                   <input
                     type="text"
                     ref="addPluginText"
-                    placeholder="Add Plugin IDs (use Enter↵)"
+                    placeholder="Add Plugin ID (use Enter↵)"
                     className="folderPaths"
                     name="pluginID"
                     onChange={this.handleChange}
@@ -2281,7 +2281,22 @@ class Folder extends Component {
                 <p></p>
                 <p></p>
 
+               
+                
+
+
                 <center><p>Plugin Stack:</p>  </center>
+
+                
+                <p></p>
+                <p></p>
+
+                <center><p>See the 'Plugins' tab for help on creating a stack. Make sure to put 'Filter' plugins at top of stack</p></center>
+
+
+                <p></p>
+                <p></p>
+
                 <center>
 
 

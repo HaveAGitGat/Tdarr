@@ -24,6 +24,8 @@ import Transcode from './pluginTemplates/Transcode/Transcode.jsx';
 
 import RemuxContainer from './pluginTemplates/Remux/RemuxContainer.jsx';
 
+import PluginGuide from './pluginTemplates/PluginGuide.jsx';
+
 
 
 
@@ -462,6 +464,26 @@ class App extends Component {
 
                   <div className="pluginTabGrid-itemLeft">
 
+                    <br/>
+                    <br/>
+                    <br/>
+
+                  <p onClick={() => {
+                      GlobalSettingsDB.upsert(
+                        "globalsettings",
+                        {
+                          $set: {
+                            navSelectedPluginCreatorItem: "navPluginGuide",
+                          }
+                        }
+                      );
+                    }} className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navPluginGuide" ? 'selectedNav' : 'unselectedNav'}>Guide</p>
+
+
+                    <br/>
+                    <br/>
+                    <br/>
+
 
                       <p>Filter</p>
 
@@ -531,6 +553,9 @@ class App extends Component {
                     
                       </div>
 
+                      <br/>
+                    <br/>
+                    <br/>
 
                     <p>Transcode</p>
                       <div className="pluginCreatorSubItems">
@@ -555,7 +580,9 @@ class App extends Component {
 
 
     
-
+                    <br/>
+                    <br/>
+                    <br/>
 
 
                       <p>Remux</p>
@@ -588,6 +615,21 @@ class App extends Component {
 
 
                   <div className="pluginTabGrid-itemRight">
+
+                  <div className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navPluginGuide" ? '' : 'hidden'}>
+                    <PluginGuide/>
+                    </div>
+
+
+
+
+
+
+
+
+
+
+
 
                   <div className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navFilterMedium" ? '' : 'hidden'}>
                     <FilterByMedium/>
