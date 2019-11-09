@@ -876,6 +876,22 @@ table.searchResultsTable td {
 
 }
 
+table.pluginStackTable th {
+
+
+  border: 1px solid white;
+  color: black;
+
+}
+
+table.pluginStackTable td {
+
+
+  border: 1px solid white;
+  color: black;
+
+}
+
 .iconContainer {
   background-color: grey;
   display: inline-block;

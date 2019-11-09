@@ -44,7 +44,7 @@ Meteor.methods({
 
 
 
-    'addPluginInclude'(DB_id, ele) {
+    'addPluginInclude'(DB_id, ele,source,index) {
 
 
 
@@ -58,6 +58,8 @@ Meteor.methods({
                 "pluginIDs": {
                     _id: ele,
                     checked: false,
+                    source:source,
+                    priority:index,
                 }
             }
         })

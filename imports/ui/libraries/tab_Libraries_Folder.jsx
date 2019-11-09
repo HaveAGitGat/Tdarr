@@ -432,26 +432,71 @@ class Folder extends Component {
   }
 
 
-  renderPlugins() {
+  renderPlugins = () => {
 
     var plugins = this.props.settings;
 
     plugins = plugins.filter(setting => setting._id == this.props.libraryItem._id);
-    plugins = plugins[0].pluginIDs
-
-
-    return plugins.map((pluginItem) => {
-
-
-
-      return (
-        <Plugin
-          key={pluginItem._id}
-          pluginItem={pluginItem}
-          DB_id={this.props.libraryItem._id}
-        />
-      );
+    plugins = plugins[0].pluginIDs.sort(function (a, b) {
+      return b.Priority - a.Priority;
     });
+
+    Meteor.call('buildPluginStack', plugins, (error, result) => {
+
+
+      //console.log(result)
+
+         result = result.sort(function (a, b) {
+        return b.Priority - a.Priority;
+      });
+
+
+      var stack = result.map((pluginItem) => {
+
+        return (
+          <Plugin
+            key={pluginItem._id}
+            pluginItem={pluginItem}
+            DB_id={this.props.libraryItem._id}
+          />
+        );
+      });
+
+
+      render(
+        <table className="pluginStackTable"><tbody>
+
+        <tr>
+      <th><center><p>Source</p></center></th>
+      <th><center><p>Enabled</p></center></th>
+      <th><center><p>id</p></center></th>
+      <th><center><p>Type</p></center></th>
+      <th><center><p>Operation</p></center></th>
+      <th><center><p>Name</p></center></th>
+      <th><center><p>Description</p></center></th>
+      <th><center><p>Priority</p></center></th>
+      <th><center><p>Remove</p></center></th>
+
+
+    </tr>
+
+         {stack}
+
+        </tbody>
+        </table>
+
+
+
+
+        , document.getElementById(this.props.libraryItem._id+"PluginStack"));
+
+
+
+
+    })
+
+
+
 
 
   }
@@ -1376,8 +1421,20 @@ class Folder extends Component {
 
     event.preventDefault();
 
+    var source
+
+    if(this.props.libraryItem.pluginCommunity == true){
+
+      source = "Community"
+
+    }else{
+
+      source = "Local"
+
+    }
+
     const text = ReactDOM.findDOMNode(this.refs.addPluginText).value.trim();
-    Meteor.call('addPluginInclude', this.props.libraryItem._id, text, function (error, result) { });
+    Meteor.call('addPluginInclude', this.props.libraryItem._id, text,source,this.props.libraryItem.pluginIDs.length, function (error, result) { });
     ReactDOM.findDOMNode(this.refs.addPluginText).value = '';
   }
 
@@ -2188,16 +2245,18 @@ class Folder extends Component {
 
               <div className={!!this.props.libraryItem.decisionMaker.pluginFilter ? '' : 'hidden'}>
 
-                <center>
-                  <p>Community:
+              
+              <br/>
+              <br/>
+              <br/>
+              <br/>
+                 
+
+
+                <p>Plugin ID:        {'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}Source:{'\u00A0'}{'\u00A0'}  Community
 <Checkbox name="community" checked={!!this.props.libraryItem.pluginCommunity} onChange={this.handleChangeChkBx} />
-                    Local:
-<Checkbox name="local" checked={!this.props.libraryItem.pluginCommunity} onChange={this.handleChangeChkBx} />
-                  </p>
-                </center>
-
-
-                <p>Plugin ID:</p>
+{'\u00A0'}{'\u00A0'}Local
+<Checkbox name="local" checked={!this.props.libraryItem.pluginCommunity} onChange={this.handleChangeChkBx} /></p>
 
 
 
@@ -2206,7 +2265,7 @@ class Folder extends Component {
                   <input
                     type="text"
                     ref="addPluginText"
-                    placeholder="Add Plugin IDs(use Enter↵)"
+                    placeholder="Add Plugin IDs (use Enter↵)"
                     className="folderPaths"
                     name="pluginID"
                     onChange={this.handleChange}
@@ -2225,10 +2284,9 @@ class Folder extends Component {
                 <center><p>Plugin Stack:</p>  </center>
                 <center>
 
-                  <table><tbody>
-                    {this.renderPlugins()}
-                  </tbody>
-                  </table>
+
+                   {this.renderPlugins()}
+                  <div id={this.props.libraryItem._id+"PluginStack"}></div>
 
                 </center>
 

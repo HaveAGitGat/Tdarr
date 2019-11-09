@@ -34,7 +34,7 @@ function details() {
   return {
     id: "${ID}_FilterByCodec_${modeType}_${codecs}",
     Name: "Filter by codec",
-    Type: "",
+    Type: "General",
     Operation: "Filter",
     Description: "Files in ${codecs} will be ${modeType}d",
     Version: "",
@@ -140,7 +140,7 @@ function details() {
   return {
     id: "${ID}_FilterByMedium_Include_${type}",
     Name: "Filter by medium",
-    Type: "",
+    Type: "${type}",
     Operation: "Filter",
     Description: "Files of ${type} type will be included.",
     Version: "",
@@ -210,7 +210,7 @@ module.exports.plugin = plugin;
             return {
               id: "${ID}_FilterByDate_ExcludeOlderThan_${string}",
               Name: "Filter by date created.",
-              Type: "",
+              Type: "General",
               Operation: "Filter",
               Description: "Files older than ${string} will be excluded.",
               Version: "",
@@ -299,7 +299,7 @@ module.exports.plugin = plugin;
             return {
               id: "${ID}_FilterByResolution_${modeType}_${resolution}",
               Name: "Filter by resolution",
-              Type: "",
+              Type: "General",
               Operation: "Filter",
               Description: "Files in ${resolution} will be ${modeType}d",
               Version: "",
@@ -396,7 +396,7 @@ module.exports.plugin = plugin;
             return {
               id: "${ID}_FilterBySize_Include_${string}",
               Name: "Filter by size",
-              Type: "",
+              Type: "General",
               Operation: "Filter",
               Description: "Files with size ${string} will be processed.",
               Version: "",
@@ -480,7 +480,7 @@ module.exports.plugin = plugin;
             return {
               id: "${ID}_Transcode_${CLI}",
               Name: "Transcode ${CLI}",
-              Type: "",
+              Type: "General",
               Operation: "Transcode",
               Description: 'Files will be transcoded with ${CLI} using the following arguments:${preset} . The output container is ${container}.',
               Version: "",
@@ -542,7 +542,7 @@ module.exports.plugin = plugin;
             return {
               id: "${ID}_RemuxContainer_${containerNoDot}",
               Name: "Remux container ${containerNoDot}",
-              Type: "",
+              Type: "General",
               Operation: "Remux",
               Description: 'If files are not in ${containerNoDot}, they will be remuxed into ${containerNoDot}.',
               Version: "",
