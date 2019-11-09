@@ -2131,7 +2131,7 @@ class Folder extends Component {
 
               <center>
 
-                <span className="buttonTextSize">Plugin:</span> <div style={libButtonStyle}><ToggleButton
+                <span className="buttonTextSize">Plugin Stack:</span> <div style={libButtonStyle}><ToggleButton
                   thumbStyle={borderRadiusStyle}
                   trackStyle={borderRadiusStyle}
 
@@ -2173,7 +2173,7 @@ class Folder extends Component {
                   }
                 /></div>{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}
 
-                <span className="buttonTextSize">Video library:</span> <div style={libButtonStyle}><ToggleButton
+                <span className="buttonTextSize">Video:</span> <div style={libButtonStyle}><ToggleButton
                   thumbStyle={borderRadiusStyle}
                   trackStyle={borderRadiusStyle}
 
@@ -2211,7 +2211,7 @@ class Folder extends Component {
                 /></div>{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}
 
 
-                <span className="buttonTextSize">Audio library:</span>
+                <span className="buttonTextSize">Audio:</span>
                 <div style={libButtonStyle}> <ToggleButton
                   thumbStyle={borderRadiusStyle}
                   trackStyle={borderRadiusStyle}

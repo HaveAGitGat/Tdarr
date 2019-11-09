@@ -2149,7 +2149,9 @@ function launchWorkerModule(workerType) {
               var inputFolderStem = (settings[0].folder).replace(/\\/g, "/");
               var outputFolder = (settings[0].cache).replace(/\\/g, "/");
               var folderToFolderConversionEnabled = settings[0].folderToFolderConversion
+              try{
               var folderToFolderConversionFolder = (settings[0].output).replace(/\\/g, "/");
+            }catch(err){var folderToFolderConversionFolder = ""}
               var container = settings[0].container
               var preset = settings[0].preset
               var handBrakeMode = settings[0].handbrake

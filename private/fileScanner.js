@@ -477,9 +477,10 @@ function ffprobeLaunch(filesToScan) {
                             
                                         var hasClosedCaptions
 
-                                        if(CCExtractorOutput.includes('Permission denied') || CCExtractorOutput.includes('not found')){
+                                        if(CCExtractorOutput.includes('Permission denied') || CCExtractorOutput.includes('not found') || CCExtractorOutput.includes('error while loading')){
 
                                             console.log(CCExtractorOutput)
+                                            hasClosedCaptions = false
                             
                                         }else if (CCExtractorOutput.includes('No captions were found in input.')) {
     
