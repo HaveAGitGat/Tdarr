@@ -70,7 +70,7 @@ const AppRouter = () => {
           </Nav>
         </Navbar.Collapse>
         <div className="versionNumber">
-          <p>v1.006</p>
+          <p>v1.0061</p>
         </div>
       </Navbar>
 

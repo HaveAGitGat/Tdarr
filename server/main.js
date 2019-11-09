@@ -80,8 +80,10 @@ if (process.env.NODE_ENV == 'production') {
 
   if (process.env.DATA) {
     var homePath = process.env.DATA
+    process.env.homePath = homePath
   } else {
     var homePath = home + '/Documents'
+    process.env.homePath = homePath
   }
 
 
@@ -112,6 +114,7 @@ if (process.env.NODE_ENV == 'production') {
 
 } else {
   var homePath = home + '/Documents'
+  process.env.homePath = homePath
 
   GlobalSettingsDB.upsert(
     "globalsettings",
@@ -2271,7 +2274,11 @@ function launchWorkerModule(workerType) {
                         
                         cliLogAdd += plugin.details().id+"\n"
 
-                        var response = plugin.plugin(firstItem);
+                        var otherArguments = {
+                          homePath:homePath
+                        }
+
+                        var response = plugin.plugin(firstItem,settings[0],otherArguments);
 
                         console.dir(response)
 

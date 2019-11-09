@@ -447,10 +447,13 @@ function ffprobeLaunch(filesToScan) {
                                         } else {
                                             CCExtractorPath = path.join(process.cwd() + '/private/ccextractor/ccextractor')
                                         }
+
+                                        var filepathUnix = filepath.replace(/'/g, '\'\"\'\"\'');
                             
-                                        workerCommand = CCExtractorPath + "  -stdout -endat 01:00 --screenfuls 1 \"" + filepath + "\""
+                                        workerCommand = CCExtractorPath + "  -stdout -endat 01:00 --screenfuls 1 '" + filepathUnix + "'"
                             
                             
+                                        
                                     }
                             
                                     if (process.platform == 'darwin') {
@@ -482,18 +485,17 @@ function ffprobeLaunch(filesToScan) {
                                             console.log(CCExtractorOutput)
                                             hasClosedCaptions = false
                             
-                                        }else if (CCExtractorOutput.includes('No captions were found in input.')) {
+                                        }else if (CCExtractorOutput.includes('XDS:')) {
     
-                                            console.log("Captions found: false")
-                            
-                                            hasClosedCaptions = false
+                                            console.log("Captions found: true")
+                                            hasClosedCaptions = true
+                                            
                             
                                         } else {
-                            
-                                            console.log("Captions found: true")
-    
-                                            hasClosedCaptions = true
-                            
+
+                                            console.log("Captions found: false")
+                                            hasClosedCaptions = false
+                 
                                         }
                             
     
