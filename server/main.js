@@ -250,6 +250,7 @@ allFilesPulledTable = FileDB.find({}).fetch()
 for (var i = 0; i < allFilesPulledTable.length; i++) {
 
   console.log("Checking file:" + (i + 1))
+  console.log("Checking file:" + allFilesPulledTable[i].file)
 
   if (allFilesPulledTable[i].TranscodeDecisionMaker == "Not attempted") {
 
@@ -316,6 +317,7 @@ for (var i = 0; i < allFilesPulledTable.length; i++) {
 
   if(!allFilesPulledTable[i].statSync){
 
+    try{
 
     FileDB.upsert(
       allFilesPulledTable[i].file,
@@ -326,7 +328,10 @@ for (var i = 0; i < allFilesPulledTable.length; i++) {
       }
     );
 
+  }catch(err){}
+
   }
+
 }
 
 
