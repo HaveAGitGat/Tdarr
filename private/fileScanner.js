@@ -44,6 +44,7 @@ allowedContainers = allowedContainers.split(',');
 var mode = process.argv[7]
 
 
+var shellThreadModule
 
 
 var filePropertiesToAdd = JSON.parse(process.argv[8])
@@ -414,33 +415,33 @@ function ffprobeLaunch(filesToScan) {
                                 //)
                                 updateConsole(scannerID, `exiftool finished on this file:${filepath}`)
 
-                              //  extractData(filepath, jsonData, tags)
+                                //  extractData(filepath, jsonData, tags)
 
 
                                 //
 
-                               
 
 
-                                if(closedCaptionScan == 'true'){
 
-                                  
+                                if (closedCaptionScan == 'true') {
+
+
 
                                     var CCExtractorPath
                                     var workerCommand
-                            
+
                                     if (process.platform == 'win32') {
-                            
+
                                         if (fs.existsSync(path.join(process.cwd() + "/npm"))) {
                                             CCExtractorPath = path.join(process.cwd() + '/assets/app/ccextractor/ccextractorwin.exe')
                                         } else {
                                             CCExtractorPath = path.join(process.cwd() + '/private/ccextractor/ccextractorwin.exe')
                                         }
-                            
-                                        workerCommand = CCExtractorPath + "  -stdout -endat 01:00 --screenfuls 1 \"" + filepath + "\""
-                            
+
+                                        workerCommand = CCExtractorPath + " -debug  -stdout -endat 01:00 --screenfuls 1 \"" + filepath + "\""
+
                                     }
-                            
+
                                     if (process.platform == 'linux') {
                                         if (fs.existsSync(path.join(process.cwd() + "/npm"))) {
                                             CCExtractorPath = path.join(process.cwd() + '/assets/app/ccextractor/ccextractor')
@@ -449,76 +450,105 @@ function ffprobeLaunch(filesToScan) {
                                         }
 
                                         var filepathUnix = filepath.replace(/'/g, '\'\"\'\"\'');
-                            
-                                        workerCommand = CCExtractorPath + "  -stdout -endat 01:00 --screenfuls 1 '" + filepathUnix + "'"
-                            
-                            
-                                        
+
+                                        workerCommand = CCExtractorPath + " -debug -stdout -endat 01:00 --screenfuls 1 '" + filepathUnix + "'"
+
+
+
                                     }
-                            
+
                                     if (process.platform == 'darwin') {
                                         workerCommand = ""
-                            
+
                                     }
-                            
-                            
-                            
+
+
+
                                     console.log(workerCommand)
-                            
+
                                     var CCExtractorOutput = ""
-                            
+
                                     console.log("Checking for captions")
-                            
+
                                     updateConsole(scannerID, `Checking for captions`)
-                            
-                                    var shellWorker = shell.exec(workerCommand, function (code, stdout, stderr, stdin) {
-                            
-                                        CCExtractorOutput += stdout
-                                        CCExtractorOutput += stderr
-                            
-                                        console.log('Exit code:', code);
-                            
-                                        var hasClosedCaptions
 
-                                        if(CCExtractorOutput.includes('Permission denied') || CCExtractorOutput.includes('not found') || CCExtractorOutput.includes('error while loading')){
 
-                                            console.log(CCExtractorOutput)
-                                            hasClosedCaptions = false
-                            
-                                        }else if (CCExtractorOutput.includes('XDS:')) {
-    
-                                            console.log("Captions found: true")
+                                    //
+
+                                    var childProcess = require('child_process');
+
+                                    var workerPath = "assets/app/ccextractor.js"
+
+                                    var hasClosedCaptions = false
+
+
+                                    shellThreadModule = childProcess.fork(workerPath, [], {
+                                        silent: true,
+                                       
+                                    });
+
+
+                                    var infoArray = [
+                                        "processFile",
+                                        workerCommand
+                                    ];
+
+
+                                    shellThreadModule.send(infoArray);
+
+
+                                    shellThreadModule.stderr.on('data', function (data) {
+
+                                        //console.log(data)
+                                        // console.log(data.toString())
+
+                                        if (data.includes('XDS:') || data.includes('Caption block')) {
+
+                                            var infoArray = [
+                                                "exitThread",
+                                                "itemCancelled",
+                                            ];
+
+                                            try {
+
+                                                if (shellThreadModule != "") {
+                                                    shellThreadModule.send(infoArray);
+                                                }
+
+
+                                            } catch (err) { }
+
                                             hasClosedCaptions = true
-                                            
-                            
-                                        } else {
 
-                                            console.log("Captions found: false")
-                                            hasClosedCaptions = false
-                 
                                         }
-                            
-    
+
+                                    });
+
+                           
+
+                                    shellThreadModule.on("exit", function (code, ) {
+
+                                        ('ccextractor:', code);
+
                                         extractData(filepath, jsonData, tags, hasClosedCaptions)
-    
+
                                         i++;
                                         if (i < filesToScan.length) {
                                             loopArray(filesToScan, i);
                                         } else {
                                             exiftool.end()
                                         }
-                            
+                                     
+                        
                                     });
-    
-    
 
 
 
-                                }else{
+                                } else {
 
 
                                     extractData(filepath, jsonData, tags)
-    
+
                                     i++;
                                     if (i < filesToScan.length) {
                                         loopArray(filesToScan, i);
@@ -533,11 +563,6 @@ function ffprobeLaunch(filesToScan) {
 
 
                                 //
-
-
-                          
-
-
                             }
                             )
 
@@ -625,9 +650,9 @@ function ffprobeLaunch(filesToScan) {
 
         var thisFileObject = {}
 
-        if(closedCaptionScan == 'true'){
+        if (closedCaptionScan == 'true') {
 
-        thisFileObject.hasClosedCaptions = hasClosedCaptions
+            thisFileObject.hasClosedCaptions = hasClosedCaptions
 
         }
 
