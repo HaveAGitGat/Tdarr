@@ -1,4 +1,3 @@
-import 'bootstrap/scss/bootstrap.scss';
 import './styles/main.scss';
 
 import React from 'react';
@@ -55,11 +54,11 @@ const AppRouter = () => {
         variant="dark"
       >
         <Navbar.Brand className="p-2" href={`${basePath}/tdarr`}>
-          <img className="h-100" src="https://i.imgur.com/s8ZbOsT.png" />
+          <img style={{height: '50px'}} src="https://i.imgur.com/s8ZbOsT.png" />
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav ">
-          <Nav style={{fontSize: '1.5em'}}>
+          <Nav>
             {tabs.map(t => (
               <NavLink
                 key={`nav-item-${t.path}`}
