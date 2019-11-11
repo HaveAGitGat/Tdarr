@@ -18,7 +18,7 @@ import TabStatistics from '../ui/tab_Statistics.jsx';
 import {ErrorBoundary} from './ErrorBoundary.jsx';
 import TabLibraries from './libraries/tab_Libraries.jsx';
 import TabPlugins from './plugins/tab_Plugins.jsx';
-import TabSearch from './plugins/tab_Search.jsx';
+import TabSearch from './tab_Search.jsx';
 import TabTranscoding from './transcoding/tab_Transcoding.jsx';
 
 const tabs = [
@@ -72,7 +72,7 @@ const AppRouter = () => {
           </Nav>
         </Navbar.Collapse>
         <div className="versionNumber">
-          <p>v1.0055</p>
+          <p>v1.0062</p>
         </div>
       </Navbar>
 

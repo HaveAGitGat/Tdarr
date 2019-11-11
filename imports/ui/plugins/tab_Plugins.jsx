@@ -14,6 +14,19 @@ import { GlobalSettingsDB } from '../../api/tasks.js';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 
 
+import FilterByCodec from './pluginTemplates/Filter/FilterByCodec.jsx';
+import FilterByMedium from './pluginTemplates/Filter/FilterByMedium.jsx';
+import FilterByDate from './pluginTemplates/Filter/FilterByDate.jsx';
+import FilterByResolution from './pluginTemplates/Filter/FilterByResolution.jsx';
+import FilterBySize from './pluginTemplates/Filter/FilterBySize.jsx';
+
+import Transcode from './pluginTemplates/Transcode/Transcode.jsx';
+
+import RemuxContainer from './pluginTemplates/Remux/RemuxContainer.jsx';
+
+import PluginGuide from './pluginTemplates/PluginGuide.jsx';
+
+
 
 
 var ButtonStyle = {
@@ -33,7 +46,8 @@ class App extends Component {
 
     //this.searchPlugins()
 
-    this.searchPlugins(event,'Community')
+    this.searchPlugins(event, 'Community')
+    this.searchPlugins(event, 'Local')
 
   }
 
@@ -51,7 +65,7 @@ class App extends Component {
 
 
     Meteor.call('updatePlugins', ReactDOM.findDOMNode(this.refs.searchStringCommunity).value.trim(), (error, result) => {
-      setTimeout((event) => this.searchPlugins(event,'Community'), 5000);
+      setTimeout((event) => this.searchPlugins(event, 'Community'), 5000);
     })
   }
 
@@ -73,41 +87,41 @@ class App extends Component {
 
         return <div>
 
-          <Button variant="outline-light" className="addFolderButton" onClick={(event) => this.searchPlugins(event,pluginType)} style={ButtonStyle}><span className="buttonTextSize">Search</span></Button>
+          <Button variant="outline-light" className="addFolderButton" onClick={(event) => this.searchPlugins(event, pluginType)} style={ButtonStyle}><span className="buttonTextSize">Search</span></Button>
           <Button variant="outline-light" className="addFolderButton" onClick={() => {
 
-            render('', document.getElementById('searchResults'+pluginType));
-          }}  style={ButtonStyle}><span className="buttonTextSize">Clear</span></Button>
+            render('', document.getElementById('searchResults' + pluginType));
+          }} style={ButtonStyle}><span className="buttonTextSize">Clear</span></Button>
 
 
-        {pluginType =="Community"?<Button variant="outline-light" className="addFolderButton" onClick={this.updatePlugins} style={ButtonStyle}><span className="buttonTextSize">Update community plugins</span></Button>:null}
-    
-      
-      <Button variant="outline-light" className="addFolderButton" onClick={()=> window.open("https://github.com/HaveAGitGat/Tdarr_Plugins", "_blank")} style={ButtonStyle}><span className="buttonTextSize">Create a plugin</span></Button>
-          
-          
+          {pluginType == "Community" ? <Button variant="outline-light" className="addFolderButton" onClick={this.updatePlugins} style={ButtonStyle}><span className="buttonTextSize">Update community plugins</span></Button> : null}
+
+
+          <Button variant="outline-light" className="addFolderButton" onClick={() => window.open("https://github.com/HaveAGitGat/Tdarr_Plugins", "_blank")} style={ButtonStyle}><span className="buttonTextSize">Create a plugin</span></Button>
+
+
           <Modal
-          trigger={<Button variant="outline-light" ><span className="buttonTextSize">i</span></Button>}
-          modal
-          closeOnDocumentClick
-        >
-          <div className="modalContainer">
-          <div className="frame">
-            <div className="scroll">
+            trigger={<Button variant="outline-light" ><span className="buttonTextSize">i</span></Button>}
+            modal
+            closeOnDocumentClick
+          >
+            <div className="modalContainer">
+              <div className="frame">
+                <div className="scroll">
 
-            
-            <div className="modalText">
-        <p></p>
-        <p>Copy a community plugin id into the 'Plugin ID:' section of one of your libraries. Make sure the 'Community' checkbox is selected.</p>
-        <p></p>
-        <p></p>
 
-        <p>For information on creating community and local plugins, have a look at:https://github.com/HaveAGitGat/Tdarr_Plugins</p>
-        </div>
-        </div>
+                  <div className="modalText">
+                    <p></p>
+                    <p>Copy a community plugin id into the 'Plugin ID:' section of one of your libraries. Make sure the 'Community' checkbox is selected.</p>
+                    <p></p>
+                    <p></p>
+
+                    <p>For information on creating community and local plugins, have a look at:https://github.com/HaveAGitGat/Tdarr_Plugins</p>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-        </Modal>
+          </Modal>
         </div>
 
 
@@ -118,211 +132,231 @@ class App extends Component {
 
 
 
-  searchPlugins = (event,pluginType) => {
+  searchPlugins = (event, pluginType) => {
 
-    try{
+    try {
 
-    if (event) {
-      event.preventDefault();
-    }
+      if (event) {
+        event.preventDefault();
+      }
 
 
-    GlobalSettingsDB.upsert('globalsettings',
-      {
-        $set: {
-          pluginSearchLoading: true,
+      GlobalSettingsDB.upsert('globalsettings',
+        {
+          $set: {
+            pluginSearchLoading: true,
+          }
         }
-      }
-    );
+      );
 
-    var string = "searchString"+pluginType
+      var string = "searchString" + pluginType
 
-    Meteor.call('searchPlugins', ReactDOM.findDOMNode(this.refs[string]).value.trim(),pluginType, (error, result) => {
-
-  
-
-      if (result[0].length == 0) {
-
-        render(<center>No results</center>, document.getElementById('searchResults'+result[1]));
-      } else {
+      Meteor.call('searchPlugins', ReactDOM.findDOMNode(this.refs[string]).value.trim(), pluginType, (error, result) => {
 
 
-        var data = result[0]
 
-        const columns = [{
-          Header: () => (
-            <div className="pluginTableHeader">  
-            <p>id</p>
-            </div>
-          ),
-          accessor: 'id',
-          id: 'id',
-          width: 70,
-          accessor: d => <CopyToClipboard text={d.id}>
-            <Button variant="outline-light" ><span className="buttonTextSize">Copy id</span></Button>
-          </CopyToClipboard>,
+        if (result[0].length == 0) {
+
+          render(<center><p>No results</p></center>, document.getElementById('searchResults' + result[1]));
+        } else {
+
+
+          var data = result[0]
+
+          const columns = [{
+            Header: () => (
+              <div className="pluginTableHeader">
+                <p>id</p>
+              </div>
+            ),
+            accessor: 'id',
+            id: 'id',
+            width: 70,
+            accessor: d => <CopyToClipboard text={d.id}>
+              <Button variant="outline-light" ><span className="buttonTextSize">Copy id</span></Button>
+            </CopyToClipboard>,
+
+
+          }, {
+
+            Header: () => (
+              <div className="pluginTableHeader">
+                <p>Type</p>
+              </div>
+            ),
+            accessor: 'Type',
+            width: 100,
+            getProps: (state, rowInfo, column) => {
+              return {
+                style: {
+                  color: "#e1e1e1",
+                  fontSize: "14px",
+                },
+              }
+            }
+
+          }, {
+
+            Header: () => (
+              <div className="pluginTableHeader">
+                <p>Operation</p>
+              </div>
+            ),
+            accessor: 'Operation',
+            width: 100,
+            getProps: (state, rowInfo, column) => {
+              return {
+                style: {
+                  color: "#e1e1e1",
+                  fontSize: "14px",
+                },
+              }
+            }
+
+          }, {
+
+            Header: () => (
+              <div className="pluginTableHeader">
+                <p>Name</p>
+              </div>
+            ),
+            accessor: 'Name',
+            width: 200,
+            getProps: (state, rowInfo, column) => {
+              return {
+                style: {
+                  color: "#e1e1e1",
+                  fontSize: "14px",
+                },
+              }
+            }
+
+          },
           
+          {
 
-        }, {
+            Header: () => (
+              <div className="pluginTableHeader">
+                <p>Description</p>
+              </div>
+            ),
+            accessor: 'Description',
 
-          Header: () => (
-            <div className="pluginTableHeader">  
-            <p>Name</p>
-            </div>
-          ),
-          accessor: 'Name',
-          width: 200,
-          getProps: (state, rowInfo, column) => {
-            return {
-              style: {
-                color:"#e1e1e1",
-                fontSize  :"14px",
-              },
+            id: 'Description',
+            //   accessor: d => {
+
+            //     console.log("d.Description:"+d.Description)
+            //       var desc = d.Description.split("\n")
+            //         desc = desc.map( row => <p>{row}<br/></p> )
+
+            //         console.dir("desc:"+desc)
+
+
+            //         return desc
+
+            //   },
+
+            style: { 'white-space': 'unset' },
+
+
+            getProps: (state, rowInfo, column) => {
+              return {
+                style: {
+                  color: "#e1e1e1",
+                  fontSize: "14px",
+                  background: rowInfo && rowInfo.row.Description.includes("BUG") ? '#c72c53' : null,
+                },
+              }
             }
+
+          }, {
+
+            Header: () => (
+              <div className="pluginTableHeader">
+                <p>Version</p>
+              </div>
+            ),
+            accessor: 'Version',
+            width: 100,
+
+            getProps: (state, rowInfo, column) => {
+              return {
+                style: {
+                  color: "#e1e1e1",
+                  fontSize: "14px",
+                },
+              }
+            }
+
+          }, {
+
+            Header: () => (
+              <div className="pluginTableHeader">
+                <p>Stars</p>
+              </div>
+            ),
+            accessor: 'Stars',
+            width: 100,
+            getProps: (state, rowInfo, column) => {
+              return {
+                style: {
+                  color: "#e1e1e1",
+                  fontSize: "14px",
+                },
+              }
+            }
+
+          }, {
+
+            Header: () => (
+              <div className="pluginTableHeader">
+                <p>Link</p>
+              </div>
+            ),
+            id: 'Link',
+            accessor: row => <p><a href="" onClick={(e) => {
+              e.preventDefault();
+              window.open(row.Link, "_blank")
+            }}>{row.Link}</a></p>,
+            width: 100,
+            getProps: (state, rowInfo, column) => {
+              return {
+                style: {
+                  color: "#e1e1e1",
+                  fontSize: "14px",
+                },
+              }
+            }
+
           }
 
-        }, {
 
-          Header: () => (
-            <div className="pluginTableHeader">  
-            <p>Type</p>
-            </div>
-          ),
-          accessor: 'Type',
-          width: 100,
-          getProps: (state, rowInfo, column) => {
-            return {
-              style: {
-                color:"#e1e1e1",
-                fontSize  :"14px",
-              },
-            }
-          }
+          ]
 
-        }, {
-
-          Header: () => (
-            <div className="pluginTableHeader">  
-            <p>Description</p>
-            </div>
-          ),
-          accessor: 'Description',
-          
-          id: 'Description',
-        //   accessor: d => {
-
-        //     console.log("d.Description:"+d.Description)
-        //       var desc = d.Description.split("\n")
-        //         desc = desc.map( row => <p>{row}<br/></p> )
-
-        //         console.dir("desc:"+desc)
+          render(<div className="libraryContainer" >
+            <ReactTable
+              data={data}
+              columns={columns}
+              defaultPageSize={100}
+              pageSizeOptions={[10, 100, 1000]}
+            />
+          </div>, document.getElementById('searchResults' + result[1]));
 
 
-        //         return desc
 
-        //   },
-
-        style: { 'white-space': 'unset' },
-
-
-          getProps: (state, rowInfo, column) => {
-            return {
-              style: {
-                color:"#e1e1e1",
-                fontSize  :"14px",
-                background: rowInfo && rowInfo.row.Description.includes("BUG") ? '#c72c53' : null,
-              },
-            }
-          }
-
-        }, {
-
-          Header: () => (
-            <div className="pluginTableHeader">  
-            <p>Version</p>
-            </div>
-          ),
-          accessor: 'Version',
-          width: 100,
-
-          getProps: (state, rowInfo, column) => {
-            return {
-              style: {
-                color:"#e1e1e1",
-                fontSize  :"14px",
-              },
-            }
-          }
-
-        }, {
-
-          Header: () => (
-            <div className="pluginTableHeader">  
-            <p>Stars</p>
-            </div>
-          ),
-          accessor: 'Stars',
-          width: 100,
-          getProps: (state, rowInfo, column) => {
-            return {
-              style: {
-                color:"#e1e1e1",
-                fontSize  :"14px",
-              },
-            }
-          }
-
-        }, {
-
-          Header: () => (
-            <div className="pluginTableHeader">  
-            <p>Link</p>
-            </div>
-          ),
-          id:'Link',
-          accessor: row => <p><a href="" onClick={(e) => {
-            e.preventDefault();
-            window.open(row.Link, "_blank")
-          }}>{row.Link}</a></p>,
-          width: 100,
-          getProps: (state, rowInfo, column) => {
-            return {
-              style: {
-                color:"#e1e1e1",
-                fontSize  :"14px",
-              },
-            }
-          }
 
         }
 
-
-        ]
-
-        render(<div className="libraryContainer" >
-          <ReactTable
-            data={data}
-            columns={columns}
-            defaultPageSize={100}
-            pageSizeOptions={[10, 100, 1000]}
-          />
-        </div>, document.getElementById('searchResults'+result[1]));
-
-
-
-
-      }
-
-    })
-  }catch(err){
-    GlobalSettingsDB.upsert('globalsettings',
-    {
-      $set: {
-        pluginSearchLoading: false,
-      }
+      })
+    } catch (err) {
+      GlobalSettingsDB.upsert('globalsettings',
+        {
+          $set: {
+            pluginSearchLoading: false,
+          }
+        }
+      );
     }
-  );
-  }
   }
 
 
@@ -332,105 +366,348 @@ class App extends Component {
     return (
 
       <div className="containerGeneral">
-      <div className="tabWrap" >     
+        <div className="tabWrap" >
 
 
-      <Tabs selectedIndex={ this.props.globalSettings != undefined &&  this.props.globalSettings[0] != undefined && this.props.globalSettings[0].selectedPluginTab != undefined ? this.props.globalSettings[0].selectedPluginTab : 0} onSelect={tabIndex => {
+          <Tabs selectedIndex={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].selectedPluginTab != undefined ? this.props.globalSettings[0].selectedPluginTab : 0} onSelect={tabIndex => {
 
-GlobalSettingsDB.upsert('globalsettings',
-{
-  $set: {
-    selectedPluginTab: tabIndex,
-  }
-}
-);
-}}>
-    <TabList>
-      <Tab><p>Community</p></Tab>
-      <Tab><p>Local</p></Tab>
+            GlobalSettingsDB.upsert('globalsettings',
+              {
+                $set: {
+                  selectedPluginTab: tabIndex,
+                }
+              }
+            );
+          }}>
+            <TabList>
+              <Tab ><p>Community</p></Tab>
+              <Tab ><p>Local</p></Tab>
+              <Tab><p>Plugin Creator</p></Tab>
 
 
-    </TabList>
+            </TabList>
 
-    <TabPanel><div className="tabContainer" >
-      
-   <br/>
-   <br/>
+            <TabPanel><div className="tabContainer" >
+
+              <br />
+              <br />
+
+
+              <form onSubmit={(event) => this.searchPlugins(event, 'Community')}  >
+                <center>
+
+
+                  <input type="text" className="searchBar" ref="searchStringCommunity" placeholder="Search for plugins by any property. E.g.  h264,mp4"></input>
+
+                </center>
+
+                <p></p>
+
+                <center>
+                  {this.renderSearchButtons('Community')}
+                </center>
+
+              </form>
+
+              <p></p>
+              <p></p>
+
+
+
+              <div id="searchResultsCommunity">
+
+              </div>
+
+            </div></TabPanel>
+
+            <TabPanel><div className="tabContainer" >
+              <br />
+              <br />
+
+
+              <form onSubmit={(event) => this.searchPlugins(event, 'Local')}  >
+                <center>
+
+
+                  <input type="text" className="searchBar" ref="searchStringLocal" placeholder="Search for plugins by any property. E.g.  h264,mp4"></input>
+
+                </center>
+
+                <p></p>
+
+                <center>
+                  {this.renderSearchButtons('Local')}
+                </center>
+
+              </form>
+
+              <p></p>
+              <p></p>
+
+
+
+              <div id="searchResultsLocal">
+              </div>
+
+
+
+            </div></TabPanel>
+
+
+            <TabPanel><div className="tabContainer" >
+
+
+              <div className="libraryContainer2">
+
+
+                <div className="pluginTabGrid-container">
+
+                  <div className="pluginTabGrid-itemLeft">
+
+                    <br/>
+                    <br/>
+                    <br/>
+
+                  <p onClick={() => {
+                      GlobalSettingsDB.upsert(
+                        "globalsettings",
+                        {
+                          $set: {
+                            navSelectedPluginCreatorItem: "navPluginGuide",
+                          }
+                        }
+                      );
+                    }} className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navPluginGuide" ? 'selectedNav' : 'unselectedNav'}>Guide</p>
+
+
+                    <br/>
+                    <br/>
+                    <br/>
+
+
+                      <p>Filter</p>
+
+                      <div className="pluginCreatorSubItems">
+
+                      <p onClick={() => {
+                      GlobalSettingsDB.upsert(
+                        "globalsettings",
+                        {
+                          $set: {
+                            navSelectedPluginCreatorItem: "navFilterMedium",
+                          }
+                        }
+                      );
+                    }} className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navFilterMedium" ? 'selectedNav' : 'unselectedNav'}>Medium</p>
+
+
+
+                      <p onClick={() => {
+                      GlobalSettingsDB.upsert(
+                        "globalsettings",
+                        {
+                          $set: {
+                            navSelectedPluginCreatorItem: "navFilterCodec",
+                          }
+                        }
+                      );
+                    }} className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navFilterCodec" ? 'selectedNav' : 'unselectedNav'}>Codec</p>
+
+
+                  <p onClick={() => {
+                      GlobalSettingsDB.upsert(
+                        "globalsettings",
+                        {
+                          $set: {
+                            navSelectedPluginCreatorItem: "navFilterDate",
+                          }
+                        }
+                      );
+                    }} className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navFilterDate" ? 'selectedNav' : 'unselectedNav'}>Date</p>
+
+
+
+<p onClick={() => {
+                      GlobalSettingsDB.upsert(
+                        "globalsettings",
+                        {
+                          $set: {
+                            navSelectedPluginCreatorItem: "navFilterResolution",
+                          }
+                        }
+                      );
+                    }} className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navFilterResolution" ? 'selectedNav' : 'unselectedNav'}>Resolution</p>
+
+
+        <p onClick={() => {
+                      GlobalSettingsDB.upsert(
+                        "globalsettings",
+                        {
+                          $set: {
+                            navSelectedPluginCreatorItem: "navFilterSize",
+                          }
+                        }
+                      );
+                    }} className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navFilterSize" ? 'selectedNav' : 'unselectedNav'}>Size</p>
+
+                    
+                      </div>
+
+                      <br/>
+                    <br/>
+                    <br/>
+
+                    <p>Transcode</p>
+                      <div className="pluginCreatorSubItems">
+
+
+                      <p onClick={() => {
+                      GlobalSettingsDB.upsert(
+                        "globalsettings",
+                        {
+                          $set: {
+                            navSelectedPluginCreatorItem: "navTranscode",
+                          }
+                        }
+                      );
+                    }} className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navTranscode" ? 'selectedNav' : 'unselectedNav'}>Preset/Arguments</p>
+
+
+
+
+
+                        </div>
+
 
     
-<form onSubmit={(event) => this.searchPlugins(event,'Community')}  >
-<center>
+                    <br/>
+                    <br/>
+                    <br/>
 
 
-  <input type="text" className="searchBar" ref="searchStringCommunity" placeholder="Search for plugins by any property. E.g.  h264,mp4"></input>
+                      <p>Remux</p>
 
-  </center>
+                      <div className="pluginCreatorSubItems">
 
-  <p></p>
-
-  <center>
-  {this.renderSearchButtons('Community')}
-  </center>
-
-</form>
-
-<p></p>
-<p></p>
-
-
-
-<div id="searchResultsCommunity">
-
-</div>
-
-    </div></TabPanel>
-
-    <TabPanel><div className="tabContainer" >
-    <br/>
-   <br/>
-
-    
-<form onSubmit={(event) => this.searchPlugins(event,'Local')}  >
-<center>
-
-
-  <input type="text" className="searchBar" ref="searchStringLocal" placeholder="Search for plugins by any property. E.g.  h264,mp4"></input>
-
-  </center>
-
-  <p></p>
-
-  <center>
-  {this.renderSearchButtons('Local')}
-  </center>
-
-</form>
-
-<p></p>
-<p></p>
-
-
-
-<div id="searchResultsLocal">
-</div>
-
-
-
-    </div></TabPanel>
-
-   
-  </Tabs> 
+                      <p onClick={() => {
+                      GlobalSettingsDB.upsert(
+                        "globalsettings",
+                        {
+                          $set: {
+                            navSelectedPluginCreatorItem: "navRemuxContainer",
+                          }
+                        }
+                      );
+                    }} className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navRemuxContainer" ? 'selectedNav' : 'unselectedNav'}>Container</p>
 
 
 
 
 
-  
+
+                        </div>
+
+
+
+                  </div>
 
 
 
 
-      </div>
+                  <div className="pluginTabGrid-itemRight">
+
+                  <div className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navPluginGuide" ? '' : 'hidden'}>
+                    <PluginGuide/>
+                    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+                  <div className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navFilterMedium" ? '' : 'hidden'}>
+                    <FilterByMedium/>
+                    </div>
+
+
+                    <div className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navFilterCodec" ? '' : 'hidden'}>
+                    <FilterByCodec/>
+                    </div>
+
+
+                    <div className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navFilterDate" ? '' : 'hidden'}>
+                    <FilterByDate/>
+                    </div>
+
+
+                    <div className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navFilterResolution" ? '' : 'hidden'}>
+                    <FilterByResolution/>
+                    </div>
+
+
+
+                    <div className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navFilterSize" ? '' : 'hidden'}>
+                    <FilterBySize/>
+                    </div>
+
+
+                    <div className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navTranscode" ? '' : 'hidden'}>
+                    <Transcode/>
+                    </div>
+
+
+                    <div className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navRemuxContainer" ? '' : 'hidden'}>
+                    <RemuxContainer/>
+                    </div>
+
+
+
+            
+
+
+
+                  </div>
+
+
+                </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              </div>
+            </div></TabPanel>
+
+
+
+
+
+
+          </Tabs>
+
+
+
+
+        </div>
       </div>
     );
   }

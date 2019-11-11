@@ -1,4 +1,5 @@
 import '../imports/api/Methods.js';
+import '../imports/api/pluginCreatorMethods.js';
 import '../imports/api/Logger.js';
 import '../imports/api/tasks.js';
 
@@ -79,8 +80,10 @@ if (process.env.NODE_ENV == 'production') {
 
   if (process.env.DATA) {
     var homePath = process.env.DATA
+    process.env.homePath = homePath
   } else {
     var homePath = home + '/Documents'
+    process.env.homePath = homePath
   }
 
 
@@ -111,6 +114,7 @@ if (process.env.NODE_ENV == 'production') {
 
 } else {
   var homePath = home + '/Documents'
+  process.env.homePath = homePath
 
   GlobalSettingsDB.upsert(
     "globalsettings",
@@ -192,13 +196,18 @@ if (!fs.existsSync(homePath + "/Tdarr/Samples")) {
 }
 
 
-
 //READ  variables from json file
 if (fs.existsSync(homePath + "/Tdarr/Data/env.json")) {
 
   try {
 
     jsonConfig = JSON.parse(fs.readFileSync(homePath + "/Tdarr/Data/env.json", 'utf8'))
+
+    console.log(jsonConfig)
+
+    if(jsonConfig.BASE != undefined){
+
+  
     GlobalSettingsDB.upsert(
       "globalsettings",
       {
@@ -207,9 +216,20 @@ if (fs.existsSync(homePath + "/Tdarr/Data/env.json")) {
         }
       }
     );
+  }
+
+  if(jsonConfig.HWT != undefined){
+
+    process.env.HWT = jsonConfig.HWT
+
+    console.log(process.env.HWT)
+
+  }
 
   } catch (err) {
     console.log("Unable to load configuration file")
+
+    console.log(err.stack)
   }
 
 }
@@ -233,6 +253,7 @@ allFilesPulledTable = FileDB.find({}).fetch()
 for (var i = 0; i < allFilesPulledTable.length; i++) {
 
   console.log("Checking file:" + (i + 1))
+  console.log("Checking file:" + allFilesPulledTable[i].file)
 
   if (allFilesPulledTable[i].TranscodeDecisionMaker == "Not attempted") {
 
@@ -297,8 +318,25 @@ for (var i = 0; i < allFilesPulledTable.length; i++) {
     );
   }
 
+  if(!allFilesPulledTable[i].statSync){
+
+    try{
+
+    FileDB.upsert(
+      allFilesPulledTable[i].file,
+      {
+        $set: {
+          statSync: fs.statSync(allFilesPulledTable[i].file),
+        }
+      }
+    );
+
+  }catch(err){}
+
+  }
 
 }
+
 
 
 
@@ -333,6 +371,23 @@ if (!Array.isArray(count) || !count.length) {
     }
   );
 } else {
+
+  if (count[0].generalWorkerLimit == undefined) {
+
+    GlobalSettingsDB.upsert('globalsettings',
+    {
+      $set: {
+        lowCPUPriority: false,
+        generalWorkerLimit: 0,
+        transcodeWorkerLimit: 0,
+        healthcheckWorkerLimit: 0,
+        queueSortType: "sortDateNewest",
+        verboseLogs: false,
+      }
+    }
+  );
+
+  }
   //init sort vars
 
   if (count[0].queueSortType == undefined) {
@@ -372,7 +427,7 @@ if (!Array.isArray(count) || !count.length) {
       }
     );
   }
-  
+
 
   if (count[0].basePath == undefined) {
 
@@ -597,9 +652,6 @@ Meteor.methods({
 
       });
 
-
-
-
       string = string.split(',')
 
       plugins = plugins.filter(row => {
@@ -644,7 +696,53 @@ Meteor.methods({
 
     return [plugins, pluginType]
 
-  }, 'verifyPlugin'(pluginID, DB_id, community) {
+  },
+
+  'buildPluginStack'(plugins) {
+
+    //  console.log(string)
+
+
+    for (var i = 0; i < plugins.length; i++) {
+
+      try {
+
+        var hwSource = fs.readFileSync(homePath + `/Tdarr/Plugins/${plugins[i].source}/` + plugins[i]._id + ".js", 'utf8');
+        var hwFunc = new Function('module', hwSource);
+        var hwModule = { exports: {} };
+        hwFunc(hwModule)
+        var hw = hwModule.exports;
+
+        var obj = hw.details();
+
+        plugins[i] = { ...plugins[i], ...obj };
+
+
+        //  console.log(obj)
+
+
+      } catch (err) {
+
+        var obj = {
+          Name: "Read error",
+          Type: "Read error",
+          Operation: "Read error",
+          Description: 'Read error',
+          Version: "Read error",
+          Link: "Read error"
+        }
+
+        console.log(err.stack)
+
+        plugins[i] = { ...plugins[i], ...obj };
+
+      }
+    }
+    return plugins
+
+  },
+  
+  'verifyPlugin'(pluginID, DB_id, community) {
 
     if (community == true) {
 
@@ -1110,9 +1208,11 @@ Meteor.methods({
 
 
 
-      var allowedContainers = SettingsDB.find({ _id: DB_id }, { sort: { createdAt: 1 } }).fetch()
-      allowedContainers = allowedContainers[0].containerFilter
+      var thisItemsLib = SettingsDB.find({ _id: DB_id }, { sort: { createdAt: 1 } }).fetch()
+      var allowedContainers = thisItemsLib[0].containerFilter
       allowedContainers = allowedContainers.split(',');
+
+      var closedCaptionScan = thisItemsLib[0].closedCaptionScan
 
 
 
@@ -1128,6 +1228,7 @@ Meteor.methods({
         mode,
         JSON.stringify(filePropertiesToAdd),
         homePath,
+        closedCaptionScan,
       ]
 
       fileScanners[scannerID] = childProcess.fork(scannerPath, child_argv);
@@ -1303,7 +1404,11 @@ Meteor.methods({
     console.log(mode, text)
 
 
-
+    if (fs.existsSync(path.join(process.cwd() + "/npm"))) {
+      var ffmpegPathLinux = path.join(process.cwd() + '/assets/app/ffmpeg/ffmpeg')
+  } else {
+      var ffmpegPathLinux = path.join(process.cwd() + '/private/ffmpeg/ffmpeg')
+  }
 
 
 
@@ -1328,18 +1433,19 @@ Meteor.methods({
     }
 
 
-    if (process.env.HWT == true) {
-      if (isDocker()) {
+    if (process.env.HWT == "true") {
 
         if (process.platform == 'linux' && mode == "handbrake") {
           workerCommand = "/usr/local/bin/HandBrakeCLI " + text
         } else if (process.platform == 'linux' && mode == "ffmpeg") {
 
-          workerCommand = "/usr/local/bin/ffmpeg " + text
+          workerCommand = ffmpegPathLinux +" " + text
 
         }
-      }
+      
     }
+
+    console.log(workerCommand)
 
 
 
@@ -1396,8 +1502,12 @@ Meteor.methods({
 
     //var preset1 = "-ss 1 -t 30 -acodec copy -vcodec copy"
 
-    var preset1 = "-ss 1 -t 30"
-    var preset2 = "-codec copy"
+    // var preset1 = "-ss 1 -t 30"
+    // var preset2 = "-codec copy"
+
+    
+    var preset1 = ""
+    var preset2 = "-ss 00:00:1 -codec copy -t 30"
 
     if (fs.existsSync(outputFile)) {
       fs.unlinkSync(outputFile)
@@ -1447,10 +1557,9 @@ for (var i = 0; i < settingsInit.length; i++) {
     }
   );
 
+  //Run scan on start if needed
   if (settingsInit[i].scanOnStart !== false) {
 
-
-    //fileDB
 
     var obj = {
       HealthCheck: "Queued",
@@ -1464,6 +1573,55 @@ for (var i = 0; i < settingsInit.length; i++) {
 
   }
 }
+
+//Plugin migration step
+
+
+  for (var i = 0; i < settingsInit.length; i++) {
+
+  if(settingsInit[i].pluginIDs && settingsInit[i].pluginIDs.length !== 0 && settingsInit[i].pluginIDs[0].priority == undefined){
+
+    var pluginIDs = settingsInit[i].pluginIDs
+
+    if(settingsInit[i].pluginCommunity == true){
+
+      var source = "Community"
+
+    }else{
+      var source = "Local"
+    }
+
+    pluginIDs = pluginIDs.map((row, i) => {
+
+      return { _id:row._id,
+              checked:row.checked,
+              priority:i,
+              source:source,
+
+      }
+
+    })
+
+    SettingsDB.upsert(
+      settingsInit[i]._id,
+      {
+        $set: {
+          pluginIDs: pluginIDs,
+        }
+      }
+    );
+
+
+
+
+  }
+
+}
+
+
+
+
+
 
 
 //runScheduledManualScan()
@@ -1999,7 +2157,9 @@ function launchWorkerModule(workerType) {
               var inputFolderStem = (settings[0].folder).replace(/\\/g, "/");
               var outputFolder = (settings[0].cache).replace(/\\/g, "/");
               var folderToFolderConversionEnabled = settings[0].folderToFolderConversion
+              try{
               var folderToFolderConversionFolder = (settings[0].output).replace(/\\/g, "/");
+            }catch(err){var folderToFolderConversionFolder = ""}
               var container = settings[0].container
               var preset = settings[0].preset
               var handBrakeMode = settings[0].handbrake
@@ -2102,28 +2262,23 @@ function launchWorkerModule(workerType) {
 
                         var plugin = ''
 
-                        if (settings[0].pluginCommunity == true) {
-                          // var plugin = require(homePath + '/Tdarr/Plugins/Community/' + pluginID + '.js');
+                        
 
-                          var hwSource = fs.readFileSync(homePath + '/Tdarr/Plugins/Community/' + pluginID + '.js', 'utf8');
+                          var hwSource = fs.readFileSync(homePath + `/Tdarr/Plugins/${pluginsSelected[i].source}/` + pluginID + '.js', 'utf8');
                           var hwFunc = new Function('module', hwSource);
                           var hwModule = { exports: {} };
                           hwFunc(hwModule)
                           var plugin = hwModule.exports;
 
 
-                        } else {
-                          // var plugin = require(homePath + '/Tdarr/Plugins/Local/' + pluginID + '.js');
-                          var hwSource = fs.readFileSync(homePath + '/Tdarr/Plugins/Local/' + pluginID + '.js', 'utf8');
-                          var hwFunc = new Function('module', hwSource);
-                          var hwModule = { exports: {} };
-                          hwFunc(hwModule)
-                          var plugin = hwModule.exports;
+                        
+                        cliLogAdd += plugin.details().id+"\n"
+
+                        var otherArguments = {
+                          homePath:homePath
                         }
 
-
-
-                        var response = plugin.plugin(firstItem);
+                        var response = plugin.plugin(firstItem,settings[0],otherArguments);
 
                         console.dir(response)
 
@@ -2135,7 +2290,16 @@ function launchWorkerModule(workerType) {
                         reQueueAfter = response.reQueueAfter
                         cliLogAdd += response.infoLog
 
-                        if (processFile == true) {
+
+                        if (processFile == true && plugin.details().Operation == "Filter"){
+
+                          //do nothing
+
+                        }else if (processFile == false && plugin.details().Operation == "Filter"){ 
+                          
+                          break 
+
+                        }else if (processFile == true) {
 
                           break
 
@@ -2151,6 +2315,8 @@ function launchWorkerModule(workerType) {
                         FFmpegMode = ''
                         reQueueAfter = ''
                         cliLogAdd += '☒Plugin does not exist!  \n'
+
+                        break
 
 
                       }
@@ -2188,21 +2354,50 @@ function launchWorkerModule(workerType) {
                       }
                     })
 
+                    console.log("here")
 
-                    if (video_codec_names_exclude.includes(firstItem.ffProbeData.streams[0]["codec_name"]) && typeof firstItem.ffProbeData.streams[0]["codec_name"] !== 'undefined') {
+                    if(settings[0].decisionMaker.videoExcludeSwitch == false){
 
-                      console.log(video_codec_names_exclude + "   " + firstItem.video_codec_name)
+                      console.log("here2")
 
-                      console.log("File video already in required codec")
+                      if (video_codec_names_exclude.includes(firstItem.ffProbeData.streams[0]["codec_name"]) && typeof firstItem.ffProbeData.streams[0]["codec_name"] !== 'undefined') {
 
-                      cliLogAdd += "☑File already in required codec  \n"
+                        console.log(video_codec_names_exclude + "   " + firstItem.video_codec_name)
+  
+                        console.log("File codec included in transcode whitelist")
+  
+                        cliLogAdd += "☑File codec included in transcode whitelist  \n"
+  
+                     
+  
+                      } else {
+                        cliLogAdd += "☒File codec not included in transcode whitelist  \n"
+                        processFile = false;
+  
+                      }
 
-                      processFile = false;
 
-                    } else {
-                      cliLogAdd += "☒File video not in required codec  \n"
 
+                    }else{
+
+                      if (video_codec_names_exclude.includes(firstItem.ffProbeData.streams[0]["codec_name"]) && typeof firstItem.ffProbeData.streams[0]["codec_name"] !== 'undefined') {
+
+                        console.log(video_codec_names_exclude + "   " + firstItem.video_codec_name)
+  
+                        console.log("File video already in required codec")
+  
+                        cliLogAdd += "☑File already in required codec  \n"
+  
+                        processFile = false;
+  
+                      } else {
+                        cliLogAdd += "☒File video not in required codec  \n"
+  
+                      }
+  
                     }
+
+
 
                     if (firstItem.file_size >= settings[0].decisionMaker.video_size_range_include.max || firstItem.file_size <= settings[0].decisionMaker.video_size_range_include.min) {
                       console.log("File not in video size range")
@@ -2258,17 +2453,41 @@ function launchWorkerModule(workerType) {
                     })
 
 
+                    if(settings[0].decisionMaker.audioExcludeSwitch == false){
+
+
                     if (audio_codec_names_exclude.includes(firstItem.ffProbeData.streams[0]["codec_name"]) && typeof firstItem.ffProbeData.streams[0]["codec_name"] !== 'undefined') {
 
-                      console.log("File already in required codec")
-                      cliLogAdd += "☑File already in required codec  \n"
+                      console.log("File codec included in transcode whitelist")
+                      cliLogAdd += "☑File codec included in transcode whitelist  \n"
 
-                      processFile = false;
+
 
                     } else {
-                      cliLogAdd += "☒File audio not in required codec  \n"
+                      cliLogAdd += "☒File codec not included in transcode whitelist  \n"
+                      processFile = false;
 
                     }
+
+                    }else{
+
+
+                      if (audio_codec_names_exclude.includes(firstItem.ffProbeData.streams[0]["codec_name"]) && typeof firstItem.ffProbeData.streams[0]["codec_name"] !== 'undefined') {
+
+                        console.log("File already in required codec")
+                        cliLogAdd += "☑File already in required codec  \n"
+  
+                        processFile = false;
+  
+                      } else {
+                        cliLogAdd += "☒File audio not in required codec  \n"
+  
+                      }
+
+                    }
+
+
+
 
                     if (firstItem.file_size >= settings[0].decisionMaker.audio_size_range_include.max || firstItem.file_size <= settings[0].decisionMaker.audio_size_range_include.min) {
 

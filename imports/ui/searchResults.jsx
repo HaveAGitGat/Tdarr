@@ -55,6 +55,21 @@ if (result.length == 0) {
     )
     return Math.min(maxWidth, cellLength * magicSpacing)
   }
+
+function fancyTimeFormat(time) {
+
+    var hrs = ~~(time / 3600);
+    var mins = ~~((time % 3600) / 60);
+    var secs = ~~time % 60;
+
+    var ret = "";
+    ret += "" + hrs + ":" + (mins < 10 ? "0" : "");
+    ret += "" + mins + ":" + (secs < 10 ? "0" : "");
+    ret += "" + secs;
+    return ret;
+  }
+
+
   
               var columns = [
                 
@@ -145,6 +160,23 @@ return null
                     }
                   }
                   
+                },{
+                  Header: () => (
+                    <div className="pluginTableHeader">  
+                    <p>CC</p>
+                    </div>
+                  ),
+                  id: 'CC',
+                  accessor: row => row.hasClosedCaptions != undefined ? row.hasClosedCaptions == true ? 'yes' : 'no' : 'Not checked',
+                  width: getColumnWidth(data, 'hasClosedCaptions', 'CC'),
+                  getProps: (state, rowInfo, column) => {
+                    return {
+                      style: {
+                        color:"#e1e1e1",
+                        fontSize  :"14px",
+                      },
+                    }
+                  }
                 },
                 {
                   Header: () => (
@@ -223,7 +255,7 @@ return null
                     </div>
                   ),
                   id: 'Duration',
-                  accessor: row =>  row.ffProbeData && row.ffProbeData.streams[0]["duration"] ?  parseFloat((row.ffProbeData.streams[0]["duration"])) : 0,
+                  accessor: row =>  row.ffProbeData && row.ffProbeData.streams[0]["duration"] ?  fancyTimeFormat(parseFloat((row.ffProbeData.streams[0]["duration"]))) : "00:00:00",
                   getProps: (state, rowInfo, column) => {
                     return {
                       style: {
@@ -283,7 +315,7 @@ return null
                   ),
                   id: 'Transcode',
                   width: 'Transcode'.length*10,
-                  accessor: row => row.TranscodeDecisionMaker == "Queued" ? "Queued("+row.tPosition+")" : this.renderRedoButton(row.file, 'TranscodeDecisionMaker'),
+                  accessor: row => row.TranscodeDecisionMaker == "Queued" ?  <span>Queued({row.tPosition}){this.renderSkipButton(row.file)}</span> : this.renderRedoButton(row.file, 'TranscodeDecisionMaker'),
                   getProps: (state, rowInfo, column) => {
                     return {
                       style: {
@@ -348,6 +380,24 @@ return null
                       }
                     }
                   },
+                  {
+                      Header: () => (
+                        <div className="pluginTableHeader">  
+                        <p>Remove</p>
+                        </div>
+                      ),
+                      id: 'Remove',
+                      width: 'Remove'.length*10,
+                      accessor: row => this.renderRemoveButton(row),
+                      getProps: (state, rowInfo, column) => {
+                        return {
+                          style: {
+                            color:"#e1e1e1",
+                            fontSize  :"14px",
+                          },
+                        }
+                      }
+                    },
 
        
 
@@ -418,6 +468,14 @@ renderBumpButton(file) {
     }
     return <ItemButton file={file} obj={obj} symbol={'↑'} type="updateDBAction" />
 
+  }
+
+  renderSkipButton(file) {
+    var obj = {
+      TranscodeDecisionMaker:"Transcode success",
+      lastTranscodeDate: new Date(),
+    }
+    return <ItemButton file={file} obj={obj} symbol={'⤳'} type="updateDBAction" />
   }
 
   renderCancelBumpButton(file) {
@@ -539,6 +597,14 @@ renderBumpButton(file) {
       </div>
       </div>
     </Modal>
+  }
+
+  renderRemoveButton(file) {
+
+
+    return <ItemButton file={file}  symbol={'X'} type="removeFile" />
+
+
   }
 
 

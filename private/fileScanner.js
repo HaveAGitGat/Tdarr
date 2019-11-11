@@ -44,10 +44,14 @@ allowedContainers = allowedContainers.split(',');
 var mode = process.argv[7]
 
 
+var shellThreadModule
+
+
 var filePropertiesToAdd = JSON.parse(process.argv[8])
 
 
 var homePath = process.argv[9]
+var closedCaptionScan = process.argv[10]
 
 updateConsole(scannerID, "Online.")
 
@@ -66,8 +70,8 @@ if (fs.existsSync(path.join(process.cwd() + "/npm"))) {
 
 
 const isDocker = require(rootModules + 'is-docker');
-
 const exiftool = require(rootModules + "exiftool-vendored").exiftool
+var shell = require(rootModules + 'shelljs');
 
 
 var home = require("os").homedir();
@@ -411,32 +415,158 @@ function ffprobeLaunch(filesToScan) {
                                 //)
                                 updateConsole(scannerID, `exiftool finished on this file:${filepath}`)
 
-                                extractData(filepath, jsonData, tags)
+                                //  extractData(filepath, jsonData, tags)
 
 
-                                i++;
-                                if (i < filesToScan.length) {
-                                    loopArray(filesToScan, i);
+                                //
+
+
+
+
+                                if (closedCaptionScan == 'true') {
+
+
+
+                                    var CCExtractorPath
+                                    var workerCommand
+
+                                    if (process.platform == 'win32') {
+
+                                        if (fs.existsSync(path.join(process.cwd() + "/npm"))) {
+                                            CCExtractorPath = path.join(process.cwd() + '/assets/app/ccextractor/ccextractorwin.exe')
+                                        } else {
+                                            CCExtractorPath = path.join(process.cwd() + '/private/ccextractor/ccextractorwin.exe')
+                                        }
+
+                                        workerCommand = CCExtractorPath + " -debug  -stdout -endat 01:00 --screenfuls 1 \"" + filepath + "\""
+
+                                    }
+
+                                    if (process.platform == 'linux') {
+                                        if (fs.existsSync(path.join(process.cwd() + "/npm"))) {
+                                            CCExtractorPath = path.join(process.cwd() + '/assets/app/ccextractor/ccextractor')
+                                        } else {
+                                            CCExtractorPath = path.join(process.cwd() + '/private/ccextractor/ccextractor')
+                                        }
+
+                                        var filepathUnix = filepath.replace(/'/g, '\'\"\'\"\'');
+
+                                        workerCommand = CCExtractorPath + " -debug -stdout -endat 01:00 --screenfuls 1 '" + filepathUnix + "'"
+
+
+
+                                    }
+
+                                    if (process.platform == 'darwin') {
+                                        workerCommand = ""
+
+                                    }
+
+
+
+                                    console.log(workerCommand)
+
+                                    var CCExtractorOutput = ""
+
+                                    console.log("Checking for captions")
+
+                                    updateConsole(scannerID, `Checking for captions`)
+
+
+                                    //
+
+                                    var childProcess = require('child_process');
+
+                                    var workerPath = "assets/app/ccextractor.js"
+
+                                    var hasClosedCaptions = false
+
+
+                                    shellThreadModule = childProcess.fork(workerPath, [], {
+                                        silent: true,
+                                       
+                                    });
+
+
+                                    var infoArray = [
+                                        "processFile",
+                                        workerCommand
+                                    ];
+
+
+                                    shellThreadModule.send(infoArray);
+
+
+                                    shellThreadModule.stderr.on('data', function (data) {
+
+                                        //console.log(data)
+                                        // console.log(data.toString())
+
+                                        if (data.includes('XDS:') || data.includes('Caption block')) {
+
+                                            var infoArray = [
+                                                "exitThread",
+                                                "itemCancelled",
+                                            ];
+
+                                            try {
+
+                                                if (shellThreadModule != "") {
+                                                    shellThreadModule.send(infoArray);
+                                                }
+
+
+                                            } catch (err) { }
+
+                                            hasClosedCaptions = true
+
+                                        }
+
+                                    });
+
+                           
+
+                                    shellThreadModule.on("exit", function (code, ) {
+
+                                        ('ccextractor:', code);
+
+                                        extractData(filepath, jsonData, tags, hasClosedCaptions)
+
+                                        i++;
+                                        if (i < filesToScan.length) {
+                                            loopArray(filesToScan, i);
+                                        } else {
+                                            exiftool.end()
+                                        }
+                                     
+                        
+                                    });
+
+
+
                                 } else {
-                                    exiftool.end()
+
+
+                                    extractData(filepath, jsonData, tags)
+
+                                    i++;
+                                    if (i < filesToScan.length) {
+                                        loopArray(filesToScan, i);
+                                    } else {
+                                        exiftool.end()
+                                    }
+
+
+
                                 }
 
 
+
+                                //
                             }
                             )
 
-
-
-
-
                     }
-
-
-
-
-
-
-
 
                 });
             }
@@ -478,8 +608,6 @@ function ffprobeLaunch(filesToScan) {
 
     function extractDataError(filepath, err) {
 
-        // console.log("Error with file:" + filepath)
-        //  console.log("Err2:" + err)
 
         var thisFileObject = {}
 
@@ -518,9 +646,15 @@ function ffprobeLaunch(filesToScan) {
 
 
 
-    function extractData(filepath, jsonData, tags) {
+    function extractData(filepath, jsonData, tags, hasClosedCaptions) {
 
         var thisFileObject = {}
+
+        if (closedCaptionScan == 'true') {
+
+            thisFileObject.hasClosedCaptions = hasClosedCaptions
+
+        }
 
 
         thisFileObject.meta = tags
@@ -563,7 +697,7 @@ function ffprobeLaunch(filesToScan) {
 
         } catch (err) {
 
-          
+
 
             updateConsole(scannerID, `Tagging bitrate data failed:${filepath}`)
 
@@ -578,7 +712,7 @@ function ffprobeLaunch(filesToScan) {
 
             try {
 
-            
+
 
                 var vidWidth = thisFileObject.ffProbeData.streams[0]["width"]
                 var vidHeight = thisFileObject.ffProbeData.streams[0]["height"]
@@ -647,7 +781,17 @@ function ffprobeLaunch(filesToScan) {
         // console.log(JSON.stringify(thisFileObject))
 
 
+
+        //
+
+
         addFileToDB(filepath, thisFileObject, filePropertiesToAdd)
+
+
+        //
+
+
+
 
     }
 }
@@ -669,13 +813,15 @@ function addFileToDB(filePath, FileObject, obj) {
     FileObject.processingStatus = false
     FileObject.createdAt = new Date()
 
-    if(FileObject.file_size == undefined){
+    if (FileObject.file_size == undefined) {
         FileObject.file_size = 0;
     }
 
-    if(FileObject.bit_rate == undefined){
+    if (FileObject.bit_rate == undefined) {
         FileObject.bit_rate = 0;
     }
+
+    FileObject.statSync = fs.statSync(filePath)
 
     obj.history += addHistory(FileObject)
 
@@ -695,11 +841,11 @@ function addFileToDB(filePath, FileObject, obj) {
                 var arr = []
 
 
-                return  `<tr><td><p>${row.codec_name}</p></td>`
-                +`<td><p>${row.codec_type}</p></td>`+""
-                +`<td><p>${row.bit_rate != undefined ? parseFloat((row.bit_rate / 1000000).toPrecision(4)) + " Mbs" : "-"}</p></td>`+""
-                +`<td><p>${row.tags != undefined && row.tags.language != undefined ? row.tags.language : "-"}</p></td>`+""
-                +`<td><p>${row.tags != undefined && row.tags.title != undefined ? row.tags.title : "-"}</p></td></tr>`
+                return `<tr><td><p>${row.codec_name}</p></td>`
+                    + `<td><p>${row.codec_type}</p></td>` + ""
+                    + `<td><p>${row.bit_rate != undefined ? parseFloat((row.bit_rate / 1000000).toPrecision(4)) + " Mbs" : "-"}</p></td>` + ""
+                    + `<td><p>${row.tags != undefined && row.tags.language != undefined ? row.tags.language : "-"}</p></td>` + ""
+                    + `<td><p>${row.tags != undefined && row.tags.title != undefined ? row.tags.title : "-"}</p></td></tr>`
 
 
             })
@@ -709,8 +855,8 @@ function addFileToDB(filePath, FileObject, obj) {
 
             histoyString += streams
 
-            
-               
+
+
 
             return histoyString
 

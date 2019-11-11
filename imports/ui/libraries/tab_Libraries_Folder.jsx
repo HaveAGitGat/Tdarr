@@ -386,26 +386,117 @@ class Folder extends Component {
     }
   }
 
-  renderPlugins() {
+  handleChangeChkBx2 = (event,type) => {
+
+
+    console.log(event.target.checked,type,event.target.name)
+
+    if(event.target.name == "ExcludeSwitch" && event.target.checked == true){
+
+      var key = "decisionMaker." + type + "ExcludeSwitch"
+
+      SettingsDB.upsert(
+
+        this.props.libraryItem._id,
+        {
+          $set: {
+            [key]: true,
+          }
+        }
+      );
+  
+  
+
+
+    }else if(event.target.name == "IncludeSwitch" && event.target.checked == true){
+
+      var key = "decisionMaker." + type + "ExcludeSwitch"
+
+      SettingsDB.upsert(
+
+        this.props.libraryItem._id,
+        {
+          $set: {
+            [key]: false,
+          }
+        }
+      );
+  
+
+
+    }
+
+
+
+
+  }
+
+
+  renderPlugins = () => {
 
     var plugins = this.props.settings;
 
     plugins = plugins.filter(setting => setting._id == this.props.libraryItem._id);
-    plugins = plugins[0].pluginIDs
-
-
-    return plugins.map((pluginItem) => {
-
-
-
-      return (
-        <Plugin
-          key={pluginItem._id}
-          pluginItem={pluginItem}
-          DB_id={this.props.libraryItem._id}
-        />
-      );
+    plugins = plugins[0].pluginIDs.sort(function (a, b) {
+      return b.Priority - a.Priority;
     });
+
+    Meteor.call('buildPluginStack', plugins, (error, result) => {
+
+
+      //console.log(result)
+
+         result = result.sort(function (a, b) {
+        return b.Priority - a.Priority;
+      });
+
+
+      var stack = result.map((pluginItem) => {
+
+        return (
+          <Plugin
+            key={pluginItem._id}
+            pluginItem={pluginItem}
+            DB_id={this.props.libraryItem._id}
+          />
+        );
+      });
+
+
+      render(
+        <table className="pluginStackTable"><tbody>
+
+        <tr>
+      <th><center><p>Source</p></center></th>
+      <th><center><p>Enabled</p></center></th>
+      <th><center><p>id</p></center></th>
+      <th><center><p>Type</p></center></th>
+      <th><center><p>Operation</p></center></th>
+      <th><center><p>Name</p></center></th>
+      <th><center><p>Description</p></center></th>
+      <th><center><p>Priority</p></center></th>
+      <th><center><p>Remove</p></center></th>
+
+
+    </tr>
+
+         {stack}
+
+        </tbody>
+        </table>
+
+
+
+
+        , document.getElementById(this.props.libraryItem._id+"PluginStack"));
+
+
+
+
+    })
+
+
+
 
 
   }
@@ -1331,12 +1422,39 @@ class Folder extends Component {
     event.preventDefault();
 
     const text = ReactDOM.findDOMNode(this.refs.addPluginText).value.trim();
-    Meteor.call('addPluginInclude', this.props.libraryItem._id, text, function (error, result) { });
+
+    var thisLibraryPlugins = SettingsDB.find({ _id: this.props.libraryItem._id }, { sort: { createdAt: 1 } }).fetch()[0].pluginIDs
+
+    var arr = thisLibraryPlugins.map(row => row._id)
+
+    if(arr.includes(text)){
+
+      alert('Plugin is already in stack!')
+
+
+    }else{
+
+  
+
+    var source
+
+    if(this.props.libraryItem.pluginCommunity == true){
+
+      source = "Community"
+
+    }else{
+
+      source = "Local"
+
+    }
+
+   
+    Meteor.call('addPluginInclude', this.props.libraryItem._id, text,source,this.props.libraryItem.pluginIDs.length, function (error, result) { });
     ReactDOM.findDOMNode(this.refs.addPluginText).value = '';
   }
 
 
-
+}
 
   addVideoCodecExclude(event) {
 
@@ -1653,7 +1771,7 @@ class Folder extends Component {
                   }
                 }
               );
-            }} className={this.props.libraryItem.navItemSelected == "navSourceFolder" ? 'selectedNav' : ''}>Source</p>
+            }} className={this.props.libraryItem.navItemSelected == "navSourceFolder" ? 'selectedNav' : 'unselectedNav'}>Source</p>
             <p onClick={() => {
               SettingsDB.upsert(
                 this.props.libraryItem._id,
@@ -1663,7 +1781,7 @@ class Folder extends Component {
                   }
                 }
               );
-            }} className={this.props.libraryItem.navItemSelected == "navCacheFolder" ? 'selectedNav' : ''}>Transcode cache</p>
+            }} className={this.props.libraryItem.navItemSelected == "navCacheFolder" ? 'selectedNav' : 'unselectedNav'}>Transcode cache</p>
             <p onClick={() => {
               SettingsDB.upsert(
                 this.props.libraryItem._id,
@@ -1673,7 +1791,7 @@ class Folder extends Component {
                   }
                 }
               );
-            }} className={this.props.libraryItem.navItemSelected == "navOutputFolder" ? 'selectedNav' : ''}>Output Folder</p>
+            }} className={this.props.libraryItem.navItemSelected == "navOutputFolder" ? 'selectedNav' : 'unselectedNav'}>Output Folder</p>
             <p onClick={() => {
               SettingsDB.upsert(
                 this.props.libraryItem._id,
@@ -1683,7 +1801,7 @@ class Folder extends Component {
                   }
                 }
               );
-            }} className={this.props.libraryItem.navItemSelected == "navContainers" ? 'selectedNav' : ''}>Containers</p>
+            }} className={this.props.libraryItem.navItemSelected == "navContainers" ? 'selectedNav' : 'unselectedNav'}>Containers</p>
             <p onClick={() => {
               SettingsDB.upsert(
                 this.props.libraryItem._id,
@@ -1693,7 +1811,7 @@ class Folder extends Component {
                   }
                 }
               );
-            }} className={this.props.libraryItem.navItemSelected == "navTranscode" ? 'selectedNav' : ''}>Transcode</p>
+            }} className={this.props.libraryItem.navItemSelected == "navTranscode" ? 'selectedNav' : 'unselectedNav'}>Transcode</p>
             <p onClick={() => {
               SettingsDB.upsert(
                 this.props.libraryItem._id,
@@ -1703,7 +1821,7 @@ class Folder extends Component {
                   }
                 }
               );
-            }} className={this.props.libraryItem.navItemSelected == "navHealthCheck" ? 'selectedNav' : ''}>Health check</p>
+            }} className={this.props.libraryItem.navItemSelected == "navHealthCheck" ? 'selectedNav' : 'unselectedNav'}>Health check</p>
             <p onClick={() => {
               SettingsDB.upsert(
                 this.props.libraryItem._id,
@@ -1713,7 +1831,7 @@ class Folder extends Component {
                   }
                 }
               );
-            }} className={this.props.libraryItem.navItemSelected == "navSchedule" ? 'selectedNav' : ''}>Schedule</p>
+            }} className={this.props.libraryItem.navItemSelected == "navSchedule" ? 'selectedNav' : 'unselectedNav'}>Schedule</p>
 
 
 
@@ -1808,6 +1926,33 @@ class Folder extends Component {
                         {
                           $set: {
                             scanOnStart: !this.props.libraryItem.scanOnStart,
+                          }
+                        }
+                      );
+                    }
+
+                    }
+                  />
+                </div>
+
+
+
+                
+                {'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}<span className="buttonTextSize">Closed caption scan (much slower -linux/tdarr_aio/win):</span>
+                <div style={libButtonStyle}>
+                  <ToggleButton
+                    thumbStyle={borderRadiusStyle}
+                    trackStyle={borderRadiusStyle}
+
+                    value={this.props.libraryItem.closedCaptionScan === undefined ? false : !!this.props.libraryItem.closedCaptionScan}
+                    onToggle={() => {
+
+                      SettingsDB.upsert(
+
+                        this.props.libraryItem._id,
+                        {
+                          $set: {
+                            closedCaptionScan: !this.props.libraryItem.closedCaptionScan,
                           }
                         }
                       );
@@ -1986,7 +2131,7 @@ class Folder extends Component {
 
               <center>
 
-                <span className="buttonTextSize">Plugin:</span> <div style={libButtonStyle}><ToggleButton
+                <span className="buttonTextSize">Plugin Stack:</span> <div style={libButtonStyle}><ToggleButton
                   thumbStyle={borderRadiusStyle}
                   trackStyle={borderRadiusStyle}
 
@@ -2028,7 +2173,7 @@ class Folder extends Component {
                   }
                 /></div>{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}
 
-                <span className="buttonTextSize">Video library:</span> <div style={libButtonStyle}><ToggleButton
+                <span className="buttonTextSize">Video:</span> <div style={libButtonStyle}><ToggleButton
                   thumbStyle={borderRadiusStyle}
                   trackStyle={borderRadiusStyle}
 
@@ -2066,7 +2211,7 @@ class Folder extends Component {
                 /></div>{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}
 
 
-                <span className="buttonTextSize">Audio library:</span>
+                <span className="buttonTextSize">Audio:</span>
                 <div style={libButtonStyle}> <ToggleButton
                   thumbStyle={borderRadiusStyle}
                   trackStyle={borderRadiusStyle}
@@ -2115,16 +2260,18 @@ class Folder extends Component {
 
               <div className={!!this.props.libraryItem.decisionMaker.pluginFilter ? '' : 'hidden'}>
 
-                <center>
-                  <p>Community:
+              
+              <br/>
+              <br/>
+              <br/>
+              <br/>
+                 
+
+
+                <p>Plugin ID:        {'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}Source:{'\u00A0'}{'\u00A0'}  Community
 <Checkbox name="community" checked={!!this.props.libraryItem.pluginCommunity} onChange={this.handleChangeChkBx} />
-                    Local:
-<Checkbox name="local" checked={!this.props.libraryItem.pluginCommunity} onChange={this.handleChangeChkBx} />
-                  </p>
-                </center>
-
-
-                <p>Plugin ID:</p>
+{'\u00A0'}{'\u00A0'}Local
+<Checkbox name="local" checked={!this.props.libraryItem.pluginCommunity} onChange={this.handleChangeChkBx} /></p>
 
 
 
@@ -2133,7 +2280,7 @@ class Folder extends Component {
                   <input
                     type="text"
                     ref="addPluginText"
-                    placeholder="Add Plugin IDs(use Enter↵)"
+                    placeholder="Add Plugin ID (use Enter↵)"
                     className="folderPaths"
                     name="pluginID"
                     onChange={this.handleChange}
@@ -2149,13 +2296,27 @@ class Folder extends Component {
                 <p></p>
                 <p></p>
 
+               
+                
+
+
                 <center><p>Plugin Stack:</p>  </center>
+
+                
+                <p></p>
+                <p></p>
+
+                <center><p>See the 'Plugins' tab for help on creating a stack. Make sure to put 'Filter' plugins at top of stack</p></center>
+
+
+                <p></p>
+                <p></p>
+
                 <center>
 
-                  <table><tbody>
-                    {this.renderPlugins()}
-                  </tbody>
-                  </table>
+
+                   {this.renderPlugins()}
+                  <div id={this.props.libraryItem._id+"PluginStack"}></div>
 
                 </center>
 
@@ -2205,7 +2366,7 @@ class Folder extends Component {
 
                 <p></p>
                 <p></p>
-                <p>Don't transcode videos already in these codecs:</p>
+                <p>Don't <Checkbox name="ExcludeSwitch" checked={this.props.libraryItem.decisionMaker.videoExcludeSwitch != undefined ? this.props.libraryItem.decisionMaker.videoExcludeSwitch : true} onChange={ event => this.handleChangeChkBx2(event,'video')} />/ Only<Checkbox name="IncludeSwitch" checked={this.props.libraryItem.decisionMaker.videoExcludeSwitch != undefined ? !this.props.libraryItem.decisionMaker.videoExcludeSwitch : false} onChange={event => this.handleChangeChkBx2(event,'video')} /> transcode videos in these codecs:</p>
 
 
                 <form onSubmit={this.addVideoCodecExclude.bind(this)} >
@@ -2307,7 +2468,7 @@ class Folder extends Component {
               <div className={!!this.props.libraryItem.decisionMaker.audioFilter ? '' : 'hidden'}>
                 <p></p>
                 <p></p>
-                <p>Don't transcode audio already in these codecs:</p>
+                <p>Don't <Checkbox name="ExcludeSwitch" checked={this.props.libraryItem.decisionMaker.audioExcludeSwitch != undefined ? this.props.libraryItem.decisionMaker.audioExcludeSwitch : true} onChange={ event => this.handleChangeChkBx2(event,'audio')} />/ Only<Checkbox name="IncludeSwitch" checked={this.props.libraryItem.decisionMaker.audioExcludeSwitch != undefined ? !this.props.libraryItem.decisionMaker.audioExcludeSwitch : false} onChange={event => this.handleChangeChkBx2(event,'audio')} /> transcode audio in these codecs:</p>
 
                 <form onSubmit={this.addAudioCodecExclude.bind(this)} >
                   <input

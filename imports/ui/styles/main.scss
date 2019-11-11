@@ -58,6 +58,11 @@ p {
   content: none;
 }
 
+input[type="text"]
+{
+    font-size:14px;
+}
+
   .folderPaths {
 
     width: 100%;
@@ -100,6 +105,23 @@ p {
         size:14px;
         
         }
+
+        .filterByDate {
+
+          width: 50px;
+         
+          display: inline-block;
+          border: 1px solid black;
+          border-radius: 4px;
+          box-sizing: border-box;
+          background-color:grey;
+          color: #e1e1e1;
+          size:14px;
+          }
+
+
+
+
     .libraryTitle {
 
       width: 90%;
@@ -852,6 +874,22 @@ table.searchResultsTable td {
 
 }
 
+table.pluginStackTable th {
+
+
+  border: 1px solid white;
+  color: black;
+
+}
+
+table.pluginStackTable td {
+
+
+  border: 1px solid white;
+  color: black;
+
+}
+
 .iconContainer {
   background-color: grey;
   display: inline-block;
@@ -924,6 +962,33 @@ table.searchResultsTable td {
 }
 
 
+.pluginTabGrid-container {
+  display: grid;
+  grid-template-columns: auto 80%;
+  width:100%;
+  height:100%;
+}
+
+.pluginTabGrid-itemLeft {
+
+  width:100%;
+  border-right: 1px solid black;
+
+}
+
+
+.pluginTabGrid-itemRight {
+
+  width:100%;
+  padding: 0 0 0 2em
+
+}
+
+
+.pluginCreatorSubItems{
+
+  margin: 0 0 0 2em;
+}
 
 
 
@@ -980,6 +1045,14 @@ table.workerDetailTable td {
 .selectedNav{
 
   color:#bb86fc;
+}
+
+.selectedNav:hover {
+  font-weight: bold;
+}
+
+.unselectedNav:hover{
+  font-weight: bold;
 }
 
 
