@@ -1,41 +1,23 @@
-import React, { Component } from 'react';
-import Checkbox from '@material-ui/core/Checkbox';
+import React from 'react';
 
+const ScheduleBlock = ({item, DB_id}) => {
+  const toggleChecked = () => {
+    Meteor.call('updateScheduleBlock', DB_id, item._id, !item.checked);
+  };
 
-export default class VideoCodec extends Component {
+  return (
+    <span className="scheduleContainer-item d-flex align-items-center justify-content-center">
+      <div className="custom-control custom-checkbox" onClick={toggleChecked}>
+        <input
+          type="checkbox"
+          className="custom-control-input"
+          checked={item.checked}
+          readOnly
+        />
+        <label className="custom-control-label"></label>
+      </div>
+    </span>
+  );
+};
 
-    constructor(props) {
-        super(props);
-
-        this.toggleChecked = this.toggleChecked.bind(this);
-    
-    
-      }
-
-    toggleChecked(event) {
-
-
-            Meteor.call('updateScheduleBlock',this.props.DB_id, this.props.item._id,event.target.checked,function (error, result) { });
-
-
-    }
-
-
-    render() {
-      return (
-
-
-        <span className="scheduleContainer-item">
-         <input type="checkbox" checked={!!this.props.item.checked} onChange={this.toggleChecked} />
-        {/* {this.props.item._id.split(":")[1]} */}
-        </span>
-        
-     
-      );
-    }
-  }
-
-  
-var noBreak = {
-  display: 'inline-block',
-}
+export default ScheduleBlock;

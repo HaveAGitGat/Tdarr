@@ -4,6 +4,11 @@ dist
 *.yml 
 
 imports/ui/*
+imports/api/*
+!imports/ui/libraries
+imports/ui/libraries/*
 
 !imports/ui/ErrorBoundary.jsx
 !imports/ui/App.jsx
+!imports/ui/libraries/tab_Libraries_Folder.jsx
+!imports/ui/libraries/ScheduleBlock.jsx

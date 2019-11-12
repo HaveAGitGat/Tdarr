@@ -154,7 +154,7 @@ export default class Worker extends Component {
 
 
 
-            <div className={this.props.worker.percentage <= 100 ? '' : 'hidden'}>
+            <div className={this.props.worker.percentage <= 100 ? '' : 'd-none'}>
               <Progress percent={parseInt(this.props.worker.percentage)} status="default"
 
                 theme={
@@ -171,7 +171,7 @@ export default class Worker extends Component {
             </div>
 
 
-            <div className={this.props.worker.percentage > 100 ? '' : 'hidden'}>
+            <div className={this.props.worker.percentage > 100 ? '' : 'd-none'}>
 
               <Progress percent={100} status="default"
 
@@ -198,7 +198,7 @@ export default class Worker extends Component {
 
 </center>
 
-            <div className={this.state.infoHidden ? 'hidden' : ''}>
+            <div className={this.state.infoHidden ? 'd-none' : ''}>
 
           
 

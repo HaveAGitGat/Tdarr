@@ -999,6 +999,10 @@ table.scheduleTable {
 
 table.scheduleTable tr:hover {
   background-color: rgb(202, 202, 202);
+
+  .scheduleButton{
+    color: #373737;
+  }
 }
 
 table.workerDetailTable td {

@@ -426,7 +426,7 @@ renderStats = () => {
 
 
 
-       <div className={this.state.resultsShow ? '' : 'hidden'}>
+       <div className={this.state.resultsShow ? '' : 'd-none'}>
        <center>
        <Button variant="outline-light" onClick={() => {
           this.setState({
