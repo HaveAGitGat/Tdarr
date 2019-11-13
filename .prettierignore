@@ -4,6 +4,7 @@ dist
 *.yml 
 
 imports/ui/*
+imports/api/*
 
 !imports/ui/ErrorBoundary.jsx
 !imports/ui/App.jsx

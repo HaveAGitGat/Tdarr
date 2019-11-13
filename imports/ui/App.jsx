@@ -11,11 +11,11 @@ import {GlobalSettingsDB} from '../api/tasks.js';
 import TabDev from '../ui/tab_Dev.jsx';
 import TabHelp from '../ui/tab_Help.jsx';
 import TabLog from '../ui/tab_Log.jsx';
+import TabOptions from '../ui/tab_Options.jsx';
 import TabStatistics from '../ui/tab_Statistics.jsx';
 import {ErrorBoundary} from './ErrorBoundary.jsx';
 import TabLibraries from './libraries/tab_Libraries.jsx';
 import TabPlugins from './plugins/tab_Plugins.jsx';
-import TabOptions from '../ui/tab_Options.jsx';
 import TabSearch from './tab_Search.jsx';
 import TabTranscoding from './transcoding/tab_Transcoding.jsx';
 
