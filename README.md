@@ -33,9 +33,17 @@ Currently in Alpha but looking for feedback/suggestions.
 </p>
 
 
+---------------------------------------------------------------------------------------
+#Search
+
+![Screenshot](https://i.imgur.com/m5aQ9cJ.png)
+---------------------------------------------------------------------------------------
+#Stats
+
 ![Screenshot](https://i.imgur.com/zofsBP5.png)
 
 ---------------------------------------------------------------------------------------
+#Transcode management
 
 ![Screenshot](https://i.imgur.com/8vEmI7d.png)
 
