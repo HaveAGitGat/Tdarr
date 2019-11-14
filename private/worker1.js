@@ -407,7 +407,7 @@ process.on('message', (m) => {
 
             // console.log("Worker in Docker")
             if (process.platform == 'linux' && handBrakeMode == true) {
-              workerCommand = "/usr/local/bin/HandBrakeCLI -i '" + currentSourceLineUnix + "' -o '" + currentDestinationLineUnix + "' " + presetUnix;
+            //  workerCommand = "/usr/local/bin/HandBrakeCLI -i '" + currentSourceLineUnix + "' -o '" + currentDestinationLineUnix + "' " + presetUnix;
             } else if (process.platform == 'linux' && FFmpegMode == true) {
               workerCommand = ffmpegPathLinux + " " + preset0Unix + " -i '" + currentSourceLineUnix + "' " + preset1Unix + " '" + currentDestinationLineUnix + "' "
         
