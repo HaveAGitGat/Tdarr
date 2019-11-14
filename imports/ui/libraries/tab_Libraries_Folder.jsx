@@ -1620,6 +1620,22 @@ class Folder extends Component {
 
                 }>Reset stats: All</Dropdown.Item>
 
+<Dropdown.Item style={{ color: 'white', fontSize: '14px' }} onClick={() => {
+
+var priority = SettingsDB.find({}, { sort: { createdAt: 1 } }).fetch().length
+var thisLibrary = (SettingsDB.find({ _id: this.props.libraryItem._id }, { sort: { createdAt: 1 } }).fetch())[0]
+
+thisLibrary.name = thisLibrary.name +" (Duplicate)"
+thisLibrary.priority = priority
+
+delete thisLibrary._id;
+SettingsDB.insert(thisLibrary)
+
+
+}
+
+}>Duplicate library</Dropdown.Item>
+
 
 
                 <Dropdown.Item style={{ color: '#bb86fc', fontSize: '14px' }} onClick={() => {
