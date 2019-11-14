@@ -907,7 +907,16 @@ class App extends Component {
 <p>Library alternation: {this.renderCheckBox('alternateLibraries')}</p>
  <p>Library prioritisation: {this.renderCheckBox('prioritiseLibraries')}</p>
 
-
+<p>Items: <input type="text" className="tableSize"  defaultValue={this.props.globalSettings && this.props.globalSettings[0] && this.props.globalSettings[0].tableSize ? this.props.globalSettings[0].tableSize : "" } onChange={(event) => {
+  GlobalSettingsDB.upsert(
+    "globalsettings",
+    {
+      $set: {
+        tableSize: event.target.value,
+      }
+    }
+  );
+}}></input></p>
 
 
             

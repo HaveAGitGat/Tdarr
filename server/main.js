@@ -388,6 +388,23 @@ if (!Array.isArray(count) || !count.length) {
   );
 
   }
+
+  //UI queue size
+
+  if (count[0].tableSize == undefined) {
+
+    GlobalSettingsDB.upsert(
+      "globalsettings",
+      {
+        $set: {
+          tableSize: 20,
+        }
+      }
+    );
+
+  }
+
+
   //init sort vars
 
   if (count[0].queueSortType == undefined) {
@@ -3449,6 +3466,8 @@ function tablesUpdate() {
 
       var settings = SettingsDB.find({}, { sort: { priority: 1 } }).fetch()
 
+      var tableSize = globalSettings[0].tableSize
+
 
 
       //
@@ -3648,12 +3667,12 @@ function tablesUpdate() {
 
       //
 
-      table1dataSlice = table1data.slice(0, 20)
-      table2dataSlice = table2data.slice(0, 20)
-      table3dataSlice = table3data.slice(0, 20)
-      table4dataSlice = table4data.slice(0, 20)
-      table5dataSlice = table5data.slice(0, 20)
-      table6dataSlice = table6data.slice(0, 20)
+      table1dataSlice = table1data.slice(0, tableSize)
+      table2dataSlice = table2data.slice(0, tableSize)
+      table3dataSlice = table3data.slice(0, tableSize)
+      table4dataSlice = table4data.slice(0, tableSize)
+      table5dataSlice = table5data.slice(0, tableSize)
+      table6dataSlice = table6data.slice(0, tableSize)
 
 
 

@@ -121,6 +121,20 @@ input[type="text"]
         
         }
 
+        
+  .tableSize {
+
+    width: 50px;
+   
+    display: inline-block;
+    border: 1px solid black;
+    border-radius: 4px;
+    box-sizing: border-box;
+    background-color:grey;
+    color: white;
+    size:14px;
+    }
+
         .filterByDate {
 
           width: 50px;
@@ -689,6 +703,9 @@ input[type="text"]
       border: 1px solid black;
       border-radius: 4px;
       box-sizing: border-box;
+      background-color:grey;
+      color: white;
+      size:14px;
 
 
     }
