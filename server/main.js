@@ -252,8 +252,8 @@ allFilesPulledTable = FileDB.find({}).fetch()
 
 for (var i = 0; i < allFilesPulledTable.length; i++) {
 
-  console.log("Checking file:" + (i + 1))
-  console.log("Checking file:" + allFilesPulledTable[i].file)
+  console.log("Checking file:" + (i + 1) +"/"+allFilesPulledTable.length)
+
 
   if (allFilesPulledTable[i].TranscodeDecisionMaker == "Not attempted") {
 
@@ -898,7 +898,9 @@ Meteor.methods({
           }
         );
 
+        try{
         var folders = getDirectories(folderPath)
+      }catch(err){var folders = []}
 
         folders = folders.map((row) => {
 
@@ -933,7 +935,9 @@ Meteor.methods({
         folderPath2.splice(idx, 1)
         folderPath2 = folderPath2.join('/')
 
+        try{
         var folders = getDirectories(folderPath)
+      }catch(err){var folders = []}
 
         folder = folders.map((row) => {
 
@@ -1436,7 +1440,7 @@ Meteor.methods({
     if (process.env.HWT == "true") {
 
         if (process.platform == 'linux' && mode == "handbrake") {
-          workerCommand = "/usr/local/bin/HandBrakeCLI " + text
+         // workerCommand = "/usr/local/bin/HandBrakeCLI " + text
         } else if (process.platform == 'linux' && mode == "ffmpeg") {
 
           workerCommand = ffmpegPathLinux +" " + text
@@ -1500,14 +1504,14 @@ Meteor.methods({
     var outputFileUnix = outputFile.replace(/'/g, '\'\"\'\"\'');
     var ffmpegPathUnix = ffmpegPath.replace(/'/g, '\'\"\'\"\'');
 
-    //var preset1 = "-ss 1 -t 30 -acodec copy -vcodec copy"
 
-    // var preset1 = "-ss 1 -t 30"
-    // var preset2 = "-codec copy"
 
-    
-    var preset1 = ""
-    var preset2 = "-ss 00:00:1 -codec copy -t 30"
+    var preset1 = "-ss 00:00:1"
+    var preset2 = "-t 00:00:30 -map 0:v? -map 0:a? -map 0:s? -map 0:d? -c copy"
+
+  //  var preset1 = "-ss 00:00:1"
+  //  var preset2 = "-t 00:00:30 -c copy -map 0"
+
 
     if (fs.existsSync(outputFile)) {
       fs.unlinkSync(outputFile)
