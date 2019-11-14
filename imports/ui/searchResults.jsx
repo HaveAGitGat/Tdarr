@@ -72,11 +72,25 @@ function fancyTimeFormat(time) {
 
   
               var columns = [
+
                 
+
+                {
+                  Header: "",
+                  id: "row",
+                  maxWidth: 50,
+                  filterable: false,
+                  Cell: (row) => {
+                    return <p>{row.index}</p>;
+                  }
+                },
+
+
+
                 {
                   Header: () => (
-                    <div className="pluginTableHeader">  
-                    <p>File</p>
+                    <div className="pluginTableHeader">
+                      <p>File</p>
                     </div>
                   ),
                   accessor: 'file',
@@ -128,20 +142,7 @@ function fancyTimeFormat(time) {
 
                         <tbody>
 
-                
-{/*                     
-                        <col width="20"/>
-                <col width="20"/>
-                <col width="20"/>
-                <col width="20"/>
-                <col width="20"/> */}
-        
 
-                          {/* <th><p>Codec</p></th>
-                          <th><p>Type</p></th>
-                          <th><p>Bitrate</p></th>
-                          <th><p>Lang</p></th>
-                          <th><p>Name</p></th> */}
                         {streams}
                         </tbody>
                       </table>
@@ -443,7 +444,9 @@ return null
 
                 <br/>
                
-                  <center><p>Tip: Use the table headers to sort & filter files</p></center>
+                  <center><p>Tip: Use the table headers to sort & filter files</p>
+            <p>Count:{data.length}</p>
+                  </center>
 
                   <br/>
              
