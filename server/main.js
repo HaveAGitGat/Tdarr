@@ -3556,7 +3556,7 @@ function tablesUpdate() {
 
 
       bumpedFiles = bumpedFiles.sort(function (a, b) {
-        return new Date(b.bumped) - new Date(a.bumped);
+        return new Date(a.bumped) - new Date(b.bumped);
       });
 
       allFilesPulledTable = bumpedFiles.concat(allFilesPulledTable)
