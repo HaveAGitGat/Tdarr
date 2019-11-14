@@ -389,6 +389,44 @@ if (!Array.isArray(count) || !count.length) {
 
   }
 
+    //Search result columns
+
+    if (count[0].searchResultColumns == undefined) {
+
+      var searchResultColumns = {
+       index:true,
+       fileName:true,
+       streams:true,
+       closedCaptions:true,
+       codec:true,
+       resolution:true,
+       size:true,
+       bitrate:true,
+       duration:true,
+       bump:true,
+       createSample:true,
+       transcode:true,
+       healthCheck:true,
+       info:true,
+       history:true,
+       remove:true,
+
+
+
+
+      }
+
+      GlobalSettingsDB.upsert(
+        "globalsettings",
+        {
+          $set: {
+            searchResultColumns: searchResultColumns,
+          }
+        }
+      );
+  
+    }
+
   //UI queue size
 
   if (count[0].tableSize == undefined) {
@@ -403,6 +441,9 @@ if (!Array.isArray(count) || !count.length) {
     );
 
   }
+
+  
+
 
 
   //init sort vars

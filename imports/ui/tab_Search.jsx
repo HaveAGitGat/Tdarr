@@ -120,8 +120,10 @@ class App extends Component {
 
     Meteor.call('searchDB', ReactDOM.findDOMNode(this.refs.searchString).value.trim(), (error, result) => {
 
+     
 
-render( <div className="libraryContainer" ><SearchResults results={result}  /></div>, document.getElementById('searchResults'));
+
+render( <div className="libraryContainer" ><SearchResults results={result} /></div>, document.getElementById('searchResults'));
 
 
     })

@@ -135,6 +135,13 @@ input[type="text"]
     size:14px;
     }
 
+    .resultColumnOptions {
+
+      width: 100px;
+      display: inline-block;
+ 
+      }
+
         .filterByDate {
 
           width: 50px;
