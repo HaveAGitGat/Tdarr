@@ -32,12 +32,12 @@ process.on('message', (infoArray) => {
 
         shellWorker = shell.exec(workerCommand, function (code, stdout, stderr, stdin) {
 
-            console.log(code)
+            //console.log(code)
         
             killSelf()
         });
 
-        setTimeout(Meteor.bindEnvironment(killSelf), 10000);
+        setTimeout(killSelf, 1000);
     }
 
 
@@ -49,7 +49,7 @@ process.on('message', (infoArray) => {
 
 function killSelf(){
 
-    console.log("killSelf")
+   // console.log("killSelf")
 
     // var message = [
     //     "Exit",
