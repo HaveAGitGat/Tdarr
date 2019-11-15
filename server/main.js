@@ -4082,19 +4082,17 @@ function workerUpdateCheck() {
     verboseLogs = globs[0].verboseLogs
 
     if (gDiff >= 1 && generalFiles.length > 0) {
-      Meteor.call('launchWorker', "general", gDiff, function (error, result) { });
+      Meteor.call('launchWorker', "general", 1, function (error, result) { });
     }
     if (tDiff >= 1 && transcodeFiles.length > 0) {
-      Meteor.call('launchWorker', "transcode", tDiff, function (error, result) { });
+      Meteor.call('launchWorker', "transcode", 1, function (error, result) { });
     }
 
     if (hDiff >= 1 && healthcheckFiles.length > 0) {
-      Meteor.call('launchWorker', "healthcheck", hDiff, function (error, result) { });
+      Meteor.call('launchWorker', "healthcheck", 1, function (error, result) { });
     }
 
     var workerCheck = findWorker() //[]
-
-
 
 
 
