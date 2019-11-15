@@ -64,7 +64,7 @@ class App extends Component {
       folderValid:true,
       cache:"Path to your transcode cache. Input a base folder and the folder browser below will show subfolders to navigate.",
       cacheValid:true,
-      output:"Path to your transcode cache. Input a base folder and the folder browser below will show subfolders to navigate.",
+      output:"Path to your output folder. Input a base folder and the folder browser below will show subfolders to navigate.",
       outputValid:true,
       folderToFolderConversion:false,
       container:".mkv",
