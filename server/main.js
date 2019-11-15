@@ -252,8 +252,8 @@ allFilesPulledTable = FileDB.find({}).fetch()
 
 for (var i = 0; i < allFilesPulledTable.length; i++) {
 
-  console.log("Checking file:" + (i + 1))
-  console.log("Checking file:" + allFilesPulledTable[i].file)
+  console.log("Checking file:" + (i + 1) +"/"+allFilesPulledTable.length)
+
 
   if (allFilesPulledTable[i].TranscodeDecisionMaker == "Not attempted") {
 
@@ -388,6 +388,64 @@ if (!Array.isArray(count) || !count.length) {
   );
 
   }
+
+    //Search result columns
+
+    if (count[0].searchResultColumns == undefined) {
+
+      var searchResultColumns = {
+       index:true,
+       fileName:true,
+       streams:true,
+       closedCaptions:true,
+       codec:true,
+       resolution:true,
+       size:true,
+       bitrate:true,
+       duration:true,
+       bump:true,
+       createSample:true,
+       transcode:true,
+       healthCheck:true,
+       info:true,
+       history:true,
+       remove:true,
+
+
+
+
+      }
+
+      GlobalSettingsDB.upsert(
+        "globalsettings",
+        {
+          $set: {
+            searchResultColumns: searchResultColumns,
+          }
+        }
+      );
+  
+    }
+
+  //UI queue size
+
+  if (count[0].tableSize == undefined) {
+
+    GlobalSettingsDB.upsert(
+      "globalsettings",
+      {
+        $set: {
+          tableSize: 20,
+        }
+      }
+    );
+
+  }
+
+  
+
+
+
   //init sort vars
 
   if (count[0].queueSortType == undefined) {
@@ -898,7 +956,9 @@ Meteor.methods({
           }
         );
 
+        try{
         var folders = getDirectories(folderPath)
+      }catch(err){var folders = []}
 
         folders = folders.map((row) => {
 
@@ -933,7 +993,9 @@ Meteor.methods({
         folderPath2.splice(idx, 1)
         folderPath2 = folderPath2.join('/')
 
+        try{
         var folders = getDirectories(folderPath)
+      }catch(err){var folders = []}
 
         folder = folders.map((row) => {
 
@@ -1436,7 +1498,7 @@ Meteor.methods({
     if (process.env.HWT == "true") {
 
         if (process.platform == 'linux' && mode == "handbrake") {
-          workerCommand = "/usr/local/bin/HandBrakeCLI " + text
+         // workerCommand = "/usr/local/bin/HandBrakeCLI " + text
         } else if (process.platform == 'linux' && mode == "ffmpeg") {
 
           workerCommand = ffmpegPathLinux +" " + text
@@ -1500,14 +1562,14 @@ Meteor.methods({
     var outputFileUnix = outputFile.replace(/'/g, '\'\"\'\"\'');
     var ffmpegPathUnix = ffmpegPath.replace(/'/g, '\'\"\'\"\'');
 
-    //var preset1 = "-ss 1 -t 30 -acodec copy -vcodec copy"
 
-    // var preset1 = "-ss 1 -t 30"
-    // var preset2 = "-codec copy"
 
-    
-    var preset1 = ""
-    var preset2 = "-ss 00:00:1 -codec copy -t 30"
+    var preset1 = "-ss 00:00:1"
+    var preset2 = "-t 00:00:30 -map 0:v? -map 0:a? -map 0:s? -map 0:d? -c copy"
+
+  //  var preset1 = "-ss 00:00:1"
+  //  var preset2 = "-t 00:00:30 -c copy -map 0"
+
 
     if (fs.existsSync(outputFile)) {
       fs.unlinkSync(outputFile)
@@ -3445,6 +3507,8 @@ function tablesUpdate() {
 
       var settings = SettingsDB.find({}, { sort: { priority: 1 } }).fetch()
 
+      var tableSize = globalSettings[0].tableSize
+
 
 
       //
@@ -3533,7 +3597,7 @@ function tablesUpdate() {
 
 
       bumpedFiles = bumpedFiles.sort(function (a, b) {
-        return new Date(b.bumped) - new Date(a.bumped);
+        return new Date(a.bumped) - new Date(b.bumped);
       });
 
       allFilesPulledTable = bumpedFiles.concat(allFilesPulledTable)
@@ -3644,12 +3708,12 @@ function tablesUpdate() {
 
       //
 
-      table1dataSlice = table1data.slice(0, 20)
-      table2dataSlice = table2data.slice(0, 20)
-      table3dataSlice = table3data.slice(0, 20)
-      table4dataSlice = table4data.slice(0, 20)
-      table5dataSlice = table5data.slice(0, 20)
-      table6dataSlice = table6data.slice(0, 20)
+      table1dataSlice = table1data.slice(0, tableSize)
+      table2dataSlice = table2data.slice(0, tableSize)
+      table3dataSlice = table3data.slice(0, tableSize)
+      table4dataSlice = table4data.slice(0, tableSize)
+      table5dataSlice = table5data.slice(0, tableSize)
+      table6dataSlice = table6data.slice(0, tableSize)
 
 
 
@@ -4018,19 +4082,17 @@ function workerUpdateCheck() {
     verboseLogs = globs[0].verboseLogs
 
     if (gDiff >= 1 && generalFiles.length > 0) {
-      Meteor.call('launchWorker', "general", gDiff, function (error, result) { });
+      Meteor.call('launchWorker', "general", 1, function (error, result) { });
     }
     if (tDiff >= 1 && transcodeFiles.length > 0) {
-      Meteor.call('launchWorker', "transcode", tDiff, function (error, result) { });
+      Meteor.call('launchWorker', "transcode", 1, function (error, result) { });
     }
 
     if (hDiff >= 1 && healthcheckFiles.length > 0) {
-      Meteor.call('launchWorker', "healthcheck", hDiff, function (error, result) { });
+      Meteor.call('launchWorker', "healthcheck", 1, function (error, result) { });
     }
 
     var workerCheck = findWorker() //[]
-
-
 
 
 

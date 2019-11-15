@@ -438,7 +438,7 @@ function ffprobeLaunch(filesToScan) {
                                             CCExtractorPath = path.join(process.cwd() + '/private/ccextractor/ccextractorwin.exe')
                                         }
 
-                                        workerCommand = CCExtractorPath + " -debug  -stdout -endat 01:00 --screenfuls 1 \"" + filepath + "\""
+                                        workerCommand = CCExtractorPath + " -debug  -stdout -endat 01:00 --screenfuls 1 -out=null \"" + filepath + "\""
 
                                     }
 
@@ -451,7 +451,7 @@ function ffprobeLaunch(filesToScan) {
 
                                         var filepathUnix = filepath.replace(/'/g, '\'\"\'\"\'');
 
-                                        workerCommand = CCExtractorPath + " -debug -stdout -endat 01:00 --screenfuls 1 '" + filepathUnix + "'"
+                                        workerCommand = CCExtractorPath + " -debug  -stdout -endat 01:00 --screenfuls 1 -out=null '" + filepathUnix + "'"
 
 
 
@@ -464,11 +464,11 @@ function ffprobeLaunch(filesToScan) {
 
 
 
-                                    console.log(workerCommand)
+                                 //  console.log(workerCommand)
 
                                     var CCExtractorOutput = ""
 
-                                    console.log("Checking for captions")
+                                  // console.log("Checking for captions")
 
                                     updateConsole(scannerID, `Checking for captions`)
 
@@ -484,7 +484,7 @@ function ffprobeLaunch(filesToScan) {
 
                                     shellThreadModule = childProcess.fork(workerPath, [], {
                                         silent: true,
-                                       
+
                                     });
 
 
@@ -496,11 +496,17 @@ function ffprobeLaunch(filesToScan) {
 
                                     shellThreadModule.send(infoArray);
 
+                                    var killFlag = false
+
 
                                     shellThreadModule.stderr.on('data', function (data) {
 
                                         //console.log(data)
                                         // console.log(data.toString())
+
+                                        if (data.includes('Permission denied') || data.includes('error while loading')) {
+                                            console.log(data.toString())
+                                        }
 
                                         if (data.includes('XDS:') || data.includes('Caption block')) {
 
@@ -510,12 +516,10 @@ function ffprobeLaunch(filesToScan) {
                                             ];
 
                                             try {
-
+                                                killFlag = true
                                                 if (shellThreadModule != "") {
                                                     shellThreadModule.send(infoArray);
                                                 }
-
-
                                             } catch (err) { }
 
                                             hasClosedCaptions = true
@@ -524,7 +528,26 @@ function ffprobeLaunch(filesToScan) {
 
                                     });
 
-                           
+                                   // setTimeout(killCCExtractor, 1000);
+
+                                    function killCCExtractor(){
+                                        var infoArray = [
+                                            "exitThread",
+                                            "itemCancelled",
+                                        ];
+
+                                        if(killFlag == false){
+
+                                        try {
+                                            if (shellThreadModule != "") {
+                                                shellThreadModule.send(infoArray);
+                                            }
+                                        } catch (err) { }
+                                    }
+
+                                    }
+
+
 
                                     shellThreadModule.on("exit", function (code, ) {
 
@@ -538,8 +561,8 @@ function ffprobeLaunch(filesToScan) {
                                         } else {
                                             exiftool.end()
                                         }
-                                     
-                        
+
+
                                     });
 
 

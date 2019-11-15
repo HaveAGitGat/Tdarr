@@ -832,12 +832,9 @@ class App extends Component {
 <p>,-map 0 -c copy -c:v libx265 -c:a aac</p>
 <p>-c:v h264_cuvid,-c:v hevc_nvenc -preset slow -c:a copy</p>
 
-<p>Please see the following tools for help with creating FFmpeg commands:</p>
+<p>Please see the following for help with creating FFmpeg commands:</p>
 
-<p><a href="" onClick={(e) => { e.preventDefault(); window.open("http://rodrigopolo.com/ffmpeg/", "_blank"); }}>http://rodrigopolo.com/ffmpeg/</a></p>
-<p><a href="" onClick={(e) => { e.preventDefault(); window.open("http://www.mackinger.at/ffmpeg/", "_blank"); }}>http://www.mackinger.at/ffmpeg/</a></p>
-<p><a href="" onClick={(e) => { e.preventDefault(); window.open("https://axiomui.github.io/", "_blank"); }}>Axiom</a></p>
-
+<p><a href="" onClick={(e) => { e.preventDefault(); window.open("https://opensource.com/article/17/6/ffmpeg-convert-media-file-formats", "_blank"); }}>https://opensource.com/article/17/6/ffmpeg-convert-media-file-formats</a></p>
 
 <br/>
 <br/>

@@ -1,3 +1,5 @@
+import './styles/main.scss';
+
 import React from 'react';
 import {Nav, Navbar} from 'react-bootstrap';
 import {
@@ -32,13 +34,49 @@ const tabs = [
 ];
 
 const AppRouter = () => {
+
   const [basePath, setBasePath] = React.useState('');
+
+  const [currentVersion, setVersion] = React.useState('');
+
+  
 
   React.useEffect(() => {
     Meteor.subscribe('GlobalSettingsDB', () => {
       const updatedBasePath = GlobalSettingsDB.find({}).fetch()[0].basePath;
-
       setBasePath(updatedBasePath);
+
+      var version =  GlobalSettingsDB.find({}).fetch()[0].version;
+
+      var newVersion = 1.0063
+
+      setVersion(newVersion)
+
+      if(version != newVersion){
+
+        alert(`
+        
+        If you set up Tdarr using the unRAID tdarr_aio template on Saturday 9th/Sunday 10th then your settings may reset on each update due to an error in the template. If this issue affects you, please delete your currently installed tdarr_aio container/template and set up the new template in the CA store. Sorry for the inconvenience.
+        
+        v1.0063 mini-release [13th Nov 19]:
+        No breaking changes.
+        Changes:
+        -[Fix] Closed caption scanning now much faster & accurate (even on empty captions)
+        -[Fix] Plugin creator plugin path error
+        -[Fix] Health check error when using FFmpeg hardware transcoding
+        
+        
+        `)
+
+        GlobalSettingsDB.upsert(
+          "globalsettings",
+          {
+            $set: {
+              version: newVersion,
+            }
+          }
+        );
+      }
     });
   });
 
@@ -52,11 +90,11 @@ const AppRouter = () => {
         variant="dark"
       >
         <Navbar.Brand className="p-2" href={`${basePath}/tdarr`}>
-          <img className="h-100" src="https://i.imgur.com/s8ZbOsT.png" />
+          <img style={{height: '50px'}} src="https://i.imgur.com/s8ZbOsT.png" />
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav ">
-          <Nav style={{fontSize: '1.5em'}}>
+          <Nav>
             {tabs.map(t => (
               <NavLink
                 key={`nav-item-${t.path}`}
@@ -70,7 +108,7 @@ const AppRouter = () => {
           </Nav>
         </Navbar.Collapse>
         <div className="versionNumber">
-          <p>v1.0062</p>
+            <p>{currentVersion}</p>
         </div>
       </Navbar>
 

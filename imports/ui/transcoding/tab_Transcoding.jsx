@@ -9,7 +9,6 @@ import Modal from "reactjs-popup";
 import { render } from 'react-dom';
 
 import { Button } from 'react-bootstrap';
-import 'bootstrap/dist/css/bootstrap.css';
 
 
 import { StatisticsDB, FileDB, GlobalSettingsDB, ClientDB } from '../../api/tasks.js';
@@ -907,7 +906,16 @@ class App extends Component {
 <p>Library alternation: {this.renderCheckBox('alternateLibraries')}</p>
  <p>Library prioritisation: {this.renderCheckBox('prioritiseLibraries')}</p>
 
-
+<p>Items: <input type="text" className="tableSize"  defaultValue={this.props.globalSettings && this.props.globalSettings[0] && this.props.globalSettings[0].tableSize ? this.props.globalSettings[0].tableSize : "" } onChange={(event) => {
+  GlobalSettingsDB.upsert(
+    "globalsettings",
+    {
+      $set: {
+        tableSize: event.target.value,
+      }
+    }
+  );
+}}></input></p>
 
 
             

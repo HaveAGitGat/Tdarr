@@ -616,7 +616,7 @@ class App extends Component {
 
                   <div className="pluginTabGrid-itemRight">
 
-                  <div className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navPluginGuide" ? '' : 'hidden'}>
+                  <div className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navPluginGuide" ? '' : 'd-none'}>
                     <PluginGuide/>
                     </div>
 
@@ -631,38 +631,38 @@ class App extends Component {
 
 
 
-                  <div className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navFilterMedium" ? '' : 'hidden'}>
+                  <div className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navFilterMedium" ? '' : 'd-none'}>
                     <FilterByMedium/>
                     </div>
 
 
-                    <div className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navFilterCodec" ? '' : 'hidden'}>
+                    <div className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navFilterCodec" ? '' : 'd-none'}>
                     <FilterByCodec/>
                     </div>
 
 
-                    <div className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navFilterDate" ? '' : 'hidden'}>
+                    <div className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navFilterDate" ? '' : 'd-none'}>
                     <FilterByDate/>
                     </div>
 
 
-                    <div className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navFilterResolution" ? '' : 'hidden'}>
+                    <div className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navFilterResolution" ? '' : 'd-none'}>
                     <FilterByResolution/>
                     </div>
 
 
 
-                    <div className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navFilterSize" ? '' : 'hidden'}>
+                    <div className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navFilterSize" ? '' : 'd-none'}>
                     <FilterBySize/>
                     </div>
 
 
-                    <div className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navTranscode" ? '' : 'hidden'}>
+                    <div className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navTranscode" ? '' : 'd-none'}>
                     <Transcode/>
                     </div>
 
 
-                    <div className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navRemuxContainer" ? '' : 'hidden'}>
+                    <div className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navRemuxContainer" ? '' : 'd-none'}>
                     <RemuxContainer/>
                     </div>
 

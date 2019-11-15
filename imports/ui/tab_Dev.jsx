@@ -120,6 +120,22 @@ export default class App extends Component {
 
               <p>Change log</p>
 
+              <p>v1.0063 mini-release [13th Nov 19]:
+            
+            <br />No breaking changes.
+            <br />Changes:
+
+            <br />-[Fix] Closed caption scanning now much faster & accurate (even on empty captions)
+            <br />-[Fix] Plugin creator plugin path error
+            <br />-[Fix] Health check error when using FFmpeg hardware transcoding
+
+
+            <br />
+            <br />
+
+            </p>
+
+
               <p>v1.006 release [9th Nov 19]:
             
             <br />No breaking changes.

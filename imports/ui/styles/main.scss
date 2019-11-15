@@ -1,6 +1,4 @@
-
-
-
+@import '../../../node_modules/bootstrap/scss/bootstrap.scss';
 
 textarea {
     border: 0 none white;
@@ -65,6 +63,19 @@ input[type="text"]
     font-size:14px;
 }
 
+::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+  color: white;
+}
+::-moz-placeholder { /* Firefox 19+ */
+  color: white;
+}
+:-ms-input-placeholder { /* IE 10+ */
+  color: white;
+}
+:-moz-placeholder { /* Firefox 18- */
+  color: white;
+}
+
   .folderPaths {
 
     width: 100%;
@@ -74,7 +85,7 @@ input[type="text"]
     border-radius: 4px;
     box-sizing: border-box;
     background-color:grey;
-    color: #e1e1e1;
+    color: white;
     size:14px;
     }
 
@@ -107,6 +118,27 @@ input[type="text"]
         size:14px;
         
         }
+
+        
+  .tableSize {
+
+    width: 50px;
+   
+    display: inline-block;
+    border: 1px solid black;
+    border-radius: 4px;
+    box-sizing: border-box;
+    background-color:grey;
+    color: white;
+    size:14px;
+    }
+
+    .resultColumnOptions {
+
+      width: 100px;
+      display: inline-block;
+ 
+      }
 
         .filterByDate {
 
@@ -676,6 +708,9 @@ input[type="text"]
       border: 1px solid black;
       border-radius: 4px;
       box-sizing: border-box;
+      background-color:grey;
+      color: white;
+      size:14px;
 
 
     }
@@ -1001,6 +1036,10 @@ table.scheduleTable {
 
 table.scheduleTable tr:hover {
   background-color: rgb(202, 202, 202);
+
+  .scheduleButton{
+    color: #373737;
+  }
 }
 
 table.workerDetailTable td {
