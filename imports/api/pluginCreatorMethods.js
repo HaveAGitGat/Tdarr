@@ -572,7 +572,7 @@ module.exports.plugin = plugin;
             if( file.container != '${containerNoDot}'){
 
                 response.infoLog += "☒File is not in ${containerNoDot} container! \\n"
-                response.preset = ', -c:v copy -c:a copy'
+                response.preset = ', -map 0 -codec copy'
                 response.reQueueAfter = true;
                 response.processFile = true;
                 return response
