@@ -5,8 +5,10 @@ dist
 
 imports/ui/*
 imports/api/*
+
 !imports/ui/libraries
-imports/ui/libraries/*
+
+
 
 !imports/ui/ErrorBoundary.jsx
 !imports/ui/App.jsx
