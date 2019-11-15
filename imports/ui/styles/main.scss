@@ -1,6 +1,4 @@
-
-
-
+@import '../../../node_modules/bootstrap/scss/bootstrap.scss';
 
 textarea {
     border: 0 none white;
@@ -1038,6 +1036,10 @@ table.scheduleTable {
 
 table.scheduleTable tr:hover {
   background-color: rgb(202, 202, 202);
+
+  .scheduleButton{
+    color: #373737;
+  }
 }
 
 table.workerDetailTable td {

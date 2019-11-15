@@ -18,4 +18,4 @@ shell-server@0.4.0            # Server-side component of the `meteor shell` comm
 insecure@1.0.7                # Allow all DB writes from clients (for prototyping)
 static-html             # Define static page content in .html files
 react-meteor-data       # React higher-order component for reactively tracking Meteor data
-twbs:bootstrap
+fourseven:scss

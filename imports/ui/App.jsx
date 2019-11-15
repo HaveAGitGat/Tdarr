@@ -1,3 +1,5 @@
+import './styles/main.scss';
+
 import React from 'react';
 import {Nav, Navbar} from 'react-bootstrap';
 import {
@@ -11,11 +13,11 @@ import {GlobalSettingsDB} from '../api/tasks.js';
 import TabDev from '../ui/tab_Dev.jsx';
 import TabHelp from '../ui/tab_Help.jsx';
 import TabLog from '../ui/tab_Log.jsx';
+import TabOptions from '../ui/tab_Options.jsx';
 import TabStatistics from '../ui/tab_Statistics.jsx';
 import {ErrorBoundary} from './ErrorBoundary.jsx';
 import TabLibraries from './libraries/tab_Libraries.jsx';
 import TabPlugins from './plugins/tab_Plugins.jsx';
-import TabOptions from '../ui/tab_Options.jsx';
 import TabSearch from './tab_Search.jsx';
 import TabTranscoding from './transcoding/tab_Transcoding.jsx';
 
@@ -88,11 +90,11 @@ const AppRouter = () => {
         variant="dark"
       >
         <Navbar.Brand className="p-2" href={`${basePath}/tdarr`}>
-          <img className="h-100" src="https://i.imgur.com/s8ZbOsT.png" />
+          <img style={{height: '50px'}} src="https://i.imgur.com/s8ZbOsT.png" />
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav ">
-          <Nav style={{fontSize: '1.5em'}}>
+          <Nav>
             {tabs.map(t => (
               <NavLink
                 key={`nav-item-${t.path}`}
