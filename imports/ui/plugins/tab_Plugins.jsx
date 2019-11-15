@@ -87,20 +87,20 @@ class App extends Component {
 
         return <div>
 
-          <Button variant="outline-light" className="addFolderButton" onClick={(event) => this.searchPlugins(event, pluginType)} style={ButtonStyle}><span className="buttonTextSize">Search</span></Button>
-          <Button variant="outline-light" className="addFolderButton" onClick={() => {
+          <Button variant="outline-light"  onClick={(event) => this.searchPlugins(event, pluginType)} style={ButtonStyle}><span className="buttonTextSize">Search</span></Button>{'\u00A0'}
+          <Button variant="outline-light"  onClick={() => {
 
             render('', document.getElementById('searchResults' + pluginType));
-          }} style={ButtonStyle}><span className="buttonTextSize">Clear</span></Button>
+          }} style={ButtonStyle}><span className="buttonTextSize">Clear</span></Button>{'\u00A0'}
 
 
-          {pluginType == "Community" ? <Button variant="outline-light" className="addFolderButton" onClick={this.updatePlugins} style={ButtonStyle}><span className="buttonTextSize">Update community plugins</span></Button> : null}
+          {pluginType == "Community" ? <Button variant="outline-light"  onClick={this.updatePlugins} style={ButtonStyle}><span className="buttonTextSize">Update community plugins</span></Button> : null}
 
 
-          <Button variant="outline-light" className="addFolderButton" onClick={() => window.open("https://github.com/HaveAGitGat/Tdarr_Plugins", "_blank")} style={ButtonStyle}><span className="buttonTextSize">Create a plugin</span></Button>
+          {'\u00A0'}<Button variant="outline-light"  onClick={() => window.open("https://github.com/HaveAGitGat/Tdarr_Plugins", "_blank")} style={ButtonStyle}><span className="buttonTextSize">Create a plugin</span></Button>
 
 
-          <Modal
+          {'\u00A0'}<Modal
             trigger={<Button variant="outline-light" ><span className="buttonTextSize">i</span></Button>}
             modal
             closeOnDocumentClick
