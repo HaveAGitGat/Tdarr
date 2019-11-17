@@ -68,7 +68,7 @@ class App extends Component {
       outputValid:true,
       folderToFolderConversion:false,
       container:".mkv",
-      containerFilter:"mkv,mp4,mov,m4v,mpg,mpeg,avi,flv,webm,wmv,vob,evo,iso",
+      containerFilter:"mkv,mp4,mov,m4v,mpg,mpeg,avi,flv,webm,wmv,vob,evo,iso,m2ts,ts",
       createdAt: new Date(),
       folderWatching:false,
       processLibrary:true,
