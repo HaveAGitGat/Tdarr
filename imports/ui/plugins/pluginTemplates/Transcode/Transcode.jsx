@@ -149,7 +149,7 @@ class App extends Component {
    
 
 
-        <p>CLI arguments/preset (avoid using ' ):</p>
+        <p>CLI preset/arguments (avoid using ' ):</p>
         <br />
 
         <input type="text" className="folderPaths" ref="preset" defaultValue={'-Z "Very Fast 1080p30"'}></input>

@@ -714,6 +714,7 @@ class Folder extends Component {
             </Dropdown.Toggle>
 
             <Dropdown.Menu>
+            <div className="optionsDropdown">
               <div
                 className={this.props.libraryItem.scanButtons ? '' : 'd-none'}
               >
@@ -798,6 +799,7 @@ SettingsDB.insert(thisLibrary)
                 <Dropdown.Item style={{ color: '#bb86fc', fontSize: '14px' }} onClick={this.deleteThisLibrary.bind(this)}>Delete library</Dropdown.Item>
 
 
+              </div>
               </div>
             </Dropdown.Menu>
           </Dropdown>

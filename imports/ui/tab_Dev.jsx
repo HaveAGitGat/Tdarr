@@ -120,10 +120,28 @@ export default class App extends Component {
 
               <p>Change log</p>
 
-              <p>v1.0063 mini-release [13th Nov 19]:
+              <p>v1.007 release [TBC]:
             
             <br />No breaking changes.
             <br />Changes:
+
+
+            <br />-[New] Option to ignore source sub-folders
+            <br />-[New] Skip health check button
+            <br />
+            <br />
+            <br />-[New] Option to change visible queue length
+            <br />-[New] Option to duplicate library
+            <br />-[New] Customise search result columns
+            <br />-[New] UI improvements (@jono)
+            <br />-[New] Option to delete source file when using folder to folder conversion.
+            <br />-[Fix] Folder watcher will now wait longer to detect if a new file has finished copying.
+            <br />-[Fix] Folder to folder conversion: Files which already meet requirements will be copied to output folder
+            <br />-[Fix] Folder to folder conversion: Cache/Output folder bug
+            <br />-[Fix] Default containers to scan for now include ts/m2ts 
+            <br />-[Fix] Keep all stream types when using remux plugin creator
+            <br />-[Fix] Prevent too many workers occassionally starting
+            <br />-[Fix] Newly transcoded files will be bumped correctly to top of queue when sorting by size
 
             <br />-[Fix] Closed caption scanning now much faster & accurate (even on empty captions)
             <br />-[Fix] Plugin creator plugin path error
@@ -161,7 +179,7 @@ export default class App extends Component {
             <br />-[New] Exclude codec whitelist/blacklist
             <br />-[New] Navgiation bar UI
             <br />-[New] Queue library alternation option
-            <br />-[Fix] 'Re-queue' buttons on 'Tdarr' tab.
+            <br />-[Fix] 'Re-queue' buttons on 'Tdarr' tab
             <br />-[Fix] Prevent find-new/fresh scans occuring on a library at the same time. Hourly find-new scan re-enabled for libraries with folder watch ON.
             <br />-[Fix] Library prioritisation sort
             <br />-[Fix] Reduced search result number for quicker render
