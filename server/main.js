@@ -1796,7 +1796,7 @@ function scheduledPluginUpdate() {
 }
 
 
-//scheduledCacheClean()
+scheduledCacheClean()
 
 function scheduledCacheClean() {
 
@@ -1805,16 +1805,12 @@ function scheduledCacheClean() {
     var settings = SettingsDB.find({}, { sort: { createdAt: 1 } }).fetch()
 
     for (var i = 0; i < settings.length; i++) {
-
-
       try {
         traverseDir(settings[i].cache)
       } catch (err) {
         console.log(err.stack)
       }
     }
-
-
 
 
     function traverseDir(inputPathStem) {
@@ -1824,17 +1820,24 @@ function scheduledCacheClean() {
 
           var fullPath = (path.join(inputPathStem, file)).replace(/\\/g, "/");
 
+          function isBeingProcessed(filePath){
+
+            for(var i = 0 ; i < filesBeingProcessed.length; i++){
+              var base = filesBeingProcessed[i].split("/")
+                  base  = base[base.length - 1]
+                  base = base.split(".")
+                  base  = base[base.length - 2]
+
+              if(filePath.includes(base)){
+                return true
+              }
+            }
+            return false
+          }
+
           try {
 
-
-
-
-            var stats = fs.statSync(fullPath);
-            var mtime = stats.mtime;
-            var n = new Date()
-            var secsSinceModified = (n - mtime) / 1000
-
-            if (secsSinceModified > 86400) {
+            if (isBeingProcessed(fullPath) == false && fullPath.includes("TdarrCacheFile") ) {
 
               console.log("Removing:" + fullPath)
 
@@ -1849,35 +1852,20 @@ function scheduledCacheClean() {
 
                 }
               }
-
-            } else {
-
-              try {
-                traverseDir(fullPath);
-              } catch (err) {
-                console.error(err.stack);
-
-              }
+            }else if(!fullPath.includes("TdarrCacheFile")){
+              console.log("File not Tdarr cache file, won't remove:" + fullPath)
+            }else{
+              console.log("Cache file in use, won't remove:" + fullPath)
             }
-
-
-
           } catch (err) {
-
-
             console.error(err.stack);
           }
         });
-
-
-
       } catch (err) { console.log(err.stack) }
     }
-
-
   } catch (err) { console.log(err.stack) }
 
-  setTimeout(Meteor.bindEnvironment(scheduledCacheClean), 60000);
+  setTimeout(Meteor.bindEnvironment(scheduledCacheClean), 10000);
 }
 
 
