@@ -2276,7 +2276,11 @@ function launchWorkerModule(workerType) {
                   FFmpegMode,
                   frameCount,
                   settingsDBIndex,
-                  reQueueAfter
+                  reQueueAfter,
+                  firstItem,
+                  folderToFolderConversionEnabled,
+                  folderToFolderConversionFolder,
+                  processFile
 
                 ]
 
@@ -2290,7 +2294,6 @@ function launchWorkerModule(workerType) {
                 //Plugin filter
 
 
-                console.log("here")
 
                 if (settings[0].decisionMaker.pluginFilter == true) {
 
@@ -2416,11 +2419,10 @@ function launchWorkerModule(workerType) {
                       }
                     })
 
-                    console.log("here")
+                    
 
                     if(settings[0].decisionMaker.videoExcludeSwitch == false){
 
-                      console.log("here2")
 
                       if (video_codec_names_exclude.includes(firstItem.ffProbeData.streams[0]["codec_name"]) && typeof firstItem.ffProbeData.streams[0]["codec_name"] !== 'undefined') {
 
@@ -2586,7 +2588,6 @@ function launchWorkerModule(workerType) {
                 }
 
 
-
                 var messageOut = [
                   "queueNumber",
                   mode, //update
@@ -2602,19 +2603,20 @@ function launchWorkerModule(workerType) {
                   reQueueAfter,
                   firstItem,
                   folderToFolderConversionEnabled,
-                  folderToFolderConversionFolder
+                  folderToFolderConversionFolder,
+                  processFile
 
 
                 ]
 
-                //decision maker
-                //process file or add to output db and get new file
-
               }
 
 
+         
+
+
               //File filtered out by transcode decision maker
-              if (processFile == false) {
+              if (processFile == false && folderToFolderConversionEnabled == false) {
 
 
 
@@ -2650,11 +2652,7 @@ function launchWorkerModule(workerType) {
                 //
 
 
-
-
-
-
-              } else if (processFile == true) {
+              } else {
 
 
                 try {
