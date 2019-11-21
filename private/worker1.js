@@ -62,6 +62,7 @@ if (fs.existsSync(path.join(process.cwd() + "/npm"))) {
 var shell = require(rootModules + 'shelljs');
 var fsextra = require(rootModules + 'fs-extra')
 const isDocker = require(rootModules + 'is-docker');
+const shortid = require(rootModules + 'shortid');
 
 
 var fileToProcess
@@ -267,10 +268,10 @@ process.on('message', (m) => {
         if (folderToFolderConversionEnabled == true) {
 
             if(fileToProcess.includes(folderToFolderConversionFolder)){
-                console.log("File includes folder to folder")
+                console.log("File includes F2F output folder")
                 currentDestinationLine = getOutputPath(fileToProcess, container, folderToFolderConversionFolder, outputFolder)
             }else{
-                console.log("File doesn't folder to folder")
+                console.log("File doesn't include F2F output folder")
                 currentDestinationLine = getOutputPath(fileToProcess, container, inputFolderStem, outputFolder)     
             }
 
@@ -295,6 +296,18 @@ process.on('message', (m) => {
             finalFilePath = getOutputPath(currentDestinationLine, container, outputFolder, inputFolderStem)
         }
 
+
+        var fileID = shortid.generate()
+        
+
+        currentDestinationLine = currentDestinationLine.split(".")
+        currentDestinationLine[currentDestinationLine.length - 2] = currentDestinationLine[currentDestinationLine.length - 2] + "-TdarrCacheFile-"+fileID
+        currentDestinationLine = currentDestinationLine.join(".")
+
+        currentDestinationLine = currentDestinationLine.split("/")
+        currentDestinationLine = path.join( outputFolder ,currentDestinationLine[currentDestinationLine.length - 1])
+
+           
 
         updateConsole(workerNumber, "currentDestinationLine:" + currentDestinationLine)
         updateConsole(workerNumber, "finalFilePath:" + finalFilePath)
@@ -412,9 +425,7 @@ process.on('message', (m) => {
         if (mode == "transcode") {
 
             if (fs.existsSync(currentDestinationLine)) {
-
                 fs.unlinkSync(currentDestinationLine)
-
             }
         }
 
@@ -525,14 +536,14 @@ process.on('message', (m) => {
 
                 checkifQueuePause();
 
-
+                
 
 
             } catch (err) {
 
                 errorLogFull += err + "\r\n"
                 errorLogFull += "Deleting original/moving new file unsuccessful" + "\r\n"
-                updateConsole(workerNumber, "Deleting original/moving new file unsuccessful:" + currentDestinationLine + " to " + finalFilePath + " err:" + err)
+                updateConsole(workerNumber, "Deleting original/moving new file unsuccessful:" + currentSourceLine + " to " + finalFilePath + " err:" + err)
 
 
                 var message = [
@@ -1277,7 +1288,16 @@ function workerNotEncounteredError() {
 function workerEncounteredError(messageOne) {
 
 
+    try{
+    if (fs.existsSync(currentDestinationLine)) {
+        fs.unlinkSync(currentDestinationLine)
+    }
+}catch(err){console.log(err)}
+
+
     if (messageOne == "Cancelled") {
+
+        
 
         var message = [
             workerNumber,
