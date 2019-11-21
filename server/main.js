@@ -1167,11 +1167,6 @@ Meteor.methods({
 
         updateConsole("Commencing file update scan. Deleting non-existent files and adding new files.", false)
 
-
-
-
-
-
         var filesInDB = allFilesPulledTable
 
         filesInDB = filesInDB.filter(row => row.DB == DB_id);
@@ -1276,6 +1271,8 @@ Meteor.methods({
 
       var closedCaptionScan = thisItemsLib[0].closedCaptionScan
 
+      var foldersToIgnore  =  thisItemsLib[0].foldersToIgnore
+
 
 
       var scannerPath = "assets/app/fileScanner.js"
@@ -1291,6 +1288,7 @@ Meteor.methods({
         JSON.stringify(filePropertiesToAdd),
         homePath,
         closedCaptionScan,
+        foldersToIgnore,
       ]
 
       fileScanners[scannerID] = childProcess.fork(scannerPath, child_argv);

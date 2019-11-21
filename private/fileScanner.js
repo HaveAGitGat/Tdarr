@@ -44,6 +44,7 @@ allowedContainers = allowedContainers.split(',');
 var mode = process.argv[7]
 
 
+
 var shellThreadModule
 
 
@@ -52,6 +53,8 @@ var filePropertiesToAdd = JSON.parse(process.argv[8])
 
 var homePath = process.argv[9]
 var closedCaptionScan = process.argv[10]
+var foldersToIgnore = process.argv[11]
+foldersToIgnore = foldersToIgnore.split(",")
 
 updateConsole(scannerID, "Online.")
 
@@ -146,11 +149,9 @@ if (arrayOrPathSwitch == 0) {
 
 
 
-        if (checkContainer(arrayOrPath[i]) != true) {
+        if (checkContainer(arrayOrPath[i]) != true || isInIgnoredFolder(arrayOrPath[i]) == true) {
 
-            updateConsole(scannerID, `File ${arrayOrPath[i]} does not meet container requirements.`)
-
-
+            updateConsole(scannerID, `File ${arrayOrPath[i]} does not meet container or ignored folder requirements.`)
 
             arrayOrPath.splice(i, 1)
             i--;
@@ -214,6 +215,7 @@ if (arrayOrPathSwitch == 1) {
                     updateConsole(scannerID, `Found: ${fullPath}`)
 
 
+                    //For Scan (Find new), check if file already in DB. Remove from array if so to increase performance.
                     if (filesInDB.includes(fullPath)) {
 
                         var idx = filesInDB.indexOf(fullPath)
@@ -227,7 +229,7 @@ if (arrayOrPathSwitch == 1) {
 
                     } else {
 
-                        if (checkContainer(fullPath) == true) {
+                        if (checkContainer(fullPath) == true && isInIgnoredFolder(fullPath) == false ) {
 
 
                             foundCounter++
@@ -288,6 +290,19 @@ if (arrayOrPathSwitch == 1) {
 // process.send(message);
 
 
+
+function isInIgnoredFolder(filePath){
+
+    for(var i = 0; i < foldersToIgnore.length; i++){
+
+        if(foldersToIgnore[i].length >= 1 && filePath.includes(foldersToIgnore[i])){
+
+            return true
+
+        }
+    }
+    return false
+}
 
 
 

@@ -1142,6 +1142,8 @@ SettingsDB.insert(thisLibrary)
                 defaultValue={this.props.libraryItem.folder}
                 onChange={this.handleChange}
               ></input>
+
+
               <div
                 className={this.props.libraryItem.folderValid ? 'hidden' : ''}
               >
@@ -1175,6 +1177,18 @@ SettingsDB.insert(thisLibrary)
                 ></div>
               </div>
               <div id="folderList"></div>
+
+              <p>Sub-folders to ignore (e.g.: .grab,.index,User/AppData):</p>
+              <input
+                type="text"
+                className="folderPaths"
+                name="foldersToIgnore"
+                defaultValue={this.props.libraryItem.foldersToIgnore}
+                onChange={this.handleChange}
+              ></input>
+
+
+
             </div>
 
             <div

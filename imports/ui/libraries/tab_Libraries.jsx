@@ -62,6 +62,7 @@ class App extends Component {
       priority:count,
       folder:"Path to your media files. Input a base folder and the folder browser below will show subfolders to navigate.",
       folderValid:true,
+      foldersToIgnore:"",
       cache:"Path to your transcode cache. Input a base folder and the folder browser below will show subfolders to navigate.",
       cacheValid:true,
       output:"Path to your output folder. Input a base folder and the folder browser below will show subfolders to navigate.",
