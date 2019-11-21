@@ -256,7 +256,7 @@ renderStats = () => {
 
  
 
-  {this.renderPie(i,7,"TranscodeDecisionMaker", '',item[1])}
+  {this.renderPie(i,6,"TranscodeDecisionMaker", '',item[1])}
 
     </div>
 
