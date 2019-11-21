@@ -255,6 +255,24 @@ for (var i = 0; i < allFilesPulledTable.length; i++) {
   console.log("Checking file:" + (i + 1) +"/"+allFilesPulledTable.length)
 
 
+  // reset processing status of files onload.
+
+  if (allFilesPulledTable[i].processingStatus == true) {
+
+    FileDB.upsert(
+      allFilesPulledTable[i].file,
+      {
+        $set: {
+          processingStatus: false,
+        }
+      }
+    );
+  }
+
+
+
+  //Migration steps
+
   if (allFilesPulledTable[i].TranscodeDecisionMaker == "Not attempted") {
 
     FileDB.upsert(
@@ -334,6 +352,8 @@ for (var i = 0; i < allFilesPulledTable.length; i++) {
   }catch(err){}
 
   }
+
+  //End migration steps
 
 }
 
