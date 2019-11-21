@@ -68,8 +68,8 @@ watchers[DB_id] = chokidar.watch(Folder, {
   interval: 30000,
   binaryInterval: 30000,
   awaitWriteFinish: {
-    stabilityThreshold: 2000,
-    pollInterval: 100
+    stabilityThreshold: 10000,
+    pollInterval: 1000
   },
 });
 
