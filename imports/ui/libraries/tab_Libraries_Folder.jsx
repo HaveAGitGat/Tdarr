@@ -1255,15 +1255,19 @@ SettingsDB.insert(thisLibrary)
               <p>etc</p>
 
               <p>
-                {' '}
-                Output Folder:{' '}
+
+
+              <span className="buttonTextSize mr-2">Output Folder:</span>
+                  <div style={libButtonStyle}>
+             
+               
                 <ToggleButton
                   thumbStyle={borderRadiusStyle}
                   trackStyle={borderRadiusStyle}
                   value={
                     this.props.libraryItem.folderToFolderConversion ===
                     undefined
-                      ? true
+                      ? false
                       : !!this.props.libraryItem.folderToFolderConversion
                   }
                   onToggle={() => {
@@ -1275,6 +1279,32 @@ SettingsDB.insert(thisLibrary)
                     });
                   }}
                 />
+
+
+</div>
+
+<span className="buttonTextSize mr-2">Delete source file:</span>
+<div style={libButtonStyle}>
+         
+                <ToggleButton
+                  thumbStyle={borderRadiusStyle}
+                  trackStyle={borderRadiusStyle}
+                  value={
+                    this.props.libraryItem.folderToFolderConversionDeleteSource ===
+                    undefined
+                      ? false
+                      : !!this.props.libraryItem.folderToFolderConversionDeleteSource
+                  }
+                  onToggle={() => {
+                    SettingsDB.upsert(this.props.libraryItem._id, {
+                      $set: {
+                        folderToFolderConversionDeleteSource: !this.props.libraryItem
+                          .folderToFolderConversionDeleteSource,
+                      },
+                    });
+                  }}
+                />
+                </div>
               </p>
 
               <input

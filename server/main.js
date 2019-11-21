@@ -2280,7 +2280,8 @@ function launchWorkerModule(workerType) {
                   firstItem,
                   folderToFolderConversionEnabled,
                   folderToFolderConversionFolder,
-                  processFile
+                  processFile,
+                  settings[0],
 
                 ]
 
@@ -2604,7 +2605,8 @@ function launchWorkerModule(workerType) {
                   firstItem,
                   folderToFolderConversionEnabled,
                   folderToFolderConversionFolder,
-                  processFile
+                  processFile,
+                  settings[0],
 
 
                 ]
@@ -2638,8 +2640,6 @@ function launchWorkerModule(workerType) {
                 var indexEle = filesBeingProcessed.indexOf(firstItem.file + "")
                 filesBeingProcessed.splice(indexEle, 1)
                 console.log("after:" + filesBeingProcessed)
-
-
 
                 var messageOut = [
                   "requestNewItem",

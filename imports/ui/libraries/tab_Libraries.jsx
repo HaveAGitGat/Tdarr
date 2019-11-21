@@ -67,6 +67,7 @@ class App extends Component {
       output:"Path to your output folder. Input a base folder and the folder browser below will show subfolders to navigate.",
       outputValid:true,
       folderToFolderConversion:false,
+      folderToFolderConversionDeleteSource:false,
       container:".mkv",
       containerFilter:"mkv,mp4,mov,m4v,mpg,mpeg,avi,flv,webm,wmv,vob,evo,iso,m2ts,ts",
       createdAt: new Date(),

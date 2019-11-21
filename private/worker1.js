@@ -90,6 +90,7 @@ var folderToFolderConversionEnabled
 var folderToFolderConversionFolder
 
 var processFile
+var librarySettings
 
 
 
@@ -238,6 +239,7 @@ process.on('message', (m) => {
         folderToFolderConversionEnabled = m[13]
         folderToFolderConversionFolder = m[14]
         processFile = m[15]
+        librarySettings = m[16]
 
 
 
@@ -464,15 +466,23 @@ process.on('message', (m) => {
                 errorLogFull += "Copying file successful:" + "\r\n"
                 updateConsole(workerNumber, "Copying file successful:" + currentSourceLine + " to " + finalFilePathCopy)
 
+               
 
-                // errorLogFull += "Attempting to delete original file" + "\r\n"
-                // updateConsole(workerNumber, "Attempting to delete original file" + currentSourceLine)
+                //Delete source file ONLY after first pass when file is still in original source folder.
 
 
 
-                // fs.unlinkSync(currentSourceLine)
-                // errorLogFull += "Original file deleted" + "\r\n"
-                // updateConsole(workerNumber, "Original file deleted" + currentSourceLine)
+                if(librarySettings.folderToFolderConversionDeleteSource === true && !fileToProcess.includes(folderToFolderConversionFolder)){
+
+                    errorLogFull += "Attempting to delete original file" + "\r\n"
+                    updateConsole(workerNumber, "Attempting to delete original file" + currentSourceLine)
+    
+                    fs.unlinkSync(currentSourceLine)
+                    errorLogFull += "Original file deleted" + "\r\n"
+                    updateConsole(workerNumber, "Original file deleted" + currentSourceLine)
+
+                }
+             
 
 
                 errorLogFull += "Renaming new file:" + "\r\n"
@@ -1084,14 +1094,22 @@ function workerNotEncounteredError() {
                 updateConsole(workerNumber, "Moving file successful:" + currentDestinationLine + " to " + finalFilePathCopy)
 
 
-                // errorLogFull += "Attempting to delete original file" + "\r\n"
-                // updateConsole(workerNumber, "Attempting to delete original file" + currentSourceLine)
+                //Delete source file ONLY after first pass when file is still in original source folder.
+
+                if(librarySettings.folderToFolderConversionDeleteSource === true && !fileToProcess.includes(folderToFolderConversionFolder)){
+
+                    errorLogFull += "Attempting to delete original file" + "\r\n"
+                    updateConsole(workerNumber, "Attempting to delete original file" + currentSourceLine)
+    
+                    fs.unlinkSync(currentSourceLine)
+                    errorLogFull += "Original file deleted" + "\r\n"
+                    updateConsole(workerNumber, "Original file deleted" + currentSourceLine)
+
+                }
+             
 
 
-
-                // fs.unlinkSync(currentSourceLine)
-                // errorLogFull += "Original file deleted" + "\r\n"
-                // updateConsole(workerNumber, "Original file deleted" + currentSourceLine)
+                
 
 
                 errorLogFull += "Renaming new file:" + "\r\n"
