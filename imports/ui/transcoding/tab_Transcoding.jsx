@@ -405,8 +405,11 @@ class App extends Component {
       return data.map((row, i) => {
 
        return <tr key={row._id}>
-          <td><p>{i + 1}</p></td><td><p>{row.file}</p></td><td><p>{!(row.bumped instanceof Date) ? this.renderBumpButton(row.file):this.renderCancelBumpButton(row.file) }</p></td>
+          <td><p>{i + 1}</p></td><td><p>{row.file}</p></td><td><p>{!(row.bumped instanceof Date) ? this.renderBumpButton(row.file):this.renderCancelBumpButton(row.file) }</p></td><td><p>{this.renderSkipHealthCheckButton(row.file)}</p></td>
           </tr>
+
+
+
 
       }
       );
@@ -542,6 +545,14 @@ class App extends Component {
     var obj = {
       TranscodeDecisionMaker:"Transcode success",
       lastTranscodeDate: new Date(),
+    }
+    return <ItemButton file={file} obj={obj} symbol={'⤳'} type="updateDBAction" />
+  }
+
+  renderSkipHealthCheckButton(file) {
+    var obj = {
+      HealthCheck: "Success",
+      lastHealthCheckDate: new Date(),
     }
     return <ItemButton file={file} obj={obj} symbol={'⤳'} type="updateDBAction" />
   }
@@ -1007,6 +1018,8 @@ class App extends Component {
                 <th><p>No.</p></th>
                 <th><p>File</p></th>
                 <th><p>Bump</p></th>
+                <th><p>Skip</p></th>
+
 
               </tr>
               {this.renderTable('table4', 'queue','HealthCheck')}

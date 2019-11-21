@@ -357,7 +357,7 @@ return null
                   ),
                   id: 'Health check',
                   width: 'Health check'.length*10,
-                  accessor: row => row.HealthCheck == "Queued" ? "Queued("+row.hPosition+")" : this.renderRedoButton(row.file, 'HealthCheck'),
+                  accessor: row => row.HealthCheck == "Queued" ? <span>Queued({row.hPosition}){this.renderSkipHealthCheckButton(row.file)}</span>: this.renderRedoButton(row.file, 'HealthCheck'),
                   getProps: (state, rowInfo, column) => {
                     return {
                       style: {
@@ -546,6 +546,14 @@ renderBumpButton(file) {
     var obj = {
       TranscodeDecisionMaker:"Transcode success",
       lastTranscodeDate: new Date(),
+    }
+    return <ItemButton file={file} obj={obj} symbol={'⤳'} type="updateDBAction" />
+  }
+
+  renderSkipHealthCheckButton(file) {
+    var obj = {
+      HealthCheck: "Success",
+      lastHealthCheckDate: new Date(),
     }
     return <ItemButton file={file} obj={obj} symbol={'⤳'} type="updateDBAction" />
   }
