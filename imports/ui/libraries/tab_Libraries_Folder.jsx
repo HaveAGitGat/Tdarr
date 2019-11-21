@@ -1241,9 +1241,18 @@ SettingsDB.insert(thisLibrary)
             >
               <p>
                 Under normal operation Tdarr is designed to work directly on
-                your library, replacing original files. If you like you can
-                enable folder-to-folder conversion below.{' '}
+                your library, replacing original files. You can enable folder to folder conversion below however 
+                this doesn't fit in with how Tdarr operates. Please test before using. {' '}
               </p>
+
+              <p>For example, without plugins, the transcode process will be:</p>
+              <p>Source ---> Cache ---> Output:</p>
+
+              <p>With plugins:</p>
+              <p>Plugin 1: Source ---> Cache ---> Output:</p>
+              <p>Plugin 2: Output ---> Cache ---> Output:</p>
+              <p>Plugin 3: Output ---> Cache ---> Output:</p>
+              <p>etc</p>
 
               <p>
                 {' '}
