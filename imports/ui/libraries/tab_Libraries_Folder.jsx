@@ -1262,12 +1262,12 @@ SettingsDB.insert(thisLibrary)
               </p>
 
               <p>For example, without plugins, the transcode process will be:</p>
-              <p>Source ---> Cache ---> Output:</p>
+              <p>Source ---> Cache ---> Output</p>
 
               <p>With plugins:</p>
-              <p>Plugin 1: Source ---> Cache ---> Output:</p>
-              <p>Plugin 2: Output ---> Cache ---> Output:</p>
-              <p>Plugin 3: Output ---> Cache ---> Output:</p>
+              <p>Plugin 1: Source ---> Cache ---> Output</p>
+              <p>Plugin 2: Output ---> Cache ---> Output</p>
+              <p>Plugin 3: Output ---> Cache ---> Output</p>
               <p>etc</p>
 
               <p>

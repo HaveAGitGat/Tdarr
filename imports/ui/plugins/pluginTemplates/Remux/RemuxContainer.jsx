@@ -70,7 +70,7 @@ alert('Local plugin created! It can be viewed on the Local plugins tab')
 
 
 
-          <p>Make sure files are in:</p>
+          <p>If not in the following, files will be remuxed into:</p>
        <br/>
 
 
