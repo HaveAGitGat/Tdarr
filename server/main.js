@@ -218,14 +218,6 @@ if (fs.existsSync(homePath + "/Tdarr/Data/env.json")) {
     );
   }
 
-  if(jsonConfig.HWT != undefined){
-
-    process.env.HWT = jsonConfig.HWT
-
-    console.log(process.env.HWT)
-
-  }
-
   } catch (err) {
     console.log("Unable to load configuration file")
 
@@ -257,7 +249,7 @@ for (var i = 0; i < allFilesPulledTable.length; i++) {
 
   // reset processing status of files onload.
 
-  if (allFilesPulledTable[i].processingStatus == true) {
+  if (allFilesPulledTable[i].processingStatus !== false) {
 
     FileDB.upsert(
       allFilesPulledTable[i].file,
@@ -1522,17 +1514,14 @@ Meteor.methods({
       workerCommand = ffmpegPath + " " + text
     }
 
+    var ffmpegNVENCBinary = (GlobalSettingsDB.find({}, {}).fetch())[0].ffmpegNVENCBinary
 
-    if (process.env.HWT == "true") {
-
+    if (ffmpegNVENCBinary == true) {
         if (process.platform == 'linux' && mode == "handbrake") {
          // workerCommand = "/usr/local/bin/HandBrakeCLI " + text
         } else if (process.platform == 'linux' && mode == "ffmpeg") {
-
           workerCommand = ffmpegPathLinux +" " + text
-
         }
-      
     }
 
     console.log(workerCommand)
@@ -2229,6 +2218,8 @@ function launchWorkerModule(workerType) {
               var fileID = firstItem._id
               var settings = SettingsDB.find({ _id: firstItem.DB }, { sort: { createdAt: 1 } }).fetch()
 
+              var ffmpegNVENCBinary = (GlobalSettingsDB.find({}, {}).fetch())[0].ffmpegNVENCBinary
+
 
               //Settings from SettingsDB
               var settingsDBIndex = firstItem.DB
@@ -2298,6 +2289,7 @@ function launchWorkerModule(workerType) {
                   folderToFolderConversionFolder,
                   processFile,
                   settings[0],
+                  ffmpegNVENCBinary,
 
                 ]
 
@@ -2404,14 +2396,6 @@ function launchWorkerModule(workerType) {
                       }
                     }
                   }
-
-
-
-
-
-
-
-
 
 
                   //
@@ -2623,6 +2607,7 @@ function launchWorkerModule(workerType) {
                   folderToFolderConversionFolder,
                   processFile,
                   settings[0],
+                  ffmpegNVENCBinary,
 
 
                 ]

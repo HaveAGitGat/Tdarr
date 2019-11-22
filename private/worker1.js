@@ -92,7 +92,7 @@ var folderToFolderConversionFolder
 
 var processFile
 var librarySettings
-
+var ffmpegNVENCBinary
 
 
 
@@ -241,6 +241,7 @@ process.on('message', (m) => {
         folderToFolderConversionFolder = m[14]
         processFile = m[15]
         librarySettings = m[16]
+        ffmpegNVENCBinary = m[17]
 
 
 
@@ -404,10 +405,7 @@ process.on('message', (m) => {
             workerCommand = ffmpegPathUnix + " " + preset0Unix + " -i '" + currentSourceLineUnix + "' " + preset1Unix + " '" + currentDestinationLineUnix + "' "
         }
 
-
-        if (process.env.HWT == "true") {
-
-
+        if (ffmpegNVENCBinary == true) {
             // console.log("Worker in Docker")
             if (process.platform == 'linux' && handBrakeMode == true) {
                 //  workerCommand = "/usr/local/bin/HandBrakeCLI -i '" + currentSourceLineUnix + "' -o '" + currentDestinationLineUnix + "' " + presetUnix;
