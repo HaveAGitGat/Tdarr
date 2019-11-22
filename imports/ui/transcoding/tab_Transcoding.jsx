@@ -110,7 +110,7 @@ class App extends Component {
       <span className="sliderWidth">
 
 
-        <center> <p>{title}({item[slider]})</p></center>
+        {/* <center> <p>{title}({item[slider]})</p></center> */}
       
         <Slider
           axis="x"
@@ -153,6 +153,7 @@ class App extends Component {
             }
           }}
         />
+        
       </span>
 
     ));
@@ -713,6 +714,8 @@ class App extends Component {
 
 
         <div className="libraryContainer" >
+        <br/>
+        
 <center><Modal
       trigger={<Button variant="outline-light" ><span className="buttonTextSize">i</span></Button>}
       modal
@@ -746,63 +749,89 @@ class App extends Component {
     </Modal></center>
 
         <center><p>Workers:</p></center>
+
+
+        
+
 <div className="sliderGrid-container">
 
-<div className="sliderGrid-item2">
-<Button   variant="outline-light" onClick={() => this.alterWorkerLimit("decrease","generalWorkerLimit")} ><span className="buttonTextSize">-</span></Button>
+<div className="sliderGrid-item1">
+<p>General</p>
 </div>
+
+
+<div className="sliderGrid-item1">
+<p>({this.props.globalSettings && this.props.globalSettings[0] && this.props.globalSettings[0].generalWorkerLimit ? this.props.globalSettings[0].generalWorkerLimit : 0})</p>
+</div>
+
+
+
 
 <div className="sliderGrid-item">
 {this.renderSlider('generalWorkerLimit','black','#808080')}
 </div>
-<div className="sliderGrid-item3">
+
+<div className="sliderGrid-item2">
+<Button   variant="outline-light" onClick={() => this.alterWorkerLimit("decrease","generalWorkerLimit")} ><span className="buttonTextSize">-</span></Button>
 <Button   variant="outline-light" onClick={() => this.alterWorkerLimit("increase","generalWorkerLimit")} ><span className="buttonTextSize">+</span></Button>
 </div>
 
 
-<div className="sliderGrid-item2">
-<Button   variant="outline-light" onClick={() => this.alterWorkerLimit("decrease","transcodeWorkerLimit")} ><span className="buttonTextSize">-</span></Button>
+
+
+
+<div className="sliderGrid-item1">
+<p>Transcode</p>
 </div>
+
+<div className="sliderGrid-item1">
+<p>({this.props.globalSettings && this.props.globalSettings[0] && this.props.globalSettings[0].transcodeWorkerLimit ? this.props.globalSettings[0].transcodeWorkerLimit : 0})</p>
+</div>
+
+
+
 
 <div className="sliderGrid-item">
 {this.renderSlider('transcodeWorkerLimit','#66ccff','#B3E6FF')}
 </div>
 
-<div className="sliderGrid-item3">
+<div className="sliderGrid-item2">
+<Button   variant="outline-light" onClick={() => this.alterWorkerLimit("decrease","transcodeWorkerLimit")} ><span className="buttonTextSize">-</span></Button>
 <Button   variant="outline-light" onClick={() => this.alterWorkerLimit("increase","transcodeWorkerLimit")} ><span className="buttonTextSize">+</span></Button>
 </div>
 
 
-<div className="sliderGrid-item2">
-<Button   variant="outline-light" onClick={() => this.alterWorkerLimit("decrease","healthcheckWorkerLimit")} ><span className="buttonTextSize">-</span></Button>
+
+
+
+<div className="sliderGrid-item1">
+<p>Health Check</p>
 </div>
+
+<div className="sliderGrid-item1">
+<p>({this.props.globalSettings && this.props.globalSettings[0] && this.props.globalSettings[0].healthcheckWorkerLimit ? this.props.globalSettings[0].healthcheckWorkerLimit : 0})</p>
+</div>
+
+
 
 <div className="sliderGrid-item">
 {this.renderSlider('healthcheckWorkerLimit','#4CAF50','#A6D7A8')}
 </div>
 
-<div className="sliderGrid-item3">
+<div className="sliderGrid-item2">
+<Button   variant="outline-light" onClick={() => this.alterWorkerLimit("decrease","healthcheckWorkerLimit")} ><span className="buttonTextSize">-</span></Button>
 <Button   variant="outline-light" onClick={() => this.alterWorkerLimit("increase","healthcheckWorkerLimit")} ><span className="buttonTextSize">+</span></Button>
 </div>
 
-
 </div>
 
 
-          <p></p>
-
-
-          
-          
 
           <center>
 
+
+
           <div style={ButtonStyle} className="workerButtoncontainer">
-
-
-
-
-
 
             <Button variant="outline-danger" onClick={() => {
 

@@ -321,7 +321,7 @@ input[type="text"]
 }
 
 .workerButtoncontainer{
-  margin:0 0 0 0%
+  margin:0 0 0 0
 }
 
 .scanButton{
@@ -956,22 +956,30 @@ table.pluginStackTable td {
 
 .sliderGrid-container {
   display: grid;
-  grid-template-columns: auto 90% auto;
-  padding:2em;
-  margin:2em;
+  grid-template-columns: auto auto 80% auto;
+  padding:0em;
+  margin:0 1em;
 }
 
 .sliderGrid-item {
 
+  margin: 0 2em 0 0.5em 
+
+}
+
+.sliderGrid-item1 {
+
 }
 
 .sliderGrid-item2 {
-  margin: 1em 2em;
+
+  margin:0 0 0 1em
+
 
 }
 
 .sliderGrid-item3 {
-  margin: 1em 0 0 0.5em;
+
 
 }
 
