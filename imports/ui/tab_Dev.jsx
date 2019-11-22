@@ -122,9 +122,7 @@ export default class App extends Component {
 
               <p>v1.007 release [22nd Nov 19]:
             
-            <br />No breaking changes.
             <br />Changes:
-
 
             <br />-[New] Option to enable Linux FFmpeg NVENC binary (3.4.5 for unRAID compatibility)
             <br />-[New] Option to ignore source sub-folders
@@ -159,7 +157,6 @@ export default class App extends Component {
 
               <p>v1.006 release [9th Nov 19]:
             
-            <br />No breaking changes.
             <br />Changes:
 
             <br />-[New] NVENC for FFmpeg enabled (linux + tdarr_aio)
@@ -193,7 +190,6 @@ export default class App extends Component {
             <br />
 
               <p>v1.005 release [1st Nov 19]:
-  <br />No breaking changes.
   <br />Changes:
   <br />-[New] UI overhaul (Dark theme)
   <br />-[New] Hardware transcoding using tdarr_aio container + HandBrake
@@ -225,7 +221,6 @@ export default class App extends Component {
 
 
               <p>v1.004 release [23rd Oct 19]:
-  <br />No breaking changes.
   <br />Changes:
   <br />-Scan on start switch added
   <br />-Prevent Tdarr temp output files mistakenly being scanned
@@ -243,7 +238,6 @@ export default class App extends Component {
 
 
               <p>v1.003 release [10th Oct 19]:
-  <br />No breaking changes.
   <br />Changes:
   <br />-Workers now show more detailed information: ETA, CLI type, preset, process reasons, start time, duration and original file size.
   <br />-Help links updated
