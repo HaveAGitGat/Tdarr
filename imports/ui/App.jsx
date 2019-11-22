@@ -48,7 +48,7 @@ const AppRouter = () => {
 
       var version =  GlobalSettingsDB.find({}).fetch()[0].version;
 
-      var newVersion = 1.006
+      var newVersion = 1.007
 
       setVersion(newVersion)
 
