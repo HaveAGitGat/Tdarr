@@ -9,7 +9,6 @@ import Modal from "reactjs-popup";
 import { render } from 'react-dom';
 
 import { Button } from 'react-bootstrap';
-import 'bootstrap/dist/css/bootstrap.css';
 
 
 import { StatisticsDB, FileDB, GlobalSettingsDB, ClientDB } from '../../api/tasks.js';
@@ -111,7 +110,7 @@ class App extends Component {
       <span className="sliderWidth">
 
 
-        <center> <p>{title}({item[slider]})</p></center>
+        {/* <center> <p>{title}({item[slider]})</p></center> */}
       
         <Slider
           axis="x"
@@ -154,6 +153,7 @@ class App extends Component {
             }
           }}
         />
+        
       </span>
 
     ));
@@ -209,9 +209,7 @@ class App extends Component {
               lowCPUPriority: !item.lowCPUPriority,
             }
           }
-
         );
-
       }
       } />
     ));
@@ -406,8 +404,11 @@ class App extends Component {
       return data.map((row, i) => {
 
        return <tr key={row._id}>
-          <td><p>{i + 1}</p></td><td><p>{row.file}</p></td><td><p>{!(row.bumped instanceof Date) ? this.renderBumpButton(row.file):this.renderCancelBumpButton(row.file) }</p></td>
+          <td><p>{i + 1}</p></td><td><p>{row.file}</p></td><td><p>{!(row.bumped instanceof Date) ? this.renderBumpButton(row.file):this.renderCancelBumpButton(row.file) }</p></td><td><p>{this.renderSkipHealthCheckButton(row.file)}</p></td>
           </tr>
+
+
+
 
       }
       );
@@ -543,6 +544,14 @@ class App extends Component {
     var obj = {
       TranscodeDecisionMaker:"Transcode success",
       lastTranscodeDate: new Date(),
+    }
+    return <ItemButton file={file} obj={obj} symbol={'⤳'} type="updateDBAction" />
+  }
+
+  renderSkipHealthCheckButton(file) {
+    var obj = {
+      HealthCheck: "Success",
+      lastHealthCheckDate: new Date(),
     }
     return <ItemButton file={file} obj={obj} symbol={'⤳'} type="updateDBAction" />
   }
@@ -703,6 +712,8 @@ class App extends Component {
 
 
         <div className="libraryContainer" >
+        <br/>
+        
 <center><Modal
       trigger={<Button variant="outline-light" ><span className="buttonTextSize">i</span></Button>}
       modal
@@ -736,63 +747,89 @@ class App extends Component {
     </Modal></center>
 
         <center><p>Workers:</p></center>
+
+
+        
+
 <div className="sliderGrid-container">
 
-<div className="sliderGrid-item2">
-<Button   variant="outline-light" onClick={() => this.alterWorkerLimit("decrease","generalWorkerLimit")} ><span className="buttonTextSize">-</span></Button>
+<div className="sliderGrid-item1">
+<p>General</p>
 </div>
+
+
+<div className="sliderGrid-item1">
+<p>({this.props.globalSettings && this.props.globalSettings[0] && this.props.globalSettings[0].generalWorkerLimit ? this.props.globalSettings[0].generalWorkerLimit : 0})</p>
+</div>
+
+
+
 
 <div className="sliderGrid-item">
 {this.renderSlider('generalWorkerLimit','black','#808080')}
 </div>
-<div className="sliderGrid-item3">
+
+<div className="sliderGrid-item2">
+<Button   variant="outline-light" onClick={() => this.alterWorkerLimit("decrease","generalWorkerLimit")} ><span className="buttonTextSize">-</span></Button>
 <Button   variant="outline-light" onClick={() => this.alterWorkerLimit("increase","generalWorkerLimit")} ><span className="buttonTextSize">+</span></Button>
 </div>
 
 
-<div className="sliderGrid-item2">
-<Button   variant="outline-light" onClick={() => this.alterWorkerLimit("decrease","transcodeWorkerLimit")} ><span className="buttonTextSize">-</span></Button>
+
+
+
+<div className="sliderGrid-item1">
+<p>Transcode</p>
 </div>
+
+<div className="sliderGrid-item1">
+<p>({this.props.globalSettings && this.props.globalSettings[0] && this.props.globalSettings[0].transcodeWorkerLimit ? this.props.globalSettings[0].transcodeWorkerLimit : 0})</p>
+</div>
+
+
+
 
 <div className="sliderGrid-item">
 {this.renderSlider('transcodeWorkerLimit','#66ccff','#B3E6FF')}
 </div>
 
-<div className="sliderGrid-item3">
+<div className="sliderGrid-item2">
+<Button   variant="outline-light" onClick={() => this.alterWorkerLimit("decrease","transcodeWorkerLimit")} ><span className="buttonTextSize">-</span></Button>
 <Button   variant="outline-light" onClick={() => this.alterWorkerLimit("increase","transcodeWorkerLimit")} ><span className="buttonTextSize">+</span></Button>
 </div>
 
 
-<div className="sliderGrid-item2">
-<Button   variant="outline-light" onClick={() => this.alterWorkerLimit("decrease","healthcheckWorkerLimit")} ><span className="buttonTextSize">-</span></Button>
+
+
+
+<div className="sliderGrid-item1">
+<p>Health Check</p>
 </div>
+
+<div className="sliderGrid-item1">
+<p>({this.props.globalSettings && this.props.globalSettings[0] && this.props.globalSettings[0].healthcheckWorkerLimit ? this.props.globalSettings[0].healthcheckWorkerLimit : 0})</p>
+</div>
+
+
 
 <div className="sliderGrid-item">
 {this.renderSlider('healthcheckWorkerLimit','#4CAF50','#A6D7A8')}
 </div>
 
-<div className="sliderGrid-item3">
+<div className="sliderGrid-item2">
+<Button   variant="outline-light" onClick={() => this.alterWorkerLimit("decrease","healthcheckWorkerLimit")} ><span className="buttonTextSize">-</span></Button>
 <Button   variant="outline-light" onClick={() => this.alterWorkerLimit("increase","healthcheckWorkerLimit")} ><span className="buttonTextSize">+</span></Button>
 </div>
 
-
 </div>
 
 
-          <p></p>
-
-
-          
-          
 
           <center>
 
+
+
           <div style={ButtonStyle} className="workerButtoncontainer">
-
-
-
-
-
 
             <Button variant="outline-danger" onClick={() => {
 
@@ -907,7 +944,16 @@ class App extends Component {
 <p>Library alternation: {this.renderCheckBox('alternateLibraries')}</p>
  <p>Library prioritisation: {this.renderCheckBox('prioritiseLibraries')}</p>
 
-
+<p>Items: <input type="text" className="tableSize"  defaultValue={this.props.globalSettings && this.props.globalSettings[0] && this.props.globalSettings[0].tableSize ? this.props.globalSettings[0].tableSize : "" } onChange={(event) => {
+  GlobalSettingsDB.upsert(
+    "globalsettings",
+    {
+      $set: {
+        tableSize: event.target.value,
+      }
+    }
+  );
+}}></input></p>
 
 
             
@@ -999,6 +1045,8 @@ class App extends Component {
                 <th><p>No.</p></th>
                 <th><p>File</p></th>
                 <th><p>Bump</p></th>
+                <th><p>Skip</p></th>
+
 
               </tr>
               {this.renderTable('table4', 'queue','HealthCheck')}

@@ -80,8 +80,10 @@ if (process.env.NODE_ENV == 'production') {
 
   if (process.env.DATA) {
     var homePath = process.env.DATA
+    process.env.homePath = homePath
   } else {
     var homePath = home + '/Documents'
+    process.env.homePath = homePath
   }
 
 
@@ -112,6 +114,7 @@ if (process.env.NODE_ENV == 'production') {
 
 } else {
   var homePath = home + '/Documents'
+  process.env.homePath = homePath
 
   GlobalSettingsDB.upsert(
     "globalsettings",
@@ -215,14 +218,6 @@ if (fs.existsSync(homePath + "/Tdarr/Data/env.json")) {
     );
   }
 
-  if(jsonConfig.HWT != undefined){
-
-    process.env.HWT = jsonConfig.HWT
-
-    console.log(process.env.HWT)
-
-  }
-
   } catch (err) {
     console.log("Unable to load configuration file")
 
@@ -249,8 +244,26 @@ allFilesPulledTable = FileDB.find({}).fetch()
 
 for (var i = 0; i < allFilesPulledTable.length; i++) {
 
-  console.log("Checking file:" + (i + 1))
-  console.log("Checking file:" + allFilesPulledTable[i].file)
+  console.log("Checking file:" + (i + 1) +"/"+allFilesPulledTable.length)
+
+
+  // reset processing status of files onload.
+
+  if (allFilesPulledTable[i].processingStatus !== false) {
+
+    FileDB.upsert(
+      allFilesPulledTable[i].file,
+      {
+        $set: {
+          processingStatus: false,
+        }
+      }
+    );
+  }
+
+
+
+  //Migration steps
 
   if (allFilesPulledTable[i].TranscodeDecisionMaker == "Not attempted") {
 
@@ -332,6 +345,8 @@ for (var i = 0; i < allFilesPulledTable.length; i++) {
 
   }
 
+  //End migration steps
+
 }
 
 
@@ -385,6 +400,64 @@ if (!Array.isArray(count) || !count.length) {
   );
 
   }
+
+    //Search result columns
+
+    if (count[0].searchResultColumns == undefined) {
+
+      var searchResultColumns = {
+       index:true,
+       fileName:true,
+       streams:true,
+       closedCaptions:true,
+       codec:true,
+       resolution:true,
+       size:true,
+       bitrate:true,
+       duration:true,
+       bump:true,
+       createSample:true,
+       transcode:true,
+       healthCheck:true,
+       info:true,
+       history:true,
+       remove:true,
+
+
+
+
+      }
+
+      GlobalSettingsDB.upsert(
+        "globalsettings",
+        {
+          $set: {
+            searchResultColumns: searchResultColumns,
+          }
+        }
+      );
+  
+    }
+
+  //UI queue size
+
+  if (count[0].tableSize == undefined) {
+
+    GlobalSettingsDB.upsert(
+      "globalsettings",
+      {
+        $set: {
+          tableSize: 20,
+        }
+      }
+    );
+
+  }
+
+  
+
+
+
   //init sort vars
 
   if (count[0].queueSortType == undefined) {
@@ -695,6 +768,20 @@ Meteor.methods({
 
   },
 
+  'deletePlugin'(pluginID) {
+
+    try {
+      fs.unlinkSync(homePath + `/Tdarr/Plugins/Local/` + pluginID + ".js")
+
+      return true
+    } catch (err) {
+      console.log(err)
+
+      return false
+    }
+
+  },
+
   'buildPluginStack'(plugins) {
 
     //  console.log(string)
@@ -713,10 +800,6 @@ Meteor.methods({
         var obj = hw.details();
 
         plugins[i] = { ...plugins[i], ...obj };
-
-
-        //  console.log(obj)
-
 
       } catch (err) {
 
@@ -895,7 +978,9 @@ Meteor.methods({
           }
         );
 
+        try{
         var folders = getDirectories(folderPath)
+      }catch(err){var folders = []}
 
         folders = folders.map((row) => {
 
@@ -930,7 +1015,9 @@ Meteor.methods({
         folderPath2.splice(idx, 1)
         folderPath2 = folderPath2.join('/')
 
+        try{
         var folders = getDirectories(folderPath)
+      }catch(err){var folders = []}
 
         folder = folders.map((row) => {
 
@@ -1102,11 +1189,6 @@ Meteor.methods({
 
         updateConsole("Commencing file update scan. Deleting non-existent files and adding new files.", false)
 
-
-
-
-
-
         var filesInDB = allFilesPulledTable
 
         filesInDB = filesInDB.filter(row => row.DB == DB_id);
@@ -1211,6 +1293,8 @@ Meteor.methods({
 
       var closedCaptionScan = thisItemsLib[0].closedCaptionScan
 
+      var foldersToIgnore  =  thisItemsLib[0].foldersToIgnore
+
 
 
       var scannerPath = "assets/app/fileScanner.js"
@@ -1226,6 +1310,7 @@ Meteor.methods({
         JSON.stringify(filePropertiesToAdd),
         homePath,
         closedCaptionScan,
+        foldersToIgnore,
       ]
 
       fileScanners[scannerID] = childProcess.fork(scannerPath, child_argv);
@@ -1429,17 +1514,14 @@ Meteor.methods({
       workerCommand = ffmpegPath + " " + text
     }
 
+    var ffmpegNVENCBinary = (GlobalSettingsDB.find({}, {}).fetch())[0].ffmpegNVENCBinary
 
-    if (process.env.HWT == "true") {
-
+    if (ffmpegNVENCBinary == true) {
         if (process.platform == 'linux' && mode == "handbrake") {
-          workerCommand = "/usr/local/bin/HandBrakeCLI " + text
+         // workerCommand = "/usr/local/bin/HandBrakeCLI " + text
         } else if (process.platform == 'linux' && mode == "ffmpeg") {
-
           workerCommand = ffmpegPathLinux +" " + text
-
         }
-      
     }
 
     console.log(workerCommand)
@@ -1497,14 +1579,14 @@ Meteor.methods({
     var outputFileUnix = outputFile.replace(/'/g, '\'\"\'\"\'');
     var ffmpegPathUnix = ffmpegPath.replace(/'/g, '\'\"\'\"\'');
 
-    //var preset1 = "-ss 1 -t 30 -acodec copy -vcodec copy"
 
-    // var preset1 = "-ss 1 -t 30"
-    // var preset2 = "-codec copy"
 
-    
-    var preset1 = ""
-    var preset2 = "-ss 00:00:1 -codec copy -t 30"
+    var preset1 = "-ss 00:00:1"
+    var preset2 = "-t 00:00:30 -map 0:v? -map 0:a? -map 0:s? -map 0:d? -c copy"
+
+  //  var preset1 = "-ss 00:00:1"
+  //  var preset2 = "-t 00:00:30 -c copy -map 0"
+
 
     if (fs.existsSync(outputFile)) {
       fs.unlinkSync(outputFile)
@@ -1713,7 +1795,7 @@ function scheduledPluginUpdate() {
 }
 
 
-//scheduledCacheClean()
+scheduledCacheClean()
 
 function scheduledCacheClean() {
 
@@ -1722,16 +1804,12 @@ function scheduledCacheClean() {
     var settings = SettingsDB.find({}, { sort: { createdAt: 1 } }).fetch()
 
     for (var i = 0; i < settings.length; i++) {
-
-
       try {
         traverseDir(settings[i].cache)
       } catch (err) {
         console.log(err.stack)
       }
     }
-
-
 
 
     function traverseDir(inputPathStem) {
@@ -1741,17 +1819,24 @@ function scheduledCacheClean() {
 
           var fullPath = (path.join(inputPathStem, file)).replace(/\\/g, "/");
 
+          function isBeingProcessed(filePath){
+
+            for(var i = 0 ; i < filesBeingProcessed.length; i++){
+              var base = filesBeingProcessed[i].split("/")
+                  base  = base[base.length - 1]
+                  base = base.split(".")
+                  base  = base[base.length - 2]
+
+              if(filePath.includes(base)){
+                return true
+              }
+            }
+            return false
+          }
+
           try {
 
-
-
-
-            var stats = fs.statSync(fullPath);
-            var mtime = stats.mtime;
-            var n = new Date()
-            var secsSinceModified = (n - mtime) / 1000
-
-            if (secsSinceModified > 86400) {
+            if (isBeingProcessed(fullPath) == false && fullPath.includes("TdarrCacheFile") ) {
 
               console.log("Removing:" + fullPath)
 
@@ -1766,35 +1851,20 @@ function scheduledCacheClean() {
 
                 }
               }
-
-            } else {
-
-              try {
-                traverseDir(fullPath);
-              } catch (err) {
-                console.error(err.stack);
-
-              }
+            }else if(!fullPath.includes("TdarrCacheFile")){
+              console.log("File not Tdarr cache file, won't remove:" + fullPath)
+            }else{
+              console.log("Cache file in use, won't remove:" + fullPath)
             }
-
-
-
           } catch (err) {
-
-
             console.error(err.stack);
           }
         });
-
-
-
       } catch (err) { console.log(err.stack) }
     }
-
-
   } catch (err) { console.log(err.stack) }
 
-  setTimeout(Meteor.bindEnvironment(scheduledCacheClean), 60000);
+  setTimeout(Meteor.bindEnvironment(scheduledCacheClean), 10000);
 }
 
 
@@ -2148,6 +2218,8 @@ function launchWorkerModule(workerType) {
               var fileID = firstItem._id
               var settings = SettingsDB.find({ _id: firstItem.DB }, { sort: { createdAt: 1 } }).fetch()
 
+              var ffmpegNVENCBinary = (GlobalSettingsDB.find({}, {}).fetch())[0].ffmpegNVENCBinary
+
 
               //Settings from SettingsDB
               var settingsDBIndex = firstItem.DB
@@ -2211,7 +2283,13 @@ function launchWorkerModule(workerType) {
                   FFmpegMode,
                   frameCount,
                   settingsDBIndex,
-                  reQueueAfter
+                  reQueueAfter,
+                  firstItem,
+                  folderToFolderConversionEnabled,
+                  folderToFolderConversionFolder,
+                  processFile,
+                  settings[0],
+                  ffmpegNVENCBinary,
 
                 ]
 
@@ -2225,7 +2303,6 @@ function launchWorkerModule(workerType) {
                 //Plugin filter
 
 
-                console.log("here")
 
                 if (settings[0].decisionMaker.pluginFilter == true) {
 
@@ -2271,7 +2348,11 @@ function launchWorkerModule(workerType) {
                         
                         cliLogAdd += plugin.details().id+"\n"
 
-                        var response = plugin.plugin(firstItem);
+                        var otherArguments = {
+                          homePath:homePath
+                        }
+
+                        var response = plugin.plugin(firstItem,settings[0],otherArguments);
 
                         console.dir(response)
 
@@ -2317,14 +2398,6 @@ function launchWorkerModule(workerType) {
                   }
 
 
-
-
-
-
-
-
-
-
                   //
 
 
@@ -2347,11 +2420,10 @@ function launchWorkerModule(workerType) {
                       }
                     })
 
-                    console.log("here")
+                    
 
                     if(settings[0].decisionMaker.videoExcludeSwitch == false){
 
-                      console.log("here2")
 
                       if (video_codec_names_exclude.includes(firstItem.ffProbeData.streams[0]["codec_name"]) && typeof firstItem.ffProbeData.streams[0]["codec_name"] !== 'undefined') {
 
@@ -2517,7 +2589,6 @@ function launchWorkerModule(workerType) {
                 }
 
 
-
                 var messageOut = [
                   "queueNumber",
                   mode, //update
@@ -2533,19 +2604,22 @@ function launchWorkerModule(workerType) {
                   reQueueAfter,
                   firstItem,
                   folderToFolderConversionEnabled,
-                  folderToFolderConversionFolder
+                  folderToFolderConversionFolder,
+                  processFile,
+                  settings[0],
+                  ffmpegNVENCBinary,
 
 
                 ]
 
-                //decision maker
-                //process file or add to output db and get new file
-
               }
 
 
+         
+
+
               //File filtered out by transcode decision maker
-              if (processFile == false) {
+              if (processFile == false && folderToFolderConversionEnabled == false) {
 
 
 
@@ -2568,8 +2642,6 @@ function launchWorkerModule(workerType) {
                 filesBeingProcessed.splice(indexEle, 1)
                 console.log("after:" + filesBeingProcessed)
 
-
-
                 var messageOut = [
                   "requestNewItem",
 
@@ -2581,11 +2653,7 @@ function launchWorkerModule(workerType) {
                 //
 
 
-
-
-
-
-              } else if (processFile == true) {
+              } else {
 
 
                 try {
@@ -3438,6 +3506,8 @@ function tablesUpdate() {
 
       var settings = SettingsDB.find({}, { sort: { priority: 1 } }).fetch()
 
+      var tableSize = globalSettings[0].tableSize
+
 
 
       //
@@ -3526,7 +3596,7 @@ function tablesUpdate() {
 
 
       bumpedFiles = bumpedFiles.sort(function (a, b) {
-        return new Date(b.bumped) - new Date(a.bumped);
+        return new Date(a.bumped) - new Date(b.bumped);
       });
 
       allFilesPulledTable = bumpedFiles.concat(allFilesPulledTable)
@@ -3637,12 +3707,12 @@ function tablesUpdate() {
 
       //
 
-      table1dataSlice = table1data.slice(0, 20)
-      table2dataSlice = table2data.slice(0, 20)
-      table3dataSlice = table3data.slice(0, 20)
-      table4dataSlice = table4data.slice(0, 20)
-      table5dataSlice = table5data.slice(0, 20)
-      table6dataSlice = table6data.slice(0, 20)
+      table1dataSlice = table1data.slice(0, tableSize)
+      table2dataSlice = table2data.slice(0, tableSize)
+      table3dataSlice = table3data.slice(0, tableSize)
+      table4dataSlice = table4data.slice(0, tableSize)
+      table5dataSlice = table5data.slice(0, tableSize)
+      table6dataSlice = table6data.slice(0, tableSize)
 
 
 
@@ -4011,19 +4081,17 @@ function workerUpdateCheck() {
     verboseLogs = globs[0].verboseLogs
 
     if (gDiff >= 1 && generalFiles.length > 0) {
-      Meteor.call('launchWorker', "general", gDiff, function (error, result) { });
+      Meteor.call('launchWorker', "general", 1, function (error, result) { });
     }
     if (tDiff >= 1 && transcodeFiles.length > 0) {
-      Meteor.call('launchWorker', "transcode", tDiff, function (error, result) { });
+      Meteor.call('launchWorker', "transcode", 1, function (error, result) { });
     }
 
     if (hDiff >= 1 && healthcheckFiles.length > 0) {
-      Meteor.call('launchWorker', "healthcheck", hDiff, function (error, result) { });
+      Meteor.call('launchWorker', "healthcheck", 1, function (error, result) { });
     }
 
     var workerCheck = findWorker() //[]
-
-
 
 
 

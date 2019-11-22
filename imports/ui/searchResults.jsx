@@ -3,12 +3,19 @@ import React, { Component } from 'react';
 import ItemButton from './item_Button.jsx'
 import Modal from "reactjs-popup";
 import ReactTable from "react-table";
-import { Button } from 'react-bootstrap';
+import { Button, Dropdown } from 'react-bootstrap';
+import Checkbox from '@material-ui/core/Checkbox';
 import { renderToString } from 'react-dom/server'
 import { Markup } from 'interweave';
 
+import { GlobalSettingsDB } from '../api/tasks.js';
+import { withTracker } from 'meteor/react-meteor-data';
 
-export default class App extends Component{
+
+
+
+
+class App extends Component{
 
 
 renderResults(result){
@@ -21,6 +28,8 @@ if (result.length == 0) {
   }else{
 
   var data = result
+
+  var columns = this.props.globalSettings[0].searchResultColumns
 
 
   function getStreams(file){
@@ -72,11 +81,27 @@ function fancyTimeFormat(time) {
 
   
               var columns = [
+
                 
+
                 {
+                  show: columns.index != undefined ? columns.index : true,
+                  Header: "",
+                  id: "row",
+                  maxWidth: 50,
+                  filterable: false,
+                  Cell: (row) => {
+                    return <p>{row.index+1}</p>;
+                  }
+                },
+
+
+
+                {
+                  show: columns.fileName != undefined ? columns.fileName : true,
                   Header: () => (
-                    <div className="pluginTableHeader">  
-                    <p>File</p>
+                    <div className="pluginTableHeader">
+                      <p>File</p>
                     </div>
                   ),
                   accessor: 'file',
@@ -92,6 +117,7 @@ function fancyTimeFormat(time) {
                 },
 
                 {
+                  show: columns.streams != undefined ? columns.streams : true,
                   Header: () => (
                     <div className="pluginTableHeader">  
                     <p>Streams</p>
@@ -128,20 +154,7 @@ function fancyTimeFormat(time) {
 
                         <tbody>
 
-                
-{/*                     
-                        <col width="20"/>
-                <col width="20"/>
-                <col width="20"/>
-                <col width="20"/>
-                <col width="20"/> */}
-        
 
-                          {/* <th><p>Codec</p></th>
-                          <th><p>Type</p></th>
-                          <th><p>Bitrate</p></th>
-                          <th><p>Lang</p></th>
-                          <th><p>Name</p></th> */}
                         {streams}
                         </tbody>
                       </table>
@@ -161,9 +174,10 @@ return null
                   }
                   
                 },{
+                  show: columns.closedCaptions != undefined ? columns.closedCaptions : true,
                   Header: () => (
                     <div className="pluginTableHeader">  
-                    <p>CC</p>
+                    <p>Closed Captions</p>
                     </div>
                   ),
                   id: 'CC',
@@ -179,6 +193,7 @@ return null
                   }
                 },
                 {
+                  show: columns.codec != undefined ? columns.codec : true,
                   Header: () => (
                     <div className="pluginTableHeader">  
                     <p>Codec</p>
@@ -196,6 +211,7 @@ return null
                   }
                 },
                 {
+                  show: columns.resolution != undefined ? columns.resolution : true,
                   Header: () => (
                     <div className="pluginTableHeader">  
                     <p>Resolution</p>
@@ -213,6 +229,7 @@ return null
                   }
                 },
                 {
+                  show: columns.size != undefined ? columns.size : true,
                   Header: () => (
                     <div className="pluginTableHeader">  
                     <p>Size(GB)</p>
@@ -231,6 +248,7 @@ return null
                 },
 
                 {
+                  show: columns.bitrate != undefined ? columns.bitrate : true,
                   Header: () => (
                     <div className="pluginTableHeader">  
                     <p>Bitrate(Mbs)</p>
@@ -249,6 +267,7 @@ return null
                 },
 
                 {
+                  show: columns.duration != undefined ? columns.duration : true,
                   Header: () => (
                     <div className="pluginTableHeader">  
                     <p>Duration(s)</p>
@@ -268,6 +287,7 @@ return null
 
 
                 {
+                  show: columns.bump != undefined ? columns.bump : true,
                   Header: () => (
                     <div className="pluginTableHeader">  
                     <p>Bump</p>
@@ -288,6 +308,7 @@ return null
                 },
 
                 {
+                  show: columns.createSample != undefined ? columns.createSample : true,
                   Header: () => (
                     <div className="pluginTableHeader">  
                     <p>Create sample</p>
@@ -308,6 +329,7 @@ return null
                 },
 
                 {
+                  show: columns.transcode != undefined ? columns.transcode : true,
                   Header: () => (
                     <div className="pluginTableHeader">  
                     <p>Transcode</p>
@@ -327,6 +349,7 @@ return null
                 },
 
                 {
+                  show: columns.healthCheck != undefined ? columns.healthCheck : true,
                   Header: () => (
                     <div className="pluginTableHeader">  
                     <p>Health check</p>
@@ -334,7 +357,7 @@ return null
                   ),
                   id: 'Health check',
                   width: 'Health check'.length*10,
-                  accessor: row => row.HealthCheck == "Queued" ? "Queued("+row.hPosition+")" : this.renderRedoButton(row.file, 'HealthCheck'),
+                  accessor: row => row.HealthCheck == "Queued" ? <span>Queued({row.hPosition}){this.renderSkipHealthCheckButton(row.file)}</span>: this.renderRedoButton(row.file, 'HealthCheck'),
                   getProps: (state, rowInfo, column) => {
                     return {
                       style: {
@@ -345,6 +368,7 @@ return null
                   }
                 },
                 {
+                  show: columns.info != undefined ? columns.info : true,
                   Header: () => (
                     <div className="pluginTableHeader">  
                     <p>Info</p>
@@ -363,6 +387,7 @@ return null
                   }
                 },
                 {
+                  show: columns.history != undefined ? columns.history : true,
                     Header: () => (
                       <div className="pluginTableHeader">  
                       <p>History</p>
@@ -381,6 +406,7 @@ return null
                     }
                   },
                   {
+                    show: columns.remove != undefined ? columns.remove : true,
                       Header: () => (
                         <div className="pluginTableHeader">  
                         <p>Remove</p>
@@ -443,7 +469,53 @@ return null
 
                 <br/>
                
-                  <center><p>Tip: Use the table headers to sort & filter files</p></center>
+                  <center><p>Tip: Use the table headers to sort & filter files</p>
+            <p>Count:{data.length}</p>
+                  </center>
+
+                  <center>
+
+                  <Dropdown >
+            <Dropdown.Toggle variant="outline-light" id="dropdown-basic" >
+              Columns
+                </Dropdown.Toggle>
+
+            <Dropdown.Menu >
+
+              <div className="optionsDropdown">
+                <p><div className="resultColumnOptions">Index </div><Checkbox name="index" checked={this.props.globalSettings[0].searchResultColumns.index} onChange={this.handleChange} /></p>
+                <p><div className="resultColumnOptions">File </div><Checkbox name="fileName" checked={this.props.globalSettings[0].searchResultColumns.fileName} onChange={this.handleChange} /></p>
+                <p><div className="resultColumnOptions">Streams </div><Checkbox name="streams" checked={this.props.globalSettings[0].searchResultColumns.streams} onChange={this.handleChange} /></p>
+                <p><div className="resultColumnOptions">Closed Captions </div><Checkbox name="closedCaptions" checked={this.props.globalSettings[0].searchResultColumns.closedCaptions} onChange={this.handleChange} /></p>
+                <p><div className="resultColumnOptions">Codec </div><Checkbox name="codec" checked={this.props.globalSettings[0].searchResultColumns.codec} onChange={this.handleChange} /></p>
+                <p><div className="resultColumnOptions">Resolution </div><Checkbox name="resolution" checked={this.props.globalSettings[0].searchResultColumns.resolution} onChange={this.handleChange} /></p>
+                <p><div className="resultColumnOptions">Size </div><Checkbox name="size" checked={this.props.globalSettings[0].searchResultColumns.size} onChange={this.handleChange} /></p>
+                <p><div className="resultColumnOptions">Bitrate </div><Checkbox name="bitrate" checked={this.props.globalSettings[0].searchResultColumns.bitrate} onChange={this.handleChange} /></p>
+                <p><div className="resultColumnOptions">Duration </div><Checkbox name="duration" checked={this.props.globalSettings[0].searchResultColumns.duration} onChange={this.handleChange} /></p>
+                <p><div className="resultColumnOptions">Bump </div><Checkbox name="bump" checked={this.props.globalSettings[0].searchResultColumns.bump} onChange={this.handleChange} /></p>
+                <p><div className="resultColumnOptions">Create Sample </div><Checkbox name="createSample" checked={this.props.globalSettings[0].searchResultColumns.createSample} onChange={this.handleChange} /></p>
+                <p><div className="resultColumnOptions">Transcode </div><Checkbox name="transcode" checked={this.props.globalSettings[0].searchResultColumns.transcode} onChange={this.handleChange} /></p>
+                <p><div className="resultColumnOptions">Health Check </div><Checkbox name="healthCheck" checked={this.props.globalSettings[0].searchResultColumns.healthCheck} onChange={this.handleChange} /></p>
+                <p><div className="resultColumnOptions">Info </div><Checkbox name="info" checked={this.props.globalSettings[0].searchResultColumns.info} onChange={this.handleChange} /></p>
+                <p><div className="resultColumnOptions">History </div><Checkbox name="history" checked={this.props.globalSettings[0].searchResultColumns.history} onChange={this.handleChange} /></p>
+                <p><div className="resultColumnOptions">Remove </div><Checkbox name="remove" checked={this.props.globalSettings[0].searchResultColumns.remove} onChange={this.handleChange} /></p>
+
+
+    
+
+
+
+
+
+
+              </div>
+
+
+            </Dropdown.Menu>
+          </Dropdown>
+
+
+                  </center>
 
                   <br/>
              
@@ -451,7 +523,7 @@ return null
                   <ReactTable
                       data={data}
                       columns={columns}
-                      defaultPageSize={100}
+                      defaultPageSize={10}
                       pageSizeOptions={[10,100, 1000, 10000]}
                       filterable={true}
                       defaultFilterMethod ={(filter, row) => filterMethod(filter, row)}
@@ -474,6 +546,14 @@ renderBumpButton(file) {
     var obj = {
       TranscodeDecisionMaker:"Transcode success",
       lastTranscodeDate: new Date(),
+    }
+    return <ItemButton file={file} obj={obj} symbol={'⤳'} type="updateDBAction" />
+  }
+
+  renderSkipHealthCheckButton(file) {
+    var obj = {
+      HealthCheck: "Success",
+      lastHealthCheckDate: new Date(),
     }
     return <ItemButton file={file} obj={obj} symbol={'⤳'} type="updateDBAction" />
   }
@@ -564,6 +644,8 @@ renderBumpButton(file) {
   }
 
 
+
+
   renderHistoryButton(row) {
 
 
@@ -579,7 +661,6 @@ renderBumpButton(file) {
            <Markup content={row} />
          ));
     }
-
 
     return <Modal
       trigger={<Button variant="outline-light" ><span className="buttonTextSize">H</span></Button>}
@@ -604,7 +685,27 @@ renderBumpButton(file) {
 
     return <ItemButton file={file}  symbol={'X'} type="removeFile" />
 
+  }
 
+  handleChange(event){
+
+
+
+    var key = "searchResultColumns."+event.target.name
+
+
+
+    GlobalSettingsDB.upsert(
+
+      "globalsettings",
+      {
+        $set: {
+          [key]: event.target.checked,
+        }
+      }
+    );
+
+    
   }
 
 
@@ -621,11 +722,16 @@ render() {
 
     )}
 
-
-
-
-
-
-
-
 }
+
+export default withTracker(() => {
+
+  Meteor.subscribe('GlobalSettingsDB');
+
+
+  return {
+
+    globalSettings: GlobalSettingsDB.find({}, {}).fetch(),
+
+  };
+})(App);

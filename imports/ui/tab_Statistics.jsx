@@ -256,7 +256,7 @@ renderStats = () => {
 
  
 
-  {this.renderPie(i,7,"TranscodeDecisionMaker", '',item[1])}
+  {this.renderPie(i,6,"TranscodeDecisionMaker", '',item[1])}
 
     </div>
 
@@ -426,7 +426,7 @@ renderStats = () => {
 
 
 
-       <div className={this.state.resultsShow ? '' : 'hidden'}>
+       <div className={this.state.resultsShow ? '' : 'd-none'}>
        <center>
        <Button variant="outline-light" onClick={() => {
           this.setState({

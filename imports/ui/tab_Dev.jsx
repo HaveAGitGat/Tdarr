@@ -120,9 +120,43 @@ export default class App extends Component {
 
               <p>Change log</p>
 
+              <p>v1.007 release [22nd Nov 19]:
+            
+            <br />Changes:
+
+            <br />-[New] Option to enable Linux FFmpeg NVENC binary (3.4.5 for unRAID compatibility)
+            <br />-[New] Option to ignore source sub-folders
+            <br />-[New] Skip health check button
+            <br />-[New] Option to change visible queue length
+            <br />-[New] Option to duplicate library
+            <br />-[New] Customise search result columns
+            <br />-[New] UI improvements (@jono)
+            <br />-[New] Option to delete source file when using folder to folder conversion.
+            <br />-[New] Community plugins (Remove commentary tracks etc)
+            <br />-[New] Option to delete local plugins
+            <br />-[New] Auto clean cache folder + preventing non-Tdarr cache files being deleted in case of incorrect mapping.
+            <br />-[Fix] Reset processing status of all files on startup so no files stuck in limbo
+            <br />-[Fix] Transcode pie showing incorrect data
+            <br />-[Fix] Folder watcher will now wait longer to detect if a new file has finished copying
+            <br />-[Fix] Folder to folder conversion: Files which already meet requirements will be copied to output folder
+            <br />-[Fix] Folder to folder conversion: Cache/Output folder bug
+            <br />-[Fix] Default containers to scan for now include ts/m2ts 
+            <br />-[Fix] Keep all stream types when using remux plugin creator
+            <br />-[Fix] Prevent too many workers occassionally starting
+            <br />-[Fix] Newly transcoded files will be bumped correctly to top of queue when sorting by size
+            <br />-[Fix] Closed caption scanning now much faster & accurate (even on empty captions)
+            <br />-[Fix] Plugin creator plugin path error
+            <br />-[Fix] Health check error when using FFmpeg hardware transcoding
+
+
+            <br />
+            <br />
+
+            </p>
+
+
               <p>v1.006 release [9th Nov 19]:
             
-            <br />No breaking changes.
             <br />Changes:
 
             <br />-[New] NVENC for FFmpeg enabled (linux + tdarr_aio)
@@ -145,7 +179,7 @@ export default class App extends Component {
             <br />-[New] Exclude codec whitelist/blacklist
             <br />-[New] Navgiation bar UI
             <br />-[New] Queue library alternation option
-            <br />-[Fix] 'Re-queue' buttons on 'Tdarr' tab.
+            <br />-[Fix] 'Re-queue' buttons on 'Tdarr' tab
             <br />-[Fix] Prevent find-new/fresh scans occuring on a library at the same time. Hourly find-new scan re-enabled for libraries with folder watch ON.
             <br />-[Fix] Library prioritisation sort
             <br />-[Fix] Reduced search result number for quicker render
@@ -156,7 +190,6 @@ export default class App extends Component {
             <br />
 
               <p>v1.005 release [1st Nov 19]:
-  <br />No breaking changes.
   <br />Changes:
   <br />-[New] UI overhaul (Dark theme)
   <br />-[New] Hardware transcoding using tdarr_aio container + HandBrake
@@ -188,7 +221,6 @@ export default class App extends Component {
 
 
               <p>v1.004 release [23rd Oct 19]:
-  <br />No breaking changes.
   <br />Changes:
   <br />-Scan on start switch added
   <br />-Prevent Tdarr temp output files mistakenly being scanned
@@ -206,7 +238,6 @@ export default class App extends Component {
 
 
               <p>v1.003 release [10th Oct 19]:
-  <br />No breaking changes.
   <br />Changes:
   <br />-Workers now show more detailed information: ETA, CLI type, preset, process reasons, start time, duration and original file size.
   <br />-Help links updated

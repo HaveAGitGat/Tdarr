@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
 import { GlobalSettingsDB } from '../api/tasks.js';
 import ClipLoader from 'react-spinners/ClipLoader';
+import ToggleButton from 'react-toggle-button';
 
 
 
@@ -10,7 +11,7 @@ var ButtonStyle = {
   display: 'inline-block',
 }
 
-
+const borderRadiusStyle = { borderRadius: 2 }
 
  class App extends Component {
 
@@ -76,7 +77,42 @@ var ButtonStyle = {
       return <div>
       <p>Base URL (e.g. /base )</p>
     <input type="text" className="folderPaths"  name="basePath" defaultValue={ settings != undefined && settings.basePath != undefined ? settings.basePath : ""} onChange={this.handleChange}></input>
+   
+   <br/>
+   <br/>
+   <br/>
+   
+   <span className="buttonTextSize mr-2" style={ButtonStyle}>Linux FFmpeg NVENC binary (3.4.5 for unRAID compatibility):</span>
+      
+        <div style={ButtonStyle}>
+          <ToggleButton
+            style={ButtonStyle}
+            thumbStyle={borderRadiusStyle}
+            trackStyle={borderRadiusStyle}
+            value={settings.ffmpegNVENCBinary} onToggle={() => {
+
+              GlobalSettingsDB.upsert('globalsettings',
+                {
+                  $set: {
+                    ffmpegNVENCBinary: !settings.ffmpegNVENCBinary,
+                  }
+                }
+              );
+            }
+            } />
+        </div>
+ 
+
+
+   
+   
+   
+   
     </div>
+
+
+
+
     }
   }
 

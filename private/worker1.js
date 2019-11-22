@@ -62,6 +62,7 @@ if (fs.existsSync(path.join(process.cwd() + "/npm"))) {
 var shell = require(rootModules + 'shelljs');
 var fsextra = require(rootModules + 'fs-extra')
 const isDocker = require(rootModules + 'is-docker');
+const shortid = require(rootModules + 'shortid');
 
 
 var fileToProcess
@@ -89,6 +90,9 @@ var currentFileObject
 var folderToFolderConversionEnabled
 var folderToFolderConversionFolder
 
+var processFile
+var librarySettings
+var ffmpegNVENCBinary
 
 
 
@@ -235,6 +239,9 @@ process.on('message', (m) => {
         currentFileObject = m[12]
         folderToFolderConversionEnabled = m[13]
         folderToFolderConversionFolder = m[14]
+        processFile = m[15]
+        librarySettings = m[16]
+        ffmpegNVENCBinary = m[17]
 
 
 
@@ -248,86 +255,83 @@ process.on('message', (m) => {
         updateConsole(workerNumber, "File received:" + fileToProcess)
 
 
-        // Workers.upsert(workerNumber,
-
-
-        //     {
-        //         $set: {
-        //             _id: workerNumber,
-        //             workerNumber: workerNumber,
-        //             processingFile: fileToProcess,
-        //         }
-        //     }
-        // );
-
-
-
-
-
-
-
-
-
-
+ 
 
         var presetSplit
         presetSplit = preset.split(',')
         var workerCommand = "";
 
-        currentDestinationLine = getOutputPath(fileToProcess, container, inputFolderStem, outputFolder)
+       
 
-        updateConsole(workerNumber, "currentDestinationLine:" + currentDestinationLine)
+    
+        //Create folder to folder conversion output folders
 
-        if(folderToFolderConversionEnabled == true){
+        if (folderToFolderConversionEnabled == true) {
+
+            if(fileToProcess.includes(folderToFolderConversionFolder)){
+                console.log("File includes F2F output folder")
+                currentDestinationLine = getOutputPath(fileToProcess, container, folderToFolderConversionFolder, outputFolder)
+            }else{
+                console.log("File doesn't include F2F output folder")
+                currentDestinationLine = getOutputPath(fileToProcess, container, inputFolderStem, outputFolder)     
+            }
 
             finalFilePath = getOutputPath(currentDestinationLine, container, outputFolder, folderToFolderConversionFolder)
 
             var outputFolderPath = finalFilePath.substring(0, finalFilePath.lastIndexOf(stringProcessingSlash))
 
-            if (!fs.existsSync(outputFolderPath)){
+            if (!fs.existsSync(outputFolderPath)) {
                 try {
-    
+
                     if (mode != "healthcheck") {
                         shell.mkdir('-p', outputFolderPath);
-    
+
                     }
                 } catch (err) {
                     updateConsole(workerNumber, "Unable to create folder!")
                 }
             }
+        } else {
 
-
-
-            
-        }else{
+            currentDestinationLine = getOutputPath(fileToProcess, container, inputFolderStem, outputFolder)
             finalFilePath = getOutputPath(currentDestinationLine, container, outputFolder, inputFolderStem)
-
         }
 
-       
 
+        var fileID = shortid.generate()
+        
+
+        currentDestinationLine = currentDestinationLine.split(".")
+        currentDestinationLine[currentDestinationLine.length - 2] = currentDestinationLine[currentDestinationLine.length - 2] + "-TdarrCacheFile-"+fileID
+        currentDestinationLine = currentDestinationLine.join(".")
+
+        currentDestinationLine = currentDestinationLine.split("/")
+        currentDestinationLine = path.join( outputFolder ,currentDestinationLine[currentDestinationLine.length - 1])
+
+           
+
+        updateConsole(workerNumber, "currentDestinationLine:" + currentDestinationLine)
         updateConsole(workerNumber, "finalFilePath:" + finalFilePath)
 
-
+         //Create transcode cache output folders
 
         var outputFolderPath = currentDestinationLine.substring(0, currentDestinationLine.lastIndexOf(stringProcessingSlash))
 
-        if (!fs.existsSync(outputFolderPath)){
+
+        if (!fs.existsSync(outputFolderPath)) {
             try {
 
                 if (mode != "healthcheck") {
-
-
                     shell.mkdir('-p', outputFolderPath);
-
-
-
                 }
 
             } catch (err) {
                 updateConsole(workerNumber, "Unable to create folder!")
             }
         }
+
+  
+
 
 
 
@@ -348,7 +352,7 @@ process.on('message', (m) => {
 
         var ffmpegPath = getFFmpegCLIPath();
 
-        
+
 
 
 
@@ -388,7 +392,7 @@ process.on('message', (m) => {
 
         } else if (process.platform == 'linux' && FFmpegMode == true) {
 
-            workerCommand =  ffmpegPathUnix + " " + preset0Unix + " -i '" + currentSourceLineUnix + "' " + preset1Unix + " '" + currentDestinationLineUnix + "' "
+            workerCommand = ffmpegPathUnix + " " + preset0Unix + " -i '" + currentSourceLineUnix + "' " + preset1Unix + " '" + currentDestinationLineUnix + "' "
 
         }
 
@@ -401,18 +405,15 @@ process.on('message', (m) => {
             workerCommand = ffmpegPathUnix + " " + preset0Unix + " -i '" + currentSourceLineUnix + "' " + preset1Unix + " '" + currentDestinationLineUnix + "' "
         }
 
-
-        if (process.env.HWT == "true") {
-
-
+        if (ffmpegNVENCBinary == true) {
             // console.log("Worker in Docker")
             if (process.platform == 'linux' && handBrakeMode == true) {
-              workerCommand = "/usr/local/bin/HandBrakeCLI -i '" + currentSourceLineUnix + "' -o '" + currentDestinationLineUnix + "' " + presetUnix;
+                //  workerCommand = "/usr/local/bin/HandBrakeCLI -i '" + currentSourceLineUnix + "' -o '" + currentDestinationLineUnix + "' " + presetUnix;
             } else if (process.platform == 'linux' && FFmpegMode == true) {
-              workerCommand = ffmpegPathLinux + " " + preset0Unix + " -i '" + currentSourceLineUnix + "' " + preset1Unix + " '" + currentDestinationLineUnix + "' "
-        
+                workerCommand = ffmpegPathLinux + " " + preset0Unix + " -i '" + currentSourceLineUnix + "' " + preset1Unix + " '" + currentDestinationLineUnix + "' "
+
             }
-          
+
         }
 
 
@@ -422,9 +423,7 @@ process.on('message', (m) => {
         if (mode == "transcode") {
 
             if (fs.existsSync(currentDestinationLine)) {
-
                 fs.unlinkSync(currentDestinationLine)
-
             }
         }
 
@@ -433,13 +432,148 @@ process.on('message', (m) => {
         errorLogFull += workerCommand + "\r\n"
 
 
+        ///currentFileObject.ffProbeRead == "success"
+
+
+        if (folderToFolderConversionEnabled == true && mode != "healthcheck" && processFile == false) {
+
+            try { var sourcefileSizeInGbytes = (((fs.statSync(currentSourceLine)).size) / 1000000000.0); } catch (err) {
+
+                var sourcefileSizeInGbytes = 0
+            }
+                var sizeDiffGB = 0;
+       
+            try {
+
+                errorLogFull += "Attempting to move new file to output folder" + "\r\n"
+                updateConsole(workerNumber, "Attempting to move new file to output folder" + currentSourceLine)
+
+
+
+                finalFilePath = finalFilePath.split(".")
+
+                //set container to original source file
+                finalFilePath[finalFilePath.length - 1] = currentFileObject.container
+
+                finalFilePath = finalFilePath.join(".")
+
+                
+                var finalFilePathCopy = finalFilePath
+
+
+                finalFilePathCopy = finalFilePathCopy.split(".")
+                finalFilePathCopy[finalFilePathCopy.length - 2] = finalFilePathCopy[finalFilePathCopy.length - 2] + "-TdarrNew"
+                finalFilePathCopy = finalFilePathCopy.join(".")
 
 
 
 
-        processFile()
+                fsextra.copySync(currentSourceLine, finalFilePathCopy, {
+                    overwrite: true
+                })
 
-        function processFile() {
+                errorLogFull += "Copying file successful:" + "\r\n"
+                updateConsole(workerNumber, "Copying file successful:" + currentSourceLine + " to " + finalFilePathCopy)
+
+               
+
+                //Delete source file ONLY after first pass when file is still in original source folder.
+
+
+
+                if(librarySettings.folderToFolderConversionDeleteSource === true && !fileToProcess.includes(folderToFolderConversionFolder)){
+
+                    errorLogFull += "Attempting to delete original file" + "\r\n"
+                    updateConsole(workerNumber, "Attempting to delete original file" + currentSourceLine)
+    
+                    fs.unlinkSync(currentSourceLine)
+                    errorLogFull += "Original file deleted" + "\r\n"
+                    updateConsole(workerNumber, "Original file deleted" + currentSourceLine)
+
+                }
+             
+
+
+                errorLogFull += "Renaming new file:" + "\r\n"
+                updateConsole(workerNumber, "Renaming new file:" + finalFilePathCopy + " to " + finalFilePath)
+
+                fsextra.moveSync(finalFilePathCopy, finalFilePath, {
+                    overwrite: true
+                })
+
+                errorLogFull += "Renaming new file success:" + "\r\n"
+                updateConsole(workerNumber, "Renaming new file success:" + finalFilePathCopy + " to " + finalFilePath)
+
+
+                var cliLog = "\n Original size GB:" + sourcefileSizeInGbytes
+                cliLog += "\n New size GB:" + sourcefileSizeInGbytes
+
+
+                var filePropertiesToAdd = {
+                    HealthCheck: "Queued",
+                    TranscodeDecisionMaker: currentFileObject.oldSize ? "Transcode success" : "Not required",
+                    lastTranscodeDate: new Date(),
+                    cliLog: cliLog,
+                    oldSize: currentFileObject.oldSize ? currentFileObject.oldSize : sourcefileSizeInGbytes,
+                    newSize: sourcefileSizeInGbytes,
+                    bumped: false,
+                    history: currentFileObject.history == undefined ? "" : currentFileObject.history
+                }
+
+                var message = [
+                    workerNumber,
+                    "success",
+                    finalFilePath,
+                    settingsDBIndex,
+                    mode,
+                    currentSourceLine,
+                    JSON.stringify(filePropertiesToAdd),
+                    sizeDiffGB,
+                ];
+                process.send(message);
+
+                checkifQueuePause();
+
+                
+
+
+            } catch (err) {
+
+                errorLogFull += err + "\r\n"
+                errorLogFull += "Deleting original/moving new file unsuccessful" + "\r\n"
+                updateConsole(workerNumber, "Deleting original/moving new file unsuccessful:" + currentSourceLine + " to " + finalFilePath + " err:" + err)
+
+
+                var message = [
+                    workerNumber,
+                    "error",
+                    currentSourceLine,
+                    settingsDBIndex,
+                    mode,
+                    errorLogFull
+
+                ];
+                process.send(message);
+
+                checkifQueuePause();
+
+            }
+
+
+
+
+
+        } else {
+
+            processFileFunc()
+
+        }
+
+
+
+
+
+        function processFileFunc() {
             //
 
             var childProcess = require('child_process');
@@ -517,11 +651,11 @@ process.on('message', (m) => {
 
                             if (n >= 6) {
 
-                              
+
                                 var output = str.substring(6, n)
 
-                        
-                                output = getFFmpegPercentage( output,frameCount,currentFileObject.meta.VideoFrameRate,currentFileObject.meta.Duration)
+
+                                output = getFFmpegPercentage(output, frameCount, currentFileObject.meta.VideoFrameRate, currentFileObject.meta.Duration)
 
 
                                 updateETA(output)
@@ -596,7 +730,7 @@ process.on('message', (m) => {
                                 var output = str.substring(6, n)
 
 
-                                output = getFFmpegPercentage( output,frameCount,currentFileObject.meta.VideoFrameRate,currentFileObject.meta.Duration)
+                                output = getFFmpegPercentage(output, frameCount, currentFileObject.meta.VideoFrameRate, currentFileObject.meta.Duration)
 
 
 
@@ -913,174 +1047,185 @@ function workerNotEncounteredError() {
 
     } else {
 
-            try {  var sourcefileSizeInGbytes = (((fs.statSync(currentSourceLine)).size) / 1000000000.0); } catch (err) {
 
-                var sourcefileSizeInGbytes = "Unable to retrieve size"
-            }
-            try { var destfileSizeInGbytes = (((fs.statSync(currentDestinationLine)).size) / 1000000000.0); } catch (err) {
+        // function transcodeWorkerFinish()
 
-                var destfileSizeInGbytes = "Unable to retrieve size"
-            }
-            try {  var sizeDiffGB = sourcefileSizeInGbytes - destfileSizeInGbytes } catch (err) {
+        try { var sourcefileSizeInGbytes = (((fs.statSync(currentSourceLine)).size) / 1000000000.0); } catch (err) {
 
-                var sizeDiffGB = 0;
-            }
+            var sourcefileSizeInGbytes = 0
+        }
+        try { var destfileSizeInGbytes = (((fs.statSync(currentDestinationLine)).size) / 1000000000.0); } catch (err) {
 
-      
+            var destfileSizeInGbytes = 0
+        }
+        try { var sizeDiffGB = sourcefileSizeInGbytes - destfileSizeInGbytes } catch (err) {
 
-
-
+            var sizeDiffGB = 0;
+        }
 
 
 
-       
+
+
+
+
+
+
 
 
         try {
 
 
-        
-
-
-          if(folderToFolderConversionEnabled == true){
-
-            errorLogFull += "Attempting to move new file to output folder" + "\r\n"
-            updateConsole(workerNumber, "Attempting to move new file to output folder" + currentSourceLine)
-
-
-            var finalFilePathCopy = finalFilePath
-
-
-            finalFilePathCopy = finalFilePathCopy.split(".")
-
-
-            finalFilePathCopy[finalFilePathCopy.length - 2] = finalFilePathCopy[finalFilePathCopy.length - 2] + "-TdarrNew"
-            finalFilePathCopy = finalFilePathCopy.join(".")
-
-
-            fsextra.moveSync(currentDestinationLine, finalFilePathCopy, {
-                overwrite: true
-            })
-
-            errorLogFull += "Moving file successful:" + "\r\n"
-            updateConsole(workerNumber, "Moving file successful:" + currentDestinationLine + " to " + finalFilePathCopy)
-
-
-            // errorLogFull += "Attempting to delete original file" + "\r\n"
-            // updateConsole(workerNumber, "Attempting to delete original file" + currentSourceLine)
 
 
 
-            // fs.unlinkSync(currentSourceLine)
-            // errorLogFull += "Original file deleted" + "\r\n"
-            // updateConsole(workerNumber, "Original file deleted" + currentSourceLine)
+            if (folderToFolderConversionEnabled == true) {
+
+                errorLogFull += "Attempting to move new file to output folder" + "\r\n"
+                updateConsole(workerNumber, "Attempting to move new file to output folder" + currentSourceLine)
 
 
-            errorLogFull += "Renaming new file:" + "\r\n"
-            updateConsole(workerNumber, "Renaming new file:" + finalFilePathCopy + " to " + finalFilePath)
-
-            fsextra.moveSync(finalFilePathCopy, finalFilePath, {
-                overwrite: true
-            })
-
-            errorLogFull += "Renaming new file success:" + "\r\n"
-            updateConsole(workerNumber, "Renaming new file success:" + finalFilePathCopy + " to " + finalFilePath)
+                var finalFilePathCopy = finalFilePath
 
 
-            var cliLog = "\n Original size GB:"+ sourcefileSizeInGbytes
-            cliLog += "\n New size GB:"+ destfileSizeInGbytes
+                finalFilePathCopy = finalFilePathCopy.split(".")
 
 
+                finalFilePathCopy[finalFilePathCopy.length - 2] = finalFilePathCopy[finalFilePathCopy.length - 2] + "-TdarrNew"
+                finalFilePathCopy = finalFilePathCopy.join(".")
 
 
-          }else{
+                fsextra.moveSync(currentDestinationLine, finalFilePathCopy, {
+                    overwrite: true
+                })
 
-            updateConsole(workerNumber, "Moving file:" + currentDestinationLine + " to " + finalFilePath)
-
-            errorLogFull += "Attempting to move new file to original folder" + "\r\n"
-            updateConsole(workerNumber, "Attempting to move new file to original folder" + currentSourceLine)
-
-            var finalFilePathCopy = finalFilePath
+                errorLogFull += "Moving file successful:" + "\r\n"
+                updateConsole(workerNumber, "Moving file successful:" + currentDestinationLine + " to " + finalFilePathCopy)
 
 
-            finalFilePathCopy = finalFilePathCopy.split(".")
+                //Delete source file ONLY after first pass when file is still in original source folder.
+
+                if(librarySettings.folderToFolderConversionDeleteSource === true && !fileToProcess.includes(folderToFolderConversionFolder)){
+
+                    errorLogFull += "Attempting to delete original file" + "\r\n"
+                    updateConsole(workerNumber, "Attempting to delete original file" + currentSourceLine)
+    
+                    fs.unlinkSync(currentSourceLine)
+                    errorLogFull += "Original file deleted" + "\r\n"
+                    updateConsole(workerNumber, "Original file deleted" + currentSourceLine)
+
+                }
+             
 
 
-            finalFilePathCopy[finalFilePathCopy.length - 2] = finalFilePathCopy[finalFilePathCopy.length - 2] + "-TdarrNew"
-            finalFilePathCopy = finalFilePathCopy.join(".")
+                
 
 
-            fsextra.moveSync(currentDestinationLine, finalFilePathCopy, {
-                overwrite: true
-            })
+                errorLogFull += "Renaming new file:" + "\r\n"
+                updateConsole(workerNumber, "Renaming new file:" + finalFilePathCopy + " to " + finalFilePath)
 
-            errorLogFull += "Moving file successful:" + "\r\n"
-            updateConsole(workerNumber, "Moving file successful:" + currentDestinationLine + " to " + finalFilePathCopy)
+                fsextra.moveSync(finalFilePathCopy, finalFilePath, {
+                    overwrite: true
+                })
 
-
-            errorLogFull += "Attempting to delete original file" + "\r\n"
-            updateConsole(workerNumber, "Attempting to delete original file" + currentSourceLine)
-
+                errorLogFull += "Renaming new file success:" + "\r\n"
+                updateConsole(workerNumber, "Renaming new file success:" + finalFilePathCopy + " to " + finalFilePath)
 
 
-            fs.unlinkSync(currentSourceLine)
-            errorLogFull += "Original file deleted" + "\r\n"
-            updateConsole(workerNumber, "Original file deleted" + currentSourceLine)
-
-
-            errorLogFull += "Renaming new file:" + "\r\n"
-            updateConsole(workerNumber, "Renaming new file:" + finalFilePathCopy + " to " + finalFilePath)
-
-            fsextra.moveSync(finalFilePathCopy, finalFilePath, {
-                overwrite: true
-            })
-
-            errorLogFull += "Renaming new file success:" + "\r\n"
-            updateConsole(workerNumber, "Renaming new file success:" + finalFilePathCopy + " to " + finalFilePath)
-
-
-            var cliLog = "\n Original size GB:"+ sourcefileSizeInGbytes
-            cliLog += "\n New size GB:"+ destfileSizeInGbytes
-
-
-          }
+                var cliLog = "\n Original size GB:" + sourcefileSizeInGbytes
+                cliLog += "\n New size GB:" + destfileSizeInGbytes
 
 
 
 
+            } else {
 
-        
+                updateConsole(workerNumber, "Moving file:" + currentDestinationLine + " to " + finalFilePath)
+
+                errorLogFull += "Attempting to move new file to original folder" + "\r\n"
+                updateConsole(workerNumber, "Attempting to move new file to original folder" + currentSourceLine)
+
+                var finalFilePathCopy = finalFilePath
+
+
+                finalFilePathCopy = finalFilePathCopy.split(".")
+
+
+                finalFilePathCopy[finalFilePathCopy.length - 2] = finalFilePathCopy[finalFilePathCopy.length - 2] + "-TdarrNew"
+                finalFilePathCopy = finalFilePathCopy.join(".")
+
+
+                fsextra.moveSync(currentDestinationLine, finalFilePathCopy, {
+                    overwrite: true
+                })
+
+                errorLogFull += "Moving file successful:" + "\r\n"
+                updateConsole(workerNumber, "Moving file successful:" + currentDestinationLine + " to " + finalFilePathCopy)
+
+
+                errorLogFull += "Attempting to delete original file" + "\r\n"
+                updateConsole(workerNumber, "Attempting to delete original file" + currentSourceLine)
+
+
+
+                fs.unlinkSync(currentSourceLine)
+                errorLogFull += "Original file deleted" + "\r\n"
+                updateConsole(workerNumber, "Original file deleted" + currentSourceLine)
+
+
+                errorLogFull += "Renaming new file:" + "\r\n"
+                updateConsole(workerNumber, "Renaming new file:" + finalFilePathCopy + " to " + finalFilePath)
+
+                fsextra.moveSync(finalFilePathCopy, finalFilePath, {
+                    overwrite: true
+                })
+
+                errorLogFull += "Renaming new file success:" + "\r\n"
+                updateConsole(workerNumber, "Renaming new file success:" + finalFilePathCopy + " to " + finalFilePath)
+
+
+                var cliLog = "\n Original size GB:" + sourcefileSizeInGbytes
+                cliLog += "\n New size GB:" + destfileSizeInGbytes
+
+
+            }
+
+
+
+
+
+
 
             if (reQueueAfter == true) {
 
                 var filePropertiesToAdd = {
-                  HealthCheck:"Queued",
-                  TranscodeDecisionMaker:"Queued",
-                  lastTranscodeDate: new Date(),
-                  cliLog:cliLog,
-                  oldSize: currentFileObject.oldSize ? currentFileObject.oldSize : sourcefileSizeInGbytes,
-                  newSize:destfileSizeInGbytes,
-                  bumped: new Date(),
-                  history:currentFileObject.history == undefined ? "" : currentFileObject.history
+                    HealthCheck: "Queued",
+                    TranscodeDecisionMaker: "Queued",
+                    lastTranscodeDate: new Date(),
+                    cliLog: cliLog,
+                    oldSize: currentFileObject.oldSize ? currentFileObject.oldSize : sourcefileSizeInGbytes,
+                    newSize: destfileSizeInGbytes,
+                    bumped: new Date(),
+                    history: currentFileObject.history == undefined ? "" : currentFileObject.history
                 }
-      
-              } else {
-      
+
+            } else {
+
                 var filePropertiesToAdd = {
-                  HealthCheck:"Queued",
-                  TranscodeDecisionMaker:"Transcode success",
-                  lastTranscodeDate: new Date(),
-                  cliLog:cliLog,
-                  oldSize: currentFileObject.oldSize ? currentFileObject.oldSize : sourcefileSizeInGbytes,
-                  newSize:destfileSizeInGbytes,
-                  bumped:false,
-                  history:currentFileObject.history == undefined ? "" : currentFileObject.history
+                    HealthCheck: "Queued",
+                    TranscodeDecisionMaker: "Transcode success",
+                    lastTranscodeDate: new Date(),
+                    cliLog: cliLog,
+                    oldSize: currentFileObject.oldSize ? currentFileObject.oldSize : sourcefileSizeInGbytes,
+                    newSize: destfileSizeInGbytes,
+                    bumped: false,
+                    history: currentFileObject.history == undefined ? "" : currentFileObject.history
                 }
-              }
+            }
 
 
-           
-            
+
+
 
 
             var message = [
@@ -1141,7 +1286,16 @@ function workerNotEncounteredError() {
 function workerEncounteredError(messageOne) {
 
 
+    try{
+    if (fs.existsSync(currentDestinationLine)) {
+        fs.unlinkSync(currentDestinationLine)
+    }
+}catch(err){console.log(err)}
+
+
     if (messageOne == "Cancelled") {
+
+        
 
         var message = [
             workerNumber,
@@ -1290,12 +1444,12 @@ function fancyTimeFormat(time) {
 }
 
 
-function getFFmpegPercentage(frame,frameCount,VideoFrameRate,Duration){
+function getFFmpegPercentage(frame, frameCount, VideoFrameRate, Duration) {
 
     if (frameCount != "undefined") {
 
         return ((frame / frameCount) * 100).toFixed(2)
-  
+
     } else if (VideoFrameRate != 'undefined' && Duration != 'undefined') {
 
         return (((frame / VideoFrameRate) / Duration) * 100).toFixed(2)
