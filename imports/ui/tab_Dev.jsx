@@ -136,7 +136,7 @@ export default class App extends Component {
             <br />-[New] Option to delete source file when using folder to folder conversion.
             <br />-[New] Community plugins (Remove commentary tracks etc)
             <br />-[New] Option to delete local plugins
-            <br />-[New] Auto clean cache folder + preventing none Tdarr cache files being deleted in case of incorrect mapping.
+            <br />-[New] Auto clean cache folder + preventing non-Tdarr cache files being deleted in case of incorrect mapping.
             <br />-[Fix] Reset processing status of all files on startup so no files stuck in limbo
             <br />-[Fix] Transcode pie showing incorrect data
             <br />-[Fix] Folder watcher will now wait longer to detect if a new file has finished copying
