@@ -776,6 +776,20 @@ Meteor.methods({
 
   },
 
+  'deletePlugin'(pluginID) {
+
+    try {
+      fs.unlinkSync(homePath + `/Tdarr/Plugins/Local/` + pluginID + ".js")
+
+      return true
+    } catch (err) {
+      console.log(err)
+
+      return false
+    }
+
+  },
+
   'buildPluginStack'(plugins) {
 
     //  console.log(string)
@@ -794,10 +808,6 @@ Meteor.methods({
         var obj = hw.details();
 
         plugins[i] = { ...plugins[i], ...obj };
-
-
-        //  console.log(obj)
-
 
       } catch (err) {
 

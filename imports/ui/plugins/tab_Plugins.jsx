@@ -166,6 +166,7 @@ class App extends Component {
 
 
           var data = result[0]
+          var pluginType = result[1]
 
           const columns = [{
             Header: () => (
@@ -293,7 +294,33 @@ class App extends Component {
             }
 
           }, {
+            show: pluginType == "Local" ? true: false,
+            Header: () => (
+              <div className="pluginTableHeader">
+                <p>Delete</p>
+              </div>
+            ),
+            accessor: '',
+            id: 'Delete',
+            width: 70,
+            accessor: d => <Button variant="outline-light" onClick={() => {
+              Meteor.call('deletePlugin',d.id, (error, result) => {
+                if(result === true){
 
+                  alert('Plugin deleted successfully!')
+
+                }else{
+
+                  alert('Error deleting plugin. Please delete manually.')
+
+                }
+              })
+            }} ><span className="buttonTextSize">X</span></Button>,
+
+
+          }, {
+
+            show: pluginType == "Community" ? true: false,
             Header: () => (
               <div className="pluginTableHeader">
                 <p>Stars</p>
@@ -311,7 +338,7 @@ class App extends Component {
             }
 
           }, {
-
+            show: pluginType == "Community" ? true: false,
             Header: () => (
               <div className="pluginTableHeader">
                 <p>Link</p>
