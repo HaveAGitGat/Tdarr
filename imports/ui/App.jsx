@@ -48,22 +48,42 @@ const AppRouter = () => {
 
       var version =  GlobalSettingsDB.find({}).fetch()[0].version;
 
-      var newVersion = 1.0063
+      var newVersion = 1.006
 
       setVersion(newVersion)
 
       if(version != newVersion){
 
         alert(`
+
+v1.007 release [22nd Nov 19]:
+No breaking changes.
+Changes:
+-[New] Option to enable Linux FFmpeg NVENC binary (3.4.5 for unRAID compatibility)
+-[New] Option to ignore source sub-folders
+-[New] Skip health check button
+-[New] Option to change visible queue length
+-[New] Option to duplicate library
+-[New] Customise search result columns
+-[New] UI improvements (@jono)
+-[New] Option to delete source file when using folder to folder conversion.
+-[New] Community plugins (Remove commentary tracks etc)
+-[New] Option to delete local plugins
+-[New] Auto clean cache folder + preventing none Tdarr cache files being deleted in case of incorrect mapping.
+-[Fix] Reset processing status of all files on startup so no files stuck in limbo
+-[Fix] Transcode pie showing incorrect data
+-[Fix] Folder watcher will now wait longer to detect if a new file has finished copying
+-[Fix] Folder to folder conversion: Files which already meet requirements will be copied to output folder
+-[Fix] Folder to folder conversion: Cache/Output folder bug
+-[Fix] Default containers to scan for now include ts/m2ts
+-[Fix] Keep all stream types when using remux plugin creator
+-[Fix] Prevent too many workers occassionally starting
+-[Fix] Newly transcoded files will be bumped correctly to top of queue when sorting by size
+-[Fix] Closed caption scanning now much faster & accurate (even on empty captions)
+-[Fix] Plugin creator plugin path error
+-[Fix] Health check error when using FFmpeg hardware transcoding
         
-        If you set up Tdarr using the unRAID tdarr_aio template on Saturday 9th/Sunday 10th then your settings may reset on each update due to an error in the template. If this issue affects you, please delete your currently installed tdarr_aio container/template and set up the new template in the CA store. Sorry for the inconvenience.
-        
-        v1.0063 mini-release [13th Nov 19]:
-        No breaking changes.
-        Changes:
-        -[Fix] Closed caption scanning now much faster & accurate (even on empty captions)
-        -[Fix] Plugin creator plugin path error
-        -[Fix] Health check error when using FFmpeg hardware transcoding
+    
         
         
         `)

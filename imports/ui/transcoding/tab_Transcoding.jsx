@@ -209,9 +209,7 @@ class App extends Component {
               lowCPUPriority: !item.lowCPUPriority,
             }
           }
-
         );
-
       }
       } />
     ));
