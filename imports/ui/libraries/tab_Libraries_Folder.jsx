@@ -303,14 +303,14 @@ class Folder extends Component {
       setting => setting._id == this.props.libraryItem._id
     );
     plugins = plugins[0].pluginIDs.sort(function(a, b) {
-      return b.Priority - a.Priority;
+      return a.priority - b.priority;
     });
 
     Meteor.call('buildPluginStack', plugins, (error, result) => {
       //console.log(result)
 
       result = result.sort(function(a, b) {
-        return b.Priority - a.Priority;
+        return a.priority - b.priority;
       });
 
       var stack = result.map(pluginItem => {
