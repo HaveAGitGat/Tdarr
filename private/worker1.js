@@ -127,20 +127,14 @@ process.on('message', (m) => {
 
 
     if (m[0] == "requestNewItem") {
-
         checkifQueuePause()
-
-
     }
 
 
 
 
     if (m[0] == "continueWork") {
-
         checkifQueuePause()
-
-
     }
 
 
@@ -155,8 +149,6 @@ process.on('message', (m) => {
             "suicide"
         ];
         process.send(message);
-
-
 
         updateConsole(workerNumber, "Stop command received. Closing sub-processes")
 
@@ -184,28 +176,17 @@ process.on('message', (m) => {
         ];
 
         try {
-
-
             if (shellThreadModule != "") {
                 shellThreadModule.send(infoArray);
             }
-
-
         } catch (err) { }
 
         try {
 
-
             if (repair_worker != "") {
                 repair_worker.send(infoArray);
             }
-
-
         } catch (err) { }
-
-        // repair_worker
-
-
     }
 
 
@@ -244,13 +225,11 @@ process.on('message', (m) => {
         updateConsole(workerNumber, "File received:" + fileToProcess)
 
 
- 
 
         var presetSplit
         presetSplit = preset.split(',')
         var workerCommand = "";
 
-       
 
     
         //Create folder to folder conversion output folders
@@ -319,9 +298,6 @@ process.on('message', (m) => {
             }
         }
 
-  
-
-
 
 
 
@@ -335,20 +311,10 @@ process.on('message', (m) => {
         }
 
 
-
-
-
-
         var ffmpegPath = getFFmpegCLIPath();
 
 
-
-
-
-
         currentSourceLine = fileToProcess
-
-
 
 
         if (process.platform == 'win32' && handBrakeMode == true) {
@@ -559,9 +525,6 @@ process.on('message', (m) => {
         }
 
 
-
-
-
         function processFileFunc() {
             //
 
@@ -767,9 +730,6 @@ process.on('message', (m) => {
                     console.error(message.error);
                 }
 
-                //var message2 = message.split(",");
-
-
 
                 if (message[0] == "Exit") {
 
@@ -777,15 +737,6 @@ process.on('message', (m) => {
                     updateConsole(workerNumber, "Sub-worker exit status received")
 
                     shellThreadModule = "";
-
-
-
-
-
-
-                    //// exit code begin
-
-
 
 
                     if (mode != "healthcheck" && !fs.existsSync(currentDestinationLine)) {
@@ -805,10 +756,6 @@ process.on('message', (m) => {
                         process.send(message);
 
 
-
-
-                        //   //  checkifQueuePause();
-
                         checkifQueuePause();
 
 
@@ -823,18 +770,6 @@ process.on('message', (m) => {
 
                     }
 
-
-
-
-
-
-
-
-
-                    //    checkifQueuePause()
-
-
-
                 }
             });
         }
@@ -843,15 +778,7 @@ process.on('message', (m) => {
 
 
 
-
-
-
-
     if (m[0] == "completed") {
-
-
-
-
 
         if (exitRequestSent == false) { }
 
@@ -881,21 +808,7 @@ process.on('message', (m) => {
 
     }
 
-
-
-
-
-
-
-
-
-
-
-
 });
-
-
-
 
 
 
@@ -982,12 +895,6 @@ function getOutputPath(inputFilePath, outputFileContainer, inputPathStem, output
 
     topFolderCharLength = topFolder.length   //
 
-
-
-    // var thisFile = fullPath + "" // path/to/folder/test.mp4
-
-    // fileTypeSplit = thisFile.split('.');    // 
-    // fileType = fileTypeSplit[fileTypeSplit.length - 1]   // mp4
 
 
     var str = inputFilePath  // path/to/topfolder/subfolder/test.mp4
@@ -1258,14 +1165,6 @@ function workerNotEncounteredError() {
             checkifQueuePause();
 
         }
-
-
-
-
-
-
-
-
     }
 }
 
