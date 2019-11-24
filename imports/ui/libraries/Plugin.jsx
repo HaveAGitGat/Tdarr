@@ -36,9 +36,6 @@ export default class Plugin extends Component {
           thisLibraryPlugins[i].priority = thisLibraryPlugins[i].priority - 1
     
         }
-
-
-
       }
 
       SettingsDB.upsert(
@@ -51,7 +48,7 @@ export default class Plugin extends Component {
       );
 
 
-        Meteor.call('removePluginInclude',this.props.DB_id, this.props.pluginItem._id,event.target.checked,function (error, result) { });
+        Meteor.call('removePluginInclude',this.props.DB_id, this.props.pluginItem._id,function (error, result) { });
 
     }
 
@@ -65,7 +62,6 @@ export default class Plugin extends Component {
           <td>
           <span className="buttonTextSize">{this.props.pluginItem.source != undefined ? this.props.pluginItem.source : "-"}</span>
           </td>
-
 
 
           <td>
