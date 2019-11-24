@@ -16,21 +16,13 @@ const shortid = require('shortid');
 const util = require('util')
 
 
-
-//new file comes in
-//=> file added to DB
-//=> decision maker triggered
-
-
-
-
 //Globals
-var path = require("path");
-var fs = require('fs');
+const path = require("path");
+const fs = require('fs');
 const fsextra = require('fs-extra')
-var rimraf = require("rimraf");
+const rimraf = require("rimraf");
 
-var os = require('os-utils');
+const os = require('os-utils');
 
 
 var workers = {}
@@ -66,8 +58,6 @@ function getRootDir() {
   var firstEle = rootDir.length - 5
   rootDir.splice(firstEle, 5)
   rootDir = rootDir.join("\\")
-
-
   return rootDir
 }
 
@@ -1991,20 +1981,6 @@ function launchWorkerModule(workerType) {
   // });
 
 
-
-  // var messageOut = [
-  //     "workerNumber",
-  //     i,
-  // ];
-
-  // workers[workerID - 1].send(messageOut);
-
-
-
-  // var worker = workers[1];
-  //  worker.send("w:"+2);
-
-
   workers[workerID].on("exit", Meteor.bindEnvironment(function (code, signal) {
 
     updateConsole("" + "Worker exited" + "", true)
@@ -3769,20 +3745,9 @@ function tablesUpdate() {
       );
 
 
-
-
-
-
-
       statisticsUpdate();
 
 
-
-
-
-
-      // filesToAddToDBLengthNew = 0
-      // filesToAddToDBLengthOld = 0
       filesToAddToDBLengthNew = filesToAddToDB.length + logsToAddToDB.length
 
       var DBLoadStatus
@@ -3828,7 +3793,7 @@ function tablesUpdate() {
           $set: {
             DBPollPeriod: DBPollPeriod > 1000 ? (DBPollPeriod / 1000) + "s" : "1s",
             DBFetchTime: (newFetchtime).toFixed(1) + "s",
-            DBTotalTime: ((DBPollPeriod / 1000) + newFetchtime).toFixed(1) + "s",
+            DBTotalTime: ((DBPollPeriod > 1000 ? (DBPollPeriod / 1000) : 1) + newFetchtime).toFixed(1) + "s",
             DBLoadStatus: DBLoadStatus,
             DBQueue: filesToAddToDB.length + logsToAddToDB.length
           }
@@ -3948,9 +3913,6 @@ function statisticsUpdate() {
     }
   );
 
-
-
-
 }
 
 
@@ -4007,15 +3969,9 @@ function updatePieStats(property, fileMedium, DB_id) {
 }
 
 
-
-
-
 //set cpu priority low
 
 setProcessPriority()
-
-
-
 
 function setProcessPriority() {
 
@@ -4028,16 +3984,10 @@ function setProcessPriority() {
     }
 
 
-
-
     if (process.platform == 'linux') {
       var workerCommandFFmpeg = 'for p in $(pgrep ^ffmpeg$); do renice -n 20 -p $p; done'
       var workerCommandHandBrake = 'for p in $(pgrep ^HandBrakeCLI$); do renice -n 20 -p $p; done'
     }
-
-
-
-
 
     if (process.platform == 'darwin') {
       var workerCommandFFmpeg = 'for p in $(pgrep ^ffmpeg$); do renice -n 20 -p $p; done'
@@ -4157,11 +4107,7 @@ function workerUpdateCheck() {
 
       try {
 
-
-
         if (workerStatus[workerCheck[i]._id][1] == 300) {
-
-
 
           if (workerStatus[workerCheck[i]._id][0] == workerCheck[i].file + workerCheck[i].percentage + "") {
 
@@ -4185,9 +4131,6 @@ function workerUpdateCheck() {
           workerStatus[workerCheck[i]._id][1] = (workerStatus[workerCheck[i]._id][1]) + 1
 
         }
-
-
-
       } catch (err) { console.log(err.stack) }
     }
 
