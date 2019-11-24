@@ -2243,6 +2243,10 @@ function launchWorkerModule(workerType) {
 
               var reQueueAfter = false
 
+              var TranscodeDecisionMaker = false
+
+              
+
               //  console.log(util.inspect(firstItem, {showHidden: false, depth: null}))
 
 
@@ -2303,10 +2307,14 @@ function launchWorkerModule(workerType) {
                 //Plugin filter
 
 
-
                 if (settings[0].decisionMaker.pluginFilter == true) {
 
                   var pluginsSelected = settings[0].pluginIDs
+
+                  pluginsSelected = pluginsSelected.sort(function(a, b) {
+                    return a.priority - b.priority;
+                  });
+
 
                   pluginsSelected = pluginsSelected.filter(row => (row.checked));
 
@@ -2320,6 +2328,8 @@ function launchWorkerModule(workerType) {
                     FFmpegMode = ''
                     reQueueAfter = ''
                     cliLogAdd += '☒No plugins selected!  \n'
+
+                    TranscodeDecisionMaker = "Transcode error"
 
 
 
@@ -2379,7 +2389,9 @@ function launchWorkerModule(workerType) {
 
                         }
                       } catch (err) {
-                        console.log(err.stack)
+                        console.log(err)
+
+                        err = JSON.stringify(err)
 
 
                         processFile = false
@@ -2388,7 +2400,9 @@ function launchWorkerModule(workerType) {
                         handBrakeMode = ''
                         FFmpegMode = ''
                         reQueueAfter = ''
-                        cliLogAdd += '☒Plugin does not exist!  \n'
+                        cliLogAdd += `☒Plugin error! ${err} \n`
+
+                        TranscodeDecisionMaker = "Transcode error"
 
                         break
 
@@ -2608,6 +2622,7 @@ function launchWorkerModule(workerType) {
                   processFile,
                   settings[0],
                   ffmpegNVENCBinary,
+                  TranscodeDecisionMaker,
 
 
                 ]
@@ -2622,12 +2637,14 @@ function launchWorkerModule(workerType) {
               if (processFile == false && folderToFolderConversionEnabled == false) {
 
 
+                //TranscodeDecisionMaker status first depends on if error encountered during plugins, else depends on
+                // if file has already been processed or not (no oldSize if it hasn't been processed)
 
                 FileDB.upsert(fileToProcess,
                   {
                     $set: {
                       _id: fileToProcess,
-                      TranscodeDecisionMaker: firstItem.oldSize ? "Transcode success" : "Not required",
+                      TranscodeDecisionMaker: TranscodeDecisionMaker != false ? TranscodeDecisionMaker : firstItem.oldSize ? "Transcode success" : "Not required" ,
                       processingStatus: false,
                       cliLog: cliLogAdd,
                       lastTranscodeDate: new Date(),

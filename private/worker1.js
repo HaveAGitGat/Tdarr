@@ -93,6 +93,7 @@ var folderToFolderConversionFolder
 var processFile
 var librarySettings
 var ffmpegNVENCBinary
+var TranscodeDecisionMaker
 
 
 
@@ -110,25 +111,12 @@ function getRootDir() {
     return rootDir
 }
 
-//__dirname = getRootDir()
-
-
-
-
-// var message = [
-//     "workerOnline",
-// ];
-// process.send(message);
-
 
 var workerNumber = process.argv[2]
 var workerType = process.argv[3]
 
-//workerNumber =process.argv[2]
 
 checkifQueuePause()
-
-
 updateConsole(workerNumber, "Worker online. Requesting item")
 
 
@@ -242,6 +230,7 @@ process.on('message', (m) => {
         processFile = m[15]
         librarySettings = m[16]
         ffmpegNVENCBinary = m[17]
+        TranscodeDecisionMaker = m[18]
 
 
 
@@ -511,7 +500,7 @@ process.on('message', (m) => {
 
                 var filePropertiesToAdd = {
                     HealthCheck: "Queued",
-                    TranscodeDecisionMaker: currentFileObject.oldSize ? "Transcode success" : "Not required",
+                    TranscodeDecisionMaker: TranscodeDecisionMaker != false ? TranscodeDecisionMaker : currentFileObject.oldSize ? "Transcode success" : "Not required" ,
                     lastTranscodeDate: new Date(),
                     cliLog: cliLog,
                     oldSize: currentFileObject.oldSize ? currentFileObject.oldSize : sourcefileSizeInGbytes,
