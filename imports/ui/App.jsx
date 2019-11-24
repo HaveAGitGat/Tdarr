@@ -20,6 +20,7 @@ import TabLibraries from './libraries/tab_Libraries.jsx';
 import TabPlugins from './plugins/tab_Plugins.jsx';
 import TabSearch from './tab_Search.jsx';
 import TabTranscoding from './transcoding/tab_Transcoding.jsx';
+import TabBackups from './tab_Backups.jsx';
 
 const tabs = [
   {path: '/tdarr/', text: 'Tdarr', component: TabTranscoding},
@@ -30,6 +31,7 @@ const tabs = [
   {path: '/options/', text: 'Options', component: TabOptions},
   {path: '/logs/', text: 'Logs', component: TabLog},
   {path: '/help/', text: 'Help', component: TabHelp},
+  {path: '/backups/', text: 'Backups', component: TabBackups},
   {path: '/', text: 'Dev', component: TabDev},
 ];
 

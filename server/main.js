@@ -8,21 +8,26 @@ import '../imports/api/tasks.js';
 
 import { LogDB, FileDB, SettingsDB, GlobalSettingsDB, StatisticsDB, ClientDB } from '../imports/api/tasks.js';
 
-
 console.log("Tdarr started")
 
 
-const shortid = require('shortid');
-const util = require('util')
+
+
 
 
 //Globals
+
+const shortid = require('shortid');
+const util = require('util')
 const path = require("path");
 const fs = require('fs');
 const fsextra = require('fs-extra')
 const rimraf = require("rimraf");
-
 const os = require('os-utils');
+var zipFolder = require('zip-folder');
+const unzipper = require('unzipper');
+const schedule = require('node-schedule');
+
 
 
 var workers = {}
@@ -46,6 +51,8 @@ var logsToAddToDB = []
 //__dirname = getRootDir()
 
 var filesBeingProcessed = []
+
+var backupStatus = false
 
 
 
@@ -161,14 +168,10 @@ if (!fs.existsSync(homePath + "/Tdarr/Plugins")) {
 
 }
 
-
-
 if (!fs.existsSync(homePath + "/Tdarr/Data")) {
   fs.mkdirSync(homePath + "/Tdarr/Data");
 
 }
-
-
 
 if (!fs.existsSync(homePath + "/Tdarr/Plugins/Community")) {
   fs.mkdirSync(homePath + "/Tdarr/Plugins/Community");
@@ -182,6 +185,11 @@ if (!fs.existsSync(homePath + "/Tdarr/Plugins/Local")) {
 
 if (!fs.existsSync(homePath + "/Tdarr/Samples")) {
   fs.mkdirSync(homePath + "/Tdarr/Samples");
+
+}
+
+if (!fs.existsSync(homePath + "/Tdarr/Backups")) {
+  fs.mkdirSync(homePath + "/Tdarr/Backups");
 
 }
 
@@ -213,7 +221,6 @@ if (fs.existsSync(homePath + "/Tdarr/Data/env.json")) {
 
     console.log(err.stack)
   }
-
 }
 
 
@@ -223,14 +230,311 @@ if (fs.existsSync(homePath + "/Tdarr/Data/env.json")) {
 //console.log("homePath:"+homePath)
 //fs.writeFileSync(homePath + "/Tdarr/Data/test.txt", "Hello", 'utf8');
 
+//
 
-//migration step
+
+
+function getDateNow() {
+
+  var today = new Date();
+  var dd = today.getDate();
+  var mm = today.getMonth() + 1;
+  var yyyy = today.getFullYear();
+  if (dd < 10) {
+    dd = '0' + dd
+  }
+
+  var months = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"];
+
+  mm = months[mm - 1];
+  today = dd + '/' + mm + '/' + yyyy;
+  var today2 = dd + '-' + mm + '-' + yyyy;
+
+
+  var d = new Date(),
+    h = (d.getHours() < 10 ? '0' : '') + d.getHours(),
+    m = (d.getMinutes() < 10 ? '0' : '') + d.getMinutes();
+  var s = (d.getSeconds() < 10 ? '0' : '') + d.getSeconds();
+  var timenow = h + '-' + m + '-' + s;
+
+  return today2 + "-" + timenow
+
+}
+
+//No need to backup client DB
+
+var collections = [
+  [FileDB,"FileDB"],
+  [LogDB,"LogDB"],
+  [SettingsDB,"SettingsDB"],
+  [GlobalSettingsDB,"GlobalSettingsDB"],
+  [StatisticsDB,"StatisticsDB"],
+]
+
+
+
+
+
+Meteor.methods({
+
+  'getBackups'() {
+    try {
+      var backups = []
+      fs.readdirSync(homePath + `/Tdarr/Backups/`).forEach(file => {
+        if(file.includes('.zip')){
+
+          var sizeInMbytes = (((fs.statSync(homePath + `/Tdarr/Backups/`+file)).size) / 1000000.0).toPrecision(2);
+
+          backups.push({name:file,
+            size:sizeInMbytes,
+          })
+
+        }
+      });
+
+    } catch (err) {
+      console.log(err.stack)
+    }
+  return backups
+
+  },
+
+  'restoreBackup'(name) {
+
+    backupStatus = [
+
+      {name:"Extract",status:"Running"},
+
+    ]
+
+    if (fs.existsSync(homePath + "/Tdarr/Data/env.json")) {
+
+      try {
+        fsextra.removeSync(homePath + `/Tdarr/Backups/${name}-unzip`)
+
+      } catch (err) { }
+
+
+    }
+
+    if (!fs.existsSync(homePath + `/Tdarr/Backups/${name}`)) {
+
+      backupStatus.push({name:"Status",status:`Backup file ${name} does not exist!`})
+
+
+    }
+
+
+  
+    try {
+
+      var file = (name.split('.'))[0]
+
+      var stream = fs.createReadStream(homePath + `/Tdarr/Backups/${name}`)
+      .pipe(unzipper.Extract({ path: homePath + `/Tdarr/Backups/${file}-unzip` }))
+      .on('finish', Meteor.bindEnvironment(function () {
+
+        backupStatus[0].status = "Complete"
+
+        for (var i = 0; i < collections.length; i++) {
+
+          var count = 0
+          
+          backupStatus.push({name:collections[i][1]})
+          backupStatus[i+1].status = "Cleaning existing DB"
+
+
+          collections[i][0].remove({});
+
+          backupStatus[i+1].status = "Existing DB cleaned"
+  
+          try{
+  
+          var dbItems = fs.readFileSync(homePath + `/Tdarr/Backups/${file}-unzip/${collections[i][1]}.txt`, dbItems, 'utf8');
+
+          backupStatus[i+1].status = "Reading backup file"
+  
+          dbItems = JSON.parse(dbItems)
+  
+          if(dbItems.length > 0){
+  
+            for (var j = 0; j < dbItems.length; j++) {
+
+              count++
+
+              backupStatus[i+1].status = "Restoring:"+count
+
+             // backupStatus = "Restoring: "+ count
+  
+              if (dbItems[j]._id) {
+    
+                var id = dbItems[j]._id
+    
+                collections[i][0].upsert(id,
+                  {
+                    $set: dbItems[j]
+                  }
+                );
+           
+              }
+            }
+
+          }else{
+            backupStatus[i+1].status = "No items to restore!"
+          }
+        }catch(err){
+          console.log(err)
+          backupStatus[i+1].status = "Error:"+JSON.stringify(err)
+        }
+  
+  
+        }
+
+
+        
+      fsextra.removeSync(homePath + `/Tdarr/Backups/${file}-unzip`)
+
+      backupStatus.push({name:"Status",status:"Success!"})
+
+       }));
+
+
+    } catch (err) {
+      console.log(err)
+      backupStatus.push({name:"Status",status:"Error:"+JSON.stringify(err)})
+
+    }
+
+    
+ 
+  }, 'deleteBackup'(name) {
+
+
+    try {
+
+
+      fsextra.removeSync(homePath + `/Tdarr/Backups/${name}`)
+
+
+      return true
+    } catch (err) {
+      console.log(err)
+      return false
+    }
+
+   
+
+
+  },  'getBackupStatus'() {
+
+    return backupStatus
+
+  },  'resetBackupStatus'() {
+
+
+    backupStatus = false
+
+  },'createBackup'(){
+
+    
+    backupStatus = []
+
+    try{
+
+    var currentDate = getDateNow()
+    if (!fs.existsSync(homePath + `/Tdarr/Backups/Backup-${currentDate}`)) {
+      fs.mkdirSync(homePath + `/Tdarr/Backups/Backup-${currentDate}`);
+    }
+
+    for(var i = 0; i < collections.length; i++){
+
+      backupStatus.push({name:collections[i][1]})
+      
+      backupStatus[i].status = "Fetching data"
+    
+      var dbItems = collections[i][0].find({}).fetch()
+      dbItems = JSON.stringify(dbItems)
+
+      backupStatus[i].status = "Writing to file"
+
+      fs.writeFileSync(homePath + `/Tdarr/Backups/Backup-${currentDate}/${collections[i][1]}.txt`, dbItems, 'utf8');
+
+      backupStatus[i].status = "Complete"
+    
+    }
+    dbItems = ""
+
+    backupStatus.push({name:"Local plugins",status:"Copying"})
+
+    if (!fs.existsSync(homePath + `/Tdarr/Backups/Backup-${currentDate}/LocalPlugins`)) {
+      fs.mkdirSync(homePath + `/Tdarr/Backups/Backup-${currentDate}/LocalPlugins`);
+    }
+
+    fsextra.copySync(homePath + "/Tdarr/Plugins/Local", homePath +  `/Tdarr/Backups/Backup-${currentDate}/LocalPlugins/`)
+    backupStatus[5].status = "Complete"
+  
+    backupStatus.push({name:"Zipping",status:"Running"})
+
+
+
+
+    zipFolder(homePath + `/Tdarr/Backups/Backup-${currentDate}`, homePath + `/Tdarr/Backups/Backup-${currentDate}.zip`, Meteor.bindEnvironment(function(err) {
+      if(err) {
+        backupStatus[6].status = "Error:"+JSON.stringify(err)
+      } else {
+        backupStatus[6].status = "Complete"
+      }
+
+     
+      
+      fsextra.removeSync(homePath + `/Tdarr/Backups/Backup-${currentDate}`)
+    
+    }));
+
+  }catch(err){
+    console.log(err)
+    backupStatus.push({name:"Status",status:"Error:"+JSON.stringify(err)})
+  }
+    
+    }
+
+})
+
+
+
+//Backup
+var dailyBackup = schedule.scheduleJob('0 0 0 * * *', Meteor.bindEnvironment(function(){
+
+  Meteor.call('createBackup', (error, result) => {})
+
+}));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+setTimeout(Meteor.bindEnvironment(main), 10000);
+
+
+function main(){
 
 
 console.log("Initialising DB")
 
-allFilesPulledTable = FileDB.find({}).fetch()
 
+
+//migration step
+allFilesPulledTable = FileDB.find({}).fetch()
 
 for (var i = 0; i < allFilesPulledTable.length; i++) {
 
@@ -724,16 +1028,10 @@ Meteor.methods({
               return false
 
             }
-
           }
 
           return true
-
-
-
         } catch (err) { console.log(err.stack) }
-
-
       }
 
 
@@ -3644,12 +3942,6 @@ function tablesUpdate() {
       transcodeFiles = table1data
       healthcheckFiles = table4data
 
-      //
-
-
-
-
-
 
 
       function getTimeNow() {
@@ -3818,9 +4110,6 @@ function tablesUpdate() {
 
 
   setTimeout(Meteor.bindEnvironment(() => { addFilesToDB = true }), 1000);
-
-
-
 }
 
 
@@ -4139,4 +4428,7 @@ function workerUpdateCheck() {
 
   setTimeout(Meteor.bindEnvironment(workerUpdateCheck), 1000);
 }
+
+}
+
 
