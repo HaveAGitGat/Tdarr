@@ -77,8 +77,13 @@ export default class App extends Component {
           variant="outline-light"
           onClick={() => {
 
+            if (confirm('Are you sure you want to restore this backup?')) {
+
+
             Meteor.call('restoreBackup', item.name, (error, result) => { })
             window.scrollTo(0, 0)
+
+            }
 
 
           }}
@@ -97,6 +102,9 @@ export default class App extends Component {
                   alert('Could not delete backup!')
 
                 }
+
+                this.renderBackups(event)
+              
               })
             }
 
@@ -149,6 +157,12 @@ export default class App extends Component {
           <br/>
           <br/>
 
+          <p>Scheduled backup runs at midnight. Local plugins are backed-up but not restored (restore manually).</p>
+
+          <br/>
+          <br/>
+
+
 
           <div className={this.state.backupStatus !== false ? '' : 'hidden'}>
 
@@ -172,7 +186,9 @@ export default class App extends Component {
           <center><Button
           variant="outline-light"
           onClick={() => {
-            Meteor.call('createBackup', (error, result) => { })
+            Meteor.call('createBackup', (error, result) => { 
+              this.renderBackups(event)
+            })
           }}
         >Create backup</Button></center>
 
