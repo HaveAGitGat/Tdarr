@@ -303,14 +303,14 @@ class Folder extends Component {
       setting => setting._id == this.props.libraryItem._id
     );
     plugins = plugins[0].pluginIDs.sort(function(a, b) {
-      return b.Priority - a.Priority;
+      return a.priority - b.priority;
     });
 
     Meteor.call('buildPluginStack', plugins, (error, result) => {
       //console.log(result)
 
       result = result.sort(function(a, b) {
-        return b.Priority - a.Priority;
+        return a.priority - b.priority;
       });
 
       var stack = result.map(pluginItem => {
@@ -1298,6 +1298,30 @@ SettingsDB.insert(thisLibrary)
 
 
 </div>
+
+<span className="buttonTextSize mr-2">Copy to output if conditions already met:</span>
+<div style={libButtonStyle}>
+         
+                <ToggleButton
+                  thumbStyle={borderRadiusStyle}
+                  trackStyle={borderRadiusStyle}
+                  value={
+                    this.props.libraryItem.copyIfConditionsMet ===
+                    undefined
+                      ? true
+                      : !!this.props.libraryItem.copyIfConditionsMet
+                  }
+                  onToggle={() => {
+                    SettingsDB.upsert(this.props.libraryItem._id, {
+                      $set: {
+                        copyIfConditionsMet: !this.props.libraryItem
+                          .copyIfConditionsMet,
+                      },
+                    });
+                  }}
+                />
+                </div>
+
 
 <span className="buttonTextSize mr-2">Delete source file:</span>
 <div style={libButtonStyle}>

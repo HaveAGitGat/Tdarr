@@ -20,6 +20,7 @@ import TabLibraries from './libraries/tab_Libraries.jsx';
 import TabPlugins from './plugins/tab_Plugins.jsx';
 import TabSearch from './tab_Search.jsx';
 import TabTranscoding from './transcoding/tab_Transcoding.jsx';
+import TabBackups from './tab_Backups.jsx';
 
 const tabs = [
   {path: '/tdarr/', text: 'Tdarr', component: TabTranscoding},
@@ -30,6 +31,7 @@ const tabs = [
   {path: '/options/', text: 'Options', component: TabOptions},
   {path: '/logs/', text: 'Logs', component: TabLog},
   {path: '/help/', text: 'Help', component: TabHelp},
+  {path: '/backups/', text: 'Backups', component: TabBackups},
   {path: '/', text: 'Dev', component: TabDev},
 ];
 
@@ -48,7 +50,7 @@ const AppRouter = () => {
 
       var version =  GlobalSettingsDB.find({}).fetch()[0].version;
 
-      var newVersion = 1.007
+      var newVersion = 1.0071
 
       setVersion(newVersion)
 
@@ -56,8 +58,14 @@ const AppRouter = () => {
 
         alert(`
 
+        v1.0071 minor release [25th Nov 19]:
+        Changes:
+        -[New] Backup and restore feature (scheduled midnight backup)
+        -[New] Toggle copying to output folder if file already meets conditions
+        -[Fix] Move item to Transcode:Error instead of Transcode:Not required if error with plugin
+
+
         v1.007 release [22nd Nov 19]:
-        No breaking changes.
         Changes:
         -[New] Option to enable Linux FFmpeg NVENC binary (3.4.5 for unRAID compatibility)
         -[New] Option to ignore source sub-folders

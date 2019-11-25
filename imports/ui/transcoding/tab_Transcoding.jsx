@@ -307,27 +307,32 @@ class App extends Component {
     Meteor.call('getWorkers', (error, result) => {
 
 
-      var workers = result.map((worker, i) => (
-
-        <Workers
-          key={worker._id}
-          worker={worker}
-
-        />
-
-      ));
-
       try {
 
-        render(workers, document.getElementById('allWorkersContainerID'));
+        var workers = result.map((worker, i) => (
+
+          <Workers
+            key={worker._id}
+            worker={worker}
+
+          />
+
+        ));
+
+        try {
+
+          render(workers, document.getElementById('allWorkersContainerID'));
+        } catch (err) { }
+
+        ;
+
       } catch (err) { }
 
-;
-
-
-    
 
     });
+
+
+
   }
 
 
@@ -386,8 +391,6 @@ class App extends Component {
         // <td>{row.bumped ? row.bumped.toISOString() : "-"}</td>
 
    
-
-        
 
        return <tr key={row._id}>
           <td><p>{i + 1}</p></td><td><p>{row.file}</p></td><td><p>{row.video_codec_name}</p></td><td><p>{row.video_resolution}</p></td><td><p>{file_size}</p></td><td><p>{ !(row.bumped instanceof Date) ? this.renderBumpButton(row.file):this.renderCancelBumpButton(row.file) }</p></td><td><p>{this.renderSkipButton(row.file)}</p></td>
@@ -522,6 +525,8 @@ class App extends Component {
   }
 
   toTime = (d) => {
+
+    d = new Date(d)
 
     var h = (d.getHours() < 10 ? '0' : '') + d.getHours();
     var m = (d.getMinutes() < 10 ? '0' : '') + d.getMinutes();

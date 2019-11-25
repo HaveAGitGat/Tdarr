@@ -43,6 +43,7 @@
     "material-tabs": "0.0.8",
     "meteor-node-stubs": "^0.4.1",
     "mongodb": "^3.3.3",
+    "node-schedule": "^1.3.2",
     "nodegit": "^0.26.2",
     "os-utils": "0.0.14",
     "prettier": "^1.18.2",
@@ -66,7 +67,9 @@
     "rimraf": "^3.0.0",
     "shelljs": "^0.8.3",
     "shortid": "^2.2.15",
-    "simple-git": "^1.126.0"
+    "simple-git": "^1.126.0",
+    "unzipper": "^0.10.5",
+    "zip-folder": "^1.0.0"
   },
   "meteor": {
     "mainModule": {

@@ -120,6 +120,20 @@ export default class App extends Component {
 
               <p>Change log</p>
 
+              
+              <p>v1.0071 minor release [25th Nov 19]:
+            
+            <br />Changes:
+
+            <br />-[New] Backup and restore feature (scheduled midnight backup)
+            <br />-[New] Toggle copying to output folder if file already meets conditions
+            <br />-[Fix] Move item to Transcode:Error instead of Transcode:Not required if error with plugin
+
+            <br />
+            <br />
+
+            </p>
+
               <p>v1.007 release [22nd Nov 19]:
             
             <br />Changes:

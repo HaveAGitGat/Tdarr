@@ -6,8 +6,8 @@ import { FileDB, SettingsDB } from '../api/tasks.js';
 
 
 //Globals
-var fs = require('fs');
-var path = require('path');
+const fs = require('fs');
+const path = require('path');
 
 const shortid = require('shortid');
 
@@ -63,9 +63,6 @@ Meteor.methods({
                 }
             }
         })
-
-
-
     },
 
     'updatePluginInclude'(DB_id, ele, status) {
@@ -121,17 +118,8 @@ Meteor.methods({
                         }
                     }
                 })
-
-
             }
-
         }
-
-
-
-
-
-
     },
 
     'updateVideoCodecExclude'(DB_id, ele, status) {
@@ -179,12 +167,8 @@ Meteor.methods({
                         }
                     }
                 })
-
-
             }
-
         }
-
     },
 
     'updateAudioCodecExclude'(DB_id, ele, status) {
@@ -277,15 +261,9 @@ Meteor.methods({
                     true
 
                 );
-
             }
-
-
         }
-
-
     }
-
 });
 
 
