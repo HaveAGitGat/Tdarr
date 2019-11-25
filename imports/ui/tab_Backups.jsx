@@ -157,7 +157,7 @@ export default class App extends Component {
           <br/>
           <br/>
 
-          <p>Scheduled backup runs at midnight. Local plugins are backed-up but not restored (restore manually).</p>
+          <p>Scheduled backup runs at midnight. Local plugins are backed-up but not restored (restore manually). Stored in Tdarr/Backups.</p>
 
           <br/>
           <br/>
