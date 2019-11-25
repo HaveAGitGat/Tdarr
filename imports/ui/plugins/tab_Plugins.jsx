@@ -176,7 +176,7 @@ class App extends Component {
             ),
             accessor: 'id',
             id: 'id',
-            width: 70,
+            width: 80,
             accessor: d => <CopyToClipboard text={d.id}>
               <Button variant="outline-light" ><span className="buttonTextSize">Copy id</span></Button>
             </CopyToClipboard>,

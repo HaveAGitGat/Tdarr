@@ -1299,6 +1299,30 @@ SettingsDB.insert(thisLibrary)
 
 </div>
 
+<span className="buttonTextSize mr-2">Copy to output if conditions already met:</span>
+<div style={libButtonStyle}>
+         
+                <ToggleButton
+                  thumbStyle={borderRadiusStyle}
+                  trackStyle={borderRadiusStyle}
+                  value={
+                    this.props.libraryItem.copyIfConditionsMet ===
+                    undefined
+                      ? true
+                      : !!this.props.libraryItem.copyIfConditionsMet
+                  }
+                  onToggle={() => {
+                    SettingsDB.upsert(this.props.libraryItem._id, {
+                      $set: {
+                        copyIfConditionsMet: !this.props.libraryItem
+                          .copyIfConditionsMet,
+                      },
+                    });
+                  }}
+                />
+                </div>
+
+
 <span className="buttonTextSize mr-2">Delete source file:</span>
 <div style={libButtonStyle}>
          
