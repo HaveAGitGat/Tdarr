@@ -1008,11 +1008,14 @@ Meteor.methods({
         var hw = hwModule.exports;
 
         var obj = hw.details();
+try{
 
         //  console.log(obj)
 
 
         plugins.push(obj)
+
+        }catch(err){console.log(err.stack)}
 
       });
 
