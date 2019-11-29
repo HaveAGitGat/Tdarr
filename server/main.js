@@ -2083,7 +2083,7 @@ function scheduledPluginUpdate() {
 }
 
 
-scheduledCacheClean()
+//scheduledCacheClean()
 
 function scheduledCacheClean() {
 
