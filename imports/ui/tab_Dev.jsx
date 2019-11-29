@@ -97,7 +97,7 @@ export default class App extends Component {
 
 
 
-              <p>If things aren't working as expected, it may be necessary to clear the database using the following button. Your files will not be affected. Please restart Tdarr after doing so.</p>
+              <p>If things aren't working as expected, please try restoring from a backup. Else it may be necessary to clear the database using the following button. Your files will not be affected. Please restart Tdarr after doing so.</p>
 
               <center>
                 <Button variant="outline-danger" onClick={() => this.clearDB()} ><span className="buttonTextSize">Clear database</span></Button>
@@ -119,6 +119,16 @@ export default class App extends Component {
               <p></p>
 
               <p>Change log</p>
+
+                            <p>v1.0072 minor release [28th Nov 19]:
+            
+            <br />Changes:
+
+            <br />-Auto cache cleaner disabled due to issues on some systems.
+            <br />
+            <br />
+
+            </p>
 
               
               <p>v1.0071 minor release [25th Nov 19]:

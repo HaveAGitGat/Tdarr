@@ -50,13 +50,17 @@ const AppRouter = () => {
 
       var version =  GlobalSettingsDB.find({}).fetch()[0].version;
 
-      var newVersion = 1.0071
+      var newVersion = 1.0072
 
       setVersion(newVersion)
 
       if(version != newVersion){
 
         alert(`
+
+        v1.0072 minor release [28th Nov 19]:
+        Changes:
+        -Auto cache cleaner disabled due to issues on some systems.
 
         v1.0071 minor release [25th Nov 19]:
         Changes:
