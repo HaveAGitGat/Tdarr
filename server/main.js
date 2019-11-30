@@ -54,6 +54,7 @@ var filesBeingProcessed = []
 
 var backupStatus = false
 
+var hasFileDBChanged = true
 
 
 
@@ -3734,8 +3735,10 @@ function tablesUpdate() {
 
 
     } else {
+    } else if (hasFileDBChanged === true) {
 
 
+      hasFileDBChanged = false
 
       addFilesToDB = false
 
@@ -4428,6 +4431,33 @@ function workerUpdateCheck() {
 
   setTimeout(Meteor.bindEnvironment(workerUpdateCheck), 1000);
 }
+
+
+	var initializing = true;
+  FileDB.find().observeChanges({
+    added: function(id, doc) {
+      if (!initializing) {
+        //console.log('FileDB:Added')
+        hasFileDBChanged = true
+      }
+    },
+   changed: function (newDoc, oldDoc) {
+      if (!initializing) {
+      //console.log("FileDB:Changed");
+      hasFileDBChanged = true
+      }
+   },
+   removed: function (doc) {
+      if (!initializing) {
+     //console.log("FileDB:Removed");
+      hasFileDBChanged = true
+      }
+   }
+
+  });
+  initializing = false;
+
+
 
 }
 
