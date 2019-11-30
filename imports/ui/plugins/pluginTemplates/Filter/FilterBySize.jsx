@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { withTracker } from 'meteor/react-meteor-data';
 import { Button} from 'react-bootstrap';
 import ReactDOM from 'react-dom';
 
@@ -13,7 +12,7 @@ var ButtonStyle = {
 
 
 
- class App extends Component {
+ export default class App extends Component {
 
   constructor(props) {
     super(props);
@@ -21,12 +20,10 @@ var ButtonStyle = {
     this.state = {
   
     };
-
-
   }
 
 
-    createPlugin = () => {
+    addFilter = () => {
 
 
       var lowerBound = parseFloat(ReactDOM.findDOMNode(this.refs.lowerBound).value)
@@ -42,9 +39,16 @@ var ButtonStyle = {
 
       var string = lowerBound + "GB-" + upperBound + "GB" 
 
-Meteor.call('createPluginFilterSize', lowerBound,upperBound, string, function (error, result) { })
 
-alert('Local plugin created! It can be viewed on the Local plugins tab')
+
+
+var obj = {
+  name: 'Filter by size',
+  filter: `library.filters.filterBySize(file,${lowerBound},${upperBound})`,
+  description: `Files in the following size range will be processed: ${string}`
+}
+
+this.props.pushConditional(obj)
 
 
     }
@@ -63,45 +67,34 @@ alert('Local plugin created! It can be viewed on the Local plugins tab')
 
       <div >
 
-<br/>
-<br/>
-<br/>
-
-<center><p>Filter by size</p> </center>
-
-       <br/>
-       <br/>
        <br/>
 
-
-
-      <p>Include files between</p>
+       <center><p>Include files between</p> </center>
        <br/>
 
-      <p>
+       <center><p>
        
        <input type="text" className="filterByDate" ref="lowerBound"  defaultValue={"0"}></input>
        GB and 
        <input type="text" className="filterByDate" ref="upperBound"  defaultValue={"100"}></input>
        GB
       
-       </p>
+       </p> </center>
 
 
-          <br/>
-          <br/>
-          <br/>
+        
           <br/>
 
 
+      
         <center>
 
-       <Button variant="outline-light" onClick={this.createPlugin}  >Create Plugin</Button>
+          <Button variant="outline-light" onClick={this.addFilter}  >Add filter</Button>
 
-       </center>
+        </center>
 
-       <br/>
-       <br/>
+        <br />
+        <br />
        <br/>
 
 
@@ -111,17 +104,3 @@ alert('Local plugin created! It can be viewed on the Local plugins tab')
     );
   }
 }
-
-export default withTracker(() => {
-
-  
-
-
-return {
- 
-
-
-};
-})(App);
-
-
