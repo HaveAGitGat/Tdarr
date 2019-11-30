@@ -5,8 +5,6 @@ import ClipLoader from 'react-spinners/ClipLoader';
 import ToggleButton from 'react-toggle-button';
 
 
-
-
 var ButtonStyle = {
   display: 'inline-block',
 }

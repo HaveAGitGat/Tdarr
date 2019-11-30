@@ -595,9 +595,10 @@ class App extends Component {
 
   renderInfoButton(cliLog) {
 
+   
     try{
 
-    cliLog = cliLog.split("\n")
+    cliLog = cliLog.split("\\n")
 
     cliLog = cliLog.map( row => <p>{row}</p> )
 
