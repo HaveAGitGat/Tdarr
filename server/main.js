@@ -2959,7 +2959,7 @@ function launchWorkerModule(workerType) {
 
 
               //File filtered out by transcode decision maker
-              if ((processFile == false && folderToFolderConversionEnabled == false) || ( processFile == false && folderToFolderConversionEnabled == true && copyIfConditionsMet === false)){
+              if ((processFile == false && folderToFolderConversionEnabled !== true) || ( processFile == false && folderToFolderConversionEnabled == true && copyIfConditionsMet === false)){
 
 
                 //TranscodeDecisionMaker status first depends on if error encountered during plugins, else depends on
