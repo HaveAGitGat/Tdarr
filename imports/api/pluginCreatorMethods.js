@@ -21,7 +21,15 @@ Meteor.methods({
 
     var text = `
 
-    const importFresh = require('import-fresh');
+    var fs = require('fs');
+    var path = require('path');
+    if (fs.existsSync(path.join(process.cwd() + '/npm'))) {
+    var rootModules = path.join(process.cwd() + '/npm/node_modules/')
+    } else{
+    var rootModules = ''
+    }
+   
+    const importFresh = require(rootModules+'import-fresh');
     const library = importFresh('../methods/library.js')
       
       function details() {
