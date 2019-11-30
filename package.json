@@ -38,6 +38,7 @@
     "ffprobe-static": "^3.0.0",
     "fs-extra": "^8.1.0",
     "git-clone": "^0.1.0",
+    "import-fresh": "^3.2.1",
     "interweave": "^12.1.0",
     "is-docker": "^2.0.0",
     "material-tabs": "0.0.8",
