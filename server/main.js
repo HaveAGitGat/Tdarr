@@ -1483,7 +1483,25 @@ try{
 
         var filesInDB = allFilesPulledTable
 
-        filesInDB = filesInDB.filter(row => row.DB == DB_id);
+        
+        for(var i = 0; i < filesInDB.length; i++){
+
+          try{
+
+         // console.log('Checking file:'+filesInDB[i].file)
+
+          if ( (!filesInDB[i].file || !(fs.existsSync(filesInDB[i].file))) && ( filesInDB[i].DB == DB_id || filesInDB[i].DB == undefined ) ) {
+            //delete files in DBs if not exist anymore (cleanse)
+            console.log("File does not exist anymore, removing:" + filesInDB[i].file)
+            filesInDB.splice(i,1)
+            FileDB.remove(filesInDB[i]._id)
+
+            i--
+          } 
+
+          }catch(err){}
+        }
+
 
 
         filesInDB2 = filesInDB.map(row => row._id + '\r\n')
