@@ -1184,6 +1184,15 @@ try{
         fsextra.copySync(homePath + '/Tdarr/Plugins/temp/Community', homePath + "/Tdarr/Plugins/Community", { overwrite: true })
       } catch (err) { console.log(err.stack) }
 
+         try {
+        fsextra.copySync(homePath + '/Tdarr/Plugins/temp/methods', homePath + '/Tdarr/Plugins/methods', { overwrite: true })
+      } catch (err) { console.log(err.stack) }
+
+
+      try {
+        fsextra.copySync(homePath + '/Tdarr/Plugins/methods', path.join(process.cwd() + `/assets/app/plugins/methods`), { overwrite: true })
+      } catch (err) { console.log(err.stack) }
+
 
       try {
         fsextra.removeSync(homePath + '/Tdarr/Plugins/temp')
