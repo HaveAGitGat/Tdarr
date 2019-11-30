@@ -60,6 +60,7 @@ var hasFileDBChanged = true
 
 
 
+
 function getRootDir() {
 
   var rootDir = path.resolve();
@@ -385,6 +386,7 @@ Meteor.methods({
           }else{
             backupStatus[i+1].status = "No items to restore!"
           }
+
         }catch(err){
           console.log(err)
           backupStatus[i+1].status = "Error:"+JSON.stringify(err)
@@ -397,7 +399,7 @@ Meteor.methods({
         
       fsextra.removeSync(homePath + `/Tdarr/Backups/${file}-unzip`)
 
-      backupStatus.push({name:"Status",status:"Success!"})
+      backupStatus.push({name:"Status",status:"Finished!"})
 
        }));
 
@@ -3769,7 +3771,6 @@ function tablesUpdate() {
     if (doTablesUpdate == false) {
 
 
-    } else {
     } else if (hasFileDBChanged === true) {
 
 
@@ -4495,5 +4496,7 @@ function workerUpdateCheck() {
 
 
 }
+
+
 
 
