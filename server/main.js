@@ -3944,13 +3944,15 @@ function tablesUpdate() {
 
       for (var i = 0; i < allFilesPulledTable.length; i++) {
 
-        if (allFilesPulledTable[i].bumped instanceof Date) {
+        if (allFilesPulledTable[i].bumped != false && allFilesPulledTable[i].bumped != undefined) {
 
           bumpedFiles.push(allFilesPulledTable[i])
           allFilesPulledTable.splice(i, 1)
           i--
         }
       }
+
+
 
 
       bumpedFiles = bumpedFiles.sort(function (a, b) {
