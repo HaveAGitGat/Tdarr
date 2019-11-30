@@ -27,6 +27,7 @@ const os = require('os-utils');
 var zipFolder = require('zip-folder');
 const unzipper = require('unzipper');
 const schedule = require('node-schedule');
+const importFresh = require('import-fresh');
 
 
 
@@ -999,19 +1000,23 @@ Meteor.methods({
 
 
       fs.readdirSync(homePath + `/Tdarr/Plugins/${pluginType}`).forEach(file => {
-        // console.log(homePath + '/Tdarr/Plugins/Community/'+file);
-        //  var temp = require(homePath + '/Tdarr/Plugins/Community/' + file);
 
-        var hwSource = fs.readFileSync(homePath + `/Tdarr/Plugins/${pluginType}/` + file, 'utf8');
-        var hwFunc = new Function('module', hwSource);
-        var hwModule = { exports: {} };
-        hwFunc(hwModule)
-        var hw = hwModule.exports;
 
-        var obj = hw.details();
 try{
+        var plugin = ""
+        var pluginID = (file.split('.'))[0]
+        var pluginAbsolutePath = path.join(process.cwd() + `/assets/app/plugins/${pluginType}/` + pluginID + '.js')
 
-        //  console.log(obj)
+       // var workerPath = "assets/app/worker1.js"
+
+        var pluginLocalPath = path.join(process.cwd() + `/assets/app/plugins/${pluginType}/` + pluginID + '.js')
+
+
+        fsextra.copySync(homePath + `/Tdarr/Plugins/${pluginType}/` + file, pluginAbsolutePath)
+      var plugin = importFresh(pluginLocalPath)
+
+        var obj = plugin.details();
+
 
 
         plugins.push(obj)
@@ -1083,13 +1088,15 @@ try{
 
       try {
 
-        var hwSource = fs.readFileSync(homePath + `/Tdarr/Plugins/${plugins[i].source}/` + plugins[i]._id + ".js", 'utf8');
-        var hwFunc = new Function('module', hwSource);
-        var hwModule = { exports: {} };
-        hwFunc(hwModule)
-        var hw = hwModule.exports;
 
-        var obj = hw.details();
+        var plugin = ""  
+        var pluginAbsolutePath = path.join(process.cwd() + `/assets/app/plugins/${plugins[i].source}/` + plugins[i]._id + '.js')
+        var pluginLocalPath = path.join(process.cwd() + `/assets/app/plugins/${plugins[i].source}/` + plugins[i]._id + '.js')
+        fsextra.copySync(homePath + `/Tdarr/Plugins/${plugins[i].source}/` + plugins[i]._id + ".js", pluginAbsolutePath)
+
+        var plugin = importFresh(pluginLocalPath)
+  
+        var obj =  plugin.details();
 
         plugins[i] = { ...plugins[i], ...obj };
 
@@ -2629,36 +2636,36 @@ function launchWorkerModule(workerType) {
 
                   } else {
 
-
                     for (var i = 0; i < pluginsSelected.length; i++) {
 
                       try {
 
-                        //var pluginID = settings[0].pluginID
                         var pluginID = pluginsSelected[i]._id
 
 
-                        var plugin = ''
-
                         
 
-                          var hwSource = fs.readFileSync(homePath + `/Tdarr/Plugins/${pluginsSelected[i].source}/` + pluginID + '.js', 'utf8');
-                          var hwFunc = new Function('module', hwSource);
-                          var hwModule = { exports: {} };
-                          hwFunc(hwModule)
-                          var plugin = hwModule.exports;
 
+                        var plugin = ""
+                        var pluginAbsolutePath = path.join(process.cwd() + `/assets/app/plugins/${pluginsSelected[i].source}/` + pluginID + '.js')
+                        var pluginLocalPath = path.join(process.cwd() + `/assets/app/plugins/${pluginsSelected[i].source}/` + pluginID + '.js')
+                        fsextra.copySync(homePath + `/Tdarr/Plugins/${pluginsSelected[i].source}/` + pluginID + '.js', pluginAbsolutePath)
+                       
+                       
+                    
 
+                        var plugin = importFresh(pluginLocalPath)
                         
-                        cliLogAdd += plugin.details().id+"\n"
+                        cliLogAdd += plugin.details().id + "\n"
 
                         var otherArguments = {
-                          homePath:homePath
+                          homePath: homePath
                         }
 
-                        var response = plugin.plugin(firstItem,settings[0],otherArguments);
+                        var response = plugin.plugin(firstItem, settings[0], otherArguments);
 
                         console.dir(response)
+
 
                         processFile = response.processFile
                         preset = response.preset
