@@ -240,6 +240,8 @@ class App extends Component {
 
 
     }
+
+    Meteor.call('FilesDBHasChanged', (error, result) => {})
   }
 
   renderCheckBox = (type) => {
@@ -260,6 +262,7 @@ class App extends Component {
               }
             }
           );
+          
         }
     
         if(type == `prioritiseLibraries` && event.target.checked){
@@ -282,6 +285,8 @@ class App extends Component {
             }
           }
         );
+
+        Meteor.call('FilesDBHasChanged', (error, result) => {})
 
       }} />
 
@@ -598,7 +603,7 @@ class App extends Component {
    
     try{
 
-    cliLog = cliLog.split("\\n")
+    cliLog = cliLog.split("\n")
 
     cliLog = cliLog.map( row => <p>{row}</p> )
 
@@ -951,6 +956,7 @@ class App extends Component {
  <p>Library prioritisation: {this.renderCheckBox('prioritiseLibraries')}</p>
 
 <p>Items: <input type="text" className="tableSize"  defaultValue={this.props.globalSettings && this.props.globalSettings[0] && this.props.globalSettings[0].tableSize ? this.props.globalSettings[0].tableSize : "" } onChange={(event) => {
+  
   GlobalSettingsDB.upsert(
     "globalsettings",
     {
@@ -959,6 +965,7 @@ class App extends Component {
       }
     }
   );
+  Meteor.call('FilesDBHasChanged', (error, result) => {})
 }}></input></p>
 
 

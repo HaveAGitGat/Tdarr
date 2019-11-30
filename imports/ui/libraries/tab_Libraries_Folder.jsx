@@ -844,6 +844,7 @@ SettingsDB.insert(thisLibrary)
                     }
                   );
                 }
+                Meteor.call('FilesDBHasChanged', (error, result) => {})
               }}
             >
               <span className="buttonTextSize">←</span>
@@ -880,6 +881,7 @@ SettingsDB.insert(thisLibrary)
                     }
                   );
                 }
+                Meteor.call('FilesDBHasChanged', (error, result) => {})
               }}
             >
               <span className="buttonTextSize">→</span>
@@ -1090,6 +1092,7 @@ SettingsDB.insert(thisLibrary)
                               .processLibrary,
                           },
                         });
+                        Meteor.call('FilesDBHasChanged', (error, result) => {})
                       }}
                     />
                   </div>
@@ -1918,6 +1921,8 @@ SettingsDB.insert(thisLibrary)
                   this.setState({
                     scheduleAll: !this.state.scheduleAll,
                   });
+
+                  Meteor.call('FilesDBHasChanged', (error, result) => {})
                 }}
               >
                 Toggle all

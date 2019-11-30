@@ -265,6 +265,8 @@ Meteor.methods({
                 );
             }
         }
+
+        Meteor.call('FilesDBHasChanged', (error, result) => {})
     }
 });
 
