@@ -2703,7 +2703,7 @@ function launchWorkerModule(workerType) {
                       } catch (err) {
                         console.log(err)
 
-                        err = JSON.stringify(err)
+                        // err = JSON.stringify(err)
 
 
                         processFile = false
