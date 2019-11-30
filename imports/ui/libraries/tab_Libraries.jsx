@@ -81,7 +81,11 @@ class App extends Component {
       expanded:true,
       navItemSelected:"navSourceFolder",
       pluginID:'',
-      pluginIDs:[],
+      pluginIDs:[{
+        _id:"Tdarr_Plugin_lmg1_Reorder_Streams",
+        checked:true,
+        source:"Community",
+      }],
       pluginValid:false,
       pluginCommunity:true,
       handbrake:true,
