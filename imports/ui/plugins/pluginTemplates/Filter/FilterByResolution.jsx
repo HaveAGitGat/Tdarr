@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { withTracker } from 'meteor/react-meteor-data';
 import { Button} from 'react-bootstrap';
 import ReactDOM from 'react-dom';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -14,7 +13,7 @@ var ButtonStyle = {
 
 
 
- class App extends Component {
+ export default class App extends Component {
 
   constructor(props) {
     super(props);
@@ -29,15 +28,27 @@ var ButtonStyle = {
   }
 
 
-    createPlugin = () => {
+  addFilter = () => {
 
 
-      var resolutions = ReactDOM.findDOMNode(this.refs.resolutions).value
+    var mode
 
- 
-      Meteor.call('createPluginFilterResolution', this.state.excludeResolutionSwitch, resolutions, function (error, result) { })
+    if (this.state.excludeResolutionSwitch == true) {
+      mode = 'exclude'
+    } else {
 
-      alert('Local plugin created! It can be viewed on the Local plugins tab')
+      mode = 'include'
+
+    }
+
+
+    var obj = {
+      name: 'Filter by resolution',
+      filter: `library.filters.filterByResolution(file,"${mode}","${ReactDOM.findDOMNode(this.refs.resolutions).value}")`,
+      description: `The following will be ${mode}d for processing: ${ReactDOM.findDOMNode(this.refs.resolutions).value}`
+    }
+
+    this.props.pushConditional(obj)
       
     }
 
@@ -55,14 +66,6 @@ var ButtonStyle = {
 
       <div >
 
-<br/>
-<br/>
-<br/>
-
-<center><p>Filter by resolution</p> </center>
-
-       <br/>
-       <br/>
        <br/>
 
 
@@ -87,19 +90,17 @@ this.setState({
 
 
  
-       <input type="text" className="folderPaths" ref="resolutions"  defaultValue={"480p,576p,720p,1080p,4KUHD,DCI4K,8KUHD,Other"}></input>
+       <input type="text" className="pluginCreatorInputs" ref="resolutions"  defaultValue={"480p,576p,720p,1080p,4KUHD,DCI4K,8KUHD,Other"}></input>
 
           <br/>
           <br/>
-          <br/>
-          <br/>
 
 
-        <center>
+          <center>
 
-       <Button variant="outline-light" onClick={this.createPlugin}  >Create Plugin</Button>
+<Button variant="outline-light" onClick={this.addFilter}  >Add filter</Button>
 
-       </center>
+</center>
 
        <br/>
        <br/>
@@ -113,16 +114,5 @@ this.setState({
   }
 }
 
-export default withTracker(() => {
-
-  
-
-
-return {
- 
-
-
-};
-})(App);
 
 
