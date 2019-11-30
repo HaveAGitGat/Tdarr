@@ -313,17 +313,6 @@ handleDetailsChange = (event) => {
 
         <br />
         <br />
-        <br />
-
-        
-        <center>
-
-          <Button variant="outline-light" onClick={this.createPlugin}  >Create Plugin</Button>
-
-        </center>
-
-        <br />
-        <br />
 
          <center><p>Plugin summary:</p></center>
 
@@ -364,10 +353,17 @@ handleDetailsChange = (event) => {
 
           </div>
 
+             <br />
+        <br />
 
-        <br />
-        <br />
-        <br />
+                  <center>
+
+          <Button variant="outline-light" onClick={this.createPlugin}  >Create Plugin</Button>
+
+        </center>
+
+
+   
         <br />
 
 

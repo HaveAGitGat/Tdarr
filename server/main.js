@@ -55,7 +55,7 @@ var filesBeingProcessed = []
 
 var backupStatus = false
 
-var hasFileDBChanged = true
+var hasFilesDBChanged = true
 
 
 
@@ -510,7 +510,7 @@ Meteor.methods({
 //Backup
 var dailyBackup = schedule.scheduleJob('0 0 0 * * *', Meteor.bindEnvironment(function(){
 
-  Meteor.call('createBackup', (error, result) => {})
+ Meteor.call('createBackup', (error, result) => {})
 
 }));
 
@@ -647,6 +647,7 @@ for (var i = 0; i < allFilesPulledTable.length; i++) {
 
 }
 
+Meteor.call('FilesDBHasChanged', (error, result) => {})
 
 
 
@@ -904,6 +905,18 @@ ClientDB.upsert('client',
 
 
 Meteor.methods({
+
+  'FilesDBHasChanged'() {
+
+    setTimeout(Meteor.bindEnvironment(setHasFilesDBChanged), 1000);
+
+function setHasFilesDBChanged() {
+
+    hasFilesDBChanged = true
+
+}
+        
+  },
 
   'searchDB'(string) {
 
@@ -1254,7 +1267,6 @@ try{
     for (var i = 0; i < allFiles.length; i++) {
 
       try {
-
         FileDB.upsert(
           allFiles[i].file,
           {
@@ -1265,6 +1277,7 @@ try{
         );
 
       } catch (err) { console.log(err.stack) }
+      Meteor.call('FilesDBHasChanged', (error, result) => {})
     }
   },
 
@@ -1413,6 +1426,8 @@ try{
     ClientDB.remove({})
     GlobalSettingsDB.remove({})
 
+    Meteor.call('FilesDBHasChanged', (error, result) => {})
+
 
   },
   'upsertWorkers'(w_id, obj) {
@@ -1514,6 +1529,7 @@ try{
             console.log("File does not exist anymore, removing:" + filesInDB[i].file)
             filesInDB.splice(i,1)
             FileDB.remove(filesInDB[i]._id)
+            Meteor.call('FilesDBHasChanged', (error, result) => {})
 
             i--
           } 
@@ -1568,6 +1584,7 @@ try{
 
 
         FileDB.remove({ DB: DB_id });
+        Meteor.call('FilesDBHasChanged', (error, result) => {})
 
         //  var filesInDB = []
 
@@ -2030,8 +2047,6 @@ for (var i = 0; i < settingsInit.length; i++) {
 
 
 
-
-
 //runScheduledManualScan()
 //run find-new scan every hour
 setTimeout(Meteor.bindEnvironment(runScheduledManualScan), 3600000);
@@ -2044,9 +2059,6 @@ function runScheduledManualScan() {
 
 
     var settingsInit = SettingsDB.find({}, {}).fetch()
-
-    // allFilesPulledTable = []
-    // allFilesPulledTable = FileDB.find({}).fetch()
 
 
     for (var i = 0; i < settingsInit.length; i++) {
@@ -2477,7 +2489,7 @@ function launchWorkerModule(workerType) {
 
             files.splice(0, 1)
 
-            //Settings from fileDB
+          
 
             if (filesBeingProcessed.includes(firstItem.file + "")) {
 
@@ -2502,6 +2514,7 @@ function launchWorkerModule(workerType) {
                   }
                 }
               );
+              Meteor.call('FilesDBHasChanged', (error, result) => {})
 
 
 
@@ -2966,6 +2979,8 @@ function launchWorkerModule(workerType) {
                   }
                 );
 
+                Meteor.call('FilesDBHasChanged', (error, result) => {})
+
 
                 var indexEle = filesBeingProcessed.indexOf(firstItem.file + "")
                 filesBeingProcessed.splice(indexEle, 1)
@@ -3098,6 +3113,8 @@ function launchWorkerModule(workerType) {
           }
         );
 
+        Meteor.call('FilesDBHasChanged', (error, result) => {})
+
         StatisticsDB.update("statistics",
           {
             $inc: { totalHealthCheckCount: 1 }
@@ -3121,6 +3138,8 @@ function launchWorkerModule(workerType) {
           }
         );
         //  ffprobeLaunch([message[2]], OutputDB, message[3])
+
+        Meteor.call('FilesDBHasChanged', (error, result) => {})
 
 
 
@@ -3159,6 +3178,8 @@ function launchWorkerModule(workerType) {
           }
         );
 
+        Meteor.call('FilesDBHasChanged', (error, result) => {})
+
 
         StatisticsDB.update("statistics",
           {
@@ -3181,6 +3202,7 @@ function launchWorkerModule(workerType) {
 
 
         FileDB.remove(message[5])
+        Meteor.call('FilesDBHasChanged', (error, result) => {})
 
         newFile = [message[2],]
 
@@ -3334,6 +3356,7 @@ function launchWorkerModule(workerType) {
             }
           }
         );
+        Meteor.call('FilesDBHasChanged', (error, result) => {})
 
 
       } else if (message[4] == "transcode") {
@@ -3350,6 +3373,7 @@ function launchWorkerModule(workerType) {
             }
           }
         );
+        Meteor.call('FilesDBHasChanged', (error, result) => {})
 
       }
 
@@ -3604,6 +3628,7 @@ function createFolderWatch(Folder, DB_id) {
     if (message[1] == "removeThisFileFromDB") {
 
       FileDB.remove(message[2])
+      Meteor.call('FilesDBHasChanged', (error, result) => {})
 
     }
 
@@ -3671,6 +3696,7 @@ function dbUpdatePush() {
               $set: filesToAddToDB[i]
             }
           );
+          Meteor.call('FilesDBHasChanged', (error, result) => {})
 
 
         } catch (err) {
@@ -3771,10 +3797,12 @@ function tablesUpdate() {
     if (doTablesUpdate == false) {
 
 
-    } else if (hasFileDBChanged === true) {
+    } else if (hasFilesDBChanged === true) {
+
+      //console.log('Updating queues')
 
 
-      hasFileDBChanged = false
+      hasFilesDBChanged = false
 
       addFilesToDB = false
 
@@ -4467,33 +4495,6 @@ function workerUpdateCheck() {
 
   setTimeout(Meteor.bindEnvironment(workerUpdateCheck), 1000);
 }
-
-
-	var initializing = true;
-  FileDB.find().observeChanges({
-    added: function(id, doc) {
-      if (!initializing) {
-        //console.log('FileDB:Added')
-        hasFileDBChanged = true
-      }
-    },
-   changed: function (newDoc, oldDoc) {
-      if (!initializing) {
-      //console.log("FileDB:Changed");
-      hasFileDBChanged = true
-      }
-   },
-   removed: function (doc) {
-      if (!initializing) {
-     //console.log("FileDB:Removed");
-      hasFileDBChanged = true
-      }
-   }
-
-  });
-  initializing = false;
-
-
 
 }
 

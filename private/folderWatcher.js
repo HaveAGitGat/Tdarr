@@ -96,7 +96,7 @@ watchers[DB_id]
     updateConsole("Folder watcher: file removed, removing:" +path)
 
     //  log(`File ${path} has been removed`)
-    //FileDB.remove(path)
+   
 
     var message = [
       watcherID,
