@@ -1478,6 +1478,7 @@ try{
       if (mode == 0) {
 
 
+        console.log("Commencing file update scan. Deleting non-existent files and adding new files.")
 
         updateConsole("Commencing file update scan. Deleting non-existent files and adding new files.", false)
 
@@ -1504,21 +1505,21 @@ try{
 
 
 
-        filesInDB2 = filesInDB.map(row => row._id + '\r\n')
-        filesInDB2 = filesInDB2.join("")
+        filesInDB = filesInDB.filter(row => row.DB == DB_id);
 
+
+        // filesInDB2 = filesInDB.map(row => row._id + '\r\n')
+        //filesInDB2 = filesInDB2.join("")
         // fs.writeFileSync(homePath + "/Tdarr/Data/test.txt", filesInDB2, 'utf8');
 
-        filesInDB = filesInDB.map((file, i) => {
-          if (!(fs.existsSync(file.file))) {
-            //delete files in DBs if not exist anymore (cleanse)
-            console.log("File does not exist anymore, removing:" + file.file)
-            FileDB.remove(file.file)
-          } else {
+              filesInDB = filesInDB.map((file, i) => {
+          if (file.file) {
+            
             return file.file
-
+          
           }
-        });
+          })
+
 
         filesInDB = filesInDB.map(row => row + '\r\n')
         filesInDB = filesInDB.join("")
