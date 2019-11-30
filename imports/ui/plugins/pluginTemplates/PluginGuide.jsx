@@ -61,7 +61,7 @@ var ButtonStyle = {
 <br/>
 <br/>
 
-<p><b>Place 'Filter' plugins at the top of your library plugin stack.</b> Files will be sent through filter plugins first to determine whether they should be processed or not.</p>
+<p>Some action types have no built in filter and rely on the filters you set.</p>
 
 
 <br/>
