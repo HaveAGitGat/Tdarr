@@ -70,6 +70,9 @@ class Folder extends Component {
   };
 
   verifyFolder = (folderPath, type, refType) => {
+
+    try{
+
     Meteor.call(
       'verifyFolder',
       folderPath,
@@ -178,11 +181,15 @@ class Folder extends Component {
         }
       }
     );
+
+    }catch(err){}
   };
 
   handleChange(event) {
     const {name, value} = event.target;
     const {_id} = this.props.libraryItem;
+
+   
 
     //turn off folder watcher if folder name change detected
     if (name == 'folder') {
@@ -206,6 +213,7 @@ class Folder extends Component {
     }
 
     if (name == 'pluginID') {
+      var pluginCommunity = this.props.libraryItem.pluginCommunity
       Meteor.call('verifyPlugin', value, _id, pluginCommunity);
     }
 
@@ -1633,15 +1641,15 @@ SettingsDB.insert(thisLibrary)
                 <br />
                 <br />
 
-                <p>Output file container: </p>
+                <center><p>Output file container: </p></center>
 
-                <input
+               <center> <input
                   type="text"
                   name="container"
                   className="folderPaths3"
                   defaultValue={this.props.libraryItem.container}
                   onChange={this.handleChange}
-                ></input>
+                ></input></center>
 
                 <center>
                   <p>
@@ -1660,7 +1668,7 @@ SettingsDB.insert(thisLibrary)
                   </p>{' '}
                 </center>
 
-                <p>CLI arguments/preset: </p>
+               <center> <p>CLI arguments/preset: </p></center>
                 <input
                   type="text"
                   name="preset"
@@ -1679,7 +1687,7 @@ SettingsDB.insert(thisLibrary)
               >
                 <p></p>
                 <p></p>
-                <p>
+                <center><p>
                   Don't{' '}
                   <Checkbox
                     name="ExcludeSwitch"
@@ -1705,16 +1713,16 @@ SettingsDB.insert(thisLibrary)
                     onChange={event => this.handleChangeChkBx2(event, 'video')}
                   />{' '}
                   transcode videos in these codecs:
-                </p>
+                </p></center>
 
-                <form onSubmit={this.addVideoCodecExclude.bind(this)}>
+               <center> <form onSubmit={this.addVideoCodecExclude.bind(this)}>
                   <input
                     type="text"
                     ref="addVideoCodecExcludeText"
                     placeholder="Add new video codecs...(use Enter↵)"
-                    className="folderPaths3"
+                    className="folderPaths4"
                   />
-                </form>
+                </form></center>
 
                 <center>
                   <table>
@@ -1797,7 +1805,7 @@ SettingsDB.insert(thisLibrary)
               >
                 <p></p>
                 <p></p>
-                <p>
+                <center><p>
                   Don't{' '}
                   <Checkbox
                     name="ExcludeSwitch"
@@ -1823,16 +1831,16 @@ SettingsDB.insert(thisLibrary)
                     onChange={event => this.handleChangeChkBx2(event, 'audio')}
                   />{' '}
                   transcode audio in these codecs:
-                </p>
+                </p></center>
 
-                <form onSubmit={this.addAudioCodecExclude.bind(this)}>
+                <center><form onSubmit={this.addAudioCodecExclude.bind(this)}>
                   <input
                     type="text"
                     ref="addAudioCodecExcludeText"
                     placeholder="Add new audio codecs...(use Enter↵)"
-                    className="folderPaths3"
+                    className="folderPaths4"
                   />
-                </form>
+                </form></center>
 
                 <center>
                   <table>
