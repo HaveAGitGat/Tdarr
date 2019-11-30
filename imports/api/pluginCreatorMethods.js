@@ -19,13 +19,6 @@ Meteor.methods({
 
     var ID = shortid.generate()
 
-
-    // var containerNoDot = container.substring(1);
-
-
-
-
-
     var text = `
 
     const importFresh = require('import-fresh');
@@ -83,7 +76,7 @@ Meteor.methods({
              }else{
 
               response.processFile = false;
-              response.infoLog += " \\n"
+              response.infoLog += ${action.infoLog}
               return response
         
         

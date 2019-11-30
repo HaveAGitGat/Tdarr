@@ -54,6 +54,7 @@ export default class App extends Component {
         handBrakeMode: true,
         FFmpegMode: false,
         processFile: true,
+         infoLog:'""',
 
       },
       conditionals: [
