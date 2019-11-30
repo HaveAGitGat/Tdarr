@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
-import { Button} from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import Checkbox from '@material-ui/core/Checkbox';
 import ReactDOM from 'react-dom';
 
@@ -14,7 +14,7 @@ var ButtonStyle = {
 
 
 
- class App extends Component {
+export default class App extends Component {
 
   constructor(props) {
     super(props);
@@ -28,22 +28,26 @@ var ButtonStyle = {
   }
 
 
-    createPlugin = () => {
+  addFilter = () => {
 
 
-var type 
+    var type
 
-if(this.state.audio == true){
-  type = "audio"
-}else{
-  type = "video"
-}
-
-Meteor.call('createPluginFilterMedium', type, function (error, result) { })
-
-alert('Local plugin created! It can be viewed on the Local plugins tab')
-
+    if (this.state.audio == true) {
+      type = 'audio'
+    } else {
+      type = 'video'
     }
+
+    var obj = {
+      name: 'Filter by medium',
+      filter: `library.filters.filterByMedium(file,"${type}")`,
+      description:`The following file type will be included for processing: ${type}`
+    }
+
+    this.props.pushConditional(obj)
+
+  }
 
 
 
@@ -53,62 +57,45 @@ alert('Local plugin created! It can be viewed on the Local plugins tab')
 
     return (
 
-
-
-
-
       <div >
 
-<br/>
-<br/>
-<br/>
 
-<center><p>Filter by medium</p> </center>
+        <br />
 
-       <br/>
-       <br/>
-       <br/>
+         <center><p>Process:</p> </center>
+         <center><p>Video files <Checkbox checked={this.state.video} onChange={event => {
 
-<p>Transcode:</p>
-<p>Video files <Checkbox  checked={this.state.video} onChange={ event => {
+          this.setState({
+            video: true,
+            audio: false
+          })
 
-this.setState({
-  video: true,
-  audio: false
-})
+        }} /></p> </center>
 
- }} /></p>
+         <center><p>Audio files <Checkbox checked={this.state.audio} onChange={event => {
 
-<p>Audio files <Checkbox  checked={this.state.audio} onChange={ event => {
+          this.setState({
+            audio: true,
+            video: false
+          })
 
-this.setState({
-  audio: true,
-  video: false
-})
-
- }} /></p>
-
-       <br/>
-       <br/>
-
-      
+        }} /></p> </center>
 
 
-          <br/>
-          <br/>
-          <br/>
-          <br/>
+
+        <br />
 
 
+  
         <center>
 
-       <Button variant="outline-light" onClick={this.createPlugin}  >Create Plugin</Button>
+          <Button variant="outline-light" onClick={this.addFilter}  >Add filter</Button>
 
-       </center>
+        </center>
 
-       <br/>
-       <br/>
-       <br/>
+        <br />
+        <br />
+        <br />
 
 
 
@@ -117,17 +104,5 @@ this.setState({
     );
   }
 }
-
-export default withTracker(() => {
-
-  
-
-
-return {
- 
-
-
-};
-})(App);
 
 
