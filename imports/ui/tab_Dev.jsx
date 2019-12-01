@@ -120,17 +120,17 @@ export default class App extends Component {
 
               <p>Change log</p>
 
-             <p>v1.008 release [30th Nov 19]:
+             <p>v1.008 release [1st Dec 19]:
             
             <br />Changes:
 
-            <br />-[New] Plugin creator UI and groundwork for future Filters and Actions. Filters now encapsulate Action taken. No separate Filter needed.
-            <br />-[New] 5 filter functions and 2 action functions available to use when creating plugins (In UI or manually)
+            <br />-[New] Plugin creator UI and groundwork for future Filters and Actions. Filters now encapsulate Action taken. No separate Filter needed
             <br />-[New] Re-order streams plugin added by default for new libraries
             <br />-[New] Backup and restore feature (scheduled midnight backup)
             <br />-[New] Toggle copying to output folder if file already meets conditions
             <br />-[Improvement] Change to how plugins are imported. Built-in NodeJS modules can now be used when creating plugins. (Can use e.g. require('fs') etc)
             <br />-[Improvement] Idle CPU usage drastically reduced
+            <br />-[Improvement] Various stability fixes
             <br />-[Improvement] Confirmation needed when restoring from backup
             <br />-[Fix] Video resolution boundaries improved
             <br />-[Fix] Non existent files + junk removed when running Find-New scan

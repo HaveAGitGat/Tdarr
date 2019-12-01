@@ -58,6 +58,8 @@ var backupStatus = false
 
 var hasFilesDBChanged = true
 
+var workerLaunched = false
+
 
 
 
@@ -969,7 +971,7 @@ function setHasFilesDBChanged() {
 try{
         var plugin = ""
         var pluginID = (file.split('.'))[0]
-        var pluginAbsolutePath = path.join(process.cwd() , `/assets/app/plugins/${pluginType}/` , pluginID , '.js')
+        var pluginAbsolutePath = path.join(process.cwd() , `/assets/app/plugins/${pluginType}/` + pluginID + '.js')
 
        // var workerPath = "assets/app/worker1.js"
 
@@ -1383,12 +1385,12 @@ try{
   'launchWorker'(workerType, number) {
 
 
-
-
     for (var i = 1; i <= number; i++) {
       launchWorkerModule(workerType)
 
     }
+
+    workerLaunched = false
 
     return null
 
@@ -2363,6 +2365,8 @@ function launchWorkerModule(workerType) {
 
 
 
+           
+
 
           if (!Array.isArray(files) || !files.length) {
 
@@ -2385,8 +2389,7 @@ function launchWorkerModule(workerType) {
 
             if (filesBeingProcessed.includes(firstItem.file + "")) {
 
-              //put item to back of the queue so doesn't hold up queue
-
+            
               var messageOut = [
                 "requestNewItem",
 
@@ -3025,10 +3028,12 @@ function launchWorkerModule(workerType) {
 
 
 
-    removeFromProcessing(message[2])
+   
 
 
       if (message[4] == "healthcheck") {
+
+        removeFromProcessing(message[2])
         
         var tempObj = {
           _id: message[2],
@@ -3056,6 +3061,8 @@ function launchWorkerModule(workerType) {
 
 
       } else if (message[4] == "transcode") {
+
+        removeFromProcessing(message[5])
 
 
         Meteor.call('modifyFileDB','removeOne',message[5], (error, result) => {})
@@ -4227,15 +4234,15 @@ workerUpdateCheck();
 //worker will cancel item if percentage stays the same for 300 secs
 function workerUpdateCheck() {
 
-  //
+
 
   try {
+
 
     var generalWorkers = workerDB.filter(row => row.mode == "general")
     var transcodeWorkers = workerDB.filter(row => row.mode == "transcode")
     var healthcheckWorkers = workerDB.filter(row => row.mode == "healthcheck")
 
-    //
 
     var globs = GlobalSettingsDB.find({}, {}).fetch()
 
@@ -4245,16 +4252,24 @@ function workerUpdateCheck() {
 
     verboseLogs = globs[0].verboseLogs
 
-    if (gDiff >= 1 && generalFiles.length > 0) {
-      Meteor.call('launchWorker', "general", 1, function (error, result) { });
-    }
-    if (tDiff >= 1 && transcodeFiles.length > 0) {
-      Meteor.call('launchWorker', "transcode", 1, function (error, result) { });
+    if(workerLaunched === false){
+
+      if (gDiff >= 1 && generalFiles.length > 0) {
+        workerLaunched = true
+        Meteor.call('launchWorker', "general", 1, function (error, result) { });
+      }
+      if (tDiff >= 1 && transcodeFiles.length > 0) {
+        workerLaunched = true
+        Meteor.call('launchWorker', "transcode", 1, function (error, result) { });
+      }
+  
+      if (hDiff >= 1 && healthcheckFiles.length > 0) {
+        workerLaunched = true
+        Meteor.call('launchWorker', "healthcheck", 1, function (error, result) { });
+      }
     }
 
-    if (hDiff >= 1 && healthcheckFiles.length > 0) {
-      Meteor.call('launchWorker', "healthcheck", 1, function (error, result) { });
-    }
+
 
     var workerCheck = findWorker() //[]
 
@@ -4340,14 +4355,12 @@ function workerUpdateCheck() {
 
     function removeFromProcessing(file){
 
-      console.log(filesBeingProcessed)
 
             var indexEle = filesBeingProcessed.indexOf(file + '')
 
                 if(indexEle >= 0){
                   filesBeingProcessed.splice(indexEle, 1)
                 }
-      console.log(filesBeingProcessed)
     }
 
   var initialising = true;
