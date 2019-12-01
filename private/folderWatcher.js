@@ -27,9 +27,9 @@ var fs = require('fs');
 var watcherFilesToScan = {}
 var watchers = {}
 
-if (fs.existsSync(path.join(process.cwd() + "/npm"))) {
+if (fs.existsSync(path.join(process.cwd() , "/npm"))) {
 
-    var rootModules = path.join(process.cwd() + '/npm/node_modules/')
+    var rootModules = path.join(process.cwd() , '/npm/node_modules/')
 
 } else {
 
@@ -96,7 +96,7 @@ watchers[DB_id]
     updateConsole("Folder watcher: file removed, removing:" +path)
 
     //  log(`File ${path} has been removed`)
-    //FileDB.remove(path)
+   
 
     var message = [
       watcherID,

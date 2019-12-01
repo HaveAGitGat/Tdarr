@@ -129,8 +129,6 @@ class App extends Component {
 
             );
 
-
-
           }}
 
           styles={{
@@ -260,6 +258,7 @@ class App extends Component {
               }
             }
           );
+          
         }
     
         if(type == `prioritiseLibraries` && event.target.checked){
@@ -595,6 +594,7 @@ class App extends Component {
 
   renderInfoButton(cliLog) {
 
+   
     try{
 
     cliLog = cliLog.split("\n")
@@ -950,6 +950,7 @@ class App extends Component {
  <p>Library prioritisation: {this.renderCheckBox('prioritiseLibraries')}</p>
 
 <p>Items: <input type="text" className="tableSize"  defaultValue={this.props.globalSettings && this.props.globalSettings[0] && this.props.globalSettings[0].tableSize ? this.props.globalSettings[0].tableSize : "" } onChange={(event) => {
+  
   GlobalSettingsDB.upsert(
     "globalsettings",
     {

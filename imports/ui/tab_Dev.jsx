@@ -97,7 +97,7 @@ export default class App extends Component {
 
 
 
-              <p>If things aren't working as expected, it may be necessary to clear the database using the following button. Your files will not be affected. Please restart Tdarr after doing so.</p>
+              <p>If things aren't working as expected, please try restoring from a backup. Else it may be necessary to clear the database using the following button. Your files will not be affected. Please restart Tdarr after doing so.</p>
 
               <center>
                 <Button variant="outline-danger" onClick={() => this.clearDB()} ><span className="buttonTextSize">Clear database</span></Button>
@@ -120,19 +120,29 @@ export default class App extends Component {
 
               <p>Change log</p>
 
-              
-              <p>v1.0071 minor release [25th Nov 19]:
+             <p>v1.008 release [1st Dec 19]:
             
             <br />Changes:
 
+            <br />-[New] Plugin creator UI and groundwork for future Filters and Actions. Filters now encapsulate Action taken. No separate Filter needed
+            <br />-[New] Re-order streams plugin added by default for new libraries
             <br />-[New] Backup and restore feature (scheduled midnight backup)
             <br />-[New] Toggle copying to output folder if file already meets conditions
+            <br />-[Improvement] Change to how plugins are imported. Built-in NodeJS modules can now be used when creating plugins. (Can use e.g. require('fs') etc)
+            <br />-[Improvement] Idle CPU usage drastically reduced
+            <br />-[Improvement] Various stability fixes
+            <br />-[Improvement] Confirmation needed when restoring from backup
+            <br />-[Fix] Video resolution boundaries improved
+            <br />-[Fix] Non existent files + junk removed when running Find-New scan
+            <br />-[Fix] Corrected error when creating remux container plugin
+            <br />-[Fix] If one plugin has an error, the rest will still load
+            <br />-[Fix] Auto cache cleaner disabled due to issues on some systems
             <br />-[Fix] Move item to Transcode:Error instead of Transcode:Not required if error with plugin
-
             <br />
             <br />
 
             </p>
+
 
               <p>v1.007 release [22nd Nov 19]:
             

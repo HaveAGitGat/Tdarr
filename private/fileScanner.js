@@ -63,9 +63,9 @@ updateConsole(scannerID, "Online.")
 var path = require("path");
 var fs = require('fs');
 
-if (fs.existsSync(path.join(process.cwd() + "/npm"))) {
+if (fs.existsSync(path.join(process.cwd() , "/npm"))) {
 
-    var rootModules = path.join(process.cwd() + '/npm/node_modules/')
+    var rootModules = path.join(process.cwd() , '/npm/node_modules/')
 
 } else {
     var rootModules = ''
@@ -447,10 +447,10 @@ function ffprobeLaunch(filesToScan) {
 
                                     if (process.platform == 'win32') {
 
-                                        if (fs.existsSync(path.join(process.cwd() + "/npm"))) {
-                                            CCExtractorPath = path.join(process.cwd() + '/assets/app/ccextractor/ccextractorwin.exe')
+                                        if (fs.existsSync(path.join(process.cwd() , "/npm"))) {
+                                            CCExtractorPath = path.join(process.cwd() , '/assets/app/ccextractor/ccextractorwin.exe')
                                         } else {
-                                            CCExtractorPath = path.join(process.cwd() + '/private/ccextractor/ccextractorwin.exe')
+                                            CCExtractorPath = path.join(process.cwd() , '/private/ccextractor/ccextractorwin.exe')
                                         }
 
                                         workerCommand = CCExtractorPath + " -debug  -stdout -endat 01:00 --screenfuls 1 -out=null \"" + filepath + "\""
@@ -458,10 +458,10 @@ function ffprobeLaunch(filesToScan) {
                                     }
 
                                     if (process.platform == 'linux') {
-                                        if (fs.existsSync(path.join(process.cwd() + "/npm"))) {
-                                            CCExtractorPath = path.join(process.cwd() + '/assets/app/ccextractor/ccextractor')
+                                        if (fs.existsSync(path.join(process.cwd() , "/npm"))) {
+                                            CCExtractorPath = path.join(process.cwd() , '/assets/app/ccextractor/ccextractor')
                                         } else {
-                                            CCExtractorPath = path.join(process.cwd() + '/private/ccextractor/ccextractor')
+                                            CCExtractorPath = path.join(process.cwd() , '/private/ccextractor/ccextractor')
                                         }
 
                                         var filepathUnix = filepath.replace(/'/g, '\'\"\'\"\'');
@@ -759,9 +759,9 @@ function ffprobeLaunch(filesToScan) {
                 //    console.log(vidWidth, vidHeight)
 
                 //Bounds +- 10%
-                // 480p	720	480		648	792		432	528
-                // 576p	720	576		648	792		518.4	633.6
-                // 720p	1280	720		1152/864	1408		648	792
+                // 480p	     720	480		648	792		432	        528
+                // 576p	    720	    576		648	792		518.4	    633.6
+                // 720p	    1280	720		1152/864	1408		648	792
                 // 1080p	1920	1080		1728	2112		972	1188
                 // 4KUHD	3840	2160		3456	4224		1944	2376
                 // DCI4K	4096	2160		3686.4	4505.6		1944	2376
@@ -770,9 +770,9 @@ function ffprobeLaunch(filesToScan) {
 
 
 
-                if (vidWidth >= 642 && vidWidth <= 792 && vidHeight >= 100 && vidHeight <= 528) {
+                if (vidWidth >= 100 && vidWidth <= 792 && vidHeight >= 100 && vidHeight <= 528) {
                     videoResolution = "480p"
-                } else if (vidWidth >= 648 && vidWidth <= 792 && vidHeight >= 100 && vidHeight <= 634) {
+                } else if (vidWidth >= 100 && vidWidth <= 792 && vidHeight >= 100 && vidHeight <= 634) {
                     videoResolution = "576p"
                 } else if (vidWidth >= 100 && vidWidth <= 1408 && vidHeight >= 100 && vidHeight <= 792) {
                     videoResolution = "720p"

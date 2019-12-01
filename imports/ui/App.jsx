@@ -50,7 +50,7 @@ const AppRouter = () => {
 
       var version =  GlobalSettingsDB.find({}).fetch()[0].version;
 
-      var newVersion = 1.0071
+      var newVersion = 1.008
 
       setVersion(newVersion)
 
@@ -58,11 +58,23 @@ const AppRouter = () => {
 
         alert(`
 
-        v1.0071 minor release [25th Nov 19]:
+        v1.008 release [1st Dec 19]:
         Changes:
+        -[New] Plugin creator UI and groundwork for future Filters and Actions. Filters now encapsulate Action taken. No separate Filter needed
+        -[New] Re-order streams plugin added by default for new libraries
         -[New] Backup and restore feature (scheduled midnight backup)
         -[New] Toggle copying to output folder if file already meets conditions
+        -[Improvement] Change to how plugins are imported. Built-in NodeJS modules can now be used when creating plugins. (Can use e.g. require('fs') etc)
+        -[Improvement] Idle CPU usage drastically reduced
+        -[Improvement] Various stability fixes
+        -[Improvement] Confirmation needed when restoring from backup
+        -[Fix] Video resolution boundaries improved
+        -[Fix] Non existent files + junk removed when running Find-New scan
+        -[Fix] Corrected error when creating remux container plugin
+        -[Fix] If one plugin has an error, the rest will still load
+        -[Fix] Auto cache cleaner disabled due to issues on some systems
         -[Fix] Move item to Transcode:Error instead of Transcode:Not required if error with plugin
+
 
 
         v1.007 release [22nd Nov 19]:

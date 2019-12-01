@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { withTracker } from 'meteor/react-meteor-data';
-import { Button} from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import Checkbox from '@material-ui/core/Checkbox';
 import ReactDOM from 'react-dom';
 
@@ -14,7 +13,7 @@ var ButtonStyle = {
 
 
 
- class App extends Component {
+export default class App extends Component {
 
   constructor(props) {
     super(props);
@@ -27,20 +26,28 @@ var ButtonStyle = {
   }
 
 
-    createPlugin = () => {
+  addFilter = () => {
 
-var codecs = ReactDOM.findDOMNode(this.refs.codecs).value
+    var mode
 
-console.log(codecs)
+    if (this.state.excludeCodecSwitch == true) {
+      mode = 'exclude'
+    } else {
 
-
-Meteor.call('createPluginFilterCodec', this.state.excludeCodecSwitch, codecs, function (error, result) { })
-
-
-      alert('Local plugin created! It can be viewed on the Local plugins tab')
-
-
+      mode = 'include'
     }
+
+    // arguments: ['file', '"include"', '"h264,vp8"'],
+
+    var obj = {
+      name: 'Filter by codec',
+      filter: `library.filters.filterByCodec(file,"${mode}","${ReactDOM.findDOMNode(this.refs.codecs).value}")`,
+      description: `The following will be ${mode}d for processing: ${ReactDOM.findDOMNode(this.refs.codecs).value}`
+    }
+
+    this.props.pushConditional(obj)
+
+  }
 
 
 
@@ -56,54 +63,46 @@ Meteor.call('createPluginFilterCodec', this.state.excludeCodecSwitch, codecs, fu
 
       <div >
 
-<br/>
-<br/>
-<br/>
-
-<center><p>Filter by codec</p> </center>
-
-       <br/>
-       <br/>
-       <br/>
+ 
+        <br />
 
 
-       <p>Don't <Checkbox  checked={this.state.excludeCodecSwitch} onChange={ event => {
+        <p>Don't <Checkbox checked={this.state.excludeCodecSwitch} onChange={event => {
 
-this.setState({
-  excludeCodecSwitch: !this.state.excludeCodecSwitch,
-})
-
-
-       }} />/ Only<Checkbox checked={!this.state.excludeCodecSwitch} onChange={event => {
-
-        this.setState({
-          excludeCodecSwitch: !this.state.excludeCodecSwitch,
-        })
+          this.setState({
+            excludeCodecSwitch: !this.state.excludeCodecSwitch,
+          })
 
 
-       }} /> transcode files in these codecs:</p>
+        }} />/ Only<Checkbox checked={!this.state.excludeCodecSwitch} onChange={event => {
 
-       <br/>
-       <br/>
+          this.setState({
+            excludeCodecSwitch: !this.state.excludeCodecSwitch,
+          })
 
-       <input type="text" className="folderPaths" ref="codecs" name="codecs" defaultValue={"hevc,h264"}></input>
+
+        }} /> process files in these codecs:</p>
+
+        <br />
+        <br />
+
+        <input type="text" className="pluginCreatorInputs" ref="codecs" defaultValue={"hevc,h264"}></input>
 
 
-          <br/>
-          <br/>
-          <br/>
-          <br/>
+
+        <br/>
+         <br/>
 
 
         <center>
 
-       <Button variant="outline-light" onClick={this.createPlugin}  >Create Plugin</Button>
+          <Button variant="outline-light" onClick={this.addFilter}  >Add filter</Button>
 
-       </center>
+        </center>
 
-       <br/>
-       <br/>
-       <br/>
+        <br />
+        <br />
+        <br />
 
 
 
@@ -113,16 +112,6 @@ this.setState({
   }
 }
 
-export default withTracker(() => {
 
-  
-
-
-return {
- 
-
-
-};
-})(App);
 
 

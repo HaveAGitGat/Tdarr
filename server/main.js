@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import '../imports/api/Methods.js';
 import '../imports/api/pluginCreatorMethods.js';
 import '../imports/api/Logger.js';
@@ -27,6 +28,7 @@ const os = require('os-utils');
 var zipFolder = require('zip-folder');
 const unzipper = require('unzipper');
 const schedule = require('node-schedule');
+const importFresh = require('import-fresh');
 
 
 
@@ -53,6 +55,10 @@ var logsToAddToDB = []
 var filesBeingProcessed = []
 
 var backupStatus = false
+
+var hasFilesDBChanged = true
+
+var workerLaunched = false
 
 
 
@@ -205,7 +211,7 @@ if (fs.existsSync(homePath + "/Tdarr/Data/env.json")) {
 
     if(jsonConfig.BASE != undefined){
 
-  
+
     GlobalSettingsDB.upsert(
       "globalsettings",
       {
@@ -272,11 +278,56 @@ var collections = [
   [StatisticsDB,"StatisticsDB"],
 ]
 
-
-
-
-
 Meteor.methods({
+  'modifyFileDB'(mode, fileID, obj) {
+    //mode == add, update, delete
+    try {
+
+
+      if (mode == 'insert') {
+
+        FileDB.insert(obj);
+
+
+      } else if (mode == 'update') {
+
+        FileDB.update(fileID,
+          {
+            $set: obj
+          });
+
+      } if (mode == 'upsert') {
+
+        FileDB.upsert(fileID,
+          {
+            $set: obj
+          });
+
+      } else if (mode == 'removeOne') {
+
+        FileDB.remove(fileID);
+
+      } else if (mode == 'removeByDB') {
+
+        FileDB.remove({ DB: fileID });
+
+
+      } else if (mode == 'removeAll') {
+
+
+        FileDB.remove({});
+
+      }
+
+    } catch (err) {
+      console.log(err.stack)
+    }
+
+
+    Meteor.call('FilesDBHasChanged', (error, result) => { })
+
+
+  },
 
   'getBackups'() {
     try {
@@ -326,7 +377,7 @@ Meteor.methods({
     }
 
 
-  
+
     try {
 
       var file = (name.split('.'))[0]
@@ -340,7 +391,7 @@ Meteor.methods({
         for (var i = 0; i < collections.length; i++) {
 
           var count = 0
-          
+
           backupStatus.push({name:collections[i][1]})
           backupStatus[i+1].status = "Cleaning existing DB"
 
@@ -348,17 +399,17 @@ Meteor.methods({
           collections[i][0].remove({});
 
           backupStatus[i+1].status = "Existing DB cleaned"
-  
+
           try{
-  
+
           var dbItems = fs.readFileSync(homePath + `/Tdarr/Backups/${file}-unzip/${collections[i][1]}.txt`, dbItems, 'utf8');
 
           backupStatus[i+1].status = "Reading backup file"
-  
+
           dbItems = JSON.parse(dbItems)
-  
+
           if(dbItems.length > 0){
-  
+
             for (var j = 0; j < dbItems.length; j++) {
 
               count++
@@ -366,36 +417,37 @@ Meteor.methods({
               backupStatus[i+1].status = "Restoring:"+count
 
              // backupStatus = "Restoring: "+ count
-  
+
               if (dbItems[j]._id) {
-    
+
                 var id = dbItems[j]._id
-    
+
                 collections[i][0].upsert(id,
                   {
                     $set: dbItems[j]
                   }
                 );
-           
+
               }
             }
 
           }else{
             backupStatus[i+1].status = "No items to restore!"
           }
+
         }catch(err){
           console.log(err)
           backupStatus[i+1].status = "Error:"+JSON.stringify(err)
         }
-  
-  
+
+
         }
 
 
-        
+
       fsextra.removeSync(homePath + `/Tdarr/Backups/${file}-unzip`)
 
-      backupStatus.push({name:"Status",status:"Success!"})
+      backupStatus.push({name:"Status",status:"Finished!"})
 
        }));
 
@@ -406,8 +458,8 @@ Meteor.methods({
 
     }
 
-    
- 
+
+
   }, 'deleteBackup'(name) {
 
 
@@ -423,7 +475,7 @@ Meteor.methods({
       return false
     }
 
-   
+
 
 
   },  'getBackupStatus'() {
@@ -437,7 +489,7 @@ Meteor.methods({
 
   },'createBackup'(){
 
-    
+
     backupStatus = []
 
     try{
@@ -450,9 +502,9 @@ Meteor.methods({
     for(var i = 0; i < collections.length; i++){
 
       backupStatus.push({name:collections[i][1]})
-      
+
       backupStatus[i].status = "Fetching data"
-    
+
       var dbItems = collections[i][0].find({}).fetch()
       dbItems = JSON.stringify(dbItems)
 
@@ -461,7 +513,7 @@ Meteor.methods({
       fs.writeFileSync(homePath + `/Tdarr/Backups/Backup-${currentDate}/${collections[i][1]}.txt`, dbItems, 'utf8');
 
       backupStatus[i].status = "Complete"
-    
+
     }
     dbItems = ""
 
@@ -473,7 +525,7 @@ Meteor.methods({
 
     fsextra.copySync(homePath + "/Tdarr/Plugins/Local", homePath +  `/Tdarr/Backups/Backup-${currentDate}/LocalPlugins/`)
     backupStatus[5].status = "Complete"
-  
+
     backupStatus.push({name:"Zipping",status:"Running"})
 
 
@@ -486,17 +538,17 @@ Meteor.methods({
         backupStatus[6].status = "Complete"
       }
 
-     
-      
+
+
       fsextra.removeSync(homePath + `/Tdarr/Backups/Backup-${currentDate}`)
-    
+
     }));
 
   }catch(err){
     console.log(err)
     backupStatus.push({name:"Status",status:"Error:"+JSON.stringify(err)})
   }
-    
+
     }
 
 })
@@ -506,7 +558,7 @@ Meteor.methods({
 //Backup
 var dailyBackup = schedule.scheduleJob('0 0 0 * * *', Meteor.bindEnvironment(function(){
 
-  Meteor.call('createBackup', (error, result) => {})
+ Meteor.call('createBackup', (error, result) => {})
 
 }));
 
@@ -532,117 +584,21 @@ function main(){
 console.log("Initialising DB")
 
 
-
-//migration step
 allFilesPulledTable = FileDB.find({}).fetch()
 
 for (var i = 0; i < allFilesPulledTable.length; i++) {
 
   console.log("Checking file:" + (i + 1) +"/"+allFilesPulledTable.length)
-
-
   // reset processing status of files onload.
 
   if (allFilesPulledTable[i].processingStatus !== false) {
 
-    FileDB.upsert(
-      allFilesPulledTable[i].file,
-      {
-        $set: {
-          processingStatus: false,
-        }
-      }
-    );
+  var tempObj = {
+    processingStatus: false,
   }
-
-
-
-  //Migration steps
-
-  if (allFilesPulledTable[i].TranscodeDecisionMaker == "Not attempted") {
-
-    FileDB.upsert(
-      allFilesPulledTable[i].file,
-      {
-        $set: {
-          TranscodeDecisionMaker: "Queued",
-        }
-      }
-    );
+  Meteor.call('modifyFileDB','update',allFilesPulledTable[i].file,tempObj, (error, result) => {})
   }
-
-  if (allFilesPulledTable[i].TranscodeDecisionMaker == "Passed") {
-
-    FileDB.upsert(
-      allFilesPulledTable[i].file,
-      {
-        $set: {
-          TranscodeDecisionMaker: "Not required",
-        }
-      }
-    );
-  }
-
-  if (allFilesPulledTable[i].HealthCheck == "Not attempted") {
-
-    FileDB.upsert(
-      allFilesPulledTable[i].file,
-      {
-        $set: {
-          HealthCheck: "Queued",
-        }
-      }
-    );
-
-
-  }
-
-
-  if (!allFilesPulledTable[i].lastTranscodeDate) {
-
-    FileDB.upsert(
-      allFilesPulledTable[i].file,
-      {
-        $set: {
-          lastTranscodeDate: new Date(),
-        }
-      }
-    );
-  }
-
-  if (!allFilesPulledTable[i].lastHealthCheckDate) {
-
-    FileDB.upsert(
-      allFilesPulledTable[i].file,
-      {
-        $set: {
-          lastHealthCheckDate: new Date(),
-        }
-      }
-    );
-  }
-
-  if(!allFilesPulledTable[i].statSync){
-
-    try{
-
-    FileDB.upsert(
-      allFilesPulledTable[i].file,
-      {
-        $set: {
-          statSync: fs.statSync(allFilesPulledTable[i].file),
-        }
-      }
-    );
-
-  }catch(err){}
-
-  }
-
-  //End migration steps
-
 }
-
 
 
 
@@ -658,7 +614,7 @@ process.on('uncaughtException', function (err) {
 
 
 
-//Set globalDB settings on init 
+//Set globalDB settings on init
 
 var count = GlobalSettingsDB.find({}, {}).fetch()
 
@@ -730,7 +686,7 @@ if (!Array.isArray(count) || !count.length) {
           }
         }
       );
-  
+
     }
 
   //UI queue size
@@ -748,7 +704,7 @@ if (!Array.isArray(count) || !count.length) {
 
   }
 
-  
+
 
 
 
@@ -901,6 +857,18 @@ ClientDB.upsert('client',
 
 Meteor.methods({
 
+  'FilesDBHasChanged'() {
+
+    setTimeout(Meteor.bindEnvironment(setHasFilesDBChanged), 1000);
+
+function setHasFilesDBChanged() {
+
+    hasFilesDBChanged = true
+
+}
+
+  },
+
   'searchDB'(string) {
 
     doTablesUpdate = false
@@ -923,7 +891,7 @@ Meteor.methods({
 
 
 
-          /// 
+          ///
 
           var match = []
 
@@ -998,21 +966,28 @@ Meteor.methods({
 
 
       fs.readdirSync(homePath + `/Tdarr/Plugins/${pluginType}`).forEach(file => {
-        // console.log(homePath + '/Tdarr/Plugins/Community/'+file);
-        //  var temp = require(homePath + '/Tdarr/Plugins/Community/' + file);
 
-        var hwSource = fs.readFileSync(homePath + `/Tdarr/Plugins/${pluginType}/` + file, 'utf8');
-        var hwFunc = new Function('module', hwSource);
-        var hwModule = { exports: {} };
-        hwFunc(hwModule)
-        var hw = hwModule.exports;
 
-        var obj = hw.details();
+try{
+        var plugin = ""
+        var pluginID = (file.split('.'))[0]
+        var pluginAbsolutePath = path.join(process.cwd() , `/assets/app/plugins/${pluginType}/` + pluginID + '.js')
 
-        //  console.log(obj)
+       // var workerPath = "assets/app/worker1.js"
+
+        var pluginLocalPath = path.join(process.cwd() , `/assets/app/plugins/${pluginType}/` + pluginID + '.js')
+
+
+        fsextra.copySync(homePath + `/Tdarr/Plugins/${pluginType}/` + file, pluginAbsolutePath)
+      var plugin = importFresh(pluginLocalPath)
+
+        var obj = plugin.details();
+
 
 
         plugins.push(obj)
+
+        }catch(err){console.log(err.stack)}
 
       });
 
@@ -1079,13 +1054,15 @@ Meteor.methods({
 
       try {
 
-        var hwSource = fs.readFileSync(homePath + `/Tdarr/Plugins/${plugins[i].source}/` + plugins[i]._id + ".js", 'utf8');
-        var hwFunc = new Function('module', hwSource);
-        var hwModule = { exports: {} };
-        hwFunc(hwModule)
-        var hw = hwModule.exports;
 
-        var obj = hw.details();
+        var plugin = ""
+        var pluginAbsolutePath = path.join(process.cwd() , `/assets/app/plugins/${plugins[i].source}/` + plugins[i]._id + '.js')
+        var pluginLocalPath = path.join(process.cwd() , `/assets/app/plugins/${plugins[i].source}/` + plugins[i]._id + '.js')
+        fsextra.copySync(homePath + `/Tdarr/Plugins/${plugins[i].source}/` + plugins[i]._id + ".js", pluginAbsolutePath)
+
+        var plugin = importFresh(pluginLocalPath)
+
+        var obj =  plugin.details();
 
         plugins[i] = { ...plugins[i], ...obj };
 
@@ -1100,7 +1077,7 @@ Meteor.methods({
           Link: "Read error"
         }
 
-        console.log(err.stack)
+        //console.log(err.stack)
 
         plugins[i] = { ...plugins[i], ...obj };
 
@@ -1109,7 +1086,7 @@ Meteor.methods({
     return plugins
 
   },
-  
+
   'verifyPlugin'(pluginID, DB_id, community) {
 
     if (community == true) {
@@ -1173,6 +1150,15 @@ Meteor.methods({
         fsextra.copySync(homePath + '/Tdarr/Plugins/temp/Community', homePath + "/Tdarr/Plugins/Community", { overwrite: true })
       } catch (err) { console.log(err.stack) }
 
+         try {
+        fsextra.copySync(homePath + '/Tdarr/Plugins/temp/methods', homePath + '/Tdarr/Plugins/methods', { overwrite: true })
+      } catch (err) { console.log(err.stack) }
+
+
+      try {
+        fsextra.copySync(homePath + '/Tdarr/Plugins/methods', path.join(process.cwd() , `/assets/app/plugins/methods`), { overwrite: true })
+      } catch (err) { console.log(err.stack) }
+
 
       try {
         fsextra.removeSync(homePath + '/Tdarr/Plugins/temp')
@@ -1233,14 +1219,11 @@ Meteor.methods({
 
       try {
 
-        FileDB.upsert(
-          allFiles[i].file,
-          {
-            $set: {
-              [mode]: "Queued",
-            }
-          }
-        );
+        var tempObj = {
+          [mode]: "Queued",
+        }
+        Meteor.call('modifyFileDB', 'update', allFiles[i].file, tempObj, (error, result) => { })
+
 
       } catch (err) { console.log(err.stack) }
     }
@@ -1274,7 +1257,7 @@ Meteor.methods({
 
           return {
 
-            fullPath: path.join(folderPath + '/' + row),
+            fullPath: path.join(folderPath , row),
             folder: row
           }
         }
@@ -1311,7 +1294,7 @@ Meteor.methods({
 
           return {
 
-            fullPath: path.join(folderPath + '/' + row),
+            fullPath: path.join(folderPath , row),
             folder: row
           }
         }
@@ -1385,12 +1368,11 @@ Meteor.methods({
   }, 'clearDB'() {
 
     LogDB.remove({})
-    FileDB.remove({})
+    Meteor.call('modifyFileDB','removeAll', (error, result) => {})
     SettingsDB.remove({})
     StatisticsDB.remove({})
     ClientDB.remove({})
     GlobalSettingsDB.remove({})
-
 
   },
   'upsertWorkers'(w_id, obj) {
@@ -1403,12 +1385,12 @@ Meteor.methods({
   'launchWorker'(workerType, number) {
 
 
-
-
     for (var i = 1; i <= number; i++) {
       launchWorkerModule(workerType)
 
     }
+
+    workerLaunched = false
 
     return null
 
@@ -1426,11 +1408,6 @@ Meteor.methods({
       workers[workerID].send(messageOut);
 
     } catch (err) { console.log(err.stack) }
-
-    //var indexEle = filesBeingProcessed.indexOf(file)
-    //filesBeingProcessed.splice(indexEle, 1)
-
-
 
 
   }, 'cancelWorkerItem'(workerID) {
@@ -1474,29 +1451,53 @@ Meteor.methods({
       if (mode == 0) {
 
 
+        console.log("Commencing file update scan. Deleting non-existent files and adding new files.")
 
         updateConsole("Commencing file update scan. Deleting non-existent files and adding new files.", false)
 
         var filesInDB = allFilesPulledTable
 
+
+        for(var i = 0; i < filesInDB.length; i++){
+
+          try{
+
+         // console.log('Checking file:'+filesInDB[i].file)
+
+            if ( (!filesInDB[i].file || !(fs.existsSync(filesInDB[i].file))) && ( filesInDB[i].DB == DB_id || filesInDB[i].DB == undefined ) ) {
+              //delete files in DBs if not exist anymore (cleanse)
+              console.log("File does not exist anymore, removing:" + filesInDB[i].file)
+
+              Meteor.call('modifyFileDB','removeOne',filesInDB[i]._id, (error, result) => {})
+              
+              
+              filesInDB.splice(i,1)
+
+              
+
+              i--
+            }
+
+          }catch(err){}
+        }
+
+
+
         filesInDB = filesInDB.filter(row => row.DB == DB_id);
 
 
-        filesInDB2 = filesInDB.map(row => row._id + '\r\n')
-        filesInDB2 = filesInDB2.join("")
-
+        // filesInDB2 = filesInDB.map(row => row._id + '\r\n')
+        //filesInDB2 = filesInDB2.join("")
         // fs.writeFileSync(homePath + "/Tdarr/Data/test.txt", filesInDB2, 'utf8');
 
         filesInDB = filesInDB.map((file, i) => {
-          if (!(fs.existsSync(file.file))) {
-            //delete files in DBs if not exist anymore (cleanse)
-            console.log("File does not exist anymore, removing:" + file.file)
-            FileDB.remove(file.file)
-          } else {
+          if (file.file) {
+
             return file.file
 
           }
-        });
+        })
+
 
         filesInDB = filesInDB.map(row => row + '\r\n')
         filesInDB = filesInDB.join("")
@@ -1525,8 +1526,7 @@ Meteor.methods({
         updateConsole("Commencing fresh file scan.", false)
 
 
-
-        FileDB.remove({ DB: DB_id });
+        Meteor.call('modifyFileDB','removeByDB',DB_id, (error, result) => {})
 
         //  var filesInDB = []
 
@@ -1774,10 +1774,10 @@ Meteor.methods({
     console.log(mode, text)
 
 
-    if (fs.existsSync(path.join(process.cwd() + "/npm"))) {
-      var ffmpegPathLinux = path.join(process.cwd() + '/assets/app/ffmpeg/ffmpeg')
+    if (fs.existsSync(path.join(process.cwd() , "/npm"))) {
+      var ffmpegPathLinux = path.join(process.cwd() , '/assets/app/ffmpeg/ffmpeg')
   } else {
-      var ffmpegPathLinux = path.join(process.cwd() + '/private/ffmpeg/ffmpeg')
+      var ffmpegPathLinux = path.join(process.cwd() , '/private/ffmpeg/ffmpeg')
   }
 
 
@@ -1941,52 +1941,6 @@ for (var i = 0; i < settingsInit.length; i++) {
   }
 }
 
-//Plugin migration step
-
-
-  for (var i = 0; i < settingsInit.length; i++) {
-
-  if(settingsInit[i].pluginIDs && settingsInit[i].pluginIDs.length !== 0 && settingsInit[i].pluginIDs[0].priority == undefined){
-
-    var pluginIDs = settingsInit[i].pluginIDs
-
-    if(settingsInit[i].pluginCommunity == true){
-
-      var source = "Community"
-
-    }else{
-      var source = "Local"
-    }
-
-    pluginIDs = pluginIDs.map((row, i) => {
-
-      return { _id:row._id,
-              checked:row.checked,
-              priority:i,
-              source:source,
-
-      }
-
-    })
-
-    SettingsDB.upsert(
-      settingsInit[i]._id,
-      {
-        $set: {
-          pluginIDs: pluginIDs,
-        }
-      }
-    );
-
-
-
-
-  }
-
-}
-
-
-
 
 
 
@@ -2003,9 +1957,6 @@ function runScheduledManualScan() {
 
 
     var settingsInit = SettingsDB.find({}, {}).fetch()
-
-    // allFilesPulledTable = []
-    // allFilesPulledTable = FileDB.find({}).fetch()
 
 
     for (var i = 0; i < settingsInit.length; i++) {
@@ -2040,18 +1991,14 @@ function runScheduledManualScan() {
 
 
 
-if (fs.existsSync(path.join(process.cwd() + "/npm"))) {
-  var handBrakeCLIPath = path.join(process.cwd() + '/assets/app/HandBrakeCLI.exe')
+if (fs.existsSync(path.join(process.cwd() , "/npm"))) {
+  var handBrakeCLIPath = path.join(process.cwd() , '/assets/app/HandBrakeCLI.exe')
 } else {
-  var handBrakeCLIPath = path.join(process.cwd() + '/private/HandBrakeCLI.exe')
+  var handBrakeCLIPath = path.join(process.cwd() , '/private/HandBrakeCLI.exe')
 }
 
 var ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 var shell = require('shelljs');
-
-
-
-
 
 
 
@@ -2083,7 +2030,7 @@ function scheduledPluginUpdate() {
 }
 
 
-scheduledCacheClean()
+//scheduledCacheClean()
 
 function scheduledCacheClean() {
 
@@ -2418,6 +2365,8 @@ function launchWorkerModule(workerType) {
 
 
 
+           
+
 
           if (!Array.isArray(files) || !files.length) {
 
@@ -2436,12 +2385,11 @@ function launchWorkerModule(workerType) {
 
             files.splice(0, 1)
 
-            //Settings from fileDB
+
 
             if (filesBeingProcessed.includes(firstItem.file + "")) {
 
-              //put item to back of the queue so doesn't hold up queue
-
+            
               var messageOut = [
                 "requestNewItem",
 
@@ -2452,15 +2400,13 @@ function launchWorkerModule(workerType) {
 
               filesBeingProcessed.push(firstItem.file + "")
 
-              FileDB.upsert(firstItem.file,
-                {
-                  $set: {
-                    _id: firstItem.file,
-                    processingStatus: true
+              var tempObj = {
+                _id: firstItem.file,
+                processingStatus: true
 
-                  }
-                }
-              );
+              }
+              Meteor.call('modifyFileDB', 'update',firstItem.file, tempObj, (error, result) => { })
+      
 
 
 
@@ -2516,7 +2462,7 @@ function launchWorkerModule(workerType) {
 
               var copyIfConditionsMet = settings[0].copyIfConditionsMet
 
-              
+
 
               //  console.log(util.inspect(firstItem, {showHidden: false, depth: null}))
 
@@ -2606,36 +2552,36 @@ function launchWorkerModule(workerType) {
 
                   } else {
 
-
                     for (var i = 0; i < pluginsSelected.length; i++) {
 
                       try {
 
-                        //var pluginID = settings[0].pluginID
                         var pluginID = pluginsSelected[i]._id
 
 
-                        var plugin = ''
-
-                        
-
-                          var hwSource = fs.readFileSync(homePath + `/Tdarr/Plugins/${pluginsSelected[i].source}/` + pluginID + '.js', 'utf8');
-                          var hwFunc = new Function('module', hwSource);
-                          var hwModule = { exports: {} };
-                          hwFunc(hwModule)
-                          var plugin = hwModule.exports;
 
 
-                        
-                        cliLogAdd += plugin.details().id+"\n"
+
+                        var plugin = ""
+                        var pluginAbsolutePath = path.join(process.cwd() , `/assets/app/plugins/${pluginsSelected[i].source}/` + pluginID + '.js')
+                        var pluginLocalPath = path.join(process.cwd() , `/assets/app/plugins/${pluginsSelected[i].source}/` + pluginID + '.js')
+                        fsextra.copySync(homePath + `/Tdarr/Plugins/${pluginsSelected[i].source}/` + pluginID + '.js', pluginAbsolutePath)
+
+
+
+
+                        var plugin = importFresh(pluginLocalPath)
+
+                        cliLogAdd += plugin.details().id + "\n"
 
                         var otherArguments = {
-                          homePath:homePath
+                          homePath: homePath
                         }
 
-                        var response = plugin.plugin(firstItem,settings[0],otherArguments);
+                        var response = plugin.plugin(firstItem, settings[0], otherArguments);
 
                         console.dir(response)
+
 
                         processFile = response.processFile
                         preset = response.preset
@@ -2650,9 +2596,9 @@ function launchWorkerModule(workerType) {
 
                           //do nothing
 
-                        }else if (processFile == false && plugin.details().Operation == "Filter"){ 
-                          
-                          break 
+                        }else if (processFile == false && plugin.details().Operation == "Filter"){
+
+                          break
 
                         }else if (processFile == true) {
 
@@ -2662,7 +2608,7 @@ function launchWorkerModule(workerType) {
                       } catch (err) {
                         console.log(err)
 
-                        err = JSON.stringify(err)
+                        // err = JSON.stringify(err)
 
 
                         processFile = false
@@ -2705,7 +2651,7 @@ function launchWorkerModule(workerType) {
                       }
                     })
 
-                    
+
 
                     if(settings[0].decisionMaker.videoExcludeSwitch == false){
 
@@ -2713,17 +2659,17 @@ function launchWorkerModule(workerType) {
                       if (video_codec_names_exclude.includes(firstItem.ffProbeData.streams[0]["codec_name"]) && typeof firstItem.ffProbeData.streams[0]["codec_name"] !== 'undefined') {
 
                         console.log(video_codec_names_exclude + "   " + firstItem.video_codec_name)
-  
+
                         console.log("File codec included in transcode whitelist")
-  
+
                         cliLogAdd += "☑File codec included in transcode whitelist  \n"
-  
-                     
-  
+
+
+
                       } else {
                         cliLogAdd += "☒File codec not included in transcode whitelist  \n"
                         processFile = false;
-  
+
                       }
 
 
@@ -2733,18 +2679,18 @@ function launchWorkerModule(workerType) {
                       if (video_codec_names_exclude.includes(firstItem.ffProbeData.streams[0]["codec_name"]) && typeof firstItem.ffProbeData.streams[0]["codec_name"] !== 'undefined') {
 
                         console.log(video_codec_names_exclude + "   " + firstItem.video_codec_name)
-  
+
                         console.log("File video already in required codec")
-  
+
                         cliLogAdd += "☑File already in required codec  \n"
-  
+
                         processFile = false;
-  
+
                       } else {
                         cliLogAdd += "☒File video not in required codec  \n"
-  
+
                       }
-  
+
                     }
 
 
@@ -2826,12 +2772,12 @@ function launchWorkerModule(workerType) {
 
                         console.log("File already in required codec")
                         cliLogAdd += "☑File already in required codec  \n"
-  
+
                         processFile = false;
-  
+
                       } else {
                         cliLogAdd += "☒File audio not in required codec  \n"
-  
+
                       }
 
                     }
@@ -2901,34 +2847,32 @@ function launchWorkerModule(workerType) {
               }
 
 
-         
+
 
 
               //File filtered out by transcode decision maker
-              if ((processFile == false && folderToFolderConversionEnabled == false) || ( processFile == false && folderToFolderConversionEnabled == true && copyIfConditionsMet === false)){
+              if ((processFile == false && folderToFolderConversionEnabled !== true) || ( processFile == false && folderToFolderConversionEnabled === true && copyIfConditionsMet === false)){
 
 
                 //TranscodeDecisionMaker status first depends on if error encountered during plugins, else depends on
                 // if file has already been processed or not (no oldSize if it hasn't been processed)
 
-                FileDB.upsert(fileToProcess,
-                  {
-                    $set: {
-                      _id: fileToProcess,
-                      TranscodeDecisionMaker: TranscodeDecisionMaker != false ? TranscodeDecisionMaker : firstItem.oldSize ? "Transcode success" : "Not required" ,
-                      processingStatus: false,
-                      cliLog: cliLogAdd,
-                      lastTranscodeDate: new Date(),
-                      bumped: false,
+                var tempObj = {
+                  _id: fileToProcess,
+                  TranscodeDecisionMaker: TranscodeDecisionMaker != false ? TranscodeDecisionMaker : firstItem.oldSize ? "Transcode success" : "Not required" ,
+                  processingStatus: false,
+                  cliLog: cliLogAdd,
+                  lastTranscodeDate: new Date(),
+                  bumped: false,
 
-                    }
-                  }
-                );
+                }
+                Meteor.call('modifyFileDB', 'update',fileToProcess, tempObj, (error, result) => { })
+
+               
 
 
-                var indexEle = filesBeingProcessed.indexOf(firstItem.file + "")
-                filesBeingProcessed.splice(indexEle, 1)
-                console.log("after:" + filesBeingProcessed)
+                removeFromProcessing(firstItem.file)
+
 
                 var messageOut = [
                   "requestNewItem",
@@ -3034,28 +2978,20 @@ function launchWorkerModule(workerType) {
       })
 
 
-
-      var indexEle = filesBeingProcessed.indexOf(message[2] + "")
-      filesBeingProcessed.splice(indexEle, 1)
-
-      console.log("filesBeingProcessed:" + filesBeingProcessed)
+      removeFromProcessing(message[2])
 
 
       if (message[4] == "healthcheck") {
 
+        var tempObj = {
+          _id: message[2],
+          HealthCheck: "Error",
+          processingStatus: false,
+          cliLog: message[5],
+          lastHealthCheckDate: new Date()
+        }
+        Meteor.call('modifyFileDB', 'update',message[2], tempObj, (error, result) => { })
 
-
-        FileDB.upsert(message[2],
-          {
-            $set: {
-              _id: message[2],
-              HealthCheck: "Error",
-              processingStatus: false,
-              cliLog: message[5],
-              lastHealthCheckDate: new Date()
-            }
-          }
-        );
 
         StatisticsDB.update("statistics",
           {
@@ -3065,21 +3001,15 @@ function launchWorkerModule(workerType) {
 
 
       } else if (message[4] == "transcode") {
-
-
-
-        FileDB.upsert(message[2],
-          {
-            $set: {
-              _id: message[2],
-              TranscodeDecisionMaker: "Transcode error",
-              processingStatus: false,
-              cliLog: message[5],
-              lastTranscodeDate: new Date()
-            }
-          }
-        );
-        //  ffprobeLaunch([message[2]], OutputDB, message[3])
+        
+        var tempObj = {
+          _id: message[2],
+          TranscodeDecisionMaker: "Transcode error",
+          processingStatus: false,
+          cliLog: message[5],
+          lastTranscodeDate: new Date()
+        }
+        Meteor.call('modifyFileDB', 'update',message[2], tempObj, (error, result) => { })
 
 
 
@@ -3098,25 +3028,20 @@ function launchWorkerModule(workerType) {
 
 
 
-      var indexEle = filesBeingProcessed.indexOf(message[2] + "")
-      filesBeingProcessed.splice(indexEle, 1)
-
-      console.log("filesBeingProcessed:" + filesBeingProcessed)
+   
 
 
       if (message[4] == "healthcheck") {
 
-
-        FileDB.upsert(message[2],
-          {
-            $set: {
-              _id: message[2],
-              HealthCheck: "Success",
-              processingStatus: false,
-              lastHealthCheckDate: new Date()
-            }
-          }
-        );
+        removeFromProcessing(message[2])
+        
+        var tempObj = {
+          _id: message[2],
+          HealthCheck: "Success",
+          processingStatus: false,
+          lastHealthCheckDate: new Date()
+        }
+        Meteor.call('modifyFileDB', 'update',message[2], tempObj, (error, result) => { })
 
 
         StatisticsDB.update("statistics",
@@ -3137,9 +3062,10 @@ function launchWorkerModule(workerType) {
 
       } else if (message[4] == "transcode") {
 
+        removeFromProcessing(message[5])
 
 
-        FileDB.remove(message[5])
+        Meteor.call('modifyFileDB','removeOne',message[5], (error, result) => {})
 
         newFile = [message[2],]
 
@@ -3274,41 +3200,32 @@ function launchWorkerModule(workerType) {
 
 
 
-      var indexEle = filesBeingProcessed.indexOf(message[2] + "")
-      filesBeingProcessed.splice(indexEle, 1)
+      removeFromProcessing(message[2])
 
 
       if (message[4] == "healthcheck") {
+       
 
-
-
-        FileDB.upsert(message[2],
-          {
-            $set: {
-              _id: message[2],
-              HealthCheck: "Cancelled",
-              processingStatus: false,
-              cliLog: "Item was cancelled by user.",
-              lastHealthCheckDate: new Date(),
-            }
-          }
-        );
+        var tempObj = {
+          _id: message[2],
+          HealthCheck: "Cancelled",
+          processingStatus: false,
+          cliLog: "Item was cancelled by user.",
+          lastHealthCheckDate: new Date(),
+        }
+        Meteor.call('modifyFileDB', 'update',message[2], tempObj, (error, result) => { })
 
 
       } else if (message[4] == "transcode") {
-
-
-        FileDB.upsert(message[2],
-          {
-            $set: {
-              _id: message[2],
-              TranscodeDecisionMaker: "Transcode cancelled",
-              processingStatus: false,
-              cliLog: "Item was cancelled by user.",
-              lastTranscodeDate: new Date(),
-            }
-          }
-        );
+        
+        var tempObj = {
+          _id: message[2],
+          TranscodeDecisionMaker: "Transcode cancelled",
+          processingStatus: false,
+          cliLog: "Item was cancelled by user.",
+          lastTranscodeDate: new Date(),
+        }
+        Meteor.call('modifyFileDB', 'update',message[2], tempObj, (error, result) => { })
 
       }
 
@@ -3562,7 +3479,7 @@ function createFolderWatch(Folder, DB_id) {
 
     if (message[1] == "removeThisFileFromDB") {
 
-      FileDB.remove(message[2])
+      Meteor.call('modifyFileDB','removeOne',message[2], (error, result) => {})
 
     }
 
@@ -3623,13 +3540,10 @@ function dbUpdatePush() {
 
 
           updateConsole(`Adding file to DB: ${filesToAddToDB[i]._id}`, true)
+          
+          var tempObj = filesToAddToDB[i]
+          Meteor.call('modifyFileDB', 'insert',filesToAddToDB[i]._id, tempObj, (error, result) => { })
 
-
-          FileDB.upsert(filesToAddToDB[i]._id,
-            {
-              $set: filesToAddToDB[i]
-            }
-          );
 
 
         } catch (err) {
@@ -3730,9 +3644,12 @@ function tablesUpdate() {
     if (doTablesUpdate == false) {
 
 
-    } else {
+    } else if (hasFilesDBChanged === true) {
+
+      //console.log('Updating queues')
 
 
+      hasFilesDBChanged = false
 
       addFilesToDB = false
 
@@ -3874,13 +3791,15 @@ function tablesUpdate() {
 
       for (var i = 0; i < allFilesPulledTable.length; i++) {
 
-        if (allFilesPulledTable[i].bumped instanceof Date) {
+        if (allFilesPulledTable[i].bumped != false && allFilesPulledTable[i].bumped != undefined) {
 
           bumpedFiles.push(allFilesPulledTable[i])
           allFilesPulledTable.splice(i, 1)
           i--
         }
       }
+
+
 
 
       bumpedFiles = bumpedFiles.sort(function (a, b) {
@@ -4315,15 +4234,15 @@ workerUpdateCheck();
 //worker will cancel item if percentage stays the same for 300 secs
 function workerUpdateCheck() {
 
-  //
+
 
   try {
+
 
     var generalWorkers = workerDB.filter(row => row.mode == "general")
     var transcodeWorkers = workerDB.filter(row => row.mode == "transcode")
     var healthcheckWorkers = workerDB.filter(row => row.mode == "healthcheck")
 
-    //
 
     var globs = GlobalSettingsDB.find({}, {}).fetch()
 
@@ -4333,16 +4252,24 @@ function workerUpdateCheck() {
 
     verboseLogs = globs[0].verboseLogs
 
-    if (gDiff >= 1 && generalFiles.length > 0) {
-      Meteor.call('launchWorker', "general", 1, function (error, result) { });
-    }
-    if (tDiff >= 1 && transcodeFiles.length > 0) {
-      Meteor.call('launchWorker', "transcode", 1, function (error, result) { });
+    if(workerLaunched === false){
+
+      if (gDiff >= 1 && generalFiles.length > 0) {
+        workerLaunched = true
+        Meteor.call('launchWorker', "general", 1, function (error, result) { });
+      }
+      if (tDiff >= 1 && transcodeFiles.length > 0) {
+        workerLaunched = true
+        Meteor.call('launchWorker', "transcode", 1, function (error, result) { });
+      }
+  
+      if (hDiff >= 1 && healthcheckFiles.length > 0) {
+        workerLaunched = true
+        Meteor.call('launchWorker', "healthcheck", 1, function (error, result) { });
+      }
     }
 
-    if (hDiff >= 1 && healthcheckFiles.length > 0) {
-      Meteor.call('launchWorker', "healthcheck", 1, function (error, result) { });
-    }
+
 
     var workerCheck = findWorker() //[]
 
@@ -4426,6 +4353,60 @@ function workerUpdateCheck() {
   setTimeout(Meteor.bindEnvironment(workerUpdateCheck), 1000);
 }
 
+    function removeFromProcessing(file){
+
+
+            var indexEle = filesBeingProcessed.indexOf(file + '')
+
+                if(indexEle >= 0){
+                  filesBeingProcessed.splice(indexEle, 1)
+                }
+    }
+
+  var initialising = true;
+
+  SettingsDB.find().observe({
+    added: function (document) {
+      if (!initialising) {
+        //console.log('doc added');
+        Meteor.call('FilesDBHasChanged', (error, result) => { })
+      }
+    },
+    changed: function (new_document, old_document) {
+      if (!initialising) {
+        //console.log('doc changed');
+        Meteor.call('FilesDBHasChanged', (error, result) => { })
+      }
+    },
+    removed: function (document) {
+      if (!initialising) {
+        //console.log('doc removed');
+        Meteor.call('FilesDBHasChanged', (error, result) => { })
+      }
+    }
+  });
+
+  GlobalSettingsDB.find().observe({
+    added: function (document) {
+      if (!initialising) {
+        //console.log('doc added');
+        Meteor.call('FilesDBHasChanged', (error, result) => { })
+      }
+    },
+    changed: function (new_document, old_document) {
+      if (!initialising) {
+        //console.log('doc changed');
+        Meteor.call('FilesDBHasChanged', (error, result) => { })
+      }
+    },
+    removed: function (document) {
+      if (!initialising) {
+        //console.log('doc removed');
+        Meteor.call('FilesDBHasChanged', (error, result) => { })
+      }
+    }
+  });
+  initialising = false;
+
+
 }
-
-

@@ -14,15 +14,12 @@ import { GlobalSettingsDB } from '../../api/tasks.js';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 
 
-import FilterByCodec from './pluginTemplates/Filter/FilterByCodec.jsx';
-import FilterByMedium from './pluginTemplates/Filter/FilterByMedium.jsx';
-import FilterByDate from './pluginTemplates/Filter/FilterByDate.jsx';
-import FilterByResolution from './pluginTemplates/Filter/FilterByResolution.jsx';
-import FilterBySize from './pluginTemplates/Filter/FilterBySize.jsx';
 
-import Transcode from './pluginTemplates/Transcode/Transcode.jsx';
 
-import RemuxContainer from './pluginTemplates/Remux/RemuxContainer.jsx';
+
+import General from './pluginTemplates/General.jsx';
+
+
 
 import PluginGuide from './pluginTemplates/PluginGuide.jsx';
 
@@ -314,6 +311,9 @@ class App extends Component {
                   alert('Error deleting plugin. Please delete manually.')
 
                 }
+
+                  this.searchPlugins(event, 'Local')
+
               })
             }} ><span className="buttonTextSize">X</span></Button>,
 
@@ -512,102 +512,21 @@ class App extends Component {
 
 
                     <br />
-                    <br />
-                    <br />
 
-
-                    <p>Filter</p>
-
-                    <div className="pluginCreatorSubItems">
-
-                      <p onClick={() => {
+                    <p onClick={() => {
                         GlobalSettingsDB.upsert(
                           "globalsettings",
                           {
                             $set: {
-                              navSelectedPluginCreatorItem: "navFilterMedium",
+                              navSelectedPluginCreatorItem: "navGeneral",
                             }
                           }
                         );
-                      }} className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navFilterMedium" ? 'selectedNav' : 'unselectedNav'}>Medium</p>
-
-
-
-                      <p onClick={() => {
-                        GlobalSettingsDB.upsert(
-                          "globalsettings",
-                          {
-                            $set: {
-                              navSelectedPluginCreatorItem: "navFilterCodec",
-                            }
-                          }
-                        );
-                      }} className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navFilterCodec" ? 'selectedNav' : 'unselectedNav'}>Codec</p>
-
-
-                      <p onClick={() => {
-                        GlobalSettingsDB.upsert(
-                          "globalsettings",
-                          {
-                            $set: {
-                              navSelectedPluginCreatorItem: "navFilterDate",
-                            }
-                          }
-                        );
-                      }} className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navFilterDate" ? 'selectedNav' : 'unselectedNav'}>Date</p>
-
-
-
-                      <p onClick={() => {
-                        GlobalSettingsDB.upsert(
-                          "globalsettings",
-                          {
-                            $set: {
-                              navSelectedPluginCreatorItem: "navFilterResolution",
-                            }
-                          }
-                        );
-                      }} className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navFilterResolution" ? 'selectedNav' : 'unselectedNav'}>Resolution</p>
-
-
-                      <p onClick={() => {
-                        GlobalSettingsDB.upsert(
-                          "globalsettings",
-                          {
-                            $set: {
-                              navSelectedPluginCreatorItem: "navFilterSize",
-                            }
-                          }
-                        );
-                      }} className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navFilterSize" ? 'selectedNav' : 'unselectedNav'}>Size</p>
-
-
-                    </div>
-
-                    <br />
-                    <br />
-                    <br />
-
-                    <p>Transcode</p>
-                    <div className="pluginCreatorSubItems">
-
-
-                      <p onClick={() => {
-                        GlobalSettingsDB.upsert(
-                          "globalsettings",
-                          {
-                            $set: {
-                              navSelectedPluginCreatorItem: "navTranscode",
-                            }
-                          }
-                        );
-                      }} className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navTranscode" ? 'selectedNav' : 'unselectedNav'}>Preset/Arguments</p>
+                      }} className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navGeneral" ? 'selectedNav' : 'unselectedNav'}>Create</p>
 
 
 
 
-
-                    </div>
 
 
 
@@ -616,27 +535,18 @@ class App extends Component {
                     <br />
 
 
-                    <p>Remux</p>
 
-                    <div className="pluginCreatorSubItems">
+                
 
-                      <p onClick={() => {
-                        GlobalSettingsDB.upsert(
-                          "globalsettings",
-                          {
-                            $set: {
-                              navSelectedPluginCreatorItem: "navRemuxContainer",
-                            }
-                          }
-                        );
-                      }} className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navRemuxContainer" ? 'selectedNav' : 'unselectedNav'}>Container</p>
+       
 
 
 
 
 
-
-                    </div>
+                    <br />
+                    <br />
+                    <br />
 
 
 
@@ -655,39 +565,18 @@ class App extends Component {
 
 
 
-
-
-
-
-
-
-
-                    <div className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navFilterMedium" ? '' : 'd-none'}>
-                      <FilterByMedium />
-                    </div>
-
-
-                    <div className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navFilterCodec" ? '' : 'd-none'}>
-                      <FilterByCodec />
-                    </div>
-
-
-                    <div className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navFilterDate" ? '' : 'd-none'}>
-                      <FilterByDate />
-                    </div>
-
-
-                    <div className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navFilterResolution" ? '' : 'd-none'}>
-                      <FilterByResolution />
+                    <div className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navGeneral" ? '' : 'd-none'}>
+                      <General />
                     </div>
 
 
 
-                    <div className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navFilterSize" ? '' : 'd-none'}>
-                      <FilterBySize />
-                    </div>
 
 
+
+
+
+{/* 
                     <div className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navTranscode" ? '' : 'd-none'}>
                       <Transcode />
                     </div>
@@ -695,7 +584,7 @@ class App extends Component {
 
                     <div className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navRemuxContainer" ? '' : 'd-none'}>
                       <RemuxContainer />
-                    </div>
+                    </div> */}
 
 
 

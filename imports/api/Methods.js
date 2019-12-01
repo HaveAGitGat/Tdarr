@@ -18,8 +18,10 @@ Meteor.methods({
     'remove'() {
 
 
-        FileDB.remove({});
+       
+        Meteor.call('modifyFileDB','removeAll', (error, result) => {})
         SettingsDB.remove({});
+
 
 
     },
@@ -34,12 +36,7 @@ Meteor.methods({
     },
 
     'removelibrary'(DB) {
-
-
-        FileDB.remove({ DB: DB });
-
-
-
+        Meteor.call('modifyFileDB','removeByDB',DB, (error, result) => {})
     },
 
 

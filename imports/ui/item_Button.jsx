@@ -58,11 +58,8 @@ export default class App extends Component {
 
             this.triggerLoadState();
 
-            FileDB.upsert(this.props.file,
-              {
-                $set: this.props.obj
-              });
 
+            Meteor.call('modifyFileDB','update',this.props.file,this.props.obj, (error, result) => {})
 
           }}><span className="buttonTextSize">{this.props.symbol}</span></Button>}
 
@@ -127,7 +124,7 @@ export default class App extends Component {
 
             this.triggerLoadState();
 
-            FileDB.remove({ _id: this.props.file._id });
+            Meteor.call('modifyFileDB','removeOne',this.props.file._id, (error, result) => {})
            
 
           }}><span className="buttonTextSize">{this.props.symbol}</span></Button>}

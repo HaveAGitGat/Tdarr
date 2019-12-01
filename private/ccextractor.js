@@ -7,8 +7,8 @@ process.on('uncaughtException', function (err) {
 var path = require("path");
 var fs = require('fs');
 
-if (fs.existsSync(path.join(process.cwd()+"/npm"))) {
-    var rootModules = path.join(process.cwd()+'/npm/node_modules/')
+if (fs.existsSync(path.join(process.cwd(),"/npm"))) {
+    var rootModules = path.join(process.cwd(),'/npm/node_modules/')
 }else{
     var rootModules = ''
 }
