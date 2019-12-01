@@ -536,8 +536,6 @@ function main(){
 console.log("Initialising DB")
 
 
-
-//migration step
 allFilesPulledTable = FileDB.find({}).fetch()
 
 for (var i = 0; i < allFilesPulledTable.length; i++) {
@@ -561,89 +559,7 @@ for (var i = 0; i < allFilesPulledTable.length; i++) {
 
 
 
-  //Migration steps
 
-  if (allFilesPulledTable[i].TranscodeDecisionMaker == "Not attempted") {
-
-    FileDB.upsert(
-      allFilesPulledTable[i].file,
-      {
-        $set: {
-          TranscodeDecisionMaker: "Queued",
-        }
-      }
-    );
-  }
-
-  if (allFilesPulledTable[i].TranscodeDecisionMaker == "Passed") {
-
-    FileDB.upsert(
-      allFilesPulledTable[i].file,
-      {
-        $set: {
-          TranscodeDecisionMaker: "Not required",
-        }
-      }
-    );
-  }
-
-  if (allFilesPulledTable[i].HealthCheck == "Not attempted") {
-
-    FileDB.upsert(
-      allFilesPulledTable[i].file,
-      {
-        $set: {
-          HealthCheck: "Queued",
-        }
-      }
-    );
-
-
-  }
-
-
-  if (!allFilesPulledTable[i].lastTranscodeDate) {
-
-    FileDB.upsert(
-      allFilesPulledTable[i].file,
-      {
-        $set: {
-          lastTranscodeDate: new Date(),
-        }
-      }
-    );
-  }
-
-  if (!allFilesPulledTable[i].lastHealthCheckDate) {
-
-    FileDB.upsert(
-      allFilesPulledTable[i].file,
-      {
-        $set: {
-          lastHealthCheckDate: new Date(),
-        }
-      }
-    );
-  }
-
-  if(!allFilesPulledTable[i].statSync){
-
-    try{
-
-    FileDB.upsert(
-      allFilesPulledTable[i].file,
-      {
-        $set: {
-          statSync: fs.statSync(allFilesPulledTable[i].file),
-        }
-      }
-    );
-
-  }catch(err){}
-
-  }
-
-  //End migration steps
 
 }
 
@@ -1126,7 +1042,7 @@ try{
           Link: "Read error"
         }
 
-        console.log(err.stack)
+        //console.log(err.stack)
 
         plugins[i] = { ...plugins[i], ...obj };
 
@@ -1464,11 +1380,6 @@ try{
 
     } catch (err) { console.log(err.stack) }
 
-    //var indexEle = filesBeingProcessed.indexOf(file)
-    //filesBeingProcessed.splice(indexEle, 1)
-
-
-
 
   }, 'cancelWorkerItem'(workerID) {
 
@@ -1524,15 +1435,15 @@ try{
 
          // console.log('Checking file:'+filesInDB[i].file)
 
-          if ( (!filesInDB[i].file || !(fs.existsSync(filesInDB[i].file))) && ( filesInDB[i].DB == DB_id || filesInDB[i].DB == undefined ) ) {
-            //delete files in DBs if not exist anymore (cleanse)
-            console.log("File does not exist anymore, removing:" + filesInDB[i].file)
-            filesInDB.splice(i,1)
-            FileDB.remove(filesInDB[i]._id)
-            Meteor.call('FilesDBHasChanged', (error, result) => {})
+            if ( (!filesInDB[i].file || !(fs.existsSync(filesInDB[i].file))) && ( filesInDB[i].DB == DB_id || filesInDB[i].DB == undefined ) ) {
+              //delete files in DBs if not exist anymore (cleanse)
+              console.log("File does not exist anymore, removing:" + filesInDB[i].file)
+              filesInDB.splice(i,1)
+              FileDB.remove(filesInDB[i]._id)
+              Meteor.call('FilesDBHasChanged', (error, result) => {})
 
-            i--
-          } 
+              i--
+            } 
 
           }catch(err){}
         }
@@ -1546,13 +1457,13 @@ try{
         //filesInDB2 = filesInDB2.join("")
         // fs.writeFileSync(homePath + "/Tdarr/Data/test.txt", filesInDB2, 'utf8');
 
-              filesInDB = filesInDB.map((file, i) => {
+        filesInDB = filesInDB.map((file, i) => {
           if (file.file) {
             
             return file.file
           
           }
-          })
+        })
 
 
         filesInDB = filesInDB.map(row => row + '\r\n')
@@ -1997,50 +1908,6 @@ for (var i = 0; i < settingsInit.length; i++) {
     Meteor.call('scanFiles', settingsInit[i]._id, settingsInit[i].folder, 1, 0, obj, function (error, result) { });
 
   }
-}
-
-//Plugin migration step
-
-
-  for (var i = 0; i < settingsInit.length; i++) {
-
-  if(settingsInit[i].pluginIDs && settingsInit[i].pluginIDs.length !== 0 && settingsInit[i].pluginIDs[0].priority == undefined){
-
-    var pluginIDs = settingsInit[i].pluginIDs
-
-    if(settingsInit[i].pluginCommunity == true){
-
-      var source = "Community"
-
-    }else{
-      var source = "Local"
-    }
-
-    pluginIDs = pluginIDs.map((row, i) => {
-
-      return { _id:row._id,
-              checked:row.checked,
-              priority:i,
-              source:source,
-
-      }
-
-    })
-
-    SettingsDB.upsert(
-      settingsInit[i]._id,
-      {
-        $set: {
-          pluginIDs: pluginIDs,
-        }
-      }
-    );
-
-
-
-
-  }
-
 }
 
 
@@ -2982,9 +2849,8 @@ function launchWorkerModule(workerType) {
                 Meteor.call('FilesDBHasChanged', (error, result) => {})
 
 
-                var indexEle = filesBeingProcessed.indexOf(firstItem.file + "")
-                filesBeingProcessed.splice(indexEle, 1)
-                console.log("after:" + filesBeingProcessed)
+                removeFromProcessing(firstItem.file)
+
 
                 var messageOut = [
                   "requestNewItem",
@@ -3090,11 +2956,7 @@ function launchWorkerModule(workerType) {
       })
 
 
-
-      var indexEle = filesBeingProcessed.indexOf(message[2] + "")
-      filesBeingProcessed.splice(indexEle, 1)
-
-      console.log("filesBeingProcessed:" + filesBeingProcessed)
+      removeFromProcessing(message[2])
 
 
       if (message[4] == "healthcheck") {
@@ -3158,10 +3020,7 @@ function launchWorkerModule(workerType) {
 
 
 
-      var indexEle = filesBeingProcessed.indexOf(message[2] + "")
-      filesBeingProcessed.splice(indexEle, 1)
-
-      console.log("filesBeingProcessed:" + filesBeingProcessed)
+    removeFromProcessing(message[2])
 
 
       if (message[4] == "healthcheck") {
@@ -3337,8 +3196,7 @@ function launchWorkerModule(workerType) {
 
 
 
-      var indexEle = filesBeingProcessed.indexOf(message[2] + "")
-      filesBeingProcessed.splice(indexEle, 1)
+      removeFromProcessing(message[2])
 
 
       if (message[4] == "healthcheck") {
@@ -4497,6 +4355,18 @@ function workerUpdateCheck() {
 
   setTimeout(Meteor.bindEnvironment(workerUpdateCheck), 1000);
 }
+
+    function removeFromProcessing(file){
+
+      console.log(filesBeingProcessed)
+
+            var indexEle = filesBeingProcessed.indexOf(file + '')
+
+                if(indexEle >= 0){
+                  filesBeingProcessed.splice(indexEle, 1)
+                }
+      console.log(filesBeingProcessed)
+    }
 
 }
 
