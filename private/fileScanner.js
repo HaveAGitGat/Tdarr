@@ -63,9 +63,9 @@ updateConsole(scannerID, "Online.")
 var path = require("path");
 var fs = require('fs');
 
-if (fs.existsSync(path.join(process.cwd() + "/npm"))) {
+if (fs.existsSync(path.join(process.cwd() , "/npm"))) {
 
-    var rootModules = path.join(process.cwd() + '/npm/node_modules/')
+    var rootModules = path.join(process.cwd() , '/npm/node_modules/')
 
 } else {
     var rootModules = ''
@@ -447,10 +447,10 @@ function ffprobeLaunch(filesToScan) {
 
                                     if (process.platform == 'win32') {
 
-                                        if (fs.existsSync(path.join(process.cwd() + "/npm"))) {
-                                            CCExtractorPath = path.join(process.cwd() + '/assets/app/ccextractor/ccextractorwin.exe')
+                                        if (fs.existsSync(path.join(process.cwd() , "/npm"))) {
+                                            CCExtractorPath = path.join(process.cwd() , '/assets/app/ccextractor/ccextractorwin.exe')
                                         } else {
-                                            CCExtractorPath = path.join(process.cwd() + '/private/ccextractor/ccextractorwin.exe')
+                                            CCExtractorPath = path.join(process.cwd() , '/private/ccextractor/ccextractorwin.exe')
                                         }
 
                                         workerCommand = CCExtractorPath + " -debug  -stdout -endat 01:00 --screenfuls 1 -out=null \"" + filepath + "\""
@@ -458,10 +458,10 @@ function ffprobeLaunch(filesToScan) {
                                     }
 
                                     if (process.platform == 'linux') {
-                                        if (fs.existsSync(path.join(process.cwd() + "/npm"))) {
-                                            CCExtractorPath = path.join(process.cwd() + '/assets/app/ccextractor/ccextractor')
+                                        if (fs.existsSync(path.join(process.cwd() , "/npm"))) {
+                                            CCExtractorPath = path.join(process.cwd() , '/assets/app/ccextractor/ccextractor')
                                         } else {
-                                            CCExtractorPath = path.join(process.cwd() + '/private/ccextractor/ccextractor')
+                                            CCExtractorPath = path.join(process.cwd() , '/private/ccextractor/ccextractor')
                                         }
 
                                         var filepathUnix = filepath.replace(/'/g, '\'\"\'\"\'');

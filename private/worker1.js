@@ -27,33 +27,17 @@ process.on('uncaughtException', function (err) {
 //Globals
 
 var shellThreadModule
-var path = require("path");
-//__dirname = path.resolve();
 var exitRequestSent = false
 var errorLogFull
 
-if (process.platform == 'win32') {
 
-    var stringProcessingSlash = "/";
-    //   var stringProcessingSlash = "\\";
-}
+const path = require('path');
+const fs = require('fs');
 
-if (process.platform == 'linux' || process.platform == 'darwin') {
-    var stringProcessingSlash = "/";
-}
-
-
-
-var fs = require('fs');
-
-if (fs.existsSync(path.join(process.cwd() + "/npm"))) {
-
-    var rootModules = path.join(process.cwd() + '/npm/node_modules/')
-
+if (fs.existsSync(path.join(process.cwd() , '/npm'))) {
+    var rootModules = path.join(process.cwd() , '/npm/node_modules/')
 } else {
-
     var rootModules = ''
-
 }
 
 
@@ -83,8 +67,8 @@ var finalFilePath
 var mode
 var settingsDBIndex
 
-var oldProgress = ""
-var lastProgCheck = ""
+var oldProgress = ''
+var lastProgCheck = ''
 
 var currentFileObject
 var folderToFolderConversionEnabled
@@ -246,7 +230,7 @@ process.on('message', (m) => {
 
             finalFilePath = getOutputPath(currentDestinationLine, container, outputFolder, folderToFolderConversionFolder)
 
-            var outputFolderPath = finalFilePath.substring(0, finalFilePath.lastIndexOf(stringProcessingSlash))
+            var outputFolderPath = finalFilePath.substring(0, finalFilePath.lastIndexOf('/'))
 
             if (!fs.existsSync(outputFolderPath)) {
                 try {
@@ -283,7 +267,7 @@ process.on('message', (m) => {
 
          //Create transcode cache output folders
 
-        var outputFolderPath = currentDestinationLine.substring(0, currentDestinationLine.lastIndexOf(stringProcessingSlash))
+        var outputFolderPath = currentDestinationLine.substring(0, currentDestinationLine.lastIndexOf('/'))
 
 
         if (!fs.existsSync(outputFolderPath)) {
@@ -303,11 +287,11 @@ process.on('message', (m) => {
 
         if (fs.existsSync(path.join(process.cwd() + "/npm"))) {
 
-            var handBrakeCLIPath = path.join(process.cwd() + '/assets/app/HandBrakeCLI.exe')
-            var ffmpegPathLinux = path.join(process.cwd() + '/assets/app/ffmpeg/ffmpeg')
+            var handBrakeCLIPath = path.join(process.cwd() , '/assets/app/HandBrakeCLI.exe')
+            var ffmpegPathLinux = path.join(process.cwd() , '/assets/app/ffmpeg/ffmpeg')
         } else {
-            var handBrakeCLIPath = path.join(process.cwd() + '/private/HandBrakeCLI.exe')
-            var ffmpegPathLinux = path.join(process.cwd() + '/private/ffmpeg/ffmpeg')
+            var handBrakeCLIPath = path.join(process.cwd() , '/private/HandBrakeCLI.exe')
+            var ffmpegPathLinux = path.join(process.cwd() , '/private/ffmpeg/ffmpeg')
         }
 
 
@@ -849,76 +833,23 @@ function getFFmpegCLIPath() {
 
 
 
-
-
-function getHandBrakeCLIPath() {
-
-
-    //handbrake CLI path
-    if (process.platform == 'win32') {
-        var handBrakeCLIPath = path.join(__dirname, "/imports/api/HandBrakeCLI.exe")
-
-    }
-
-
-    if (process.platform == 'linux' || process.platform == 'darwin') {
-        //development && //production
-        var handBrakeCLIPath = "HandBrakeCLI -i \""
-    }
-
-    return handBrakeCLIPath
-
-}
-
-
-
 function getOutputPath(inputFilePath, outputFileContainer, inputPathStem, outputPathStem) {
 
-    while (inputPathStem.charAt(inputPathStem.length - 1) == '/') {
-        inputPathStem = inputPathStem.split("")
-        inputPathStem.splice(inputPathStem.length - 1, 1)
-        inputPathStem = inputPathStem.join("")
-    }
+    //add new container
+    outputFileContainer = outputFileContainer.split('.').join('')
+    inputFilePath = inputFilePath.split('.')
+    inputFilePath[inputFilePath.length - 1] = outputFileContainer
+    inputFilePath = inputFilePath.join('.')
 
-    while (outputPathStem.charAt(outputPathStem.length - 1) == '/') {
-        outputPathStem = outputPathStem.split("")
-        outputPathStem.splice(outputPathStem.length - 1, 1)
-        outputPathStem = outputPathStem.join("")
-    }
+    
+    //get + add subStem
+    var subStem = inputFilePath.substring(inputPathStem.length)
 
-
-    inputPathStemSplit = inputPathStem.split(','); // comma removed step 1:  /path/to/folder
+    var outputFilePath = path.join(outputPathStem , subStem)
 
 
+    return outputFilePath.replace(/\\/g, '/')
 
-    topFolder = inputPathStemSplit[inputPathStemSplit.length - 1] // comma removed step 2:  /path/to/folder
-
-    topFolderCharLength = topFolder.length   //
-
-
-
-    var str = inputFilePath  // path/to/topfolder/subfolder/test.mp4
-
-
-    str = str.substring(topFolderCharLength);       // /subfolder/test.mp4
-
-
-    pointer = str.split(stringProcessingSlash);
-
-    filePathEnd = pointer[pointer.length - 1]   //     test.mp4
-
-    filePathEndFileType = filePathEnd.slice(0, filePathEnd.lastIndexOf('.'));   // test
-
-
-
-    subfilePath = filePathEndFileType + outputFileContainer;   // "test" +".mp4"
-
-
-    LongsubfilePath = str.slice(0, str.lastIndexOf(stringProcessingSlash)); //  path/to/folder
-    newsubfilePath = LongsubfilePath + stringProcessingSlash + subfilePath; // path/to/folder + "/" + "test.mp4"
-    outputFilePath = outputPathStem + newsubfilePath;
-
-    return outputFilePath.replace(/\\/g, "/");
 }
 
 
@@ -962,17 +893,7 @@ function workerNotEncounteredError() {
 
 
 
-
-
-
-
-
-
-
         try {
-
-
-
 
 
             if (folderToFolderConversionEnabled == true) {

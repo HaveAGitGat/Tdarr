@@ -129,6 +129,7 @@ class App extends Component {
 
             );
 
+        Meteor.call('FilesDBHasChanged', (error, result) => {})
 
 
           }}
