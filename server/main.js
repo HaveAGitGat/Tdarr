@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import '../imports/api/Methods.js';
 import '../imports/api/pluginCreatorMethods.js';
 import '../imports/api/Logger.js';
@@ -208,7 +209,7 @@ if (fs.existsSync(homePath + "/Tdarr/Data/env.json")) {
 
     if(jsonConfig.BASE != undefined){
 
-  
+
     GlobalSettingsDB.upsert(
       "globalsettings",
       {
@@ -275,11 +276,56 @@ var collections = [
   [StatisticsDB,"StatisticsDB"],
 ]
 
-
-
-
-
 Meteor.methods({
+  'modifyFileDB'(mode, fileID, obj) {
+    //mode == add, update, delete
+    try {
+
+
+      if (mode == 'insert') {
+
+        FileDB.insert(obj);
+
+
+      } else if (mode == 'update') {
+
+        FileDB.update(fileID,
+          {
+            $set: obj
+          });
+
+      } if (mode == 'upsert') {
+
+        FileDB.upsert(fileID,
+          {
+            $set: obj
+          });
+
+      } else if (mode == 'removeOne') {
+
+        FileDB.remove(fileID);
+
+      } else if (mode == 'removeByDB') {
+
+        FileDB.remove({ DB: fileID });
+
+
+      } else if (mode == 'removeAll') {
+
+
+        FileDB.remove({});
+
+      }
+
+    } catch (err) {
+      console.log(err.stack)
+    }
+
+
+    Meteor.call('FilesDBHasChanged', (error, result) => { })
+
+
+  },
 
   'getBackups'() {
     try {
@@ -329,7 +375,7 @@ Meteor.methods({
     }
 
 
-  
+
     try {
 
       var file = (name.split('.'))[0]
@@ -343,7 +389,7 @@ Meteor.methods({
         for (var i = 0; i < collections.length; i++) {
 
           var count = 0
-          
+
           backupStatus.push({name:collections[i][1]})
           backupStatus[i+1].status = "Cleaning existing DB"
 
@@ -351,17 +397,17 @@ Meteor.methods({
           collections[i][0].remove({});
 
           backupStatus[i+1].status = "Existing DB cleaned"
-  
+
           try{
-  
+
           var dbItems = fs.readFileSync(homePath + `/Tdarr/Backups/${file}-unzip/${collections[i][1]}.txt`, dbItems, 'utf8');
 
           backupStatus[i+1].status = "Reading backup file"
-  
+
           dbItems = JSON.parse(dbItems)
-  
+
           if(dbItems.length > 0){
-  
+
             for (var j = 0; j < dbItems.length; j++) {
 
               count++
@@ -369,17 +415,17 @@ Meteor.methods({
               backupStatus[i+1].status = "Restoring:"+count
 
              // backupStatus = "Restoring: "+ count
-  
+
               if (dbItems[j]._id) {
-    
+
                 var id = dbItems[j]._id
-    
+
                 collections[i][0].upsert(id,
                   {
                     $set: dbItems[j]
                   }
                 );
-           
+
               }
             }
 
@@ -391,12 +437,12 @@ Meteor.methods({
           console.log(err)
           backupStatus[i+1].status = "Error:"+JSON.stringify(err)
         }
-  
-  
+
+
         }
 
 
-        
+
       fsextra.removeSync(homePath + `/Tdarr/Backups/${file}-unzip`)
 
       backupStatus.push({name:"Status",status:"Finished!"})
@@ -410,8 +456,8 @@ Meteor.methods({
 
     }
 
-    
- 
+
+
   }, 'deleteBackup'(name) {
 
 
@@ -427,7 +473,7 @@ Meteor.methods({
       return false
     }
 
-   
+
 
 
   },  'getBackupStatus'() {
@@ -441,7 +487,7 @@ Meteor.methods({
 
   },'createBackup'(){
 
-    
+
     backupStatus = []
 
     try{
@@ -454,9 +500,9 @@ Meteor.methods({
     for(var i = 0; i < collections.length; i++){
 
       backupStatus.push({name:collections[i][1]})
-      
+
       backupStatus[i].status = "Fetching data"
-    
+
       var dbItems = collections[i][0].find({}).fetch()
       dbItems = JSON.stringify(dbItems)
 
@@ -465,7 +511,7 @@ Meteor.methods({
       fs.writeFileSync(homePath + `/Tdarr/Backups/Backup-${currentDate}/${collections[i][1]}.txt`, dbItems, 'utf8');
 
       backupStatus[i].status = "Complete"
-    
+
     }
     dbItems = ""
 
@@ -477,7 +523,7 @@ Meteor.methods({
 
     fsextra.copySync(homePath + "/Tdarr/Plugins/Local", homePath +  `/Tdarr/Backups/Backup-${currentDate}/LocalPlugins/`)
     backupStatus[5].status = "Complete"
-  
+
     backupStatus.push({name:"Zipping",status:"Running"})
 
 
@@ -490,17 +536,17 @@ Meteor.methods({
         backupStatus[6].status = "Complete"
       }
 
-     
-      
+
+
       fsextra.removeSync(homePath + `/Tdarr/Backups/Backup-${currentDate}`)
-    
+
     }));
 
   }catch(err){
     console.log(err)
     backupStatus.push({name:"Status",status:"Error:"+JSON.stringify(err)})
   }
-    
+
     }
 
 })
@@ -541,29 +587,16 @@ allFilesPulledTable = FileDB.find({}).fetch()
 for (var i = 0; i < allFilesPulledTable.length; i++) {
 
   console.log("Checking file:" + (i + 1) +"/"+allFilesPulledTable.length)
-
-
   // reset processing status of files onload.
 
   if (allFilesPulledTable[i].processingStatus !== false) {
 
-    FileDB.upsert(
-      allFilesPulledTable[i].file,
-      {
-        $set: {
-          processingStatus: false,
-        }
-      }
-    );
+  var tempObj = {
+    processingStatus: false,
   }
-
-
-
-
-
+  Meteor.call('modifyFileDB','update',allFilesPulledTable[i].file,tempObj, (error, result) => {})
+  }
 }
-
-Meteor.call('FilesDBHasChanged', (error, result) => {})
 
 
 
@@ -579,7 +612,7 @@ process.on('uncaughtException', function (err) {
 
 
 
-//Set globalDB settings on init 
+//Set globalDB settings on init
 
 var count = GlobalSettingsDB.find({}, {}).fetch()
 
@@ -651,7 +684,7 @@ if (!Array.isArray(count) || !count.length) {
           }
         }
       );
-  
+
     }
 
   //UI queue size
@@ -669,7 +702,7 @@ if (!Array.isArray(count) || !count.length) {
 
   }
 
-  
+
 
 
 
@@ -831,7 +864,7 @@ function setHasFilesDBChanged() {
     hasFilesDBChanged = true
 
 }
-        
+
   },
 
   'searchDB'(string) {
@@ -856,7 +889,7 @@ function setHasFilesDBChanged() {
 
 
 
-          /// 
+          ///
 
           var match = []
 
@@ -1020,13 +1053,13 @@ try{
       try {
 
 
-        var plugin = ""  
+        var plugin = ""
         var pluginAbsolutePath = path.join(process.cwd() , `/assets/app/plugins/${plugins[i].source}/` + plugins[i]._id + '.js')
         var pluginLocalPath = path.join(process.cwd() , `/assets/app/plugins/${plugins[i].source}/` + plugins[i]._id + '.js')
         fsextra.copySync(homePath + `/Tdarr/Plugins/${plugins[i].source}/` + plugins[i]._id + ".js", pluginAbsolutePath)
 
         var plugin = importFresh(pluginLocalPath)
-  
+
         var obj =  plugin.details();
 
         plugins[i] = { ...plugins[i], ...obj };
@@ -1051,7 +1084,7 @@ try{
     return plugins
 
   },
-  
+
   'verifyPlugin'(pluginID, DB_id, community) {
 
     if (community == true) {
@@ -1183,17 +1216,14 @@ try{
     for (var i = 0; i < allFiles.length; i++) {
 
       try {
-        FileDB.upsert(
-          allFiles[i].file,
-          {
-            $set: {
-              [mode]: "Queued",
-            }
-          }
-        );
+
+        var tempObj = {
+          [mode]: "Queued",
+        }
+        Meteor.call('modifyFileDB', 'update', allFiles[i].file, tempObj, (error, result) => { })
+
 
       } catch (err) { console.log(err.stack) }
-      Meteor.call('FilesDBHasChanged', (error, result) => {})
     }
   },
 
@@ -1336,14 +1366,11 @@ try{
   }, 'clearDB'() {
 
     LogDB.remove({})
-    FileDB.remove({})
+    Meteor.call('modifyFileDB','removeAll', (error, result) => {})
     SettingsDB.remove({})
     StatisticsDB.remove({})
     ClientDB.remove({})
     GlobalSettingsDB.remove({})
-
-    Meteor.call('FilesDBHasChanged', (error, result) => {})
-
 
   },
   'upsertWorkers'(w_id, obj) {
@@ -1428,7 +1455,7 @@ try{
 
         var filesInDB = allFilesPulledTable
 
-        
+
         for(var i = 0; i < filesInDB.length; i++){
 
           try{
@@ -1438,12 +1465,16 @@ try{
             if ( (!filesInDB[i].file || !(fs.existsSync(filesInDB[i].file))) && ( filesInDB[i].DB == DB_id || filesInDB[i].DB == undefined ) ) {
               //delete files in DBs if not exist anymore (cleanse)
               console.log("File does not exist anymore, removing:" + filesInDB[i].file)
+
+              Meteor.call('modifyFileDB','removeOne',filesInDB[i]._id, (error, result) => {})
+              
+              
               filesInDB.splice(i,1)
-              FileDB.remove(filesInDB[i]._id)
-              Meteor.call('FilesDBHasChanged', (error, result) => {})
+
+              
 
               i--
-            } 
+            }
 
           }catch(err){}
         }
@@ -1459,9 +1490,9 @@ try{
 
         filesInDB = filesInDB.map((file, i) => {
           if (file.file) {
-            
+
             return file.file
-          
+
           }
         })
 
@@ -1493,9 +1524,7 @@ try{
         updateConsole("Commencing fresh file scan.", false)
 
 
-
-        FileDB.remove({ DB: DB_id });
-        Meteor.call('FilesDBHasChanged', (error, result) => {})
+        Meteor.call('modifyFileDB','removeByDB',DB_id, (error, result) => {})
 
         //  var filesInDB = []
 
@@ -1972,10 +2001,6 @@ var shell = require('shelljs');
 
 
 
-
-
-
-
 scheduledPluginUpdate()
 
 
@@ -2356,7 +2381,7 @@ function launchWorkerModule(workerType) {
 
             files.splice(0, 1)
 
-          
+
 
             if (filesBeingProcessed.includes(firstItem.file + "")) {
 
@@ -2372,16 +2397,13 @@ function launchWorkerModule(workerType) {
 
               filesBeingProcessed.push(firstItem.file + "")
 
-              FileDB.upsert(firstItem.file,
-                {
-                  $set: {
-                    _id: firstItem.file,
-                    processingStatus: true
+              var tempObj = {
+                _id: firstItem.file,
+                processingStatus: true
 
-                  }
-                }
-              );
-              Meteor.call('FilesDBHasChanged', (error, result) => {})
+              }
+              Meteor.call('modifyFileDB', 'update',firstItem.file, tempObj, (error, result) => { })
+      
 
 
 
@@ -2437,7 +2459,7 @@ function launchWorkerModule(workerType) {
 
               var copyIfConditionsMet = settings[0].copyIfConditionsMet
 
-              
+
 
               //  console.log(util.inspect(firstItem, {showHidden: false, depth: null}))
 
@@ -2534,19 +2556,19 @@ function launchWorkerModule(workerType) {
                         var pluginID = pluginsSelected[i]._id
 
 
-                        
+
 
 
                         var plugin = ""
                         var pluginAbsolutePath = path.join(process.cwd() , `/assets/app/plugins/${pluginsSelected[i].source}/` + pluginID + '.js')
                         var pluginLocalPath = path.join(process.cwd() , `/assets/app/plugins/${pluginsSelected[i].source}/` + pluginID + '.js')
                         fsextra.copySync(homePath + `/Tdarr/Plugins/${pluginsSelected[i].source}/` + pluginID + '.js', pluginAbsolutePath)
-                       
-                       
-                    
+
+
+
 
                         var plugin = importFresh(pluginLocalPath)
-                        
+
                         cliLogAdd += plugin.details().id + "\n"
 
                         var otherArguments = {
@@ -2571,9 +2593,9 @@ function launchWorkerModule(workerType) {
 
                           //do nothing
 
-                        }else if (processFile == false && plugin.details().Operation == "Filter"){ 
-                          
-                          break 
+                        }else if (processFile == false && plugin.details().Operation == "Filter"){
+
+                          break
 
                         }else if (processFile == true) {
 
@@ -2626,7 +2648,7 @@ function launchWorkerModule(workerType) {
                       }
                     })
 
-                    
+
 
                     if(settings[0].decisionMaker.videoExcludeSwitch == false){
 
@@ -2634,17 +2656,17 @@ function launchWorkerModule(workerType) {
                       if (video_codec_names_exclude.includes(firstItem.ffProbeData.streams[0]["codec_name"]) && typeof firstItem.ffProbeData.streams[0]["codec_name"] !== 'undefined') {
 
                         console.log(video_codec_names_exclude + "   " + firstItem.video_codec_name)
-  
+
                         console.log("File codec included in transcode whitelist")
-  
+
                         cliLogAdd += "☑File codec included in transcode whitelist  \n"
-  
-                     
-  
+
+
+
                       } else {
                         cliLogAdd += "☒File codec not included in transcode whitelist  \n"
                         processFile = false;
-  
+
                       }
 
 
@@ -2654,18 +2676,18 @@ function launchWorkerModule(workerType) {
                       if (video_codec_names_exclude.includes(firstItem.ffProbeData.streams[0]["codec_name"]) && typeof firstItem.ffProbeData.streams[0]["codec_name"] !== 'undefined') {
 
                         console.log(video_codec_names_exclude + "   " + firstItem.video_codec_name)
-  
+
                         console.log("File video already in required codec")
-  
+
                         cliLogAdd += "☑File already in required codec  \n"
-  
+
                         processFile = false;
-  
+
                       } else {
                         cliLogAdd += "☒File video not in required codec  \n"
-  
+
                       }
-  
+
                     }
 
 
@@ -2747,12 +2769,12 @@ function launchWorkerModule(workerType) {
 
                         console.log("File already in required codec")
                         cliLogAdd += "☑File already in required codec  \n"
-  
+
                         processFile = false;
-  
+
                       } else {
                         cliLogAdd += "☒File audio not in required codec  \n"
-  
+
                       }
 
                     }
@@ -2822,7 +2844,7 @@ function launchWorkerModule(workerType) {
               }
 
 
-         
+
 
 
               //File filtered out by transcode decision maker
@@ -2832,21 +2854,18 @@ function launchWorkerModule(workerType) {
                 //TranscodeDecisionMaker status first depends on if error encountered during plugins, else depends on
                 // if file has already been processed or not (no oldSize if it hasn't been processed)
 
-                FileDB.upsert(fileToProcess,
-                  {
-                    $set: {
-                      _id: fileToProcess,
-                      TranscodeDecisionMaker: TranscodeDecisionMaker != false ? TranscodeDecisionMaker : firstItem.oldSize ? "Transcode success" : "Not required" ,
-                      processingStatus: false,
-                      cliLog: cliLogAdd,
-                      lastTranscodeDate: new Date(),
-                      bumped: false,
+                var tempObj = {
+                  _id: fileToProcess,
+                  TranscodeDecisionMaker: TranscodeDecisionMaker != false ? TranscodeDecisionMaker : firstItem.oldSize ? "Transcode success" : "Not required" ,
+                  processingStatus: false,
+                  cliLog: cliLogAdd,
+                  lastTranscodeDate: new Date(),
+                  bumped: false,
 
-                    }
-                  }
-                );
+                }
+                Meteor.call('modifyFileDB', 'update',fileToProcess, tempObj, (error, result) => { })
 
-                Meteor.call('FilesDBHasChanged', (error, result) => {})
+               
 
 
                 removeFromProcessing(firstItem.file)
@@ -2961,21 +2980,15 @@ function launchWorkerModule(workerType) {
 
       if (message[4] == "healthcheck") {
 
+        var tempObj = {
+          _id: message[2],
+          HealthCheck: "Error",
+          processingStatus: false,
+          cliLog: message[5],
+          lastHealthCheckDate: new Date()
+        }
+        Meteor.call('modifyFileDB', 'update',message[2], tempObj, (error, result) => { })
 
-
-        FileDB.upsert(message[2],
-          {
-            $set: {
-              _id: message[2],
-              HealthCheck: "Error",
-              processingStatus: false,
-              cliLog: message[5],
-              lastHealthCheckDate: new Date()
-            }
-          }
-        );
-
-        Meteor.call('FilesDBHasChanged', (error, result) => {})
 
         StatisticsDB.update("statistics",
           {
@@ -2985,23 +2998,15 @@ function launchWorkerModule(workerType) {
 
 
       } else if (message[4] == "transcode") {
-
-
-
-        FileDB.upsert(message[2],
-          {
-            $set: {
-              _id: message[2],
-              TranscodeDecisionMaker: "Transcode error",
-              processingStatus: false,
-              cliLog: message[5],
-              lastTranscodeDate: new Date()
-            }
-          }
-        );
-        //  ffprobeLaunch([message[2]], OutputDB, message[3])
-
-        Meteor.call('FilesDBHasChanged', (error, result) => {})
+        
+        var tempObj = {
+          _id: message[2],
+          TranscodeDecisionMaker: "Transcode error",
+          processingStatus: false,
+          cliLog: message[5],
+          lastTranscodeDate: new Date()
+        }
+        Meteor.call('modifyFileDB', 'update',message[2], tempObj, (error, result) => { })
 
 
 
@@ -3024,20 +3029,14 @@ function launchWorkerModule(workerType) {
 
 
       if (message[4] == "healthcheck") {
-
-
-        FileDB.upsert(message[2],
-          {
-            $set: {
-              _id: message[2],
-              HealthCheck: "Success",
-              processingStatus: false,
-              lastHealthCheckDate: new Date()
-            }
-          }
-        );
-
-        Meteor.call('FilesDBHasChanged', (error, result) => {})
+        
+        var tempObj = {
+          _id: message[2],
+          HealthCheck: "Success",
+          processingStatus: false,
+          lastHealthCheckDate: new Date()
+        }
+        Meteor.call('modifyFileDB', 'update',message[2], tempObj, (error, result) => { })
 
 
         StatisticsDB.update("statistics",
@@ -3059,9 +3058,7 @@ function launchWorkerModule(workerType) {
       } else if (message[4] == "transcode") {
 
 
-
-        FileDB.remove(message[5])
-        Meteor.call('FilesDBHasChanged', (error, result) => {})
+        Meteor.call('modifyFileDB','removeOne',message[5], (error, result) => {})
 
         newFile = [message[2],]
 
@@ -3200,38 +3197,28 @@ function launchWorkerModule(workerType) {
 
 
       if (message[4] == "healthcheck") {
+       
 
-
-
-        FileDB.upsert(message[2],
-          {
-            $set: {
-              _id: message[2],
-              HealthCheck: "Cancelled",
-              processingStatus: false,
-              cliLog: "Item was cancelled by user.",
-              lastHealthCheckDate: new Date(),
-            }
-          }
-        );
-        Meteor.call('FilesDBHasChanged', (error, result) => {})
+        var tempObj = {
+          _id: message[2],
+          HealthCheck: "Cancelled",
+          processingStatus: false,
+          cliLog: "Item was cancelled by user.",
+          lastHealthCheckDate: new Date(),
+        }
+        Meteor.call('modifyFileDB', 'update',message[2], tempObj, (error, result) => { })
 
 
       } else if (message[4] == "transcode") {
-
-
-        FileDB.upsert(message[2],
-          {
-            $set: {
-              _id: message[2],
-              TranscodeDecisionMaker: "Transcode cancelled",
-              processingStatus: false,
-              cliLog: "Item was cancelled by user.",
-              lastTranscodeDate: new Date(),
-            }
-          }
-        );
-        Meteor.call('FilesDBHasChanged', (error, result) => {})
+        
+        var tempObj = {
+          _id: message[2],
+          TranscodeDecisionMaker: "Transcode cancelled",
+          processingStatus: false,
+          cliLog: "Item was cancelled by user.",
+          lastTranscodeDate: new Date(),
+        }
+        Meteor.call('modifyFileDB', 'update',message[2], tempObj, (error, result) => { })
 
       }
 
@@ -3485,8 +3472,7 @@ function createFolderWatch(Folder, DB_id) {
 
     if (message[1] == "removeThisFileFromDB") {
 
-      FileDB.remove(message[2])
-      Meteor.call('FilesDBHasChanged', (error, result) => {})
+      Meteor.call('modifyFileDB','removeOne',message[2], (error, result) => {})
 
     }
 
@@ -3547,14 +3533,10 @@ function dbUpdatePush() {
 
 
           updateConsole(`Adding file to DB: ${filesToAddToDB[i]._id}`, true)
+          
+          var tempObj = filesToAddToDB[i]
+          Meteor.call('modifyFileDB', 'insert',filesToAddToDB[i]._id, tempObj, (error, result) => { })
 
-
-          FileDB.upsert(filesToAddToDB[i]._id,
-            {
-              $set: filesToAddToDB[i]
-            }
-          );
-          Meteor.call('FilesDBHasChanged', (error, result) => {})
 
 
         } catch (err) {
@@ -4368,8 +4350,50 @@ function workerUpdateCheck() {
       console.log(filesBeingProcessed)
     }
 
+  var initialising = true;
+
+  SettingsDB.find().observe({
+    added: function (document) {
+      if (!initialising) {
+        //console.log('doc added');
+        Meteor.call('FilesDBHasChanged', (error, result) => { })
+      }
+    },
+    changed: function (new_document, old_document) {
+      if (!initialising) {
+        //console.log('doc changed');
+        Meteor.call('FilesDBHasChanged', (error, result) => { })
+      }
+    },
+    removed: function (document) {
+      if (!initialising) {
+        //console.log('doc removed');
+        Meteor.call('FilesDBHasChanged', (error, result) => { })
+      }
+    }
+  });
+
+  GlobalSettingsDB.find().observe({
+    added: function (document) {
+      if (!initialising) {
+        //console.log('doc added');
+        Meteor.call('FilesDBHasChanged', (error, result) => { })
+      }
+    },
+    changed: function (new_document, old_document) {
+      if (!initialising) {
+        //console.log('doc changed');
+        Meteor.call('FilesDBHasChanged', (error, result) => { })
+      }
+    },
+    removed: function (document) {
+      if (!initialising) {
+        //console.log('doc removed');
+        Meteor.call('FilesDBHasChanged', (error, result) => { })
+      }
+    }
+  });
+  initialising = false;
+
+
 }
-
-
-
-

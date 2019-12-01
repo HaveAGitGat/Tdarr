@@ -129,9 +129,6 @@ class App extends Component {
 
             );
 
-        Meteor.call('FilesDBHasChanged', (error, result) => {})
-
-
           }}
 
           styles={{
@@ -241,8 +238,6 @@ class App extends Component {
 
 
     }
-
-    Meteor.call('FilesDBHasChanged', (error, result) => {})
   }
 
   renderCheckBox = (type) => {
@@ -286,8 +281,6 @@ class App extends Component {
             }
           }
         );
-
-        Meteor.call('FilesDBHasChanged', (error, result) => {})
 
       }} />
 
@@ -966,7 +959,6 @@ class App extends Component {
       }
     }
   );
-  Meteor.call('FilesDBHasChanged', (error, result) => {})
 }}></input></p>
 
 
