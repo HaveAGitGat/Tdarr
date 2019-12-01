@@ -1020,11 +1020,11 @@ function setHasFilesDBChanged() {
 try{
         var plugin = ""
         var pluginID = (file.split('.'))[0]
-        var pluginAbsolutePath = path.join(process.cwd() + `/assets/app/plugins/${pluginType}/` + pluginID + '.js')
+        var pluginAbsolutePath = path.join(process.cwd() , `/assets/app/plugins/${pluginType}/` , pluginID , '.js')
 
        // var workerPath = "assets/app/worker1.js"
 
-        var pluginLocalPath = path.join(process.cwd() + `/assets/app/plugins/${pluginType}/` + pluginID + '.js')
+        var pluginLocalPath = path.join(process.cwd() , `/assets/app/plugins/${pluginType}/` + pluginID + '.js')
 
 
         fsextra.copySync(homePath + `/Tdarr/Plugins/${pluginType}/` + file, pluginAbsolutePath)
@@ -1105,8 +1105,8 @@ try{
 
 
         var plugin = ""  
-        var pluginAbsolutePath = path.join(process.cwd() + `/assets/app/plugins/${plugins[i].source}/` + plugins[i]._id + '.js')
-        var pluginLocalPath = path.join(process.cwd() + `/assets/app/plugins/${plugins[i].source}/` + plugins[i]._id + '.js')
+        var pluginAbsolutePath = path.join(process.cwd() , `/assets/app/plugins/${plugins[i].source}/` + plugins[i]._id + '.js')
+        var pluginLocalPath = path.join(process.cwd() , `/assets/app/plugins/${plugins[i].source}/` + plugins[i]._id + '.js')
         fsextra.copySync(homePath + `/Tdarr/Plugins/${plugins[i].source}/` + plugins[i]._id + ".js", pluginAbsolutePath)
 
         var plugin = importFresh(pluginLocalPath)
@@ -1205,7 +1205,7 @@ try{
 
 
       try {
-        fsextra.copySync(homePath + '/Tdarr/Plugins/methods', path.join(process.cwd() + `/assets/app/plugins/methods`), { overwrite: true })
+        fsextra.copySync(homePath + '/Tdarr/Plugins/methods', path.join(process.cwd() , `/assets/app/plugins/methods`), { overwrite: true })
       } catch (err) { console.log(err.stack) }
 
 
@@ -1309,7 +1309,7 @@ try{
 
           return {
 
-            fullPath: path.join(folderPath + '/' + row),
+            fullPath: path.join(folderPath , row),
             folder: row
           }
         }
@@ -1346,7 +1346,7 @@ try{
 
           return {
 
-            fullPath: path.join(folderPath + '/' + row),
+            fullPath: path.join(folderPath , row),
             folder: row
           }
         }
@@ -1832,10 +1832,10 @@ try{
     console.log(mode, text)
 
 
-    if (fs.existsSync(path.join(process.cwd() + "/npm"))) {
-      var ffmpegPathLinux = path.join(process.cwd() + '/assets/app/ffmpeg/ffmpeg')
+    if (fs.existsSync(path.join(process.cwd() , "/npm"))) {
+      var ffmpegPathLinux = path.join(process.cwd() , '/assets/app/ffmpeg/ffmpeg')
   } else {
-      var ffmpegPathLinux = path.join(process.cwd() + '/private/ffmpeg/ffmpeg')
+      var ffmpegPathLinux = path.join(process.cwd() , '/private/ffmpeg/ffmpeg')
   }
 
 
@@ -2093,10 +2093,10 @@ function runScheduledManualScan() {
 
 
 
-if (fs.existsSync(path.join(process.cwd() + "/npm"))) {
-  var handBrakeCLIPath = path.join(process.cwd() + '/assets/app/HandBrakeCLI.exe')
+if (fs.existsSync(path.join(process.cwd() , "/npm"))) {
+  var handBrakeCLIPath = path.join(process.cwd() , '/assets/app/HandBrakeCLI.exe')
 } else {
-  var handBrakeCLIPath = path.join(process.cwd() + '/private/HandBrakeCLI.exe')
+  var handBrakeCLIPath = path.join(process.cwd() , '/private/HandBrakeCLI.exe')
 }
 
 var ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
@@ -2671,8 +2671,8 @@ function launchWorkerModule(workerType) {
 
 
                         var plugin = ""
-                        var pluginAbsolutePath = path.join(process.cwd() + `/assets/app/plugins/${pluginsSelected[i].source}/` + pluginID + '.js')
-                        var pluginLocalPath = path.join(process.cwd() + `/assets/app/plugins/${pluginsSelected[i].source}/` + pluginID + '.js')
+                        var pluginAbsolutePath = path.join(process.cwd() , `/assets/app/plugins/${pluginsSelected[i].source}/` + pluginID + '.js')
+                        var pluginLocalPath = path.join(process.cwd() , `/assets/app/plugins/${pluginsSelected[i].source}/` + pluginID + '.js')
                         fsextra.copySync(homePath + `/Tdarr/Plugins/${pluginsSelected[i].source}/` + pluginID + '.js', pluginAbsolutePath)
                        
                        
@@ -2959,7 +2959,7 @@ function launchWorkerModule(workerType) {
 
 
               //File filtered out by transcode decision maker
-              if ((processFile == false && folderToFolderConversionEnabled !== true) || ( processFile == false && folderToFolderConversionEnabled == true && copyIfConditionsMet === false)){
+              if ((processFile == false && folderToFolderConversionEnabled !== true) || ( processFile == false && folderToFolderConversionEnabled === true && copyIfConditionsMet === false)){
 
 
                 //TranscodeDecisionMaker status first depends on if error encountered during plugins, else depends on
