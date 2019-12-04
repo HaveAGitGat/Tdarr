@@ -20,7 +20,7 @@ class App extends Component{
 
 renderResults(result){
 
-if (result.length == 0) {
+if ( !result || result.length == 0) {
 
     return <center><p>No results</p></center>
 
@@ -42,6 +42,7 @@ if (result.length == 0) {
             <td>{row.codec_name}</td>
             <td>{row.bit_rate != undefined ?  parseFloat((row.bit_rate / 1000000).toPrecision(4))+" Mbs" : "-"}</td>
           </tr>
+
 
     })
 
@@ -141,6 +142,7 @@ function fancyTimeFormat(time) {
 
 
                             <td width="20%"><p>{ row.tags != undefined && row.tags.language != undefined ?  row.tags.language : "-"}</p></td>
+                            <td width="20%"><p>{ row.channels != undefined ?  row.channels : "-"}</p></td>
 
 
                             <td width="20%"><p>{ row.tags != undefined && row.tags.title != undefined ?  row.tags.title : "-"}</p></td>
