@@ -424,6 +424,26 @@ return null
                         }
                       }
                     },
+                    {
+                      show: columns.forceProcessing != undefined ? columns.forceProcessing : true,
+                        Header: () => (
+                          <div className="pluginTableHeader">  
+                          <p>Force processing</p>
+                          </div>
+                        ),
+                        id: 'forceProcessing',
+                        width: 'forceProcessing'.length*10,
+                        accessor: row => row.forceProcessing === true ? this.renderCancelForceProcessingButton(row.file) : this.renderForceProcessingButton(row.file),
+                        getProps: (state, rowInfo, column) => {
+                          return {
+                            style: {
+                              color:"#e1e1e1",
+                              fontSize  :"14px",
+                            },
+                          }
+                        }
+                      },
+
 
        
 
@@ -499,6 +519,7 @@ return null
                 <p><div className="resultColumnOptions">Info </div><Checkbox name="info" checked={this.props.globalSettings[0].searchResultColumns.info} onChange={this.handleChange} /></p>
                 <p><div className="resultColumnOptions">History </div><Checkbox name="history" checked={this.props.globalSettings[0].searchResultColumns.history} onChange={this.handleChange} /></p>
                 <p><div className="resultColumnOptions">Remove </div><Checkbox name="remove" checked={this.props.globalSettings[0].searchResultColumns.remove} onChange={this.handleChange} /></p>
+                <p><div className="resultColumnOptions">Force Processing </div><Checkbox name="forceProcessing" checked={this.props.globalSettings[0].searchResultColumns.forceProcessing} onChange={this.handleChange} /></p>
 
 
     
@@ -584,6 +605,22 @@ renderBumpButton(file) {
 
     return <ItemButton file={file} obj={obj} symbol={'↻'} type="updateDBAction" />
   }
+
+  renderForceProcessingButton(file) {
+    var obj = {
+      forceProcessing: true,
+    }
+    return <ItemButton file={file} obj={obj} symbol={'No'} type="updateDBAction" />
+  }
+  
+  renderCancelForceProcessingButton(file) {
+    var obj = {
+      forceProcessing: false,
+    }
+    return <ItemButton file={file} obj={obj} symbol={'Yes'} type="updateDBAction" />
+  }
+
+
 
   renderIgnoreButton(file, mode) {
 
