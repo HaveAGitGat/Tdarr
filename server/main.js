@@ -768,9 +768,12 @@ GlobalSettingsDB.upsert('globalsettings',
     $set: {
       logsLoading: false,
       selectedLibrary: 0,
+      propertySearchLoading: false,
     }
   }
 );
+
+
 
 //configure libraries
 
@@ -871,6 +874,8 @@ function setHasFilesDBChanged() {
 
   'searchDB'(string) {
 
+    try{
+
     doTablesUpdate = false
 
     string = string.replace(/\\/g, "/");
@@ -952,6 +957,23 @@ function setHasFilesDBChanged() {
     doTablesUpdate = true
 
     return allFiles
+
+  }catch(err){
+
+    GlobalSettingsDB.upsert('globalsettings',
+    {
+      $set: {
+        propertySearchLoading: false,
+      }
+    }
+  );
+
+  doTablesUpdate = true
+
+
+    return null
+  }
+
 
   },
 
