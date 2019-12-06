@@ -3,7 +3,7 @@
 </p>
 
 
-# Tdarr Alpha - Audio/Video Library Analytics & Transcode Automation
+# Tdarr Beta - Audio/Video Library Analytics & Transcode/Remux Automation
 
 - FFmpeg/HandBrake + video health checking (Windows, macOS, Linux & Docker)
 
