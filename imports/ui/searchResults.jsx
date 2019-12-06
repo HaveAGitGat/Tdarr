@@ -11,6 +11,9 @@ import { Markup } from 'interweave';
 import { GlobalSettingsDB } from '../api/tasks.js';
 import { withTracker } from 'meteor/react-meteor-data';
 
+import JSONPretty from 'react-json-pretty';
+import 'react-json-pretty/themes/monikai.css';
+
 
 
 
@@ -670,7 +673,10 @@ renderBumpButton(file) {
       <div className="frame">
         <div className="scroll">
         <div className="modalText">
-          {result}
+          {/* {result} */}
+
+          <JSONPretty id="json-pretty" data={row}></JSONPretty>
+
 
           </div>
         </div>

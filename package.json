@@ -55,6 +55,7 @@
     "react-dom": "^16.11.0",
     "react-input-range": "^1.3.0",
     "react-input-slider": "^5.1.3",
+    "react-json-pretty": "^2.2.0",
     "react-loading": "^2.0.3",
     "react-native-fs": "^2.16.1",
     "react-router-dom": "^5.1.2",
