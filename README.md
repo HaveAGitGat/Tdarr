@@ -23,10 +23,10 @@ https://github.com/HaveAGitGat/Tdarr_Plugins
 - Tested on a 180,000 file dummy library with 60 workers
 - Search for files based on hundreds of properties
 - Expanding stats page
-- Hardware transcoding container (install Nvidia plugin on UnRaid/nVidia runtime container on Ubuntu)
+- Hardware transcoding container (install Nvidia plugin on unRAID/Nvidia runtime container on Ubuntu)
 
 
-Currently in Alpha but looking for feedback/suggestions. 
+Currently in Beta but looking for feedback/suggestions. 
 
 <p align="center">
 <img src="https://i.imgur.com/wRV6tBJ.png" height="300" />

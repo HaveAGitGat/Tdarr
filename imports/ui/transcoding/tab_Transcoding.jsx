@@ -1011,9 +1011,9 @@ class App extends Component {
 
     <div className="modalText">
  
-   <p>All new plugins created in v1.009 will have a new force processing switch which overrides filters (or you'll need to modify existing plugins).</p>
+   <p>All new plugins created in v1.101 will have a new force processing switch which overrides filters (or you'll need to modify existing plugins).</p>
 
-   <p>It will allow for the FIRST plugin's filter in the plugin stack to be overridden. So you need to have your main transcode plugin at the top of your stack (best practice regardless).</p>
+   <p>It will allow for the FIRST plugin's filter in the plugin stack to be overridden. So you need to have your main transcode plugin at the top of your stack.</p>
    <p></p>
    <p>So a typical stack might look like:</p>
    <p></p>

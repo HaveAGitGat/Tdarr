@@ -524,7 +524,7 @@ export default class App extends Component {
           <center>  <select ref="actionDropdown" onChange={this.setShownAction}>
 
             <option value="transcodeHandBrakeBasic">Transcode - HandBrake basic options</option>
-            <option value="transcodeCustom">Transcode - Custom arguments</option>
+            <option value="transcodeCustom">Transcode - HandBrake/FFmpeg custom arguments</option>
             <option value="transcodeStandardiseAudioCodecs">Transcode - Standardise audio stream codecs</option>
             <option value="transcodeAddAudioStream">Transcode - Add audio stream</option>
             <option value="transcodeKeepOneAudioStream">Transcode - Keep one audio stream</option>

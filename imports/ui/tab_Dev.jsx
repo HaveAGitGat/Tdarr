@@ -58,7 +58,7 @@ export default class App extends Component {
             </p>
 
             <header>
-              <h1>Welcome to Tdarr Alpha</h1>
+              <h1>Welcome to Tdarr Beta</h1>
             </header>
 
           </center>
@@ -120,7 +120,25 @@ export default class App extends Component {
 
               <p>Change log</p>
 
-             <p>v1.008 release [1st Dec 19]:
+              <p>Beta v1.101 release [06 Dec 19]:
+            
+            <br />Changes:
+
+            <br />-[New] Force processing of files
+            <br />-[New] Action: HandBrake basic options
+            <br />-[New] Action: Add one audio stream
+            <br />-[New] Action: Keep one audio stream
+            <br />-[New] Action: Standardise audio stream codecs 
+            <br />-[New] Channel count now shown in streams table
+            <br />-[Fix] Rare search result bug (no results shown)
+            <br />-[Fix] Audio files with cover art being detected as video
+
+            <br />
+            <br />
+
+            </p>
+
+             <p>Alpha v1.008 release [1st Dec 19]:
             
             <br />Changes:
 
@@ -144,7 +162,7 @@ export default class App extends Component {
             </p>
 
 
-              <p>v1.007 release [22nd Nov 19]:
+              <p>Alpha v1.007 release [22nd Nov 19]:
             
             <br />Changes:
 
@@ -179,7 +197,7 @@ export default class App extends Component {
             </p>
 
 
-              <p>v1.006 release [9th Nov 19]:
+              <p>Alpha v1.006 release [9th Nov 19]:
             
             <br />Changes:
 
@@ -213,7 +231,7 @@ export default class App extends Component {
             <br />
             <br />
 
-              <p>v1.005 release [1st Nov 19]:
+              <p>Alpha v1.005 release [1st Nov 19]:
   <br />Changes:
   <br />-[New] UI overhaul (Dark theme)
   <br />-[New] Hardware transcoding using tdarr_aio container + HandBrake
@@ -244,7 +262,7 @@ export default class App extends Component {
               </p>
 
 
-              <p>v1.004 release [23rd Oct 19]:
+              <p>Alpha v1.004 release [23rd Oct 19]:
   <br />Changes:
   <br />-Scan on start switch added
   <br />-Prevent Tdarr temp output files mistakenly being scanned
@@ -261,7 +279,7 @@ export default class App extends Component {
 
 
 
-              <p>v1.003 release [10th Oct 19]:
+              <p>Alpha v1.003 release [10th Oct 19]:
   <br />Changes:
   <br />-Workers now show more detailed information: ETA, CLI type, preset, process reasons, start time, duration and original file size.
   <br />-Help links updated

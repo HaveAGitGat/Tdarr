@@ -56,21 +56,37 @@ var ButtonStyle = {
 
 <p>Each of your libraries can have its own plugin stack. Use both community and local plugins to create a stack which processes your files to your requirements.</p>
 
-<p>Plugins created in the plugin creator will be saved locally in 'Tdarr/Plugins/Local' and can be viewed on the 'Local' plugins tab to the upper left.</p>
+<p>Plugins created in the plugin creator will be saved locally in 'Tdarr/Plugins/Local' and can be viewed on the 'Local' plugins tab to the upper left. Plugins are written in JavaScript and are highly configurable. It is encouraged that you open up plugins in a text/code editor and modify them to do exactly what you need. </p>
 
 <br/>
 <br/>
 
-<p>Some action types have no built in filter and rely on the filters you set.</p>
+<p>The following illustrates how the plugin stack works.</p>
+
+<br/>
+
+<p align="center">
+              <img src="https://i.imgur.com/483AakN.png" height="500" />
+            </p>
+
+
+            <br/>
+
+<p>It is best practice to put video transcode plugins at the top of your stack and then your other plugins. Think logically 
+  about how your files will be processed. For example, let's say you have 2 plugins: 
+</p>
+<p>(1) Transcode non hevc files into hevc mkv</p>
+<p>(2) Remux non-mkv files into mkv</p>
+<p>It would not makes sense to put the remux plugin above the transcode plugin. In the above stack if, for example, a h264 MP4 file enters the stack, only the transcode plugin would need to be used. If the remux plugin was above the transcode plugin, 2 plugins would need to be used, resulting in additional processing time and more disk read/writes.</p>
+<p></p>
+
+<br/>
+<p>When using Tdarr <b>it's important that you implement conditions/filters to prevent your files from going through an infinite transcode/remux cycle</b>. For example, if you're transcoding into hevc, then add a filter to prevent hevc being transcoded. That way your new files (in hevc), won't be re-transcoded. You can use the 'Force processing' buttons to force a plugin through your first plugin (applies to plugins created in the plugin creator from 1.101+).</p>
+
+<p>Some actions/plugins have built-in filters. This means they'll automatically detect if a file needs to be processed or not (such as the remove subtitles community plugin). Additional filters can be added.</p>
 
 
 <br/>
-<br/>
-<p>When using Tdarr it's important that you implement conditions to prevent your files from going through an infinite transcode/remux cycle. For example, if you're transcoding into hevc then add a filter to prevent hevc being transcoded. That way your new files (in hevc), won't be re-transcoded.</p>
-<br/>
-<br/>
-
-
 
 
        <br/>
