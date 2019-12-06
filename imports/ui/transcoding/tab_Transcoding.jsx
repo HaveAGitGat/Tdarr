@@ -392,7 +392,7 @@ class App extends Component {
    
 
        return <tr key={row._id}>
-          <td><p>{i + 1}</p></td><td><p>{row.file}</p></td><td><p>{row.video_codec_name}</p></td><td><p>{row.video_resolution}</p></td><td><p>{file_size}</p></td><td><p>{ !(row.bumped instanceof Date) ? this.renderBumpButton(row.file):this.renderCancelBumpButton(row.file) }</p></td><td><p>{this.renderSkipButton(row.file)}</p></td>
+          <td><p>{i + 1}</p></td><td><p>{row.file}</p></td><td><p>{row.forceProcessing === true ? this.renderCancelForceProcessingButton(row.file) : this.renderForceProcessingButton(row.file)}</p></td><td><p>{row.video_codec_name}</p></td><td><p>{row.video_resolution}</p></td><td><p>{file_size}</p></td><td><p>{ !(row.bumped instanceof Date) ? this.renderBumpButton(row.file):this.renderCancelBumpButton(row.file) }</p></td><td><p>{this.renderSkipButton(row.file)}</p></td>
           </tr>
 
       }
@@ -579,6 +579,21 @@ class App extends Component {
 
     return <ItemButton file={file} obj={obj} symbol={'↻'} type="updateDBAction" />
   }
+
+  renderForceProcessingButton(file) {
+    var obj = {
+      forceProcessing: true,
+    }
+    return <ItemButton file={file} obj={obj} symbol={'No'} type="updateDBAction" />
+  }
+  
+  renderCancelForceProcessingButton(file) {
+    var obj = {
+      forceProcessing: false,
+    }
+    return <ItemButton file={file} obj={obj} symbol={'Yes'} type="updateDBAction" />
+  }
+
 
   renderIgnoreButton(file, mode) {
 
@@ -985,6 +1000,37 @@ class App extends Component {
               <tr>
                 <th><p>No.</p></th>
                 <th><p>File</p></th>
+                <th><p>Force processing<Modal
+      trigger={<Button variant="outline-light" ><span className="buttonTextSize">i</span></Button>}
+      modal
+      closeOnDocumentClick
+    >
+       <div className="modalContainer">
+       <div className="frame">
+    <div className="scroll"> 
+
+    <div className="modalText">
+ 
+   <p>All new plugins created in v1.101 will have a new force processing switch which overrides filters (or you'll need to modify existing plugins).</p>
+
+   <p>It will allow for the FIRST plugin's filter in the plugin stack to be overridden. So you need to have your main transcode plugin at the top of your stack.</p>
+   <p></p>
+   <p>So a typical stack might look like:</p>
+   <p></p>
+   <p>(1) Transcode using HandBrake into h264 (Exclude files already in h264)</p>
+   <p>(2) Remove subs</p>
+   <p>(3) Remove closed captions</p>
+   <p>(4) Remux if not in mkv</p>
+   <p></p>
+   <p>Force processing will force the HandBrake transcode plugin on a file (even if it's already in h264) and then the status for force processing is reset to off.</p>
+
+    </div>
+      
+    </div>
+  </div>
+  </div>
+
+    </Modal></p></th>
                 <th><p>Codec</p></th>
                 <th><p>Resolution</p></th>
                 <th><p>Size (GB)</p></th>

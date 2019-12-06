@@ -32,7 +32,7 @@ Meteor.methods({
     const importFresh = require(rootModules+'import-fresh');
     const library = importFresh('../methods/library.js')
       
-      function details() {
+    module.exports.details = function details() {
 
           return {
             id: "${ID}",
@@ -47,16 +47,16 @@ Meteor.methods({
 
 
 
-        function plugin(file) {
+    module.exports.plugin = function plugin(file) {
         
         
           //Must return this object at some point
         
           var response = {
         
-             processFile : true,
+             processFile : false,
              preset : '',
-             container : '',
+             container : '.mkv',
              handBrakeMode : false,
              FFmpegMode : true,
              reQueueAfter : true,
@@ -67,7 +67,7 @@ Meteor.methods({
           response.infoLog += ${conditionalNotes}
         
           
-          if(${conditionalsString}){
+          if((${conditionalsString}) || file.forceProcessing === true){
 
              
               response.preset = ${action.preset}
@@ -90,9 +90,6 @@ Meteor.methods({
         
              }
         }
-
-module.exports.details = details;
-module.exports.plugin = plugin;
 
       `
     fs.writeFileSync(process.env.homePath + `/Tdarr/Plugins/Local/${ID}.js`, text, 'utf8');

@@ -744,7 +744,7 @@ function ffprobeLaunch(filesToScan) {
 
         //if (!!("video_codec_name" in thisFileObject)) {
 
-        if (jsonString.includes('"codec_type":"video"')) {
+        if (jsonString.includes('"codec_type":"video"') && !jsonString.includes('"codec_name":"mjpeg"') ) {
 
             updateConsole(scannerID, `Tagging video res:${filepath}`)
 

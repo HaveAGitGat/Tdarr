@@ -1265,7 +1265,7 @@ SettingsDB.insert(thisLibrary)
             >
               <p>
                 Under normal operation Tdarr is designed to work directly on
-                your library, replacing original files. You can enable folder to folder conversion below however 
+                your library, replacing original files so you don't need to touch these options. You can enable folder to folder conversion below however 
                 this doesn't fit in with how Tdarr operates. Please test before using. {' '}
               </p>
 
@@ -1609,8 +1609,7 @@ SettingsDB.insert(thisLibrary)
 
                 <center>
                   <p>
-                    See the 'Plugins' tab for help on creating a stack. Make
-                    sure to put 'Filter' plugins at top of stack
+                    See the 'Plugins' tab guide for how the plugin stack works and for creating plugins.<b>It is best practice to put video transcode plugins at the top of your stack (below re-order streams if that's enabled).</b>
                   </p>
                 </center>
 

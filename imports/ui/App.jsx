@@ -50,13 +50,24 @@ const AppRouter = () => {
 
       var version =  GlobalSettingsDB.find({}).fetch()[0].version;
 
-      var newVersion = 1.008
+      var newVersion = 1.101
 
       setVersion(newVersion)
 
       if(version != newVersion){
 
         alert(`
+
+        Beta v1.101 release [06 Dec 19]:
+        Changes:
+        -[New] Force processing of files
+        -[New] Action: HandBrake basic options
+        -[New] Action: Add one audio stream
+        -[New] Action: Keep one audio stream
+        -[New] Action: Standardise audio stream codecs
+        -[New] Channel count now shown in streams table
+        -[Fix] Rare search result bug (no results shown)
+        -[Fix] Audio files with cover art being detected as video
 
         v1.008 release [1st Dec 19]:
         Changes:
@@ -148,7 +159,7 @@ const AppRouter = () => {
           </Nav>
         </Navbar.Collapse>
         <div className="versionNumber">
-            <p>Alpha {currentVersion}</p>
+            <p>Beta {currentVersion}</p>
         </div>
       </Navbar>
 

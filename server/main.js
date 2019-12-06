@@ -768,9 +768,12 @@ GlobalSettingsDB.upsert('globalsettings',
     $set: {
       logsLoading: false,
       selectedLibrary: 0,
+      propertySearchLoading: false,
     }
   }
 );
+
+
 
 //configure libraries
 
@@ -871,6 +874,8 @@ function setHasFilesDBChanged() {
 
   'searchDB'(string) {
 
+    try{
+
     doTablesUpdate = false
 
     string = string.replace(/\\/g, "/");
@@ -952,6 +957,23 @@ function setHasFilesDBChanged() {
     doTablesUpdate = true
 
     return allFiles
+
+  }catch(err){
+
+    GlobalSettingsDB.upsert('globalsettings',
+    {
+      $set: {
+        propertySearchLoading: false,
+      }
+    }
+  );
+
+  doTablesUpdate = true
+
+
+    return null
+  }
+
 
   },
 
@@ -1151,6 +1173,7 @@ try{
       } catch (err) { console.log(err.stack) }
 
          try {
+           //COMMENT OUT WHEN WORKING ON LIBRARY FITLERS/ACTIONS
         fsextra.copySync(homePath + '/Tdarr/Plugins/temp/methods', homePath + '/Tdarr/Plugins/methods', { overwrite: true })
       } catch (err) { console.log(err.stack) }
 
@@ -1779,6 +1802,8 @@ try{
   } else {
       var ffmpegPathLinux = path.join(process.cwd() , '/private/ffmpeg/ffmpeg')
   }
+
+      ffmpegPathLinux = ffmpegPathLinux.replace(/'/g, '\'\"\'\"\'');
 
 
 
@@ -4407,6 +4432,11 @@ function workerUpdateCheck() {
     }
   });
   initialising = false;
+
+
+
+
+
 
 
 }

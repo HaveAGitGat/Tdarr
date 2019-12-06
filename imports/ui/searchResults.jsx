@@ -11,6 +11,9 @@ import { Markup } from 'interweave';
 import { GlobalSettingsDB } from '../api/tasks.js';
 import { withTracker } from 'meteor/react-meteor-data';
 
+import JSONPretty from 'react-json-pretty';
+import 'react-json-pretty/themes/monikai.css';
+
 
 
 
@@ -20,7 +23,7 @@ class App extends Component{
 
 renderResults(result){
 
-if (result.length == 0) {
+if ( !result || result.length == 0) {
 
     return <center><p>No results</p></center>
 
@@ -42,6 +45,7 @@ if (result.length == 0) {
             <td>{row.codec_name}</td>
             <td>{row.bit_rate != undefined ?  parseFloat((row.bit_rate / 1000000).toPrecision(4))+" Mbs" : "-"}</td>
           </tr>
+
 
     })
 
@@ -141,6 +145,7 @@ function fancyTimeFormat(time) {
 
 
                             <td width="20%"><p>{ row.tags != undefined && row.tags.language != undefined ?  row.tags.language : "-"}</p></td>
+                            <td width="20%"><p>{ row.channels != undefined ?  row.channels : "-"}</p></td>
 
 
                             <td width="20%"><p>{ row.tags != undefined && row.tags.title != undefined ?  row.tags.title : "-"}</p></td>
@@ -424,6 +429,26 @@ return null
                         }
                       }
                     },
+                    {
+                      show: columns.forceProcessing != undefined ? columns.forceProcessing : true,
+                        Header: () => (
+                          <div className="pluginTableHeader">  
+                          <p>Force processing</p>
+                          </div>
+                        ),
+                        id: 'forceProcessing',
+                        width: 'forceProcessing'.length*10,
+                        accessor: row => row.forceProcessing === true ? this.renderCancelForceProcessingButton(row.file) : this.renderForceProcessingButton(row.file),
+                        getProps: (state, rowInfo, column) => {
+                          return {
+                            style: {
+                              color:"#e1e1e1",
+                              fontSize  :"14px",
+                            },
+                          }
+                        }
+                      },
+
 
        
 
@@ -499,6 +524,7 @@ return null
                 <p><div className="resultColumnOptions">Info </div><Checkbox name="info" checked={this.props.globalSettings[0].searchResultColumns.info} onChange={this.handleChange} /></p>
                 <p><div className="resultColumnOptions">History </div><Checkbox name="history" checked={this.props.globalSettings[0].searchResultColumns.history} onChange={this.handleChange} /></p>
                 <p><div className="resultColumnOptions">Remove </div><Checkbox name="remove" checked={this.props.globalSettings[0].searchResultColumns.remove} onChange={this.handleChange} /></p>
+                <p><div className="resultColumnOptions">Force Processing </div><Checkbox name="forceProcessing" checked={this.props.globalSettings[0].searchResultColumns.forceProcessing} onChange={this.handleChange} /></p>
 
 
     
@@ -585,6 +611,22 @@ renderBumpButton(file) {
     return <ItemButton file={file} obj={obj} symbol={'↻'} type="updateDBAction" />
   }
 
+  renderForceProcessingButton(file) {
+    var obj = {
+      forceProcessing: true,
+    }
+    return <ItemButton file={file} obj={obj} symbol={'No'} type="updateDBAction" />
+  }
+  
+  renderCancelForceProcessingButton(file) {
+    var obj = {
+      forceProcessing: false,
+    }
+    return <ItemButton file={file} obj={obj} symbol={'Yes'} type="updateDBAction" />
+  }
+
+
+
   renderIgnoreButton(file, mode) {
 
     var obj = {
@@ -631,7 +673,10 @@ renderBumpButton(file) {
       <div className="frame">
         <div className="scroll">
         <div className="modalText">
-          {result}
+          {/* {result} */}
+
+          <JSONPretty id="json-pretty" data={row}></JSONPretty>
+
 
           </div>
         </div>

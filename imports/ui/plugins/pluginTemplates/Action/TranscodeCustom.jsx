@@ -50,7 +50,7 @@ export default class App extends Component {
       handBrakeMode: this.state.handBrakeMode,
       FFmpegMode: this.state.FFmpegMode,
       processFile: true,
-      infoLog:'""',
+      infoLog: '"File is being transcoded using custom arguments \\n"',
 
     }
 
@@ -81,11 +81,12 @@ export default class App extends Component {
         <center><p>Custom transcode</p> </center>
 
 
-        <br/>
+        <br />
 
-<p>This action has no built-in filter. It relies on the filters set above.</p>
+        <p>This action has no built-in filter. It relies on the filters set above.</p>
+        <p>For example, <b>if transcoding into hevc (h265), set a filter to exclude hevc or your files may be infinitely transcoded.</b></p>
 
-<br/>
+        <br />
 
 
         <center>  <p>HandBrake<Checkbox checked={this.state.handBrakeMode} onChange={event => {

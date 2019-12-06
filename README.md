@@ -26,7 +26,7 @@ https://github.com/HaveAGitGat/Tdarr_Plugins
 - Hardware transcoding container (install Nvidia plugin on unRAID/Nvidia runtime container on Ubuntu)
 
 
-Currently in Alpha but looking for feedback/suggestions. 
+Currently in Beta but looking for feedback/suggestions. 
 
 <p align="center">
 <img src="https://i.imgur.com/wRV6tBJ.png" height="300" />
