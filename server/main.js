@@ -1173,6 +1173,7 @@ try{
       } catch (err) { console.log(err.stack) }
 
          try {
+           //COMMENT OUT WHEN WORKING ON LIBRARY FITLERS/ACTIONS
         fsextra.copySync(homePath + '/Tdarr/Plugins/temp/methods', homePath + '/Tdarr/Plugins/methods', { overwrite: true })
       } catch (err) { console.log(err.stack) }
 
@@ -1801,6 +1802,8 @@ try{
   } else {
       var ffmpegPathLinux = path.join(process.cwd() , '/private/ffmpeg/ffmpeg')
   }
+
+      ffmpegPathLinux = ffmpegPathLinux.replace(/'/g, '\'\"\'\"\'');
 
 
 
@@ -4429,6 +4432,11 @@ function workerUpdateCheck() {
     }
   });
   initialising = false;
+
+
+
+
+
 
 
 }
