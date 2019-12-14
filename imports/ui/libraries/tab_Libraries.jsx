@@ -85,6 +85,7 @@ class App extends Component {
         _id:"Tdarr_Plugin_lmg1_Reorder_Streams",
         checked:true,
         source:"Community",
+        priority:0,
       }],
       pluginValid:false,
       pluginCommunity:true,
