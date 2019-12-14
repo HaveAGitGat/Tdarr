@@ -948,17 +948,27 @@ class App extends Component {
 
 
 
-<p>Sort queue by: </p>
-                  <p>Oldest:
+          <p>Sort queue by: </p>
+          <p>Oldest (Scanned):
 {this.renderSortBox('sortDateOldest')}
-                    Newest:
+            Newest (Scanned):
 {this.renderSortBox('sortDateNewest')}
-              
-                Smallest:
+
+            Oldest (Created):
+{this.renderSortBox('sortDateFileCreatedOldest')}
+            Newest (Created):
+{this.renderSortBox('sortDateFileCreatedNewest')}
+
+            Oldest (Modified):
+{this.renderSortBox('sortDateFileModifiedOldest')}
+            Newest (Modified):
+{this.renderSortBox('sortDateFileModifiedNewest')}
+
+            Smallest:
 {this.renderSortBox('sortSizeSmallest')}
-                    Largest:
+            Largest:
 {this.renderSortBox('sortSizeLargest')}
-                  </p>
+          </p>
 
 
 <p>Library alternation: {this.renderCheckBox('alternateLibraries')}</p>
