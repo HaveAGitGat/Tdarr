@@ -2511,7 +2511,7 @@ function launchWorkerModule(workerType) {
                   handBrakeMode = false
                   FFmpegMode = true
 
-                  preset = "-v error, -f null"
+                  preset = "-v error, -f null -max_muxing_queue_size 9999"
 
                 }
 
