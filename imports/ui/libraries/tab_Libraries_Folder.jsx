@@ -1150,6 +1150,7 @@ SettingsDB.insert(thisLibrary)
                 ref={this.props.libraryItem._id + 'f'}
                 name="folder"
                 defaultValue={this.props.libraryItem.folder}
+                placeholder='Path to your media files. Input a base folder and the folder browser below will show subfolders to navigate.'
                 onChange={this.handleChange}
               ></input>
 
@@ -1216,6 +1217,7 @@ SettingsDB.insert(thisLibrary)
                 ref={this.props.libraryItem._id + 'c'}
                 name="cache"
                 defaultValue={this.props.libraryItem.cache}
+                placeholder='Path to your transcode cache. Input a base folder and the folder browser below will show subfolders to navigate.'
                 onChange={this.handleChange}
               ></input>
 
@@ -1361,6 +1363,7 @@ SettingsDB.insert(thisLibrary)
                 ref={this.props.libraryItem._id + 'o'}
                 name="output"
                 defaultValue={this.props.libraryItem.output}
+                placeholder='Path to your output folder. Input a base folder and the folder browser below will show subfolders to navigate.'
                 onChange={this.handleChange}
               ></input>
 
