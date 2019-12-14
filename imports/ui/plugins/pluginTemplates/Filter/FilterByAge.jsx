@@ -20,6 +20,7 @@ export default class App extends Component {
 
     this.state = {
       excludeSwitch:true,
+      dateType:'dateCreated'
 
     };
 
@@ -60,7 +61,7 @@ export default class App extends Component {
 
     var obj = {
       name: 'Filter by age',
-      filter: `library.filters.filterByAge(file,${totalSeconds},'${mode}')`,
+      filter: `library.filters.filterByAge(file,${totalSeconds},'${mode}','${this.state.dateType}')`,
       description: `Files older than the following will be ${mode}d from processing: ${string}`
     }
 
@@ -82,6 +83,24 @@ export default class App extends Component {
 
         <br />
 
+
+        <center><p>Date created<Checkbox checked={this.state.dateType == 'dateCreated' ? true : false} onChange={event => {
+
+this.setState({
+  dateType:'dateCreated'
+})
+
+
+}} />/ Date modified <Checkbox checked={this.state.dateType == 'dateModified' ? true : false} onChange={event => {
+
+this.setState({
+  dateType:'dateModified',
+})
+
+
+}} /></p> </center>
+
+<br />
 
 
          <center><p>Exclude<Checkbox checked={this.state.excludeSwitch} onChange={event => {
