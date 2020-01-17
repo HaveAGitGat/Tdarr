@@ -73,7 +73,7 @@ Tdarr is extremely modular/configurable and the main idea behind it is creating 
     (5) Remove closed captions
 
 
-In this example, plugins 1,2,3 and 5 are community plugins which are available for you to use immediately. Plugin 5 can be created in the plugin creator interface in Tdarr and will appear as a local plugin.
+In this example, plugins 1,2,3 and 5 are community plugins which are available for you to use immediately. Plugin 4 can be created in the plugin creator interface in Tdarr and will appear as a local plugin.
 
 
 Each of the plugins are conditional, so are only used if needed. They are located in Tdarr/Documents and are written in JavaScript so if none of the plugins do what you want then you can modify/create new plugins if you have a bit of coding experience (or get the gist from having a look). Steps for doing so are in the README here:https://github.com/HaveAGitGat/Tdarr_Plugins . Ask for help in the Discord channel if need be.
@@ -84,12 +84,12 @@ Here is an illustration of how the plugin stack works:
 https://i.imgur.com/483AakN.png
 
 
-For those of you wondering what is meant by the term 'streams', here is an example of how a file appears in Tdarr search results:
+For the term 'streams', here is an example of how a file appears in Tdarr search results:
 
 https://i.imgur.com/RaKnq2c.png
 
 
-That file has 3 streams - a video, audio and subtitle stream. For those that don't know, subtitles and closed captions are very different. Where is the closed caption data in this example? It's embedded inside the h264 video stream.
+That file has 3 streams - a video, audio and subtitle stream. Subtitles and closed captions are very different. Where is the closed caption data in this example? It's embedded inside the h264 video stream.
 
 
 Extra streams and closed captions which you don't need can cause problems with direct playing and syncing files, so you might as well remove them (I recommend using Bazarr for subtitles). Even when playing files in programs such as VLC or Kodi, subtitles/closed captions can cause playback delays and make things stuttery for a few seconds when jumping around the video.
