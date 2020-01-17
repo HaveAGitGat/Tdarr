@@ -7,8 +7,6 @@ assignees: ''
 
 ---
 
-2019-12-16: Please note I'm on a 2 week break. Sorry for the inconvenience.
-
 **Describe the bug**
 A clear and concise description of what the bug is.
 
