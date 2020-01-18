@@ -19,8 +19,8 @@ export default class App extends Component {
     super(props);
 
     this.state = {
-      excludeSwitch:true,
-      dateType:'dateCreated'
+      excludeSwitch: true,
+      dateType: 'dateCreated'
 
     };
 
@@ -48,11 +48,11 @@ export default class App extends Component {
 
     var totalSeconds = (h * 3600) + (m * 60) + (s)
 
-    if(this.state.excludeSwitch === true){
+    if (this.state.excludeSwitch === true) {
 
       var mode = 'exclude'
 
-    }else{
+    } else {
 
       var mode = 'include'
 
@@ -86,41 +86,41 @@ export default class App extends Component {
 
         <center><p>Date created<Checkbox checked={this.state.dateType == 'dateCreated' ? true : false} onChange={event => {
 
-this.setState({
-  dateType:'dateCreated'
-})
+          this.setState({
+            dateType: 'dateCreated'
+          })
 
 
-}} />/ Date modified <Checkbox checked={this.state.dateType == 'dateModified' ? true : false} onChange={event => {
+        }} />/ Date modified <Checkbox checked={this.state.dateType == 'dateModified' ? true : false} onChange={event => {
 
-this.setState({
-  dateType:'dateModified',
-})
-
-
-}} /></p> </center>
-
-<br />
+          this.setState({
+            dateType: 'dateModified',
+          })
 
 
-         <center><p>Exclude<Checkbox checked={this.state.excludeSwitch} onChange={event => {
+        }} /></p> </center>
 
-this.setState({
-  excludeSwitch: !this.state.excludeSwitch,
-})
-
-
-}} />/ Include <Checkbox checked={!this.state.excludeSwitch} onChange={event => {
-
-this.setState({
-  excludeSwitch: !this.state.excludeSwitch,
-})
-
-
-}} /> files older than</p> </center>
         <br />
 
-         <center><p>
+
+        <center><p>Exclude<Checkbox checked={this.state.excludeSwitch} onChange={event => {
+
+          this.setState({
+            excludeSwitch: !this.state.excludeSwitch,
+          })
+
+
+        }} />/ Include <Checkbox checked={!this.state.excludeSwitch} onChange={event => {
+
+          this.setState({
+            excludeSwitch: !this.state.excludeSwitch,
+          })
+
+
+        }} /> files older than</p> </center>
+        <br />
+
+        <center><p>
 
           <input type="text" className="filterByDate" ref="hours" defaultValue={"0"}></input>
           H{'\u00A0'}{'\u00A0'}
@@ -131,7 +131,7 @@ this.setState({
        </p> </center>
 
 
-    
+
         <br />
 
 
@@ -144,8 +144,6 @@ this.setState({
         <br />
         <br />
         <br />
-
-
 
       </div>
 

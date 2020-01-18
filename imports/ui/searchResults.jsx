@@ -600,7 +600,7 @@ renderBumpButton(file) {
 
   renderRedoButton(file, mode) {
 
-
+    
     var obj = {
       [mode]: "Queued",
       processingStatus: false,
