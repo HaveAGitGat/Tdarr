@@ -15,6 +15,7 @@
     "@ffmpeg-installer/ffmpeg": "^1.0.20",
     "@material-ui/core": "^4.6.0",
     "@trendmicro/react-sidenav": "^0.4.5",
+    "all": "0.0.0",
     "babel-eslint": "^10.0.3",
     "bootstrap": "^4.3.1",
     "child_process": "^1.0.2",

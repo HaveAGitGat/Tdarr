@@ -1150,6 +1150,7 @@ SettingsDB.insert(thisLibrary)
                 ref={this.props.libraryItem._id + 'f'}
                 name="folder"
                 defaultValue={this.props.libraryItem.folder}
+                placeholder='Path to your media files. Input a base folder and the folder browser below will show subfolders to navigate.'
                 onChange={this.handleChange}
               ></input>
 
@@ -1188,7 +1189,7 @@ SettingsDB.insert(thisLibrary)
               </div>
               <div id="folderList"></div>
 
-              <p>Sub-folders to ignore (e.g.: .grab,.index,User/AppData):</p>
+              <p>File paths containing the following will be ignored (e.g.: .grab,.index,User/AppData,-trailer,.mp4):</p>
               <input
                 type="text"
                 className="folderPaths"
@@ -1216,6 +1217,7 @@ SettingsDB.insert(thisLibrary)
                 ref={this.props.libraryItem._id + 'c'}
                 name="cache"
                 defaultValue={this.props.libraryItem.cache}
+                placeholder='Path to your transcode cache. Input a base folder and the folder browser below will show subfolders to navigate.'
                 onChange={this.handleChange}
               ></input>
 
@@ -1361,6 +1363,7 @@ SettingsDB.insert(thisLibrary)
                 ref={this.props.libraryItem._id + 'o'}
                 name="output"
                 defaultValue={this.props.libraryItem.output}
+                placeholder='Path to your output folder. Input a base folder and the folder browser below will show subfolders to navigate.'
                 onChange={this.handleChange}
               ></input>
 
@@ -1609,7 +1612,7 @@ SettingsDB.insert(thisLibrary)
 
                 <center>
                   <p>
-                    See the 'Plugins' tab guide for how the plugin stack works and for creating plugins.<b>It is best practice to put video transcode plugins at the top of your stack (below re-order streams if that's enabled).</b>
+                    See the 'Plugins' tab guide for how the plugin stack works and for creating plugins.<b>It is best practice to put video transcode plugins at the top of your stack.</b>
                   </p>
                 </center>
 

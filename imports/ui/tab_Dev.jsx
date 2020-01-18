@@ -120,7 +120,25 @@ export default class App extends Component {
 
               <p>Change log</p>
 
-              <p>Beta v1.101 release [06 Dec 19]:
+              <p>Beta v1.102 release [18th Jan 2020]:
+            
+            <br />Changes:
+
+            <br />-[New] Plugin creator option (Filter by age) - select 'Date created' or 'Date modified' 
+            <br />-[New] Plugin creator option (Filter by age) - include files OLDER than specified time
+            <br />-[New] Options to sort queue by date (Scanned, Created, Modified)
+            <br />-[Fix] Audio file codec not showing in search results
+            <br />-[Fix] MJPEG video incorrectly tagged as audio file
+            <br />-[Fix] Default plugin priority
+            <br />-[Fix] 'Too many packets buffered for output stream' when health checking
+            <br />-[Fix] Folder path placeholder text
+
+            <br />
+            <br />
+
+            </p>
+
+              <p>Beta v1.101 release [6th Dec 19]:
             
             <br />Changes:
 

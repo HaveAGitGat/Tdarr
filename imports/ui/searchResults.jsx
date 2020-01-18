@@ -204,7 +204,7 @@ return null
                     <p>Codec</p>
                     </div>
                   ),
-                  accessor: 'video_codec_name',
+                  accessor: 'ffProbeData.streams[0].codec_name',
                   width: getColumnWidth(data, 'video_codec_name', 'Codec'),
                   getProps: (state, rowInfo, column) => {
                     return {
@@ -600,7 +600,7 @@ renderBumpButton(file) {
 
   renderRedoButton(file, mode) {
 
-
+    
     var obj = {
       [mode]: "Queued",
       processingStatus: false,

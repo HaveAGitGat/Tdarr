@@ -2511,7 +2511,7 @@ function launchWorkerModule(workerType) {
                   handBrakeMode = false
                   FFmpegMode = true
 
-                  preset = "-v error, -f null"
+                  preset = "-v error, -f null -max_muxing_queue_size 9999"
 
                 }
 
@@ -3688,6 +3688,9 @@ function tablesUpdate() {
       //sort queues based on user preference
       var globalSettings = GlobalSettingsDB.find({}, {}).fetch()
 
+
+      //Sort by date scanned (date createdAt in Tdarr db)
+
       if (globalSettings[0].queueSortType == "sortDateOldest") {
 
 
@@ -3704,7 +3707,43 @@ function tablesUpdate() {
           return new Date(b.createdAt) - new Date(a.createdAt);
         });
 
-      } else if (globalSettings[0].queueSortType == "sortSizeSmallest") {
+      //Sort by date created
+
+      }else if (globalSettings[0].queueSortType == "sortDateFileCreatedOldest") {
+
+
+        allFilesPulledTable = allFilesPulledTable.sort(function (a, b) {
+          return new Date(a.statSync.ctime) - new Date(b.statSync.ctime);
+        });
+
+
+      }else if (globalSettings[0].queueSortType == "sortDateFileCreatedNewest") {
+
+
+        allFilesPulledTable = allFilesPulledTable.sort(function (a, b) {
+          return new Date(b.statSync.ctime) - new Date(a.statSync.ctime);
+        });
+
+      }
+
+      //Sort by date modified
+
+      else if (globalSettings[0].queueSortType == "sortDateFileModifiedOldest") {
+
+
+        allFilesPulledTable = allFilesPulledTable.sort(function (a, b) {
+          return new Date(a.statSync.mtime) - new Date(b.statSync.mtime);
+        });
+
+
+      }else if (globalSettings[0].queueSortType == "sortDateFileModifiedNewest") {
+
+
+        allFilesPulledTable = allFilesPulledTable.sort(function (a, b) {
+          return new Date(b.statSync.mtime) - new Date(a.statSync.mtime);
+        });
+
+      }else if (globalSettings[0].queueSortType == "sortSizeSmallest") {
 
 
 

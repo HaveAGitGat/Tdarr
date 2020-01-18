@@ -50,13 +50,24 @@ const AppRouter = () => {
 
       var version =  GlobalSettingsDB.find({}).fetch()[0].version;
 
-      var newVersion = 1.101
+      var newVersion = 1.102
 
       setVersion(newVersion)
 
       if(version != newVersion){
 
         alert(`
+
+        Beta v1.102 release [18th Jan 2020]:
+        Changes:
+        -[New] Plugin creator option (Filter by age) - select 'Date created' or 'Date modified'
+        -[New] Plugin creator option (Filter by age) - include files OLDER than specified time
+        -[New] Options to sort queue by date (Scanned, Created, Modified)
+        -[Fix] Audio file codec not showing in search results
+        -[Fix] MJPEG video incorrectly tagged as audio file
+        -[Fix] Default plugin priority
+        -[Fix] 'Too many packets buffered for output stream' when health checking
+        -[Fix] Folder path placeholder text
 
         Beta v1.101 release [06 Dec 19]:
         Changes:
