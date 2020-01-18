@@ -3688,6 +3688,9 @@ function tablesUpdate() {
       //sort queues based on user preference
       var globalSettings = GlobalSettingsDB.find({}, {}).fetch()
 
+
+      //Sort by date scanned (date createdAt in Tdarr db)
+
       if (globalSettings[0].queueSortType == "sortDateOldest") {
 
 
@@ -3703,6 +3706,8 @@ function tablesUpdate() {
         allFilesPulledTable = allFilesPulledTable.sort(function (a, b) {
           return new Date(b.createdAt) - new Date(a.createdAt);
         });
+
+      //Sort by date created
 
       }else if (globalSettings[0].queueSortType == "sortDateFileCreatedOldest") {
 
@@ -3720,6 +3725,8 @@ function tablesUpdate() {
         });
 
       }
+
+      //Sort by date modified
 
       else if (globalSettings[0].queueSortType == "sortDateFileModifiedOldest") {
 
