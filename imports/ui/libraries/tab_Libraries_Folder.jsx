@@ -1189,7 +1189,7 @@ SettingsDB.insert(thisLibrary)
               </div>
               <div id="folderList"></div>
 
-              <p>Sub-folders to ignore (e.g.: .grab,.index,User/AppData):</p>
+              <p>File paths containing the following will be ignored (e.g.: .grab,.index,User/AppData,-trailer,.mp4):</p>
               <input
                 type="text"
                 className="folderPaths"
