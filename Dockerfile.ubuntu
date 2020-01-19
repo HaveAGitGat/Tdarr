@@ -57,7 +57,7 @@ RUN mkdir -p /data/db
 
 USER Tdarr
 ENV HOME /home/Tdarr
-ADD Tdarr $HOME/Tdarr
+ADD ../Tdarr-Bundle $HOME/Tdarr
 
 COPY ./mongodb /etc/init.d/mongodb
 
