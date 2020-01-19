@@ -1,8 +1,9 @@
 name: Publish Docker
 
 on:
-  release:
-    types: [published]
+  [push]
+  #release:
+  #  types: [published]
     
 jobs:
   build:
@@ -12,14 +13,14 @@ jobs:
         meteor: [ '1.8.1']
 
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@2
   
     - name: Get release version
       id: get_version
       run: echo ::set-env name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
   
     - name: Setup Meteor
-      uses: meteorengineer/setup-meteor@v1
+      uses: meteorengineer/setup-meteor@v1.0.1
       with:
         meteor-release: ${{ matrix.meteor }}
 
@@ -29,7 +30,7 @@ jobs:
         meteor build --directory Tdarr-Bundle  
        
     - name: Publish to Registry
-      uses: elgohr/Publish-Docker-Github-Action@master
+      uses: elgohr/Publish-Docker-Github-Action@2.12
       env:
         CI: true
       with:
@@ -39,4 +40,5 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
         dockerfile: Dockerfile.ubuntu
         buildargs: CI
-        tags: "latest,${{ env.RELEASE_VERSION }}"
+        #tags: "latest,${{ env.RELEASE_VERSION }}"
+        tags: "latest"
