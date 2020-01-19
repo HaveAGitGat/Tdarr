@@ -39,4 +39,4 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
         dockerfile: Dockerfile.ubuntu
         buildargs: CI
-        tags: "latest,$RELEASE_VERSION"
+        tags: "latest,${{ env.RELEASE_VERSION }}"
