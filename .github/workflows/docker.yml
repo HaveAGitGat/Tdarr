@@ -1,5 +1,5 @@
 name: Publish Docker
-on: [push]
+on: [release]
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -30,4 +30,4 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
         dockerfile: Dockerfile.ubuntu
         buildargs: CI
-        tags: "latest"
+        tags: "latest,${GITHUB_REF/refs\/tags\//}"
