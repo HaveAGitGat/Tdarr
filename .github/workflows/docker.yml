@@ -30,4 +30,4 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
         dockerfile: Dockerfile.ubuntu
         buildargs: CI
-        tags: "latest,${GITHUB_REF/refs\/tags\//}"
+        tags: latest,${GITHUB_REF/refs\/tags\//}
