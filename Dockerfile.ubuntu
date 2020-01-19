@@ -57,9 +57,9 @@ RUN mkdir -p /data/db
 
 USER Tdarr
 ENV HOME /home/Tdarr
-ADD ../Tdarr-Bundle $HOME/Tdarr
+ADD Tdarr-Bundle $HOME/Tdarr
 
-COPY ./mongodb /etc/init.d/mongodb
+RUN curl https://raw.githubusercontent.com/mongodb/mongo/master/debian/init.d > /etc/init.d/mongodb
 
 RUN sudo chown -R $USER:$USER $HOME/Tdarr/bundle/programs/server/assets/app/ccextractor/ccextractor
 RUN sudo chmod +x $HOME/Tdarr/bundle/programs/server/assets/app/ccextractor/ccextractor

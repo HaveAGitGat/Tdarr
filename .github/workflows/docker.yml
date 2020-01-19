@@ -18,7 +18,7 @@ jobs:
     - name: Build meteor bundle
       run: |
         meteor npm install
-        meteor build --directory ../Tdarr-Bundle  
+        meteor build --directory Tdarr-Bundle  
        
     - name: Publish to Registry
       uses: elgohr/Publish-Docker-Github-Action@master
