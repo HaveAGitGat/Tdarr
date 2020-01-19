@@ -11,7 +11,7 @@ jobs:
         meteor: [ '1.8.1']
 
     steps:
-    - uses: actions/checkout@v1.2.0
+    - uses: actions/checkout@v2
   
     - name: Setup Meteor
       uses: meteorengineer/setup-meteor@v1.0.1
