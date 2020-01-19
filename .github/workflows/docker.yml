@@ -16,7 +16,9 @@ jobs:
         meteor-release: ${{ matrix.meteor }}
 
     - name: Build meteor bundle
-      run: meteor build --directory $HOME/Tdarr  
+      run: |
+        meteor npm install
+        meteor build --directory $HOME/Tdarr  
        
     - name: Publish to Registry
       uses: elgohr/Publish-Docker-Github-Action@master
