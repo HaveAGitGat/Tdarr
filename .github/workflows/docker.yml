@@ -10,6 +10,10 @@ jobs:
     steps:
     - uses: actions/checkout@master
   
+    - name: Get release version
+      id: get_version
+      run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+  
     - name: Setup Meteor
       uses: meteorengineer/setup-meteor@v1
       with:
@@ -24,10 +28,11 @@ jobs:
       uses: elgohr/Publish-Docker-Github-Action@master
       env:
         CI: true
+        RELEASE_VERSION: ${{ steps.vars.outputs.version }}
       with:
         name: xchanclasox/tdarr_aio_test
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
         dockerfile: Dockerfile.ubuntu
         buildargs: CI
-        tags: latest,${GITHUB_REF/refs\/tags\//}
+        tags: "latest,$RELEASE_VERSION}"
