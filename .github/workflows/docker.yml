@@ -1,8 +1,15 @@
 name: Publish Docker
 
-on:
-  [push]
-    
+on:    
+  release:
+      types: [published]
+  push:
+    branches:
+      - master
+      - docker_fixes
+  schedule:
+    - cron: '0 2 * * 0' # Weekly on Sundays at 02:00
+      
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -34,3 +41,4 @@ jobs:
         dockerfile: Dockerfile.ubuntu
         buildargs: CI
         tags: "latest"
+        cache: ${{ github.event_name != 'schedule' }}
