@@ -9,13 +9,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@master
-
     - name: Build meteor bundle
     - uses: meteorengineer/setup-meteor@v1
       with:
         meteor-release: ${{ matrix.meteor }}
       run: meteor build --directory $HOME/Tdarr   
-
     - name: Publish to Registry
       uses: elgohr/Publish-Docker-Github-Action@master
       env:
