@@ -17,7 +17,7 @@ jobs:
     - name: Get release version
       id: get_version
       run: |
-        echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+        echo ::set-output name=version::${GITHUB_REF/refs\/tags\//}
         echo ${{ steps.vars.outputs.version }}
   
     - name: Setup Meteor
