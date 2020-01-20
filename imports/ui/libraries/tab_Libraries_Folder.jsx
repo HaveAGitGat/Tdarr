@@ -1198,6 +1198,15 @@ SettingsDB.insert(thisLibrary)
                 onChange={this.handleChange}
               ></input>
 
+              <p>Folder watch scan interval (seconds)</p>
+              <input
+                type="text"
+                className="folderPaths"
+                name="folderWatchScanInterval"
+                defaultValue={this.props.libraryItem.folderWatchScanInterval}
+                onChange={this.handleChange}
+              ></input>
+
 
 
             </div>

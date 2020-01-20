@@ -63,6 +63,7 @@ class App extends Component {
       folder:"",
       folderValid:true,
       foldersToIgnore:"",
+      folderWatchScanInterval:30,
       cache:"",
       cacheValid:true,
       output:"",

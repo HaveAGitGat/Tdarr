@@ -1174,7 +1174,7 @@ try{
 
          try {
            //COMMENT OUT WHEN WORKING ON LIBRARY FITLERS/ACTIONS
-        fsextra.copySync(homePath + '/Tdarr/Plugins/temp/methods', homePath + '/Tdarr/Plugins/methods', { overwrite: true })
+        //fsextra.copySync(homePath + '/Tdarr/Plugins/temp/methods', homePath + '/Tdarr/Plugins/methods', { overwrite: true })
       } catch (err) { console.log(err.stack) }
 
 
@@ -1953,6 +1953,19 @@ for (var i = 0; i < settingsInit.length; i++) {
       }
     }
   );
+
+  //Add folder watch scan interval
+
+  if(settingsInit[i].folderWatchScanInterval == undefined){
+    SettingsDB.upsert(settingsInit[i]._id,
+      {
+        $set: {
+          folderWatchScanInterval: 30,
+        }
+      }
+    );
+  }
+
 
   //Run scan on start if needed
   if (settingsInit[i].scanOnStart !== false) {
@@ -3460,6 +3473,10 @@ function createFolderWatch(Folder, DB_id) {
 
   var watcherID = DB_id
 
+
+  var folderWatchScanInterval = SettingsDB.find({ _id: DB_id }, { sort: { createdAt: 1 } }).fetch()[0].folderWatchScanInterval
+  console.log(folderWatchScanInterval)
+
   var watcherPath = "assets/app/folderWatcher.js"
 
   var childProcess = require("child_process");
@@ -3467,6 +3484,7 @@ function createFolderWatch(Folder, DB_id) {
     watcherID,
     Folder,
     DB_id,
+    folderWatchScanInterval
 
   ]
 
