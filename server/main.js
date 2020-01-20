@@ -1408,12 +1408,17 @@ try{
   'launchWorker'(workerType, number) {
 
 
-    for (var i = 1; i <= number; i++) {
-      launchWorkerModule(workerType)
+    if (workerLaunched === false) {
 
+      workerLaunched = true
+
+      for (var i = 1; i <= number; i++) {
+        launchWorkerModule(workerType)
+
+      }
     }
 
-    workerLaunched = false
+
 
     return null
 
@@ -2325,12 +2330,7 @@ function launchWorkerModule(workerType) {
 
 
 
-
       var workerType = message[2]
-
-
-
-
 
       var workerStats = findWorker(message[0])
       //workerStats[0].percentage = 0
@@ -2964,7 +2964,15 @@ function launchWorkerModule(workerType) {
 
       }
 
-    }//if
+
+      //check if this is worker's first request
+      if (message[3] == true) {
+        //reset worker launch status
+        workerLaunched = false
+      }
+      
+
+    }
 
 
     if (message[1] == "processing") {
@@ -4316,22 +4324,18 @@ function workerUpdateCheck() {
 
     verboseLogs = globs[0].verboseLogs
 
-    if(workerLaunched === false){
+  
 
       if (gDiff >= 1 && generalFiles.length > 0) {
-        workerLaunched = true
         Meteor.call('launchWorker', "general", 1, function (error, result) { });
       }
       if (tDiff >= 1 && transcodeFiles.length > 0) {
-        workerLaunched = true
         Meteor.call('launchWorker', "transcode", 1, function (error, result) { });
       }
   
       if (hDiff >= 1 && healthcheckFiles.length > 0) {
-        workerLaunched = true
         Meteor.call('launchWorker', "healthcheck", 1, function (error, result) { });
       }
-    }
 
 
 
@@ -4345,6 +4349,9 @@ function workerUpdateCheck() {
 
     function checkReduceIncrease(Diff, WorkerType) {
 
+
+      //set all running workers to enabled
+
       for (var i = 0; i < WorkerType.length; i++) {
         upsertWorker(WorkerType[i]._id, {
           _id: WorkerType[i]._id,
@@ -4352,11 +4359,13 @@ function workerUpdateCheck() {
         })
       }
 
+     // disable unnecessary workers (disable newest first)
+
       if (Diff <= -1) {
 
         var count = 0
 
-        for (var i = 0; i < WorkerType.length; i++) {
+        for (var i = WorkerType.length - 1; i >= 0 ; i--) {
 
           if (WorkerType[i].idle == false) {
 

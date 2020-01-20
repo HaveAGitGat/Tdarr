@@ -100,7 +100,7 @@ var workerNumber = process.argv[2]
 var workerType = process.argv[3]
 
 
-checkifQueuePause()
+checkifQueuePause(true)
 updateConsole(workerNumber, "Worker online. Requesting item")
 
 
@@ -796,13 +796,14 @@ process.on('message', (m) => {
 
 
 
-function checkifQueuePause() {
+function checkifQueuePause(initialRequest) {
 
 
     var message = [
         workerNumber,
         "queueRequest",
         workerType,
+        initialRequest,
     ];
     process.send(message);
 
