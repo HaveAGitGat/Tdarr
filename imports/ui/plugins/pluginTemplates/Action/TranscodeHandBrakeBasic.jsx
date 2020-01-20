@@ -118,7 +118,7 @@ export default class App extends Component {
 
         <p>You can learn more about HandBrake presets here:</p>
 
-        <p><a href="" onClick={(e) => { e.preventDefault(); window.open("https://handbrake.fr/docs/en/latest/technical/official-presets.html", "_blank") }}>HandBrake presets</a></p>
+        <p><a href="https://handbrake.fr/docs/en/latest/technical/official-presets.html" onClick={(e) => { e.preventDefault(); window.open("https://handbrake.fr/docs/en/latest/technical/official-presets.html", "_blank") }}>HandBrake presets</a></p>
 
         <br />
         <br />
