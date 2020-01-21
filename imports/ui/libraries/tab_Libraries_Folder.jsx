@@ -588,9 +588,9 @@ class Folder extends Component {
     );
   };
 
-  resetAllStatus(mode) {
+  setAllStatus(mode) {
     if (confirm('Are you sure you want to re-queue all files?')) {
-      Meteor.call('resetAllStatus', this.props.libraryItem._id, mode);
+      Meteor.call('setAllStatus', this.props.libraryItem._id, mode, null, 'Queued');
     }
   }
 
@@ -740,14 +740,14 @@ class Folder extends Component {
                 </Dropdown.Item>
 
                 <Dropdown.Item
-                  onClick={() => this.resetAllStatus('TranscodeDecisionMaker')}
+                  onClick={() => this.setAllStatus('TranscodeDecisionMaker')}
                 >
                   <span className="buttonTextSize">
                     Requeue all items (transcode)
                   </span>
                 </Dropdown.Item>
                 <Dropdown.Item
-                  onClick={() => this.resetAllStatus('HealthCheck')}
+                  onClick={() => this.setAllStatus('HealthCheck')}
                 >
                   <span className="buttonTextSize">
                     Requeue all items (health check)

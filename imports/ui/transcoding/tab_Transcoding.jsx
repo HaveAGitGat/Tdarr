@@ -680,13 +680,11 @@ class App extends Component {
   }
 
 
+  setAllStatus(mode,table,processStatus,text) {
 
+    if (confirm(`Are you sure you want to ${text} all files?`)) {
 
-
-  resetAllStatus(mode,table) {
-
-    if (confirm('Are you sure you want to re-queue all files?')) {
-      Meteor.call('resetAllStatus', 'all', mode,table, function (error, result) { })
+      Meteor.call('setAllStatus', 'all', mode,table,processStatus, function (error, result) { })
 
     }
   }
@@ -1045,7 +1043,7 @@ class App extends Component {
                 <th><p>Resolution</p></th>
                 <th><p>Size (GB)</p></th>
                 <th><p>Bump</p></th>
-                <th><p>Skip</p></th>
+                <th><p><Button variant="outline-light" onClick={() => this.setAllStatus('TranscodeDecisionMaker','table1','Transcode success','skip')} ><span className="buttonTextSize">Skip</span></Button></p></th>
 
               </tr>
               {this.renderTable('table1', 'queue','TranscodeDecisionMaker')}
@@ -1066,7 +1064,7 @@ class App extends Component {
                 <th><p>Transcode</p></th>
                 <th><p>Old size (GB)</p></th>
                 <th><p>New size (GB)</p></th>
-                <th><p><Button variant="outline-light" onClick={() => this.resetAllStatus('TranscodeDecisionMaker','table2')} ><span className="buttonTextSize">Re-queue</span></Button></p></th>
+                <th><p><Button variant="outline-light" onClick={() => this.setAllStatus('TranscodeDecisionMaker','table2','Queued','re-queue')} ><span className="buttonTextSize">Re-queue</span></Button></p></th>
                 <th><p>Info</p></th>
                 <th><p>History</p></th>
 
@@ -1084,7 +1082,7 @@ class App extends Component {
                 <th><p>No.</p></th>
                 <th><p>Time</p></th>
                 <th><p>File</p></th>
-                <th><p><Button variant="outline-light" onClick={() => this.resetAllStatus('TranscodeDecisionMaker','table3')} ><span className="buttonTextSize">Re-queue</span></Button></p></th>
+                <th><p><Button variant="outline-light" onClick={() => this.setAllStatus('TranscodeDecisionMaker','table3','Queued','re-queue')} ><span className="buttonTextSize">Re-queue</span></Button></p></th>
                 <th><p>Ignore</p></th>
                 <th><p>Info</p></th>
 
@@ -1107,8 +1105,7 @@ class App extends Component {
                 <th><p>No.</p></th>
                 <th><p>File</p></th>
                 <th><p>Bump</p></th>
-                <th><p>Skip</p></th>
-
+                <th><p><Button variant="outline-light" onClick={() => this.setAllStatus('HealthCheck','table4','Success','skip')} ><span className="buttonTextSize">Skip</span></Button></p></th>
 
               </tr>
               {this.renderTable('table4', 'queue','HealthCheck')}
@@ -1125,7 +1122,7 @@ class App extends Component {
                 <th><p>No.</p></th>
                 <th><p>Time</p></th>
                 <th><p>File</p></th>
-                <th><p><Button   variant="outline-light" onClick={() => this.resetAllStatus('HealthCheck','table5')} ><span className="buttonTextSize">Re-queue</span></Button></p></th>
+                <th><p><Button variant="outline-light" onClick={() => this.setAllStatus('HealthCheck','table5','Queued','re-queue')} ><span className="buttonTextSize">Re-queue</span></Button></p></th>
                 <th><p>Info</p></th>
               </tr>
 
@@ -1145,7 +1142,7 @@ class App extends Component {
                 <th><p>No.</p></th>
                 <th><p>Time</p></th>
                 <th><p>File</p></th>
-                <th><p><Button   variant="outline-light" onClick={() => this.resetAllStatus('HealthCheck','table6')} ><span className="buttonTextSize">Re-queue</span></Button></p></th>
+                <th><p><Button   variant="outline-light" onClick={() => this.setAllStatus('HealthCheck','table6','Queued','re-queue')} ><span className="buttonTextSize">Re-queue</span></Button></p></th>
                 <th><p>Ignore</p></th>
                 <th><p>Info</p></th>
 

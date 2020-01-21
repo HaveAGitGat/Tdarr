@@ -1210,7 +1210,7 @@ try{
 
 
 
-  }, 'resetAllStatus'(DB_id, mode, table) {
+  }, 'setAllStatus'(DB_id, mode, table, processStatus) {
 
     //Files transcode/health check status is reset from either the library 'Options' or from the table 'Re-qeueue' button
 
@@ -1220,10 +1220,14 @@ try{
 
     if (DB_id == "all") {
 
-      if (table == "table2") {
+      if (table == "table1") {
+        allFiles = table1data
+      } else if (table == "table2") {
         allFiles = table2data
       } else if (table == "table3") {
         allFiles = table3data
+      } else if (table == "table4") {
+        allFiles = table4data
       } if (table == "table5") {
         allFiles = table5data
       } if (table == "table6") {
@@ -1243,7 +1247,8 @@ try{
       try {
 
         var tempObj = {
-          [mode]: "Queued",
+          //[mode]: 'Queued',
+          [mode]: processStatus,
         }
         Meteor.call('modifyFileDB', 'update', allFiles[i].file, tempObj, (error, result) => { })
 
