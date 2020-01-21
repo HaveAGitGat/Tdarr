@@ -163,7 +163,7 @@ export default class App extends Component {
           <option value='Apple 720p30 Surround'>Apple 720p30 Surround (h264)</option>
           <option value='Apple 540p30 Surround'>Apple 540p30 Surround (h264)</option>
           <option value='Apple 240p30'>Apple 240p30 (h264)</option>
-          <option value='Chromecast 2160p60 4K HEVC Surround'>Chromecast 2160p60 4K HEVC Surround (h264)</option>
+          <option value='Chromecast 2160p60 4K HEVC Surround'>Chromecast 2160p60 4K HEVC Surround (h265)</option>
           <option value='Chromecast 1080p60 Surround'>Chromecast 1080p60 Surround (h264)</option>
           <option value='Chromecast 1080p30 Surround'>Chromecast 1080p30 Surround (h264)</option>
           <option value='Amazon Fire 2160p60 4K HEVC Surround'>Amazon Fire 2160p60 4K HEVC Surround (h265)</option>
