@@ -70,6 +70,7 @@ var settingsDBIndex
 var oldProgress = ''
 var lastProgCheck = ''
 
+
 var currentFileObject
 var folderToFolderConversionEnabled
 var folderToFolderConversionFolder
@@ -1170,6 +1171,10 @@ function workerEncounteredError(messageOne) {
 
 var progAVG = []
 
+var oldOutSize = 0
+var oldEstSize = 0
+
+
 function updateETA(perc) {
 
     if (!isNaN(perc) && perc > 0) {
@@ -1206,10 +1211,44 @@ function updateETA(perc) {
                     var sum = progAVG.reduce((previous, current) => current += previous);
                     var avg = sum / progAVG.length;
 
+
+                    // est size
+
+                    var estSize = "0"
+
+                    try {
+
+                        var singleFileSize = fs.statSync(currentDestinationLine)
+                        var singleFileSize = singleFileSize.size
+                        var outputFileSizeInGbytes = singleFileSize / 1000000000.0;
+
+                        if(outputFileSizeInGbytes != oldOutSize){
+
+                        oldOutSize =  outputFileSizeInGbytes
+                            
+
+                        estSize = outputFileSizeInGbytes + (((100 - perc) / perc) * outputFileSizeInGbytes)
+
+                        oldEstSize = estSize
+
+                        }
+
+                        
+
+
+                    } catch (err) { }
+
+
+
+
+
+
                     var message = [
                         workerNumber,
                         "ETAUpdate",
-                        fancyTimeFormat(avg)
+                        fancyTimeFormat(avg),
+                        outputFileSizeInGbytes,
+                        oldEstSize,
                     ];
                     process.send(message);
 

@@ -3011,6 +3011,8 @@ function launchWorkerModule(workerType) {
 
       upsertWorker(message[0], {
         ETA: message[2],
+        outputFileSizeInGbytes : message[3],
+        estSize : message[4],
       })
     }
 
