@@ -4410,38 +4410,50 @@ function workerUpdateCheck() {
 
 
 
-    var workerCheck = findWorker()
+    var workerStallDetector = (GlobalSettingsDB.find({}, {}).fetch())[0].workerStallDetector
 
-    for (var i = 0; i < workerCheck.length; i++) {
+    if (workerStallDetector === true) {
 
-      try {
 
-        if (workerStatus[workerCheck[i]._id][1] == 300) {
+      var workerCheck = findWorker()
 
-          if (workerStatus[workerCheck[i]._id][0] == workerCheck[i].file + workerCheck[i].percentage + "") {
+      for (var i = 0; i < workerCheck.length; i++) {
 
-            console.log("Worker " + workerCheck[i]._id + " stalled. Cancelling item.")
-            // Meteor.call('cancelWorkerItem', workerCheck[i]._id, function (error, result) { })
-            workerStatus[workerCheck[i]._id][0] = ""
-            workerStatus[workerCheck[i]._id][1] = -1
+        try {
+
+          if (workerStatus[workerCheck[i]._id][1] == 300) {
+
+            if (workerStatus[workerCheck[i]._id][0] == workerCheck[i].file + workerCheck[i].percentage + "") {
+
+              //console.log("Worker " + workerCheck[i]._id + " stalled. Cancelling item.")
+              Meteor.call('cancelWorkerItem', workerCheck[i]._id, function (error, result) { })
+              workerStatus[workerCheck[i]._id][0] = ""
+              workerStatus[workerCheck[i]._id][1] = -1
+
+            } else {
+
+              //console.log("Worker " + workerCheck[i]._id + " has not stalled.")
+
+              workerStatus[workerCheck[i]._id][0] = workerCheck[i].file + workerCheck[i].percentage + ""
+              workerStatus[workerCheck[i]._id][1] = 0
+
+            }
+
 
           } else {
 
-            console.log("Worker " + workerCheck[i]._id + " has not stalled.")
-
-            workerStatus[workerCheck[i]._id][0] = workerCheck[i].file + workerCheck[i].percentage + ""
-            workerStatus[workerCheck[i]._id][1] = 0
+            workerStatus[workerCheck[i]._id][1] = (workerStatus[workerCheck[i]._id][1]) + 1
 
           }
-
-
-        } else {
-
-          workerStatus[workerCheck[i]._id][1] = (workerStatus[workerCheck[i]._id][1]) + 1
-
-        }
-      } catch (err) { console.log(err.stack) }
+        } catch (err) { console.log(err.stack) }
+      }
     }
+
+
+
+
+
+
 
 
   } catch (err) { console.log(err.stack) }
