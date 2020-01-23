@@ -29,7 +29,7 @@ jobs:
       run: |
         meteor npm install --save babel-runtime
         meteor npm install
-        meteor build --directory Tdarr-Bundle  
+        meteor build --server localhost:8265 --directory Tdarr-Bundle --architecture os.linux.x86_64  
        
     - name: Publish to Registry
       uses: elgohr/Publish-Docker-Github-Action@2.12
