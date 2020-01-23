@@ -53,7 +53,7 @@ export default class App extends Component {
 
             <p align="center">
 
-              <img src="https://i.imgur.com/s8ZbOsT.png" />
+              <img src="/images/icon_dark.png" />
 
             </p>
 
@@ -83,7 +83,7 @@ export default class App extends Component {
             <p></p>
 
             <p align="center">
-              <img src="https://i.imgur.com/wRV6tBJ.png" height="300" />
+              <img src="/images/example_file_replacement.png" height="300" />
             </p>
 
             <p></p>

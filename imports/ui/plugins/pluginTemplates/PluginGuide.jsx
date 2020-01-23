@@ -66,7 +66,7 @@ var ButtonStyle = {
 <br/>
 
 <p align="center">
-              <img src="https://i.imgur.com/483AakN.png" height="500" />
+              <img src="/images/example_plugin_stack_flow.png" height="500" />
             </p>
 
 
