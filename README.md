@@ -149,8 +149,8 @@ I like to maximise the chance of direct play, so my plugin stack looks like this
     (3) Remove subs
 
     (4) Remove closed captions
-
-    (5) Add aac stereo audio if none (eng preferred) [very universal audio stream]
+ 
+    (5) Add aac stereo audio if none (eng preferred) [very universal audio codec/channel count]
 
     (6) Remove meta-data if title meta detected [Stops annoying titles appearing in Plex]
 
