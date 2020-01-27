@@ -50,13 +50,23 @@ const AppRouter = () => {
 
       var version =  GlobalSettingsDB.find({}).fetch()[0].version;
 
-      var newVersion = 1.102
+      var newVersion = 1.103
 
       setVersion(newVersion)
 
       if(version != newVersion){
 
         alert(`
+
+        Beta v1.103 release [27th Jan 2020]:
+        Changes:
+        -[New] Option to set folder watch scan interval (default 30 secs)
+        -[New] Button to skip all for transcode and health check queues
+        -[New] Option on 'Options' tab to toggle worker stall detector
+        -[New] Basic output file size estimation shown on workers
+        -[Re-Fix] Prevent too many workers being started
+        -[Fix] Links open correctly when using context menu
+        -[Fix] Images stored locally
 
         Beta v1.102 release [18th Jan 2020]:
         Changes:

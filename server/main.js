@@ -1174,7 +1174,7 @@ try{
 
          try {
            //COMMENT OUT WHEN WORKING ON LIBRARY FITLERS/ACTIONS
-        //fsextra.copySync(homePath + '/Tdarr/Plugins/temp/methods', homePath + '/Tdarr/Plugins/methods', { overwrite: true })
+        fsextra.copySync(homePath + '/Tdarr/Plugins/temp/methods', homePath + '/Tdarr/Plugins/methods', { overwrite: true })
       } catch (err) { console.log(err.stack) }
 
 
