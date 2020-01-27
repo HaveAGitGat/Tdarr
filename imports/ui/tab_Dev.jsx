@@ -53,7 +53,7 @@ export default class App extends Component {
 
             <p align="center">
 
-              <img src="https://i.imgur.com/s8ZbOsT.png" />
+              <img src="/images/icon_dark.png" />
 
             </p>
 
@@ -83,7 +83,7 @@ export default class App extends Component {
             <p></p>
 
             <p align="center">
-              <img src="https://i.imgur.com/wRV6tBJ.png" height="300" />
+              <img src="/images/example_file_replacement.png" height="300" />
             </p>
 
             <p></p>
@@ -119,6 +119,25 @@ export default class App extends Component {
               <p></p>
 
               <p>Change log</p>
+
+
+              <p>Beta v1.103 release [27th Jan 2020]:
+            
+            <br />Changes:
+
+            <br />-[New] Option to set folder watch scan interval (default 30 secs)
+            <br />-[New] Button to skip all for transcode and health check queues
+            <br />-[New] Option on 'Options' tab to toggle worker stall detector
+            <br />-[New] Basic output file size estimation shown on workers
+            <br />-[Re-Fix] Prevent too many workers being started
+            <br />-[Fix] Links open correctly when using context menu
+            <br />-[Fix] Images stored locally
+
+
+            <br />
+            <br />
+
+            </p>
 
               <p>Beta v1.102 release [18th Jan 2020]:
             

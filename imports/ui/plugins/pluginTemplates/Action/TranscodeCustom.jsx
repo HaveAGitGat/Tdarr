@@ -135,7 +135,7 @@ export default class App extends Component {
 
         <p>Please see the following for help with creating FFmpeg commands:</p>
 
-        <p><a href="" onClick={(e) => { e.preventDefault(); window.open("https://opensource.com/article/17/6/ffmpeg-convert-media-file-formats", "_blank"); }}>https://opensource.com/article/17/6/ffmpeg-convert-media-file-formats</a></p>
+        <p><a href="https://opensource.com/article/17/6/ffmpeg-convert-media-file-formats" onClick={(e) => { e.preventDefault(); window.open("https://opensource.com/article/17/6/ffmpeg-convert-media-file-formats", "_blank"); }}>https://opensource.com/article/17/6/ffmpeg-convert-media-file-formats</a></p>
 
 
         <br />
@@ -154,7 +154,7 @@ export default class App extends Component {
 
         <p>You can learn more about HandBrake presets here:</p>
 
-        <p><a href="" onClick={(e) => { e.preventDefault(); window.open("https://handbrake.fr/docs/en/latest/technical/official-presets.html", "_blank") }}>HandBrake presets</a></p>
+        <p><a href="https://handbrake.fr/docs/en/latest/technical/official-presets.html" onClick={(e) => { e.preventDefault(); window.open("https://handbrake.fr/docs/en/latest/technical/official-presets.html", "_blank") }}>HandBrake presets</a></p>
 
         <br />
         <br />

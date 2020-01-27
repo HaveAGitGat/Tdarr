@@ -11,7 +11,7 @@ var ButtonStyle = {
 
 const borderRadiusStyle = { borderRadius: 2 }
 
- class App extends Component {
+class App extends Component {
 
   constructor(props) {
     super(props);
@@ -19,29 +19,29 @@ const borderRadiusStyle = { borderRadius: 2 }
   }
 
 
-  handleChange = (event) =>{
+  handleChange = (event) => {
 
 
-    if(event.target.name == "basePath"){
+    if (event.target.name == "basePath") {
 
       var URL = event.target.value
 
-      if(URL.charAt(0) !== "/"){
+      if (URL.charAt(0) !== "/") {
 
-        URL = "/"+URL
+        URL = "/" + URL
 
       }
 
-      
-    GlobalSettingsDB.upsert(
 
-      "globalsettings",
-      {
-        $set: {
-          [event.target.name]: URL,
+      GlobalSettingsDB.upsert(
+
+        "globalsettings",
+        {
+          $set: {
+            [event.target.name]: URL,
+          }
         }
-      }
-    );
+      );
 
 
 
@@ -52,7 +52,7 @@ const borderRadiusStyle = { borderRadius: 2 }
 
 
 
-  renderOptions = () =>{
+  renderOptions = () => {
 
 
     var settings = this.props.globalSettings
@@ -73,15 +73,15 @@ const borderRadiusStyle = { borderRadius: 2 }
 
       settings = settings[0]
       return <div>
-      <p>Base URL (e.g. /base )</p>
-    <input type="text" className="folderPaths"  name="basePath" defaultValue={ settings != undefined && settings.basePath != undefined ? settings.basePath : ""} onChange={this.handleChange}></input>
-   
-   <br/>
-   <br/>
-   <br/>
-   
-   <span className="buttonTextSize mr-2" style={ButtonStyle}>Linux FFmpeg NVENC binary (3.4.5 for unRAID compatibility):</span>
-      
+        <p>Base URL (e.g. /base )</p>
+        <input type="text" className="folderPaths" name="basePath" defaultValue={settings != undefined && settings.basePath != undefined ? settings.basePath : ""} onChange={this.handleChange}></input>
+
+        <br />
+        <br />
+        <br />
+
+        <span className="buttonTextSize mr-2" style={ButtonStyle}>Linux FFmpeg NVENC binary (3.4.5 for unRAID compatibility):</span>
+
         <div style={ButtonStyle}>
           <ToggleButton
             style={ButtonStyle}
@@ -99,14 +99,39 @@ const borderRadiusStyle = { borderRadius: 2 }
             }
             } />
         </div>
- 
+
+        <br />
+        <br />
+        <br />
+
+        <span className="buttonTextSize mr-2" style={ButtonStyle}>Auto-cancel stalled workers:</span>
+
+        <div style={ButtonStyle}>
+          <ToggleButton
+            style={ButtonStyle}
+            thumbStyle={borderRadiusStyle}
+            trackStyle={borderRadiusStyle}
+            value={settings.workerStallDetector} onToggle={() => {
+
+              GlobalSettingsDB.upsert('globalsettings',
+                {
+                  $set: {
+                    workerStallDetector: !settings.workerStallDetector,
+                  }
+                }
+              );
+            }
+            } />
+        </div>
 
 
-   
-   
-   
-   
-    </div>
+
+
+
+
+
+
+      </div>
 
 
 
@@ -126,18 +151,18 @@ const borderRadiusStyle = { borderRadius: 2 }
 
       <div className="containerGeneral">
 
-        <br/><br/>
-
-        
-        <div className="tabWrap" >   
-
-        <div className="optionsDiv">
-
-          {this.renderOptions()}
+        <br /><br />
 
 
+        <div className="tabWrap" >
 
-        </div>
+          <div className="optionsDiv">
+
+            {this.renderOptions()}
+
+
+
+          </div>
 
 
         </div>
@@ -152,13 +177,13 @@ const borderRadiusStyle = { borderRadius: 2 }
 
 export default withTracker(() => {
 
-Meteor.subscribe('GlobalSettingsDB');
+  Meteor.subscribe('GlobalSettingsDB');
 
 
-return {
-  globalSettings: GlobalSettingsDB.find({}, {}).fetch(),
+  return {
+    globalSettings: GlobalSettingsDB.find({}, {}).fetch(),
 
-};
+  };
 })(App);
 
 

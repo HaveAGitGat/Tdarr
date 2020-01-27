@@ -345,7 +345,7 @@ class App extends Component {
               </div>
             ),
             id: 'Link',
-            accessor: row => <p><a href="" onClick={(e) => {
+            accessor: row => <p><a href={row.Link} onClick={(e) => {
               e.preventDefault();
               window.open(row.Link, "_blank")
             }}>{row.Link}</a></p>,

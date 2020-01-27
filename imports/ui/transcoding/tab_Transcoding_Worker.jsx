@@ -128,7 +128,7 @@ export default class Worker extends Component {
 
               <div className="grid-item" style={ButtonStyle}>
 
-              <p>ETA{'\u00A0'}{'\u00A0'}{this.props.worker.percentage <= 100 ? this.props.worker.ETA : ''}</p>
+              <p>ETA{'\u00A0'}{'\u00A0'}{ this.props.worker.modeType == 'healthcheck' && this.props.worker.CLIType == "FFmpeg" ? "None" :this.props.worker.percentage <= 100 ? this.props.worker.ETA : ''}</p>
 
               </div>
 
@@ -220,7 +220,9 @@ export default class Worker extends Component {
 
                 <tr><td><p>Duration:</p></td><td><p>{this.duration(this.props.worker.startTime)}</p></td></tr>
 
-                <tr><td><p>Original size (GB)</p></td><td><p>{parseFloat((this.props.worker.sourcefileSizeInGbytes).toPrecision(4))}</p></td></tr>
+                <tr><td><p>Original size</p></td><td><p> {this.props.worker.sourcefileSizeInGbytes == undefined ? 0 : (this.props.worker.sourcefileSizeInGbytes < 1 ? parseFloat((this.props.worker.sourcefileSizeInGbytes * 1000).toPrecision(4)) +" MB" : parseFloat((this.props.worker.sourcefileSizeInGbytes).toPrecision(4)) + " GB")}</p></td></tr>
+                <tr><td><p>Output file size</p></td><td><p>{this.props.worker.outputFileSizeInGbytes == undefined ? 0 : (this.props.worker.outputFileSizeInGbytes < 1 ? parseFloat((this.props.worker.outputFileSizeInGbytes * 1000).toPrecision(4)) +" MB" : parseFloat((this.props.worker.outputFileSizeInGbytes).toPrecision(4)) + " GB")}</p></td></tr>
+                <tr><td><p>Estimated size</p></td><td><p>{this.props.worker.estSize == undefined ? 0 : (this.props.worker.estSize < 1 ? parseFloat((this.props.worker.estSize * 1000).toPrecision(4)) +" MB" : parseFloat((this.props.worker.estSize).toPrecision(4)) + " GB")}</p></td></tr>
 
                
                 

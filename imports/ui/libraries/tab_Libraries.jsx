@@ -63,6 +63,7 @@ class App extends Component {
       folder:"",
       folderValid:true,
       foldersToIgnore:"",
+      folderWatchScanInterval:30,
       cache:"",
       cacheValid:true,
       output:"",
@@ -812,7 +813,7 @@ class App extends Component {
 
 <p>Provide a base folder path and the folder browser will show subfolders which you can navigate to using the buttons.</p>
 
-<img src="https://i.imgur.com/vyp7fle.png"/>
+<img src="/images/example_folder_browser.png"/>
 
 <p>'Scan (Find new)' does 2 things - it removes files from the database which don't exist anymore, and adds newly detected files. Turn on 'Folder watch' to automate this process. New files will be scanned for every 30 seconds or so.</p>
 <p>All new files will be added to both the transcode queues and the health check queues. If you're not interested in using one or the other, then just make sure not to fire up any workers for that respective queue.</p>
@@ -823,7 +824,7 @@ class App extends Component {
 <p>In the library transcode settings, you can either use plugins or manually set either video file or audio file transcode settings.</p>
 
 <p>You can stack plugins but this will increase the number of transcode/remux passes on a file. It's best to use/create a plugin which can do what you need all at once.</p>
-<img src="https://i.imgur.com/yGmb9Rn.png"/>
+<img src="/images/example_plugin_stack.png"/>
 
 
 <p>See the plugins tab for plugins info on creating a plugin.</p>
@@ -842,7 +843,7 @@ class App extends Component {
 
 <p>Please see the following for help with creating FFmpeg commands:</p>
 
-<p><a href="" onClick={(e) => { e.preventDefault(); window.open("https://opensource.com/article/17/6/ffmpeg-convert-media-file-formats", "_blank"); }}>https://opensource.com/article/17/6/ffmpeg-convert-media-file-formats</a></p>
+<p><a href="https://opensource.com/article/17/6/ffmpeg-convert-media-file-formats" onClick={(e) => { e.preventDefault(); window.open("https://opensource.com/article/17/6/ffmpeg-convert-media-file-formats", "_blank"); }}>https://opensource.com/article/17/6/ffmpeg-convert-media-file-formats</a></p>
 
 <br/>
 <br/>
@@ -860,7 +861,7 @@ class App extends Component {
 
 <p>You can learn more about HandBrake presets here:</p>
 
-<p><a href="" onClick={(e) => {e.preventDefault();  window.open("https://handbrake.fr/docs/en/latest/technical/official-presets.html", "_blank") }}>HandBrake presets</a></p>
+<p><a href="https://handbrake.fr/docs/en/latest/technical/official-presets.html" onClick={(e) => {e.preventDefault();  window.open("https://handbrake.fr/docs/en/latest/technical/official-presets.html", "_blank") }}>HandBrake presets</a></p>
 
 <br/>
 <br/>
