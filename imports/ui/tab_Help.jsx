@@ -129,8 +129,14 @@ export default class App extends Component {
           <br></br>
 
 
+        <p>unRAID: Enable NVENC: https://forums.unraid.net/topic/77813-plugin-linuxserverio-unraid-nvidia/</p>
+        <p>unRAID: Enable Intel QSV: https://forums.unraid.net/topic/77943-guide-plex-hardware-acceleration-using-intel-quick-sync/ </p>
+
+        <br></br>
+        <br></br>
 
 
+      
 
 
 
