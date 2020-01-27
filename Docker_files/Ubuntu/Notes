@@ -7,4 +7,4 @@ npm install
 
 cd *Build folder*
 docker build -t haveagitgat/tdarr_aio .
-docker push haveagitgat/tdarr_dev:latest
+docker push haveagitgat/tdarr_aio:latest
