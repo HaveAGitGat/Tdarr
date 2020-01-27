@@ -1,29 +1,24 @@
 name: Node CI
-
-on:
-  pull_request:
-    branches:
-    - master
+on: [push, pull_request]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
         node-version: [8.x]
-
+    
+    name: Use Node.js ${{ matrix.node-version }}
     steps:
-    - uses: actions/checkout@v1
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    - name: npm install, build, and test
-      run: |
-        npm install
-        npm run lint
-        # npm test (TODO)
-      env:
-        CI: true
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1.1.2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: npm install, build, and test
+        run: |
+          npm ci
+          npm run lint
+          # npm test (TODO)
+        env:
+          CI: true
