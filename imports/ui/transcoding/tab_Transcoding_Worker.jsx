@@ -128,7 +128,7 @@ export default class Worker extends Component {
 
               <div className="grid-item" style={ButtonStyle}>
 
-              <p>ETA{'\u00A0'}{'\u00A0'}{this.props.worker.percentage <= 100 ? this.props.worker.ETA : ''}</p>
+              <p>ETA{'\u00A0'}{'\u00A0'}{ this.props.worker.modeType == 'healthcheck' && this.props.worker.CLIType == "FFmpeg" ? "None" :this.props.worker.percentage <= 100 ? this.props.worker.ETA : ''}</p>
 
               </div>
 
