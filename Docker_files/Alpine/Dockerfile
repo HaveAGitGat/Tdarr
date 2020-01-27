@@ -25,7 +25,8 @@ RUN export uid=1000 gid=1000 && \
     echo "Tdarr:x:${uid}:${gid}:Tdarr,,,:/home/Tdarr:/bin/bash" >> /etc/passwd && \
     echo "Tdarr:x:${uid}:" >> /etc/group && \
     chown ${uid}:${gid} -R /home/Tdarr && \
-    chown ${uid}:${gid} -R /temp
+    chown ${uid}:${gid} -R /temp && \
+    chown ${uid}:${gid} -R /app/Tdarr/bundle/programs/server/assets/app
 
 USER Tdarr    
 ENV HOME /home/Tdarr
