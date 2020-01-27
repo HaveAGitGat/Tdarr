@@ -220,9 +220,9 @@ export default class Worker extends Component {
 
                 <tr><td><p>Duration:</p></td><td><p>{this.duration(this.props.worker.startTime)}</p></td></tr>
 
-                <tr><td><p>Original size</p></td><td><p> {this.props.worker.sourcefileSizeInGbytes < 1 ? parseFloat((this.props.worker.sourcefileSizeInGbytes * 1000).toPrecision(4)) +" MB" : parseFloat((this.props.worker.sourcefileSizeInGbytes).toPrecision(4)) + " GB"}</p></td></tr>
-                <tr><td><p>Output file size</p></td><td><p>{this.props.worker.outputFileSizeInGbytes < 1 ? parseFloat((this.props.worker.outputFileSizeInGbytes * 1000).toPrecision(4)) +" MB" : parseFloat((this.props.worker.outputFileSizeInGbytes).toPrecision(4)) + " GB"}</p></td></tr>
-                <tr><td><p>Estimated size</p></td><td><p>{this.props.worker.estSize < 1 ? parseFloat((this.props.worker.estSize * 1000).toPrecision(4)) +" MB" : parseFloat((this.props.worker.estSize).toPrecision(4)) + " GB"}</p></td></tr>
+                <tr><td><p>Original size</p></td><td><p> {this.props.worker.sourcefileSizeInGbytes == undefined ? 0 : (this.props.worker.sourcefileSizeInGbytes < 1 ? parseFloat((this.props.worker.sourcefileSizeInGbytes * 1000).toPrecision(4)) +" MB" : parseFloat((this.props.worker.sourcefileSizeInGbytes).toPrecision(4)) + " GB")}</p></td></tr>
+                <tr><td><p>Output file size</p></td><td><p>{this.props.worker.outputFileSizeInGbytes == undefined ? 0 : (this.props.worker.outputFileSizeInGbytes < 1 ? parseFloat((this.props.worker.outputFileSizeInGbytes * 1000).toPrecision(4)) +" MB" : parseFloat((this.props.worker.outputFileSizeInGbytes).toPrecision(4)) + " GB")}</p></td></tr>
+                <tr><td><p>Estimated size</p></td><td><p>{this.props.worker.estSize == undefined ? 0 : (this.props.worker.estSize < 1 ? parseFloat((this.props.worker.estSize * 1000).toPrecision(4)) +" MB" : parseFloat((this.props.worker.estSize).toPrecision(4)) + " GB")}</p></td></tr>
 
                
                 

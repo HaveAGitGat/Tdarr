@@ -1214,7 +1214,7 @@ function updateETA(perc) {
 
                     // est size
 
-                    var estSize = "0"
+                    var estSize = 0
 
                     try {
 
@@ -1236,8 +1236,9 @@ function updateETA(perc) {
                         
 
 
-                    } catch (err) { }
-
+                    } catch (err) { 
+                    
+                    }
 
 
 
@@ -1247,8 +1248,8 @@ function updateETA(perc) {
                         workerNumber,
                         "ETAUpdate",
                         fancyTimeFormat(avg),
-                        outputFileSizeInGbytes,
-                        oldEstSize,
+                        outputFileSizeInGbytes == undefined ? 0 : outputFileSizeInGbytes,
+                        oldEstSize == undefined ? 0 : oldEstSize
                     ];
                     process.send(message);
 
