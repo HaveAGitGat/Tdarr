@@ -1808,13 +1808,7 @@ function main() {
       console.log(mode, text)
 
 
-      if (fs.existsSync(path.join(process.cwd(), "/npm"))) {
-        var ffmpegPathLinux = path.join(process.cwd(), '/assets/app/ffmpeg/ffmpeg')
-      } else {
-        var ffmpegPathLinux = path.join(process.cwd(), '/private/ffmpeg/ffmpeg')
-      }
 
-      ffmpegPathLinux = ffmpegPathLinux.replace(/'/g, '\'\"\'\"\'');
 
 
 
@@ -1828,7 +1822,7 @@ function main() {
         workerCommand = "HandBrakeCLI" + " " + text
       } else if (process.platform == 'linux' && mode == "ffmpeg") {
 
-        workerCommand = ffmpegPath + " " + text
+        workerCommand = ffmpegPathLinux42 + " " + text
 
       }
 
@@ -1844,7 +1838,7 @@ function main() {
         if (process.platform == 'linux' && mode == "handbrake") {
           // workerCommand = "/usr/local/bin/HandBrakeCLI " + text
         } else if (process.platform == 'linux' && mode == "ffmpeg") {
-          workerCommand = ffmpegPathLinux + " " + text
+          workerCommand = ffmpegPathLinux345 + " " + text
         }
       }
 
@@ -1921,8 +1915,11 @@ function main() {
         workerCommand = ffmpegPath + " " + preset1 + " -i \"" + inputFile + "\" " + preset2 + " \"" + outputFile + "\" "
       }
 
-      if (process.platform == 'linux' || process.platform == 'darwin') {
-
+      if (process.platform == 'linux'){
+        workerCommand = ffmpegPathLinux42 + " " + preset1 + " -i '" + inputFileUnix + "' " + preset2 + " '" + outputFileUnix + "' " 
+      }
+      
+      if(process.platform == 'darwin') {
         workerCommand = ffmpegPathUnix + " " + preset1 + " -i '" + inputFileUnix + "' " + preset2 + " '" + outputFileUnix + "' "
       }
 
@@ -1930,10 +1927,6 @@ function main() {
 
         console.log('Exit code:', code);
       });
-
-
-
-
 
     },
 
@@ -2042,17 +2035,23 @@ function main() {
 
   if (fs.existsSync(path.join(process.cwd(), "/npm"))) {
     var handBrakeCLIPath = path.join(process.cwd(), '/assets/app/HandBrakeCLI.exe')
+    var ffmpegPathLinux345 = path.join(process.cwd(), '/assets/app/ffmpeg/ffmpeg345/ffmpeg')
+    var ffmpegPathLinux42 = path.join(process.cwd(), '/assets/app/ffmpeg/ffmpeg42/ffmpeg')
   } else {
     var handBrakeCLIPath = path.join(process.cwd(), '/private/HandBrakeCLI.exe')
+    var ffmpegPathLinux345 = path.join(process.cwd(), '/private/ffmpeg/ffmpeg345/ffmpeg')
+    var ffmpegPathLinux42 = path.join(process.cwd(), '/private/ffmpeg/ffmpeg42/ffmpeg')
   }
 
   var ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
+
+  ffmpegPathLinux345 = ffmpegPathLinux345.replace(/'/g, '\'\"\'\"\'');
+  ffmpegPathLinux42 = ffmpegPathLinux42.replace(/'/g, '\'\"\'\"\'');
+
+
   var shell = require('shelljs');
 
-
-
-
-  scheduledPluginUpdate()
+ scheduledPluginUpdate()
 
 
   function scheduledPluginUpdate() {
