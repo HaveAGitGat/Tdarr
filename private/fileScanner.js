@@ -743,7 +743,15 @@ function ffprobeLaunch(filesToScan) {
 
         //if (!!("video_codec_name" in thisFileObject)) {
 
-        if (jsonString.includes('"codec_type":"video"') && thisFileObject.meta.MIMEType.includes('video')) {
+
+        try{
+            var exifToolVerdict = thisFileObject.meta.MIMEType.includes('video')
+        }catch(err){
+            var exifToolVerdict = true
+        }
+
+
+        if (jsonString.includes('"codec_type":"video"') && exifToolVerdict === true) {
 
             updateConsole(scannerID, `Tagging video res:${filepath}`)
 
