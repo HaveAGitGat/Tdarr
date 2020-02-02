@@ -1702,15 +1702,6 @@ SettingsDB.insert(thisLibrary)
                               className="folderPaths"
                             />
                           </form>
-
-                          <button
-                            variant="outline-light"
-                            onClick={() => {
-                              console.log("modal closed ");
-                              close();
-                            }}
-                          >X</button>
-
                         </div>
                       </div>
                     </div>

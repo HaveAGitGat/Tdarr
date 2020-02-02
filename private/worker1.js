@@ -355,7 +355,6 @@ process.on('message', (m) => {
                 workerCommand = ffmpegPathLinux345 + " " + preset0Unix + " -i '" + currentSourceLineUnix + "' " + preset1Unix + " '" + currentDestinationLineUnix + "' "
 
             }
-
         }
 
 

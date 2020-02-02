@@ -491,6 +491,7 @@ Meteor.methods({
   }, 'createBackup'() {
 
 
+    //push backup status into array, array is displayed on front end in table.
     backupStatus = []
 
     try {
@@ -502,18 +503,27 @@ Meteor.methods({
 
       for (var i = 0; i < collections.length; i++) {
 
-        backupStatus.push({ name: collections[i][1] })
+        try {
 
-        backupStatus[i].status = "Fetching data"
+          backupStatus.push({ name: collections[i][1] })
 
-        var dbItems = collections[i][0].find({}).fetch()
-        dbItems = JSON.stringify(dbItems)
+          backupStatus[i].status = "Fetching data"
 
-        backupStatus[i].status = "Writing to file"
+          var dbItems = collections[i][0].find({}).fetch()
+          dbItems = JSON.stringify(dbItems)
 
-        fs.writeFileSync(homePath + `/Tdarr/Backups/Backup-${currentDate}/${collections[i][1]}.txt`, dbItems, 'utf8');
+          backupStatus[i].status = "Writing to file"
 
-        backupStatus[i].status = "Complete"
+          fs.writeFileSync(homePath + `/Tdarr/Backups/Backup-${currentDate}/${collections[i][1]}.txt`, dbItems, 'utf8');
+
+          backupStatus[i].status = "Complete"
+
+        } catch (err) {
+
+          console.log(err)
+          backupStatus.push({ name: "Status", status: "Error:" + JSON.stringify(err) })
+
+        }
 
       }
       dbItems = ""
@@ -547,7 +557,7 @@ Meteor.methods({
 
     } catch (err) {
       console.log(err)
-      backupStatus.push({ name: "Status", status: "Error:" + JSON.stringify(err) })
+
     }
 
   }
@@ -1010,7 +1020,8 @@ function main() {
 
             plugins.push(obj)
 
-          } catch (err) { console.log(err.stack) }
+          } catch (err) { console.log(err.stack) 
+          }
 
         });
 
@@ -3364,11 +3375,6 @@ function main() {
 
 
     // os.cpuUsage( Meteor.bindEnvironment(function(v){
-
-
-
-
-
     //       }));
 
 
@@ -3377,8 +3383,6 @@ function main() {
 
 
   //File watching
-
-
 
 
   var settings = SettingsDB.find({}, { sort: { createdAt: 1 } }).fetch()
