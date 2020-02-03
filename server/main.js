@@ -279,7 +279,7 @@ var collections = [
 ]
 
 Meteor.methods({
-  'getTimeNow'(){
+  'getTimeNow'() {
 
     var d = new Date(),
       h = (d.getHours() < 10 ? '0' : '') + d.getHours(),
@@ -1012,16 +1012,10 @@ function main() {
 
 
           try {
-            var plugin = ""
+
             var pluginID = (file.split('.'))[0]
-            var pluginAbsolutePath = path.join(process.cwd(), `/assets/app/plugins/${pluginType}/` + pluginID + '.js')
-
-            // var workerPath = "assets/app/worker1.js"
-
             var pluginLocalPath = path.join(process.cwd(), `/assets/app/plugins/${pluginType}/` + pluginID + '.js')
-
-
-            fsextra.copySync(homePath + `/Tdarr/Plugins/${pluginType}/` + file, pluginAbsolutePath)
+            fsextra.copySync(homePath + `/Tdarr/Plugins/${pluginType}/` + file, pluginLocalPath)
             var plugin = importFresh(pluginLocalPath)
 
             var obj = plugin.details();
@@ -1030,7 +1024,8 @@ function main() {
 
             plugins.push(obj)
 
-          } catch (err) { console.log(err.stack) 
+          } catch (err) {
+            console.log(err.stack)
           }
 
         });
@@ -1099,10 +1094,8 @@ function main() {
         try {
 
 
-          var plugin = ""
-          var pluginAbsolutePath = path.join(process.cwd(), `/assets/app/plugins/${plugins[i].source}/` + plugins[i]._id + '.js')
           var pluginLocalPath = path.join(process.cwd(), `/assets/app/plugins/${plugins[i].source}/` + plugins[i]._id + '.js')
-          fsextra.copySync(homePath + `/Tdarr/Plugins/${plugins[i].source}/` + plugins[i]._id + ".js", pluginAbsolutePath)
+          fsextra.copySync(homePath + `/Tdarr/Plugins/${plugins[i].source}/` + plugins[i]._id + ".js", pluginLocalPath)
 
           var plugin = importFresh(pluginLocalPath)
 
@@ -1936,11 +1929,11 @@ function main() {
         workerCommand = ffmpegPath + " " + preset1 + " -i \"" + inputFile + "\" " + preset2 + " \"" + outputFile + "\" "
       }
 
-      if (process.platform == 'linux'){
-        workerCommand = ffmpegPathLinux42 + " " + preset1 + " -i '" + inputFileUnix + "' " + preset2 + " '" + outputFileUnix + "' " 
+      if (process.platform == 'linux') {
+        workerCommand = ffmpegPathLinux42 + " " + preset1 + " -i '" + inputFileUnix + "' " + preset2 + " '" + outputFileUnix + "' "
       }
-      
-      if(process.platform == 'darwin') {
+
+      if (process.platform == 'darwin') {
         workerCommand = ffmpegPathUnix + " " + preset1 + " -i '" + inputFileUnix + "' " + preset2 + " '" + outputFileUnix + "' "
       }
 
@@ -2072,7 +2065,7 @@ function main() {
 
   var shell = require('shelljs');
 
- scheduledPluginUpdate()
+  scheduledPluginUpdate()
 
 
   function scheduledPluginUpdate() {
@@ -2526,6 +2519,8 @@ function main() {
 
                 var copyIfConditionsMet = settings[0].copyIfConditionsMet
 
+                var lastPluginDetails = ''
+
 
 
                 //  console.log(util.inspect(firstItem, {showHidden: false, depth: null}))
@@ -2575,6 +2570,8 @@ function main() {
                     processFile,
                     settings[0],
                     ffmpegNVENCBinary,
+                    null,
+                    null,
 
                   ]
 
@@ -2621,31 +2618,35 @@ function main() {
                         try {
 
                           var pluginID = pluginsSelected[i]._id
-
-
-
-
-
-                          var plugin = ""
-                          var pluginAbsolutePath = path.join(process.cwd(), `/assets/app/plugins/${pluginsSelected[i].source}/` + pluginID + '.js')
                           var pluginLocalPath = path.join(process.cwd(), `/assets/app/plugins/${pluginsSelected[i].source}/` + pluginID + '.js')
-                          fsextra.copySync(homePath + `/Tdarr/Plugins/${pluginsSelected[i].source}/` + pluginID + '.js', pluginAbsolutePath)
+                          fsextra.copySync(homePath + `/Tdarr/Plugins/${pluginsSelected[i].source}/` + pluginID + '.js', pluginLocalPath)
 
 
+                          lastPluginDetails = {
+                            source: pluginsSelected[i].source,
+                            id: pluginID,
+                          }
 
 
-                          var plugin = importFresh(pluginLocalPath)
-
-                          cliLogAdd += plugin.details().id + "\n"
+                         
 
                           var otherArguments = {
                             homePath: homePath
                           }
 
-                          var response = plugin.plugin(firstItem, settings[0], otherArguments);
+                          var librarySettings = settings[0]
+                          var plugin = importFresh(pluginLocalPath)
+                          cliLogAdd += plugin.details().id + "\n"
+                          var response = plugin.plugin(firstItem, librarySettings, otherArguments);
+
+
+                          if(firstItem.lastPluginDetails && firstItem.lastPluginDetails.id === pluginID ){
+
+                          var temp = plugin.onTranscodeSuccess(firstItem, librarySettings, otherArguments);
+
+                          }
 
                           console.dir(response)
-
 
                           processFile = response.processFile
                           preset = response.preset
@@ -2904,6 +2905,7 @@ function main() {
                     settings[0],
                     ffmpegNVENCBinary,
                     TranscodeDecisionMaker,
+                    lastPluginDetails,
 
 
                   ]
@@ -2917,6 +2919,47 @@ function main() {
                 //File filtered out by transcode decision maker
                 if ((processFile == false && folderToFolderConversionEnabled !== true) || (processFile == false && folderToFolderConversionEnabled === true && copyIfConditionsMet === false)) {
 
+                  
+
+                  //post processing script
+
+
+                  try {
+
+
+                    if(TranscodeDecisionMaker == false){
+
+                      var pluginLocalPath = path.join(process.cwd(), `/assets/app/plugins/Local/finalPostProcessing.js`)
+                      fsextra.copySync(homePath + `/Tdarr/Plugins/Local/finalPostProcessing.js`, pluginLocalPath)
+  
+                      var otherArguments = {
+                        homePath: homePath
+                      }
+  
+                      var librarySettings = settings[0]
+                      var plugin = importFresh(pluginLocalPath)
+  
+                      // console.log('----------------------------------')
+                      // console.dir(firstItem)
+                      // console.dir(librarySettings)
+                      // console.dir(otherArguments)
+  
+  
+  
+                      var response = plugin.finalPostProcessing(firstItem, librarySettings, otherArguments);
+
+                    }
+
+
+
+
+                  } catch (err) {console.log('final post processing failed')}
+
+
+
+
+
+
 
                   //TranscodeDecisionMaker status first depends on if error encountered during plugins, else depends on
                   // if file has already been processed or not (no oldSize if it hasn't been processed)
@@ -2928,6 +2971,7 @@ function main() {
                     cliLog: cliLogAdd,
                     lastTranscodeDate: new Date(),
                     bumped: false,
+                    lastPluginDetails:'none'
 
                   }
                   Meteor.call('modifyFileDB', 'update', fileToProcess, tempObj, (error, result) => { })
@@ -3075,6 +3119,29 @@ function main() {
 
 
         } else if (message[4] == "transcode") {
+
+
+          try {
+          var lastPluginDetails = message[6]
+          var file = message[6]
+
+          var pluginLocalPath = path.join(process.cwd(), `/assets/app/plugins/${lastPluginDetails.source}/` + lastPluginDetails.id + '.js')
+          fsextra.copySync(homePath + `/Tdarr/Plugins/${lastPluginDetails.source}/` + lastPluginDetails.id + '.js', pluginLocalPath)
+
+
+
+          var librarySettings = SettingsDB.find({ _id: file.DB }, { sort: { createdAt: 1 } }).fetch()[0]
+
+
+          var otherArguments = {
+            homePath: homePath
+          }
+
+          var plugin = importFresh(pluginLocalPath)
+
+         
+            var response = plugin.onTranscodeError(file, librarySettings, otherArguments);
+          } catch (err) {console.log('onTranscodeError failed') }
 
           var tempObj = {
             _id: message[2],

@@ -831,6 +831,7 @@ function addFileToDB(filePath, FileObject, obj) {
     FileObject._id = filePath
     FileObject.file = filePath
     FileObject.DB = DB_id
+    FileObject.lastPluginDetails = 'none'
 
     FileObject.processingStatus = false
     FileObject.createdAt = new Date()
