@@ -1131,9 +1131,6 @@ function workerEncounteredError(messageOne) {
 
 
         if (mode == "healthcheck") {
-            //function everything else waits
-
-            //if repair file == true
 
             // healthcheck process error 
 

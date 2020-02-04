@@ -2937,15 +2937,7 @@ function main() {
                       }
   
                       var librarySettings = settings[0]
-                      var plugin = importFresh(pluginLocalPath)
-  
-                      // console.log('----------------------------------')
-                      // console.dir(firstItem)
-                      // console.dir(librarySettings)
-                      // console.dir(otherArguments)
-  
-  
-  
+                      var plugin = importFresh(pluginLocalPath)  
                       var response = plugin.finalPostProcessing(firstItem, librarySettings, otherArguments);
 
                     }
