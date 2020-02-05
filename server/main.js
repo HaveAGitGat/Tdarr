@@ -2594,7 +2594,8 @@ function main() {
                     });
 
 
-                    pluginsSelected = pluginsSelected.filter(row => (row.checked));
+                    pluginsSelected = pluginsSelected.filter(row => row.checked);
+
 
 
                     if (pluginsSelected.length == 0) {
@@ -2605,7 +2606,7 @@ function main() {
                       handBrakeMode = ''
                       FFmpegMode = ''
                       reQueueAfter = ''
-                      cliLogAdd += '☒No plugins selected!  \n'
+                      cliLogAdd += '☒No pre-processing plugins selected!  \n'
 
                       TranscodeDecisionMaker = "Transcode error"
 
@@ -2628,7 +2629,7 @@ function main() {
                           }
 
 
-                         
+
 
                           var otherArguments = {
                             homePath: homePath
@@ -2637,39 +2638,53 @@ function main() {
                           var librarySettings = settings[0]
                           var plugin = importFresh(pluginLocalPath)
                           cliLogAdd += plugin.details().id + "\n"
-                          var response = plugin.plugin(firstItem, librarySettings, otherArguments);
+
+                          console.log('----------------------------')
+                          console.log(plugin.details().Stage)
+
+                          if (plugin.details().Stage == undefined || plugin.details().Stage == 'Pre-processing') {
+                            var response = plugin.plugin(firstItem, librarySettings, otherArguments);
 
 
-                          if(firstItem.lastPluginDetails && firstItem.lastPluginDetails.id === pluginID ){
+                            if (firstItem.lastPluginDetails && firstItem.lastPluginDetails.id === pluginID) {
 
-                          var temp = plugin.onTranscodeSuccess(firstItem, librarySettings, otherArguments);
+                              var temp = plugin.onTranscodeSuccess(firstItem, librarySettings, otherArguments);
+
+                            }
+
+
+
+                            console.dir(response)
+
+                            processFile = response.processFile
+                            preset = response.preset
+                            container = response.container
+                            handBrakeMode = response.handBrakeMode
+                            FFmpegMode = response.FFmpegMode
+                            reQueueAfter = response.reQueueAfter
+                            cliLogAdd += response.infoLog
+
+
+                            if (processFile == true && plugin.details().Operation == "Filter") {
+
+                              //do nothing
+
+                            } else if (processFile == false && plugin.details().Operation == "Filter") {
+
+                              break
+
+                            } else if (processFile == true) {
+
+                              break
+
+                            }
+
 
                           }
 
-                          console.dir(response)
-
-                          processFile = response.processFile
-                          preset = response.preset
-                          container = response.container
-                          handBrakeMode = response.handBrakeMode
-                          FFmpegMode = response.FFmpegMode
-                          reQueueAfter = response.reQueueAfter
-                          cliLogAdd += response.infoLog
 
 
-                          if (processFile == true && plugin.details().Operation == "Filter") {
 
-                            //do nothing
-
-                          } else if (processFile == false && plugin.details().Operation == "Filter") {
-
-                            break
-
-                          } else if (processFile == true) {
-
-                            break
-
-                          }
                         } catch (err) {
                           console.log(err)
 
@@ -2919,7 +2934,7 @@ function main() {
                 //File filtered out by transcode decision maker
                 if ((processFile == false && folderToFolderConversionEnabled !== true) || (processFile == false && folderToFolderConversionEnabled === true && copyIfConditionsMet === false)) {
 
-                  
+
 
                   //post processing script
 
@@ -2927,30 +2942,75 @@ function main() {
                   try {
 
 
-                    if(TranscodeDecisionMaker == false){
+                    // if(TranscodeDecisionMaker == false){
 
-                      var pluginLocalPath = path.join(process.cwd(), `/assets/app/plugins/Local/finalPostProcessing.js`)
-                      fsextra.copySync(homePath + `/Tdarr/Plugins/Local/finalPostProcessing.js`, pluginLocalPath)
-  
-                      var otherArguments = {
-                        homePath: homePath
+                    //   var pluginLocalPath = path.join(process.cwd(), `/assets/app/plugins/Local/finalPostProcessing.js`)
+                    //   fsextra.copySync(homePath + `/Tdarr/Plugins/Local/finalPostProcessing.js`, pluginLocalPath)
+
+                    //   var otherArguments = {
+                    //     homePath: homePath
+                    //   }
+
+                    //   var librarySettings = settings[0]
+                    //   var plugin = importFresh(pluginLocalPath)  
+                    //   var response = plugin.finalPostProcessing(firstItem, librarySettings, otherArguments);
+
+                    // }
+
+                    var pluginsSelected = settings[0].pluginIDs
+
+                    pluginsSelected = pluginsSelected.sort(function (a, b) {
+                      return a.priority - b.priority;
+                    });
+
+
+                    pluginsSelected = pluginsSelected.filter(row => row.checked);
+
+
+                    if (pluginsSelected.length == 0) {
+
+                      console.log('No post-processing plugins selected!')
+
+                    } else {
+
+                      for (var i = 0; i < pluginsSelected.length; i++) {
+
+                        try {
+
+                          var pluginID = pluginsSelected[i]._id
+                          var pluginLocalPath = path.join(process.cwd(), `/assets/app/plugins/${pluginsSelected[i].source}/` + pluginID + '.js')
+                          fsextra.copySync(homePath + `/Tdarr/Plugins/${pluginsSelected[i].source}/` + pluginID + '.js', pluginLocalPath)
+
+
+                          lastPluginDetails = {
+                            source: pluginsSelected[i].source,
+                            id: pluginID,
+                          }
+
+
+                          var otherArguments = {
+                            homePath: homePath
+                          }
+
+                          var librarySettings = settings[0]
+                          var plugin = importFresh(pluginLocalPath)
+                          cliLogAdd += plugin.details().id + "\n"
+
+                          if (plugin.details().Stage == 'Post-processing') {
+                            var response = plugin.plugin(firstItem, librarySettings, otherArguments);
+                          }
+
+                        } catch (err) {
+                          console.log(err)
+                          console.log('final post processing failed' + i)
+                        }
                       }
-  
-                      var librarySettings = settings[0]
-                      var plugin = importFresh(pluginLocalPath)  
-                      var response = plugin.finalPostProcessing(firstItem, librarySettings, otherArguments);
-
                     }
 
-
-
-
-                  } catch (err) {console.log('final post processing failed')}
-
-
-
-
-
+                  } catch (err) {
+                    console.log(err)
+                    console.log('final post processing failed')
+                  }
 
 
                   //TranscodeDecisionMaker status first depends on if error encountered during plugins, else depends on
@@ -2963,7 +3023,7 @@ function main() {
                     cliLog: cliLogAdd,
                     lastTranscodeDate: new Date(),
                     bumped: false,
-                    lastPluginDetails:'none'
+                    lastPluginDetails: 'none'
 
                   }
                   Meteor.call('modifyFileDB', 'update', fileToProcess, tempObj, (error, result) => { })
@@ -3114,33 +3174,34 @@ function main() {
 
 
           try {
-          var lastPluginDetails = message[6]
-          var file = message[6]
+            var lastPluginDetails = message[6]
+            var file = message[6]
 
-          var pluginLocalPath = path.join(process.cwd(), `/assets/app/plugins/${lastPluginDetails.source}/` + lastPluginDetails.id + '.js')
-          fsextra.copySync(homePath + `/Tdarr/Plugins/${lastPluginDetails.source}/` + lastPluginDetails.id + '.js', pluginLocalPath)
-
-
-
-          var librarySettings = SettingsDB.find({ _id: file.DB }, { sort: { createdAt: 1 } }).fetch()[0]
+            var pluginLocalPath = path.join(process.cwd(), `/assets/app/plugins/${lastPluginDetails.source}/` + lastPluginDetails.id + '.js')
+            fsextra.copySync(homePath + `/Tdarr/Plugins/${lastPluginDetails.source}/` + lastPluginDetails.id + '.js', pluginLocalPath)
 
 
-          var otherArguments = {
-            homePath: homePath
-          }
 
-          var plugin = importFresh(pluginLocalPath)
+            var librarySettings = SettingsDB.find({ _id: file.DB }, { sort: { createdAt: 1 } }).fetch()[0]
 
-         
+
+            var otherArguments = {
+              homePath: homePath
+            }
+
+            var plugin = importFresh(pluginLocalPath)
+
+
             var response = plugin.onTranscodeError(file, librarySettings, otherArguments);
-          } catch (err) {console.log('onTranscodeError failed') }
+          } catch (err) { console.log('onTranscodeError failed') }
 
           var tempObj = {
             _id: message[2],
             TranscodeDecisionMaker: "Transcode error",
             processingStatus: false,
             cliLog: message[5],
-            lastTranscodeDate: new Date()
+            lastTranscodeDate: new Date(),
+            lastPluginDetails:'none'
           }
           Meteor.call('modifyFileDB', 'update', message[2], tempObj, (error, result) => { })
 
