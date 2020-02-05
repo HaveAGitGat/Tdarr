@@ -2089,7 +2089,7 @@ function main() {
   }
 
 
-  //scheduledCacheClean()
+  scheduledCacheClean()
 
   function scheduledCacheClean() {
 
@@ -2158,7 +2158,7 @@ function main() {
       }
     } catch (err) { console.log(err.stack) }
 
-    setTimeout(Meteor.bindEnvironment(scheduledCacheClean), 10000);
+    // setTimeout(Meteor.bindEnvironment(scheduledCacheClean), 10000);
   }
 
 
