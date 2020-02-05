@@ -171,7 +171,6 @@ class App extends Component {
                 <p>id</p>
               </div>
             ),
-            accessor: 'id',
             id: 'id',
             width: 80,
             accessor: d => <CopyToClipboard text={d.id}>
@@ -245,19 +244,6 @@ class App extends Component {
             accessor: 'Description',
 
             id: 'Description',
-            //   accessor: d => {
-
-            //     console.log("d.Description:"+d.Description)
-            //       var desc = d.Description.split("\n")
-            //         desc = desc.map( row => <p>{row}<br/></p> )
-
-            //         console.dir("desc:"+desc)
-
-
-            //         return desc
-
-            //   },
-
             style: { 'white-space': 'unset' },
 
 
@@ -271,7 +257,53 @@ class App extends Component {
               }
             }
 
-          }, {
+          },
+          {
+            Header: () => (
+              <div className="pluginTableHeader">
+                <p>Inputs</p>
+              </div>
+            ),
+            id: 'Inputs',
+            width: 80,
+            accessor: row => {
+
+              if (row.Inputs == undefined) {
+
+                return <p></p>
+
+              }
+
+              var variableArray = row.Inputs
+
+
+              var desc = variableArray.map(row => <p><Modal
+                trigger={<Button variant="outline-light" ><span className="buttonTextSize">i</span></Button>}
+                modal
+                closeOnDocumentClick
+              >
+                <div className="modalContainer">
+                  <div className="frame">
+                    <div className="scroll">
+
+                      <div className="modalText">
+                        <p>Tip:</p>
+                        <p></p>
+                        <p></p>
+                        <p>{row.tooltip}</p>
+
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+              </Modal><span>{row.name}</span></p>)
+
+              return desc
+
+            }
+          },
+          {
 
             Header: () => (
               <div className="pluginTableHeader">
@@ -291,7 +323,7 @@ class App extends Component {
             }
 
           }, {
-            show: pluginType == "Local" ? true: false,
+            show: pluginType == "Local" ? true : false,
             Header: () => (
               <div className="pluginTableHeader">
                 <p>Delete</p>
@@ -301,18 +333,18 @@ class App extends Component {
             id: 'Delete',
             width: 70,
             accessor: d => <Button variant="outline-light" onClick={() => {
-              Meteor.call('deletePlugin',d.id, (error, result) => {
-                if(result === true){
+              Meteor.call('deletePlugin', d.id, (error, result) => {
+                if (result === true) {
 
                   alert('Plugin deleted successfully!')
 
-                }else{
+                } else {
 
                   alert('Error deleting plugin. Please delete manually.')
 
                 }
 
-                  this.searchPlugins(event, 'Local')
+                this.searchPlugins(event, 'Local')
 
               })
             }} ><span className="buttonTextSize">X</span></Button>,
@@ -320,7 +352,7 @@ class App extends Component {
 
           }, {
 
-            show: pluginType == "Community" ? true: false,
+            show: pluginType == "Community" ? true : false,
             Header: () => (
               <div className="pluginTableHeader">
                 <p>Stars</p>
@@ -338,7 +370,7 @@ class App extends Component {
             }
 
           }, {
-            show: pluginType == "Community" ? true: false,
+            show: pluginType == "Community" ? true : false,
             Header: () => (
               <div className="pluginTableHeader">
                 <p>Link</p>
@@ -514,15 +546,15 @@ class App extends Component {
                     <br />
 
                     <p onClick={() => {
-                        GlobalSettingsDB.upsert(
-                          "globalsettings",
-                          {
-                            $set: {
-                              navSelectedPluginCreatorItem: "navGeneral",
-                            }
+                      GlobalSettingsDB.upsert(
+                        "globalsettings",
+                        {
+                          $set: {
+                            navSelectedPluginCreatorItem: "navGeneral",
                           }
-                        );
-                      }} className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navGeneral" ? 'selectedNav' : 'unselectedNav'}>Create</p>
+                        }
+                      );
+                    }} className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navGeneral" ? 'selectedNav' : 'unselectedNav'}>Create</p>
 
 
 
@@ -536,9 +568,9 @@ class App extends Component {
 
 
 
-                
 
-       
+
+
 
 
 
@@ -576,7 +608,7 @@ class App extends Component {
 
 
 
-{/* 
+                    {/* 
                     <div className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navTranscode" ? '' : 'd-none'}>
                       <Transcode />
                     </div>

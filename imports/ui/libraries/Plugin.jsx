@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Checkbox from '@material-ui/core/Checkbox';
 import { Button} from 'react-bootstrap';
+import Modal from "reactjs-popup";
 
 import { SettingsDB} from '../../api/tasks.js';
 
@@ -53,6 +54,62 @@ export default class Plugin extends Component {
     }
 
 
+    renderInputs = (inputs) => {
+
+      var desc = inputs.map(row => <p><Modal
+        trigger={<Button variant="outline-light" ><span className="buttonTextSize">i</span></Button>}
+        modal
+        closeOnDocumentClick
+      >
+        <div className="modalContainer">
+          <div className="frame">
+            <div className="scroll">
+
+              <div className="modalText">
+                <p>Tip:</p>
+                <p></p>
+                <p></p>
+                <p>{row.tooltip}</p>
+
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </Modal><span>{row.name}:<input type="text" defaultValue={this.props.pluginItem.InputsDB && this.props.pluginItem.InputsDB[row.name] != undefined  ? this.props.pluginItem.InputsDB[row.name] : ''} name={row.name} onChange={this.saveInput}></input></span></p>)
+
+      return desc
+
+
+    }
+
+  saveInput = (event) => {
+
+    const { name, value } = event.target;
+
+    var thisLibraryPlugins = SettingsDB.find({ _id: this.props.DB_id }, { sort: { createdAt: 1 } }).fetch()[0].pluginIDs
+
+    if(thisLibraryPlugins[this.props.pluginItem.priority].InputsDB == undefined){
+
+      thisLibraryPlugins[this.props.pluginItem.priority].InputsDB = {}
+
+
+    }
+    thisLibraryPlugins[this.props.pluginItem.priority].InputsDB[name] = value
+
+    SettingsDB.upsert(
+      this.props.DB_id,
+      {
+        $set: {
+          pluginIDs: thisLibraryPlugins,
+        }
+      }
+    );
+
+
+  }
+
+
 
     render() {
       return (
@@ -89,6 +146,12 @@ export default class Plugin extends Component {
           <td>
             <span className="buttonTextSize">{this.props.pluginItem.Description != undefined ? this.props.pluginItem.Description : "-"}</span>
           </td>
+
+          <td>
+            <span className="buttonTextSize">{this.props.pluginItem.Inputs != undefined ? this.renderInputs(this.props.pluginItem.Inputs) : "-"}</span>
+          </td>
+
+
 
           <td>
             <span className="buttonTextSize">

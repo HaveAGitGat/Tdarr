@@ -930,11 +930,6 @@ table.pluginTable {
   width: 100%;
 }
 
-.frame{
-
-  height: 500px;
-  overflow-y: auto;
-}
 
 
 
@@ -1130,6 +1125,8 @@ table.workerDetailTable td {
   text-align: left;
 }
 
+
+
 .modalContainer{
 
   border: 2px solid black;
@@ -1140,12 +1137,22 @@ table.workerDetailTable td {
 }
 
 
+.frame{
+
+  height: 500px;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+
 .modalText{
 
   padding-right: 10%;
   padding-left: 10%;
   text-align: left;
 }
+
+
 
 .buttonTextSize{
   color: #e1e1e1;

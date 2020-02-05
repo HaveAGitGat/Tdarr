@@ -1086,9 +1086,6 @@ function main() {
 
     'buildPluginStack'(plugins) {
 
-      //  console.log(string)
-
-
       for (var i = 0; i < plugins.length; i++) {
 
         try {
@@ -2639,16 +2636,18 @@ function main() {
                           var plugin = importFresh(pluginLocalPath)
                           cliLogAdd += plugin.details().id + "\n"
 
-                          console.log('----------------------------')
-                          console.log(plugin.details().Stage)
+
+
+
+                          var pluginInputs = SettingsDB.find({ _id: firstItem.DB }, { sort: { createdAt: 1 } }).fetch()[0].pluginIDs.filter(row => row._id == pluginID)[0].InputsDB
 
                           if (plugin.details().Stage == undefined || plugin.details().Stage == 'Pre-processing') {
-                            var response = plugin.plugin(firstItem, librarySettings, otherArguments);
+                            var response = plugin.plugin(firstItem, librarySettings, pluginInputs, otherArguments);
 
 
                             if (firstItem.lastPluginDetails && firstItem.lastPluginDetails.id === pluginID) {
 
-                              var temp = plugin.onTranscodeSuccess(firstItem, librarySettings, otherArguments);
+                              var temp = plugin.onTranscodeSuccess(firstItem, librarySettings, pluginInputs, otherArguments);
 
                             }
 
@@ -2941,22 +2940,6 @@ function main() {
 
                   try {
 
-
-                    // if(TranscodeDecisionMaker == false){
-
-                    //   var pluginLocalPath = path.join(process.cwd(), `/assets/app/plugins/Local/finalPostProcessing.js`)
-                    //   fsextra.copySync(homePath + `/Tdarr/Plugins/Local/finalPostProcessing.js`, pluginLocalPath)
-
-                    //   var otherArguments = {
-                    //     homePath: homePath
-                    //   }
-
-                    //   var librarySettings = settings[0]
-                    //   var plugin = importFresh(pluginLocalPath)  
-                    //   var response = plugin.finalPostProcessing(firstItem, librarySettings, otherArguments);
-
-                    // }
-
                     var pluginsSelected = settings[0].pluginIDs
 
                     pluginsSelected = pluginsSelected.sort(function (a, b) {
@@ -2996,8 +2979,10 @@ function main() {
                           var plugin = importFresh(pluginLocalPath)
                           cliLogAdd += plugin.details().id + "\n"
 
+                          var pluginInputs = SettingsDB.find({ _id: firstItem.DB }, { sort: { createdAt: 1 } }).fetch()[0].pluginIDs.filter(row => row._id == pluginID)[0].InputsDB
+
                           if (plugin.details().Stage == 'Post-processing') {
-                            var response = plugin.plugin(firstItem, librarySettings, otherArguments);
+                            var response = plugin.plugin(firstItem, librarySettings, pluginInputs, otherArguments);
                           }
 
                         } catch (err) {
@@ -3191,8 +3176,10 @@ function main() {
 
             var plugin = importFresh(pluginLocalPath)
 
+            var pluginInputs = SettingsDB.find({ _id: file.DB }, { sort: { createdAt: 1 } }).fetch()[0].pluginIDs.filter(row => row._id == lastPluginDetails.id)[0].InputsDB
 
-            var response = plugin.onTranscodeError(file, librarySettings, otherArguments);
+
+            var response = plugin.onTranscodeError(file, librarySettings, pluginInputs, otherArguments);
           } catch (err) { console.log('onTranscodeError failed') }
 
           var tempObj = {
@@ -3201,7 +3188,7 @@ function main() {
             processingStatus: false,
             cliLog: message[5],
             lastTranscodeDate: new Date(),
-            lastPluginDetails:'none'
+            lastPluginDetails: 'none'
           }
           Meteor.call('modifyFileDB', 'update', message[2], tempObj, (error, result) => { })
 

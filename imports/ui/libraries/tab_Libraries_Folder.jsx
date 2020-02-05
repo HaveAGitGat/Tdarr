@@ -328,7 +328,10 @@ class Folder extends Component {
 
       var stack = result.map(pluginItem => {
 
-        pluginStackCopy+=`${pluginItem.source},${pluginItem._id},,`
+        pluginStackCopy += `${pluginItem.source},${pluginItem._id},,`
+
+
+
 
 
         return (
@@ -340,9 +343,13 @@ class Folder extends Component {
         );
       });
 
-      this.setState({
-        pluginStackCopyList: pluginStackCopy,
-      });
+      if (pluginStackCopy != this.state.pluginStackCopyList) {
+
+        this.setState({
+          pluginStackCopyList: pluginStackCopy,
+        });
+      }
+
 
       render(
         <table className="pluginStackTable">
@@ -381,6 +388,11 @@ class Folder extends Component {
               <th>
                 <center>
                   <p>Description</p>
+                </center>
+              </th>
+              <th>
+                <center>
+                  <p>Inputs</p>
                 </center>
               </th>
               <th>
