@@ -66,7 +66,16 @@ class Folder extends Component {
       'output',
       this.props.libraryItem._id + 'o'
     );
+
+    this.interval2 = setInterval(() =>this.getServerTime(), 1000);
   };
+
+  getServerTime = () => {
+    Meteor.call('getTimeNow', (error, result) => {
+      render(result, document.getElementById('serverTime'));
+    })
+
+  }
 
   toggleFolderWatch = status => {
     Meteor.call('toggleFolderWatch', status, this.props.libraryItem._id, false);
@@ -368,6 +377,11 @@ class Folder extends Component {
               <th>
                 <center>
                   <p>id</p>
+                </center>
+              </th>
+              <th>
+                <center>
+                  <p>Stage</p>
                 </center>
               </th>
               <th>
@@ -2018,6 +2032,9 @@ SettingsDB.insert(thisLibrary)
               }
             >
               <p>Schedule: </p>
+
+
+              <p><b>Server time</b>:<span id='serverTime'></span></p>
 
               <Button
                 variant="outline-light"
