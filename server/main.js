@@ -2643,7 +2643,14 @@ function main() {
                           var pluginInputs = SettingsDB.find({ _id: firstItem.DB }, { sort: { createdAt: 1 } }).fetch()[0].pluginIDs.filter(row => row._id == pluginID)[0].InputsDB
 
                           if (plugin.details().Stage == undefined || plugin.details().Stage == 'Pre-processing') {
+
                             var response = plugin.plugin(firstItem, librarySettings, pluginInputs, otherArguments);
+                            if(response.removeFromDB == true){
+                              Meteor.call('modifyFileDB', 'removeOne', response.file._id, (error, result) => { })
+                            }
+                            if(response.updateDB == true){
+                              Meteor.call('modifyFileDB', 'update', response.file._id, response.file, (error, result) => { })
+                            }
 
 
                             if (firstItem.lastPluginDetails && firstItem.lastPluginDetails.id === pluginID) {
@@ -2651,6 +2658,13 @@ function main() {
                               try {
 
                                 var temp = plugin.onTranscodeSuccess(firstItem, librarySettings, pluginInputs, otherArguments);
+
+                                if(temp.removeFromDB == true){
+                                  Meteor.call('modifyFileDB', 'removeOne', temp.file._id, (error, result) => { })
+                                }
+                                if(temp.updateDB == true){
+                                  Meteor.call('modifyFileDB', 'update', temp.file._id, temp.file, (error, result) => { })
+                                }
 
                               } catch (err) {}
                             }
@@ -2987,6 +3001,12 @@ function main() {
 
                           if (plugin.details().Stage == 'Post-processing') {
                             var response = plugin.plugin(firstItem, librarySettings, pluginInputs, otherArguments);
+                            if(response.removeFromDB == true){
+                              Meteor.call('modifyFileDB', 'removeOne', response.file._id, (error, result) => { })
+                            }
+                            if(response.updateDB == true){
+                              Meteor.call('modifyFileDB', 'update', response.file._id, response.file, (error, result) => { })
+                            } 
                           }
 
                         } catch (err) {
@@ -3192,6 +3212,12 @@ function main() {
 
 
             var response = plugin.onTranscodeError(file, librarySettings, pluginInputs, otherArguments);
+            if(response.removeFromDB == true){
+              Meteor.call('modifyFileDB', 'removeOne', response.file._id, (error, result) => { })
+            }
+            if(response.updateDB == true){
+              Meteor.call('modifyFileDB', 'update', response.file._id, response.file, (error, result) => { })
+            }
           } catch (err) { console.log('onTranscodeError failed') }
 
           var tempObj = {
