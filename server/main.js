@@ -3111,11 +3111,18 @@ function main() {
 
       if (message[1] == "ETAUpdate") {
 
-        upsertWorker(message[0], {
-          ETA: message[2],
-          outputFileSizeInGbytes: message[3],
-          estSize: message[4],
-        })
+        if(message[2] != 'Copying'){
+          upsertWorker(message[0], {
+            ETA: message[2],
+            outputFileSizeInGbytes: message[3],
+            estSize: message[4],
+          })
+        }else{
+          upsertWorker(message[0], {
+            ETA: message[2],
+          })
+        }
+
       }
 
       if (message[1] == "repair_worker_percentage") {

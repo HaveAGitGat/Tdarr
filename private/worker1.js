@@ -897,6 +897,13 @@ function workerNotEncounteredError() {
 
         try {
 
+            var message = [
+                workerNumber,
+                "ETAUpdate",
+                "Copying",
+            ];
+            process.send(message);
+
 
             if (folderToFolderConversionEnabled == true) {
 
