@@ -129,6 +129,10 @@ export default class Plugin extends Component {
             <span className="buttonTextSize">{this.props.pluginItem._id}</span>
           </td>
 
+          <td>
+            <span className="buttonTextSize">{this.props.pluginItem.Stage}</span>
+          </td>
+
           
           <td>
             <span className="buttonTextSize">{this.props.pluginItem.Type}</span>
