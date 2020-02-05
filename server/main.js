@@ -2623,6 +2623,7 @@ function main() {
                           lastPluginDetails = {
                             source: pluginsSelected[i].source,
                             id: pluginID,
+                            number:(i+1)+'/'+pluginsSelected.length
                           }
 
 
@@ -2647,8 +2648,11 @@ function main() {
 
                             if (firstItem.lastPluginDetails && firstItem.lastPluginDetails.id === pluginID) {
 
-                              var temp = plugin.onTranscodeSuccess(firstItem, librarySettings, pluginInputs, otherArguments);
+                              try {
 
+                                var temp = plugin.onTranscodeSuccess(firstItem, librarySettings, pluginInputs, otherArguments);
+
+                              } catch (err) {}
                             }
 
 
@@ -3067,6 +3071,7 @@ function main() {
                     CLIType: CLIType,
                     preset: preset,
                     ETA: "Calculating...",
+                    lastPluginDetails
                   })
 
 
