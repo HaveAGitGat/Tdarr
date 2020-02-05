@@ -180,6 +180,24 @@ class App extends Component {
 
           }, {
 
+              Header: () => (
+                <div className="pluginTableHeader">
+                  <p>Stage</p>
+                </div>
+              ),
+              accessor: 'Stage',
+              width: 100,
+              getProps: (state, rowInfo, column) => {
+                return {
+                  style: {
+                    color: "#e1e1e1",
+                    fontSize: "14px",
+                  },
+                }
+              }
+
+            }, {
+
             Header: () => (
               <div className="pluginTableHeader">
                 <p>Type</p>
