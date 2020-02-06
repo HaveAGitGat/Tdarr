@@ -1467,7 +1467,7 @@ function main() {
 
       //arrayOrPath: array or string
       //arrayOrPathSwitch:   0 (array) or 1 (path)
-      //mode: 0 (scan for new files only) or 1 (full fresh scan) or 2 (array of files coming in from folder watcher)
+      //mode: 0 (scan for new files only) or 1 (full fresh scan) or 3 (array of files coming in from folder watcher)
       //filePropertiesToAdd: obj of properties to add to newly scanned files
 
 
@@ -2478,9 +2478,6 @@ function main() {
 
 
 
-
-                var fileToProcess = firstItem.file
-                var fileID = firstItem._id
                 var settings = SettingsDB.find({ _id: firstItem.DB }, { sort: { createdAt: 1 } }).fetch()
 
                 var ffmpegNVENCBinary = (GlobalSettingsDB.find({}, {}).fetch())[0].ffmpegNVENCBinary
@@ -2547,7 +2544,7 @@ function main() {
                   var messageOut = [
                     "queueNumber",
                     mode, //update
-                    fileToProcess,
+                    firstItem.file,
                     inputFolderStem,
                     outputFolder,
                     container,
@@ -2646,7 +2643,10 @@ function main() {
                               Meteor.call('modifyFileDB', 'removeOne', response.file._id, (error, result) => { })
                             }
                             if (response.updateDB == true) {
-                              Meteor.call('modifyFileDB', 'update', response.file._id, response.file, (error, result) => { })
+                              Meteor.call('modifyFileDB', 'removeOne', response.file._id, (error, result) => { })
+                              //Meteor.call('modifyFileDB', 'update', response.file._id, response.file, (error, result) => { })
+                              Meteor.call('modifyFileDB', 'insert', response.file._id, response.file, (error, result) => { })
+                              firstItem = { ...firstItem, ...response.file };
                             }
 
 
@@ -2661,7 +2661,10 @@ function main() {
                                   Meteor.call('modifyFileDB', 'removeOne', temp.file._id, (error, result) => { })
                                 }
                                 if (temp.updateDB == true) {
-                                  Meteor.call('modifyFileDB', 'update', temp.file._id, temp.file, (error, result) => { })
+                                  Meteor.call('modifyFileDB', 'removeOne', temp.file._id, (error, result) => { })
+                                  //Meteor.call('modifyFileDB', 'update', temp.file._id, temp.file, (error, result) => { })
+                                  Meteor.call('modifyFileDB', 'insert', temp.file._id, temp.file, (error, result) => { })
+                                  firstItem = { ...firstItem, ...temp.file };
                                 }
 
                               } catch (err) { }
@@ -2913,7 +2916,7 @@ function main() {
                   var messageOut = [
                     "queueNumber",
                     mode, //update
-                    fileToProcess,
+                    firstItem.file,
                     inputFolderStem,
                     outputFolder,
                     container,
@@ -2947,6 +2950,8 @@ function main() {
 
 
                   //post processing script
+
+                  if (settings[0].decisionMaker.pluginFilter == true) {
 
 
                   try {
@@ -2998,7 +3003,10 @@ function main() {
                               Meteor.call('modifyFileDB', 'removeOne', response.file._id, (error, result) => { })
                             }
                             if (response.updateDB == true) {
-                              Meteor.call('modifyFileDB', 'update', response.file._id, response.file, (error, result) => { })
+                              Meteor.call('modifyFileDB', 'removeOne', response.file._id, (error, result) => { })
+                              //Meteor.call('modifyFileDB', 'update', response.file._id, response.file, (error, result) => { })
+                              Meteor.call('modifyFileDB', 'insert', response.file._id, response.file, (error, result) => { })
+                              firstItem = { ...firstItem, ...response.file };
                             }
                           }
 
@@ -3013,13 +3021,14 @@ function main() {
                     console.log(err)
                     console.log('final post processing failed')
                   }
+                }
 
 
                   //TranscodeDecisionMaker status first depends on if error encountered during plugins, else depends on
                   // if file has already been processed or not (no oldSize if it hasn't been processed)
 
                   var tempObj = {
-                    _id: fileToProcess,
+                    _id: firstItem.file,
                     TranscodeDecisionMaker: TranscodeDecisionMaker != false ? TranscodeDecisionMaker : firstItem.oldSize ? "Transcode success" : "Not required",
                     processingStatus: false,
                     cliLog: cliLogAdd,
@@ -3028,7 +3037,7 @@ function main() {
                     lastPluginDetails: 'none'
 
                   }
-                  Meteor.call('modifyFileDB', 'update', fileToProcess, tempObj, (error, result) => { })
+                  Meteor.call('modifyFileDB', 'update', firstItem.file, tempObj, (error, result) => { })
 
 
 
@@ -3051,7 +3060,7 @@ function main() {
 
 
                   try {
-                    var sourcefileSizeInGbytes = (((fs.statSync(fileToProcess)).size) / 1000000000.0);
+                    var sourcefileSizeInGbytes = (((fs.statSync(firstItem.file)).size) / 1000000000.0);
                   } catch (err) {
                     console.log(err.stack)
                     var sourcefileSizeInGbytes = "Error"
@@ -3072,7 +3081,7 @@ function main() {
 
                   upsertWorker(message[0], {
                     _id: message[0],
-                    file: fileToProcess,
+                    file: firstItem.file,
                     mode: workerType,
                     modeType: mode,
                     idle: false,
@@ -3090,7 +3099,7 @@ function main() {
 
                   workers[message[0]].send(messageOut);
 
-                  workerStatus[message[0]] = [fileToProcess + 0 + "", 0]
+                  workerStatus[message[0]] = [firstItem.file + 0 + "", 0]
 
 
                 }
@@ -3209,7 +3218,10 @@ function main() {
               Meteor.call('modifyFileDB', 'removeOne', response.file._id, (error, result) => { })
             }
             if (response.updateDB == true) {
-              Meteor.call('modifyFileDB', 'update', response.file._id, response.file, (error, result) => { })
+              Meteor.call('modifyFileDB', 'removeOne', response.file._id, (error, result) => { })
+              //Meteor.call('modifyFileDB', 'update', response.file._id, response.file, (error, result) => { })
+              Meteor.call('modifyFileDB', 'insert', response.file._id, response.file, (error, result) => { })
+              message[2] = response.file._id;
             }
           } catch (err) { console.log('onTranscodeError failed') }
 
