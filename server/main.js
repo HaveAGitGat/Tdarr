@@ -58,7 +58,7 @@ var backupStatus = false
 
 var hasFilesDBChanged = true
 
-var workerLaunched = false
+var workerLaunched = 0
 
 
 
@@ -1425,15 +1425,11 @@ function main() {
     'launchWorker'(workerType, number) {
 
 
-      if (workerLaunched === false) {
-
-        workerLaunched = true
+      
 
         for (var i = 1; i <= number; i++) {
           launchWorkerModule(workerType)
-
         }
-      }
 
 
 
@@ -2623,7 +2619,7 @@ function main() {
                           lastPluginDetails = {
                             source: pluginsSelected[i].source,
                             id: pluginID,
-                            number:(i+1)+'/'+pluginsSelected.length
+                            number: (i + 1) + '/' + pluginsSelected.length
                           }
 
 
@@ -2642,31 +2638,33 @@ function main() {
 
                           var pluginInputs = SettingsDB.find({ _id: firstItem.DB }, { sort: { createdAt: 1 } }).fetch()[0].pluginIDs.filter(row => row._id == pluginID)[0].InputsDB
 
+                          //run if pre-processing plugin
                           if (plugin.details().Stage == undefined || plugin.details().Stage == 'Pre-processing') {
 
                             var response = plugin.plugin(firstItem, librarySettings, pluginInputs, otherArguments);
-                            if(response.removeFromDB == true){
+                            if (response.removeFromDB == true) {
                               Meteor.call('modifyFileDB', 'removeOne', response.file._id, (error, result) => { })
                             }
-                            if(response.updateDB == true){
+                            if (response.updateDB == true) {
                               Meteor.call('modifyFileDB', 'update', response.file._id, response.file, (error, result) => { })
                             }
 
 
+                            //run post processing functions inside - pre-processing plugins (last run plugin ID must match)
                             if (firstItem.lastPluginDetails && firstItem.lastPluginDetails.id === pluginID) {
 
                               try {
 
                                 var temp = plugin.onTranscodeSuccess(firstItem, librarySettings, pluginInputs, otherArguments);
 
-                                if(temp.removeFromDB == true){
+                                if (temp.removeFromDB == true) {
                                   Meteor.call('modifyFileDB', 'removeOne', temp.file._id, (error, result) => { })
                                 }
-                                if(temp.updateDB == true){
+                                if (temp.updateDB == true) {
                                   Meteor.call('modifyFileDB', 'update', temp.file._id, temp.file, (error, result) => { })
                                 }
 
-                              } catch (err) {}
+                              } catch (err) { }
                             }
 
 
@@ -2695,12 +2693,7 @@ function main() {
                               break
 
                             }
-
-
                           }
-
-
-
 
                         } catch (err) {
                           console.log(err)
@@ -3001,12 +2994,12 @@ function main() {
 
                           if (plugin.details().Stage == 'Post-processing') {
                             var response = plugin.plugin(firstItem, librarySettings, pluginInputs, otherArguments);
-                            if(response.removeFromDB == true){
+                            if (response.removeFromDB == true) {
                               Meteor.call('modifyFileDB', 'removeOne', response.file._id, (error, result) => { })
                             }
-                            if(response.updateDB == true){
+                            if (response.updateDB == true) {
                               Meteor.call('modifyFileDB', 'update', response.file._id, response.file, (error, result) => { })
-                            } 
+                            }
                           }
 
                         } catch (err) {
@@ -3113,7 +3106,7 @@ function main() {
         //check if this is worker's first request
         if (message[3] == true) {
           //reset worker launch status
-          workerLaunched = false
+          workerLaunched--
         }
 
 
@@ -3136,13 +3129,13 @@ function main() {
 
       if (message[1] == "ETAUpdate") {
 
-        if(message[2] != 'Copying'){
+        if (message[2] != 'Copying') {
           upsertWorker(message[0], {
             ETA: message[2],
             outputFileSizeInGbytes: message[3],
             estSize: message[4],
           })
-        }else{
+        } else {
           upsertWorker(message[0], {
             ETA: message[2],
           })
@@ -3212,10 +3205,10 @@ function main() {
 
 
             var response = plugin.onTranscodeError(file, librarySettings, pluginInputs, otherArguments);
-            if(response.removeFromDB == true){
+            if (response.removeFromDB == true) {
               Meteor.call('modifyFileDB', 'removeOne', response.file._id, (error, result) => { })
             }
-            if(response.updateDB == true){
+            if (response.updateDB == true) {
               Meteor.call('modifyFileDB', 'update', response.file._id, response.file, (error, result) => { })
             }
           } catch (err) { console.log('onTranscodeError failed') }
@@ -4511,14 +4504,24 @@ function main() {
 
 
       if (gDiff >= 1 && generalFiles.length > 0) {
-        Meteor.call('launchWorker', "general", 1, function (error, result) { });
+        if (workerLaunched === 0) {
+          workerLaunched++
+          Meteor.call('launchWorker', "general", 1, function (error, result) { });
+        }
+
       }
       if (tDiff >= 1 && transcodeFiles.length > 0) {
-        Meteor.call('launchWorker', "transcode", 1, function (error, result) { });
+        if (workerLaunched === 0) {
+          workerLaunched++
+          Meteor.call('launchWorker', "transcode", 1, function (error, result) { });
+        }
       }
 
       if (hDiff >= 1 && healthcheckFiles.length > 0) {
-        Meteor.call('launchWorker', "healthcheck", 1, function (error, result) { });
+        if (workerLaunched === 0) {
+          workerLaunched++
+          Meteor.call('launchWorker', "healthcheck", 1, function (error, result) { });
+        }
       }
 
 
@@ -4676,11 +4679,5 @@ function main() {
     }
   });
   initialising = false;
-
-
-
-
-
-
 
 }
