@@ -63,9 +63,9 @@ updateConsole(scannerID, "Online.")
 var path = require("path");
 var fs = require('fs');
 
-if (fs.existsSync(path.join(process.cwd() , "/npm"))) {
+if (fs.existsSync(path.join(process.cwd(), "/npm"))) {
 
-    var rootModules = path.join(process.cwd() , '/npm/node_modules/')
+    var rootModules = path.join(process.cwd(), '/npm/node_modules/')
 
 } else {
     var rootModules = ''
@@ -229,7 +229,7 @@ if (arrayOrPathSwitch == 1) {
 
                     } else {
 
-                        if (checkContainer(fullPath) == true && isInIgnoredFolder(fullPath) == false ) {
+                        if (checkContainer(fullPath) == true && isInIgnoredFolder(fullPath) == false) {
 
 
                             foundCounter++
@@ -291,11 +291,11 @@ if (arrayOrPathSwitch == 1) {
 
 
 
-function isInIgnoredFolder(filePath){
+function isInIgnoredFolder(filePath) {
 
-    for(var i = 0; i < foldersToIgnore.length; i++){
+    for (var i = 0; i < foldersToIgnore.length; i++) {
 
-        if(foldersToIgnore[i].length >= 1 && filePath.includes(foldersToIgnore[i])){
+        if (foldersToIgnore[i].length >= 1 && filePath.includes(foldersToIgnore[i])) {
 
             return true
 
@@ -447,10 +447,10 @@ function ffprobeLaunch(filesToScan) {
 
                                     if (process.platform == 'win32') {
 
-                                        if (fs.existsSync(path.join(process.cwd() , "/npm"))) {
-                                            CCExtractorPath = path.join(process.cwd() , '/assets/app/ccextractor/ccextractorwin.exe')
+                                        if (fs.existsSync(path.join(process.cwd(), "/npm"))) {
+                                            CCExtractorPath = path.join(process.cwd(), '/assets/app/ccextractor/ccextractorwin.exe')
                                         } else {
-                                            CCExtractorPath = path.join(process.cwd() , '/private/ccextractor/ccextractorwin.exe')
+                                            CCExtractorPath = path.join(process.cwd(), '/private/ccextractor/ccextractorwin.exe')
                                         }
 
                                         workerCommand = CCExtractorPath + " -debug  -stdout -endat 01:00 --screenfuls 1 -out=null \"" + filepath + "\""
@@ -458,10 +458,10 @@ function ffprobeLaunch(filesToScan) {
                                     }
 
                                     if (process.platform == 'linux') {
-                                        if (fs.existsSync(path.join(process.cwd() , "/npm"))) {
-                                            CCExtractorPath = path.join(process.cwd() , '/assets/app/ccextractor/ccextractor')
+                                        if (fs.existsSync(path.join(process.cwd(), "/npm"))) {
+                                            CCExtractorPath = path.join(process.cwd(), '/assets/app/ccextractor/ccextractor')
                                         } else {
-                                            CCExtractorPath = path.join(process.cwd() , '/private/ccextractor/ccextractor')
+                                            CCExtractorPath = path.join(process.cwd(), '/private/ccextractor/ccextractor')
                                         }
 
                                         var filepathUnix = filepath.replace(/'/g, '\'\"\'\"\'');
@@ -479,11 +479,11 @@ function ffprobeLaunch(filesToScan) {
 
 
 
-                                 //  console.log(workerCommand)
+                                    //  console.log(workerCommand)
 
                                     var CCExtractorOutput = ""
 
-                                  // console.log("Checking for captions")
+                                    // console.log("Checking for captions")
 
                                     updateConsole(scannerID, `Checking for captions`)
 
@@ -543,22 +543,22 @@ function ffprobeLaunch(filesToScan) {
 
                                     });
 
-                                   // setTimeout(killCCExtractor, 1000);
+                                    // setTimeout(killCCExtractor, 1000);
 
-                                    function killCCExtractor(){
+                                    function killCCExtractor() {
                                         var infoArray = [
                                             "exitThread",
                                             "itemCancelled",
                                         ];
 
-                                        if(killFlag == false){
+                                        if (killFlag == false) {
 
-                                        try {
-                                            if (shellThreadModule != "") {
-                                                shellThreadModule.send(infoArray);
-                                            }
-                                        } catch (err) { }
-                                    }
+                                            try {
+                                                if (shellThreadModule != "") {
+                                                    shellThreadModule.send(infoArray);
+                                                }
+                                            } catch (err) { }
+                                        }
 
                                     }
 
@@ -601,11 +601,8 @@ function ffprobeLaunch(filesToScan) {
 
 
                                 //
-                            }
-                            )
-
+                            })
                     }
-
                 });
             }
         } catch (err) {
@@ -622,11 +619,6 @@ function ffprobeLaunch(filesToScan) {
 
 
         }
-
-
-
-
-
     }
 
 
@@ -743,7 +735,15 @@ function ffprobeLaunch(filesToScan) {
 
         //if (!!("video_codec_name" in thisFileObject)) {
 
-        if (jsonString.includes('"codec_type":"video"') && thisFileObject.meta.MIMEType.includes('video')) {
+
+        try{
+            var exifToolVerdict = thisFileObject.meta.MIMEType.includes('video')
+        }catch(err){
+            var exifToolVerdict = true
+        }
+
+
+        if (jsonString.includes('"codec_type":"video"') && exifToolVerdict === true) {
 
             updateConsole(scannerID, `Tagging video res:${filepath}`)
 
@@ -811,24 +811,9 @@ function ffprobeLaunch(filesToScan) {
         }
 
 
-        //   thisFileObject.cliLog = "No info"
-
         filePropertiesToAdd.cliLog += "\n"
 
-        // console.log(JSON.stringify(thisFileObject))
-
-
-
-        //
-
-
         addFileToDB(filepath, thisFileObject, filePropertiesToAdd)
-
-
-        //
-
-
-
 
     }
 }
@@ -846,6 +831,7 @@ function addFileToDB(filePath, FileObject, obj) {
     FileObject._id = filePath
     FileObject.file = filePath
     FileObject.DB = DB_id
+    FileObject.lastPluginDetails = 'none'
 
     FileObject.processingStatus = false
     FileObject.createdAt = new Date()
@@ -891,9 +877,6 @@ function addFileToDB(filePath, FileObject, obj) {
             streams = `<table className="streamsTable"><tbody>${streams}</tbody></table>`
 
             histoyString += streams
-
-
-
 
             return histoyString
 

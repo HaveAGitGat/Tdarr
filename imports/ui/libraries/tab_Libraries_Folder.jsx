@@ -4,6 +4,8 @@ import {Meteor} from 'meteor/meteor';
 import {withTracker} from 'meteor/react-meteor-data';
 import React, {Component} from 'react';
 import {Button, Dropdown} from 'react-bootstrap';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+import Modal from "reactjs-popup";
 import ReactDOM, {render} from 'react-dom';
 import InputRange from 'react-input-range';
 import ToggleButton from 'react-toggle-button';
@@ -34,6 +36,7 @@ class Folder extends Component {
       cacheBrowser: false,
       outputBrowser: false,
       navItemSelected: 'navSourceFolder',
+      pluginStackCopyList:',,'
     };
 
     this.scanFiles = this.scanFiles.bind(this);
@@ -63,7 +66,16 @@ class Folder extends Component {
       'output',
       this.props.libraryItem._id + 'o'
     );
+
+    this.interval2 = setInterval(() =>this.getServerTime(), 1000);
   };
+
+  getServerTime = () => {
+    Meteor.call('getTimeNow', (error, result) => {
+      render(result, document.getElementById('serverTime'));
+    })
+
+  }
 
   toggleFolderWatch = status => {
     Meteor.call('toggleFolderWatch', status, this.props.libraryItem._id, false);
@@ -321,7 +333,16 @@ class Folder extends Component {
         return a.priority - b.priority;
       });
 
+      var pluginStackCopy = ''
+
       var stack = result.map(pluginItem => {
+
+        pluginStackCopy += `${pluginItem.source},${pluginItem._id},,`
+
+
+
+
+
         return (
           <Plugin
             key={pluginItem._id}
@@ -330,6 +351,14 @@ class Folder extends Component {
           />
         );
       });
+
+      if (pluginStackCopy != this.state.pluginStackCopyList) {
+
+        this.setState({
+          pluginStackCopyList: pluginStackCopy,
+        });
+      }
+
 
       render(
         <table className="pluginStackTable">
@@ -352,6 +381,11 @@ class Folder extends Component {
               </th>
               <th>
                 <center>
+                  <p>Stage</p>
+                </center>
+              </th>
+              <th>
+                <center>
                   <p>Type</p>
                 </center>
               </th>
@@ -368,6 +402,11 @@ class Folder extends Component {
               <th>
                 <center>
                   <p>Description</p>
+                </center>
+              </th>
+              <th>
+                <center>
+                  <p>Inputs</p>
                 </center>
               </th>
               <th>
@@ -597,18 +636,12 @@ class Folder extends Component {
   addPlugin(event) {
     event.preventDefault();
 
-    const text = ReactDOM.findDOMNode(this.refs.addPluginText).value.trim();
+   console.log(event.target.name)
 
-    var thisLibraryPlugins = SettingsDB.find(
-      {_id: this.props.libraryItem._id},
-      {sort: {createdAt: 1}}
-    ).fetch()[0].pluginIDs;
 
-    var arr = thisLibraryPlugins.map(row => row._id);
+    if(event.target.name == 'Single'){
+      const text = ReactDOM.findDOMNode(this.refs.addPluginText).value.trim();
 
-    if (arr.includes(text)) {
-      alert('Plugin is already in stack!');
-    } else {
       var source;
 
       if (this.props.libraryItem.pluginCommunity == true) {
@@ -625,7 +658,59 @@ class Folder extends Component {
         this.props.libraryItem.pluginIDs.length
       );
       ReactDOM.findDOMNode(this.refs.addPluginText).value = '';
+
+
+    }else  if(event.target.name == 'Stack'){
+
+      const text = ReactDOM.findDOMNode(this.refs.addStackText).value.trim();
+
+      var arr = text.split(',,') 
+
+      console.log(arr)
+
+      var priority = this.props.libraryItem.pluginIDs.length
+
+      for(var i = 0; i < arr.length; i++){
+
+        var plugin = arr[i].split(',')
+
+
+        //check plugin text is valid
+        if(plugin.length == 2 && (plugin[0] === 'Local' || plugin[0] === 'Community')){
+
+          Meteor.call(
+            'addPluginInclude',
+            this.props.libraryItem._id,
+            plugin[1],
+            plugin[0],
+            priority,
+          );
+
+          priority++
+         
+        }
+        ReactDOM.findDOMNode(this.refs.addStackText).value = '';
+      }
     }
+
+   
+
+    // var thisLibraryPlugins = SettingsDB.find(
+    //   {_id: this.props.libraryItem._id},
+    //   {sort: {createdAt: 1}}
+    // ).fetch()[0].pluginIDs;
+
+    // var arr = thisLibraryPlugins.map(row => row._id);
+
+    // if (arr.includes(text)) {
+    //   alert('Plugin is already in stack!');
+    // } else {
+
+    // }
+
+
+
+   
   }
 
   addVideoCodecExclude(event) {
@@ -1584,7 +1669,7 @@ SettingsDB.insert(thisLibrary)
                   />
                 </p>
 
-                <form onSubmit={this.addPlugin.bind(this)}>
+                <form onSubmit={this.addPlugin.bind(this)} name='Single'>
                   <input
                     type="text"
                     ref="addPluginText"
@@ -1619,6 +1704,39 @@ SettingsDB.insert(thisLibrary)
                 <p></p>
                 <p></p>
 
+                <CopyToClipboard text={this.state.pluginStackCopyList}>
+                  <Button variant="outline-light" ><span className="buttonTextSize">Copy stack</span></Button>
+                </CopyToClipboard>
+
+                <Modal
+                  trigger={<Button variant="outline-light" ><span className="buttonTextSize">Add stack</span></Button>}
+                  modal
+                  closeOnDocumentClick
+                >
+                  <div className="modalContainer">
+                    <div className="frame">
+                      <div className="scroll">
+                        <div className="modalText">
+
+
+
+                          <form onSubmit={this.addPlugin.bind(this)} name='Stack'>
+                            <input
+                              type="text"
+                              ref="addStackText"
+                              placeholder="Paste stack and press Enter↵"
+                              className="folderPaths"
+                            />
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Modal>
+
+                <p></p>
+                <p></p>
+
                 <center>
                   <p>
                     See the 'Plugins' tab guide for how the plugin stack works and for creating plugins.<b>It is best practice to put video transcode plugins at the top of your stack.</b>
@@ -1629,8 +1747,11 @@ SettingsDB.insert(thisLibrary)
                 <p></p>
 
                 <center>
+
                   {this.renderPlugins()}
-                  <div id={this.props.libraryItem._id + 'PluginStack'}></div>
+                  <div id={this.props.libraryItem._id + 'PluginStack'} className="scheduleContainer">
+
+                  </div>
                 </center>
 
                 {/* <input type="text" className="folderPaths" name="pluginID" defaultValue={this.props.libraryItem.pluginID} onChange={this.handleChange}></input> */}
@@ -1914,6 +2035,9 @@ SettingsDB.insert(thisLibrary)
               }
             >
               <p>Schedule: </p>
+
+
+              <p><b>Server time</b>:<span id='serverTime'></span></p>
 
               <Button
                 variant="outline-light"

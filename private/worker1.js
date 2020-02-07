@@ -79,7 +79,7 @@ var processFile
 var librarySettings
 var ffmpegNVENCBinary
 var TranscodeDecisionMaker
-
+var lastPluginDetails
 
 
 
@@ -197,6 +197,7 @@ process.on('message', (m) => {
         librarySettings = m[16]
         ffmpegNVENCBinary = m[17]
         TranscodeDecisionMaker = m[18]
+        lastPluginDetails = m[19]
 
 
 
@@ -289,10 +290,12 @@ process.on('message', (m) => {
         if (fs.existsSync(path.join(process.cwd() + "/npm"))) {
 
             var handBrakeCLIPath = path.join(process.cwd() , '/assets/app/HandBrakeCLI.exe')
-            var ffmpegPathLinux = path.join(process.cwd() , '/assets/app/ffmpeg/ffmpeg')
+            var ffmpegPathLinux345 = path.join(process.cwd(), '/assets/app/ffmpeg/ffmpeg345/ffmpeg')
+            var ffmpegPathLinux42 = path.join(process.cwd(), '/assets/app/ffmpeg/ffmpeg42/ffmpeg')
         } else {
             var handBrakeCLIPath = path.join(process.cwd() , '/private/HandBrakeCLI.exe')
-            var ffmpegPathLinux = path.join(process.cwd() , '/private/ffmpeg/ffmpeg')
+            var ffmpegPathLinux345 = path.join(process.cwd(), '/private/ffmpeg/ffmpeg345/ffmpeg')
+            var ffmpegPathLinux42 = path.join(process.cwd(), '/private/ffmpeg/ffmpeg42/ffmpeg')
         }
 
 
@@ -332,7 +335,7 @@ process.on('message', (m) => {
 
         } else if (process.platform == 'linux' && FFmpegMode == true) {
 
-            workerCommand = ffmpegPathUnix + " " + preset0Unix + " -i '" + currentSourceLineUnix + "' " + preset1Unix + " '" + currentDestinationLineUnix + "' "
+            workerCommand = ffmpegPathLinux42 + " " + preset0Unix + " -i '" + currentSourceLineUnix + "' " + preset1Unix + " '" + currentDestinationLineUnix + "' "
 
         }
 
@@ -350,10 +353,9 @@ process.on('message', (m) => {
             if (process.platform == 'linux' && handBrakeMode == true) {
                 //  workerCommand = "/usr/local/bin/HandBrakeCLI -i '" + currentSourceLineUnix + "' -o '" + currentDestinationLineUnix + "' " + presetUnix;
             } else if (process.platform == 'linux' && FFmpegMode == true) {
-                workerCommand = ffmpegPathLinux + " " + preset0Unix + " -i '" + currentSourceLineUnix + "' " + preset1Unix + " '" + currentDestinationLineUnix + "' "
+                workerCommand = ffmpegPathLinux345 + " " + preset0Unix + " -i '" + currentSourceLineUnix + "' " + preset1Unix + " '" + currentDestinationLineUnix + "' "
 
             }
-
         }
 
 
@@ -372,8 +374,8 @@ process.on('message', (m) => {
         errorLogFull += workerCommand + "\r\n"
 
 
-        ///currentFileObject.ffProbeRead == "success"
 
+        //What to do if folder to folder conversion is enabled but file does not need to be transcoded
 
         if (folderToFolderConversionEnabled == true && mode != "healthcheck" && processFile == false) {
 
@@ -457,7 +459,8 @@ process.on('message', (m) => {
                     oldSize: currentFileObject.oldSize ? currentFileObject.oldSize : sourcefileSizeInGbytes,
                     newSize: sourcefileSizeInGbytes,
                     bumped: false,
-                    history: currentFileObject.history == undefined ? "" : currentFileObject.history
+                    history: currentFileObject.history == undefined ? "" : currentFileObject.history,
+                    lastPluginDetails:'none'
                 }
 
                 var message = [
@@ -469,6 +472,7 @@ process.on('message', (m) => {
                     currentSourceLine,
                     JSON.stringify(filePropertiesToAdd),
                     sizeDiffGB,
+                
                 ];
                 process.send(message);
 
@@ -484,13 +488,16 @@ process.on('message', (m) => {
                 updateConsole(workerNumber, "Deleting original/moving new file unsuccessful:" + currentSourceLine + " to " + finalFilePath + " err:" + err)
 
 
+                // transcode process error moving/renaming file (during folder to folder conversion)
                 var message = [
                     workerNumber,
                     "error",
                     currentSourceLine,
                     settingsDBIndex,
                     mode,
-                    errorLogFull
+                    errorLogFull,
+                    lastPluginDetails,
+                    currentFileObject,
 
                 ];
                 process.send(message);
@@ -728,14 +735,16 @@ process.on('message', (m) => {
 
                         updateConsole(workerNumber, "Tdarr ALERT: NO OUTPUT FILE PRODUCED" + currentDestinationLine)
 
-
+                        // transcode process error 
                         var message = [
                             workerNumber,
                             "error",
                             currentSourceLine,
                             settingsDBIndex,
                             mode,
-                            errorLogFull
+                            errorLogFull,
+                            lastPluginDetails,
+                            currentFileObject,
 
                         ];
                         process.send(message);
@@ -813,20 +822,11 @@ function checkifQueuePause(initialRequest) {
 
 
 
-//path.join(__dirname, workerPath )
-
-
-
-
-// Workers.remove({workerNumber})
-
 
 function getFFmpegCLIPath() {
 
 
     var ffmpegPath = require(rootModules + '@ffmpeg-installer/ffmpeg').path;
-
-
     return ffmpegPath
 
 }
@@ -896,6 +896,13 @@ function workerNotEncounteredError() {
 
 
         try {
+
+            var message = [
+                workerNumber,
+                "ETAUpdate",
+                "Copying",
+            ];
+            process.send(message);
 
 
             if (folderToFolderConversionEnabled == true) {
@@ -1025,7 +1032,8 @@ function workerNotEncounteredError() {
                     oldSize: currentFileObject.oldSize ? currentFileObject.oldSize : sourcefileSizeInGbytes,
                     newSize: destfileSizeInGbytes,
                     bumped: new Date(),
-                    history: currentFileObject.history == undefined ? "" : currentFileObject.history
+                    history: currentFileObject.history == undefined ? "" : currentFileObject.history,
+                    lastPluginDetails:lastPluginDetails,
                 }
 
             } else {
@@ -1038,7 +1046,8 @@ function workerNotEncounteredError() {
                     oldSize: currentFileObject.oldSize ? currentFileObject.oldSize : sourcefileSizeInGbytes,
                     newSize: destfileSizeInGbytes,
                     bumped: false,
-                    history: currentFileObject.history == undefined ? "" : currentFileObject.history
+                    history: currentFileObject.history == undefined ? "" : currentFileObject.history,
+                    lastPluginDetails:lastPluginDetails,
                 }
             }
 
@@ -1072,14 +1081,16 @@ function workerNotEncounteredError() {
 
             updateConsole(workerNumber, "Deleting original file and moving new file unsuccessful:" + currentDestinationLine + " to " + finalFilePath + " err:" + err)
 
-
+            // transcode process error moving/renaming file
             var message = [
                 workerNumber,
                 "error",
                 currentSourceLine,
                 settingsDBIndex,
                 mode,
-                errorLogFull
+                errorLogFull,
+                lastPluginDetails,
+                currentFileObject,
 
             ];
             process.send(message);
@@ -1127,9 +1138,8 @@ function workerEncounteredError(messageOne) {
 
 
         if (mode == "healthcheck") {
-            //function everything else waits
 
-            //if repair file == true
+            // healthcheck process error 
 
             var message = [
                 workerNumber,
@@ -1152,13 +1162,16 @@ function workerEncounteredError(messageOne) {
 
         } else {
 
+             // transcode process error
             var message = [
                 workerNumber,
                 "error",
                 currentSourceLine,
                 settingsDBIndex,
                 mode,
-                errorLogFull
+                errorLogFull,
+                lastPluginDetails,
+                currentFileObject,
 
             ];
             process.send(message);

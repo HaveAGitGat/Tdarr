@@ -85,6 +85,7 @@ var ButtonStyle = {
 
 <p>Some actions/plugins have built-in filters. This means they'll automatically detect if a file needs to be processed or not (such as the remove subtitles community plugin). Additional filters can be added.</p>
 
+<p>To use plugins, press the 'Copy id' button on one of the plugins on the 'Plugins' tab. Paste the id in the plugin id box in the 'Transcode' section of one of your libraries. Make sure to use the checkboxes to specify whether it's a Community or Local plugin.</p>
 
 <br/>
 

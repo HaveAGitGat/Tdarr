@@ -288,10 +288,57 @@ return null
                       },
                     }
                   }
-                },
+                 }
+                //,{
+                //   show: columns.bump != undefined ? columns.bump : true,
+                //   Header: () => (
+                //     <div className="pluginTableHeader">  
+                //     <p>Options</p>
+                //     </div>
+                //   ),
+                //   id: 'Options',
+                //   width: 'Bump'.length*10,
+                //   accessor: row => {
+
+                    
+
+                //     return <Dropdown >
+                //       <Dropdown.Toggle variant="outline-light" id="dropdown-basic" >
+                //         Options
+                //     </Dropdown.Toggle>
+
+                //       <Dropdown.Menu className="optionsDropdown">
+
+                //         <div className="optionsDropdown">
+                //           <p><div className="resultColumnOptions">Bump:{!(row.bumped instanceof Date) ? this.renderBumpButton(row.file) : this.renderCancelBumpButton(row.file)}</div></p>
+                //           <p><div className="resultColumnOptions">Create sample:{this.renderCreateSampleButton(row.file)}</div></p>
+
+                //         </div>
+                //       </Dropdown.Menu>
+                //     </Dropdown>
 
 
-                {
+
+
+
+
+
+                //   },
+                //   getProps: (state, rowInfo, column) => {
+                //     return {
+                //       style: {
+                //         color:"#e1e1e1",
+                //         fontSize  :"14px",
+                //       },
+                //     }
+                //   }
+                  
+                // },
+
+
+
+
+                ,{
                   show: columns.bump != undefined ? columns.bump : true,
                   Header: () => (
                     <div className="pluginTableHeader">  
@@ -450,6 +497,27 @@ return null
                       },
 
 
+                      {
+                        show: columns.reScan != undefined ? columns.reScan : true,
+                          Header: () => (
+                            <div className="pluginTableHeader">  
+                            <p>Re-scan</p>
+                            </div>
+                          ),
+                          id: 'reScan',
+                          width: 'reScan'.length*10,
+                          accessor: row =>  this.renderReScanButton(row),
+                          getProps: (state, rowInfo, column) => {
+                            return {
+                              style: {
+                                color:"#e1e1e1",
+                                fontSize  :"14px",
+                              },
+                            }
+                          }
+                        },
+
+
        
 
   
@@ -517,6 +585,10 @@ return null
                 <p><div className="resultColumnOptions">Size </div><Checkbox name="size" checked={this.props.globalSettings[0].searchResultColumns.size} onChange={this.handleChange} /></p>
                 <p><div className="resultColumnOptions">Bitrate </div><Checkbox name="bitrate" checked={this.props.globalSettings[0].searchResultColumns.bitrate} onChange={this.handleChange} /></p>
                 <p><div className="resultColumnOptions">Duration </div><Checkbox name="duration" checked={this.props.globalSettings[0].searchResultColumns.duration} onChange={this.handleChange} /></p>
+                
+
+                {/* <p><div className="resultColumnOptions">Options </div><Checkbox name="optionsDropdownMenu" checked={this.props.globalSettings[0].searchResultColumns.optionsDropdownMenu} onChange={this.handleChange} /></p> */}
+                
                 <p><div className="resultColumnOptions">Bump </div><Checkbox name="bump" checked={this.props.globalSettings[0].searchResultColumns.bump} onChange={this.handleChange} /></p>
                 <p><div className="resultColumnOptions">Create Sample </div><Checkbox name="createSample" checked={this.props.globalSettings[0].searchResultColumns.createSample} onChange={this.handleChange} /></p>
                 <p><div className="resultColumnOptions">Transcode </div><Checkbox name="transcode" checked={this.props.globalSettings[0].searchResultColumns.transcode} onChange={this.handleChange} /></p>
@@ -525,6 +597,8 @@ return null
                 <p><div className="resultColumnOptions">History </div><Checkbox name="history" checked={this.props.globalSettings[0].searchResultColumns.history} onChange={this.handleChange} /></p>
                 <p><div className="resultColumnOptions">Remove </div><Checkbox name="remove" checked={this.props.globalSettings[0].searchResultColumns.remove} onChange={this.handleChange} /></p>
                 <p><div className="resultColumnOptions">Force Processing </div><Checkbox name="forceProcessing" checked={this.props.globalSettings[0].searchResultColumns.forceProcessing} onChange={this.handleChange} /></p>
+
+                <p><div className="resultColumnOptions">Re-scan</div><Checkbox name="reScan" checked={this.props.globalSettings[0].searchResultColumns.reScan} onChange={this.handleChange} /></p>
 
 
     
@@ -727,8 +801,13 @@ renderBumpButton(file) {
 
   renderRemoveButton(file) {
 
-
     return <ItemButton file={file}  symbol={'X'} type="removeFile" />
+
+  }
+
+  renderReScanButton(file) {
+    
+    return <ItemButton file={file}  symbol={'Re-scan'} type="reScan" />
 
   }
 

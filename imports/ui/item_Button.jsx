@@ -137,15 +137,45 @@ export default class App extends Component {
             loading={true}
           />}
 
-
-
-
-
         </div>
 
-      )
+      )}
 
-    }
+      if (this.props.type == "reScan") {
+
+        return (
+  
+          <div>
+            {this.state.isShowState && <Button variant="outline-light" onClick={() => {
+  
+  
+              this.triggerLoadState();
+  
+             Meteor.call('modifyFileDB','removeOne',this.props.file._id, (error, result) => {})
+             
+              var obj = {
+                HealthCheck: "Queued",
+                TranscodeDecisionMaker: "Queued",
+                cliLog: "",
+                bumped: false,
+                history: ""
+              }
+              Meteor.call('scanFiles', this.props.file.DB, [this.props.file._id], 0, 3, obj, function (error, result) { });
+
+  
+            }}><span className="buttonTextSize">{this.props.symbol}</span></Button>}
+  
+            {this.state.isLoadState && <ClipLoader
+  
+              sizeUnit={"px"}
+              size={25}
+              color={'white'}
+              loading={true}
+            />}
+  
+          </div>
+  
+        )}
 
     
 

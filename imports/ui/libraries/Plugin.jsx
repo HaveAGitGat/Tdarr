@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Checkbox from '@material-ui/core/Checkbox';
 import { Button} from 'react-bootstrap';
+import Modal from "reactjs-popup";
 
 import { SettingsDB} from '../../api/tasks.js';
 
@@ -46,11 +47,87 @@ export default class Plugin extends Component {
           }
         }
       );
+      
 
 
         Meteor.call('removePluginInclude',this.props.DB_id, this.props.pluginItem._id,function (error, result) { });
 
     }
+
+
+    renderInputs = (inputs) => {
+
+
+
+      var desc = inputs.map(row => {
+
+        var tooltip = row.tooltip.split('\\n')
+
+        for (var i = 0; i < tooltip.length; i++) {
+
+          var current = i
+
+          if (tooltip[i].includes('Example:') && i+1 < tooltip.length) {
+            tooltip[i + 1] = <div className="toolTipHighlight"><p>{tooltip[i + 1]}</p></div>
+            i++
+          }
+
+          tooltip[current] = <p>{tooltip[current]}</p>
+        }
+
+
+        return <div><Modal
+          trigger={<Button variant="outline-light" ><span className="buttonTextSize">i</span></Button>}
+          modal
+          closeOnDocumentClick
+        >
+          <div className="modalContainer">
+            <div className="frame">
+              <div className="scroll">
+
+                <div className="modalText">
+                  <p>Usage:</p>
+                  <p></p>
+                  <p></p>
+                  {tooltip}
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </Modal><span><p>{row.name}:</p><input type="text" defaultValue={this.props.pluginItem.InputsDB && this.props.pluginItem.InputsDB[row.name] != undefined ? this.props.pluginItem.InputsDB[row.name] : ''} name={row.name} onChange={this.saveInput}></input></span></div>
+      })
+
+      return desc
+
+
+    }
+
+  saveInput = (event) => {
+
+    const { name, value } = event.target;
+
+    var thisLibraryPlugins = SettingsDB.find({ _id: this.props.DB_id }, { sort: { createdAt: 1 } }).fetch()[0].pluginIDs
+
+    if(thisLibraryPlugins[this.props.pluginItem.priority].InputsDB == undefined){
+
+      thisLibraryPlugins[this.props.pluginItem.priority].InputsDB = {}
+
+
+    }
+    thisLibraryPlugins[this.props.pluginItem.priority].InputsDB[name] = value
+
+    SettingsDB.upsert(
+      this.props.DB_id,
+      {
+        $set: {
+          pluginIDs: thisLibraryPlugins,
+        }
+      }
+    );
+
+
+  }
 
 
 
@@ -72,6 +149,10 @@ export default class Plugin extends Component {
             <span className="buttonTextSize">{this.props.pluginItem._id}</span>
           </td>
 
+          <td>
+            <span className="buttonTextSize">{this.props.pluginItem.Stage}</span>
+          </td>
+
           
           <td>
             <span className="buttonTextSize">{this.props.pluginItem.Type}</span>
@@ -89,6 +170,12 @@ export default class Plugin extends Component {
           <td>
             <span className="buttonTextSize">{this.props.pluginItem.Description != undefined ? this.props.pluginItem.Description : "-"}</span>
           </td>
+
+          <td>
+            <span className="buttonTextSize">{this.props.pluginItem.Inputs != undefined ? this.renderInputs(this.props.pluginItem.Inputs) : "-"}</span>
+          </td>
+
+
 
           <td>
             <span className="buttonTextSize">

@@ -91,12 +91,7 @@ export default class App extends Component {
         <br></br>
         <br></br>
 
-        <center>
 
-
-          <p>Join us!</p>
-
-          </center>
 
           <center>
 
