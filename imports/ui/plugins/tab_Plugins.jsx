@@ -270,7 +270,7 @@ class App extends Component {
                 style: {
                   color: "#e1e1e1",
                   fontSize: "14px",
-                  background: rowInfo && rowInfo.row.Description.includes("BUG") ? '#c72c53' : null,
+                  background: rowInfo && rowInfo.row.Description.includes("BUG") ? '#c72c53' : rowInfo && rowInfo.row.Description.includes("TESTING") ? '#ffa500'  : null,
                 },
               }
             }
