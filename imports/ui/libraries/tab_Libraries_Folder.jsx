@@ -1747,8 +1747,11 @@ SettingsDB.insert(thisLibrary)
                 <p></p>
 
                 <center>
+
                   {this.renderPlugins()}
-                  <div id={this.props.libraryItem._id + 'PluginStack'}></div>
+                  <div id={this.props.libraryItem._id + 'PluginStack'} className="scheduleContainer">
+
+                  </div>
                 </center>
 
                 {/* <input type="text" className="folderPaths" name="pluginID" defaultValue={this.props.libraryItem.pluginID} onChange={this.handleChange}></input> */}
