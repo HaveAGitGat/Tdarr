@@ -2618,7 +2618,7 @@ function main() {
 
                           var librarySettings = settings[0]
                           var plugin = importFresh(pluginLocalPath)
-                          cliLogAdd += plugin.details().id + "\n"
+                         
 
 
 
@@ -2627,6 +2627,8 @@ function main() {
 
                           //run if pre-processing plugin
                           if (plugin.details().Stage == undefined || plugin.details().Stage == 'Pre-processing') {
+
+                            cliLogAdd += plugin.details().id + " - Pre-processing\n"
 
                             preProcPluginSelected = true
 
@@ -2644,6 +2646,8 @@ function main() {
 
                             //run post processing functions inside - pre-processing plugins (last run plugin ID must match)
                             if (firstItem.lastPluginDetails && firstItem.lastPluginDetails.id === pluginID) {
+
+                              cliLogAdd += plugin.details().id + " - Transcode success post processing\n"
 
                               try {
 
@@ -2995,11 +2999,13 @@ function main() {
 
                           var librarySettings = settings[0]
                           var plugin = importFresh(pluginLocalPath)
-                          cliLogAdd += plugin.details().id + "\n"
 
                           var pluginInputs = SettingsDB.find({ _id: firstItem.DB }, { sort: { createdAt: 1 } }).fetch()[0].pluginIDs.filter(row => row._id == pluginID)[0].InputsDB
 
                           if (plugin.details().Stage == 'Post-processing') {
+                            cliLogAdd += plugin.details().id + " - Post-processing\n"
+
+
                             postProcPluginSelected = true
                             var response = plugin.plugin(firstItem, librarySettings, pluginInputs, otherArguments);
                             if (response && response.removeFromDB == true) {
