@@ -2639,10 +2639,10 @@ function main() {
                           if (plugin.details().Stage == undefined || plugin.details().Stage == 'Pre-processing') {
 
                             var response = plugin.plugin(firstItem, librarySettings, pluginInputs, otherArguments);
-                            if (response.removeFromDB == true) {
+                            if (response && response.removeFromDB == true) {
                               Meteor.call('modifyFileDB', 'removeOne', response.file._id, (error, result) => { })
                             }
-                            if (response.updateDB == true) {
+                            if (response && response.updateDB == true) {
                               Meteor.call('modifyFileDB', 'removeOne', response.file._id, (error, result) => { })
                               //Meteor.call('modifyFileDB', 'update', response.file._id, response.file, (error, result) => { })
                               Meteor.call('modifyFileDB', 'insert', response.file._id, response.file, (error, result) => { })
@@ -2657,10 +2657,10 @@ function main() {
 
                                 var temp = plugin.onTranscodeSuccess(firstItem, librarySettings, pluginInputs, otherArguments);
 
-                                if (temp.removeFromDB == true) {
+                                if (temp && temp.removeFromDB == true) {
                                   Meteor.call('modifyFileDB', 'removeOne', temp.file._id, (error, result) => { })
                                 }
-                                if (temp.updateDB == true) {
+                                if (temp && temp.updateDB == true) {
                                   Meteor.call('modifyFileDB', 'removeOne', temp.file._id, (error, result) => { })
                                   //Meteor.call('modifyFileDB', 'update', temp.file._id, temp.file, (error, result) => { })
                                   Meteor.call('modifyFileDB', 'insert', temp.file._id, temp.file, (error, result) => { })
@@ -2999,10 +2999,10 @@ function main() {
 
                           if (plugin.details().Stage == 'Post-processing') {
                             var response = plugin.plugin(firstItem, librarySettings, pluginInputs, otherArguments);
-                            if (response.removeFromDB == true) {
+                            if (response && response.removeFromDB == true) {
                               Meteor.call('modifyFileDB', 'removeOne', response.file._id, (error, result) => { })
                             }
-                            if (response.updateDB == true) {
+                            if (response && response.updateDB == true) {
                               Meteor.call('modifyFileDB', 'removeOne', response.file._id, (error, result) => { })
                               //Meteor.call('modifyFileDB', 'update', response.file._id, response.file, (error, result) => { })
                               Meteor.call('modifyFileDB', 'insert', response.file._id, response.file, (error, result) => { })
@@ -3214,10 +3214,10 @@ function main() {
 
 
             var response = plugin.onTranscodeError(file, librarySettings, pluginInputs, otherArguments);
-            if (response.removeFromDB == true) {
+            if (response &&  response.removeFromDB == true) {
               Meteor.call('modifyFileDB', 'removeOne', response.file._id, (error, result) => { })
             }
-            if (response.updateDB == true) {
+            if (response && response.updateDB == true) {
               Meteor.call('modifyFileDB', 'removeOne', response.file._id, (error, result) => { })
               //Meteor.call('modifyFileDB', 'update', response.file._id, response.file, (error, result) => { })
               Meteor.call('modifyFileDB', 'insert', response.file._id, response.file, (error, result) => { })
