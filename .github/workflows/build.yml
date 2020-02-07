@@ -2,14 +2,15 @@ name: CreateRelease
 on: [push]
 
 jobs:
-  build-ubuntu:
-    runs-on: ubuntu-latest
+  Build:
+    runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
+        os: [macos-10.15, ubuntu-18.04]
         node-version: [8.x]
     
-    name: Build
+    name: Build ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1.1.2
@@ -20,32 +21,8 @@ jobs:
           curl https://install.meteor.com/ | sh
           npm install --production
       - name: Build bundle
-        run: meteor build --server localhost:8265 --directory ../tdarr-linux-x64 --architecture os.linux.x86_64
+        run: meteor build --server localhost:8265 --directory ../tdarr-${{ matrix.os }} 
       - uses: actions/upload-artifact@v1
         with:
-          name: tdarr-linux-x64
-          path: ../tdarr-linux-x64
-
-  build-mac:
-    runs-on: macos-latest
-
-    strategy:
-      matrix:
-        node-version: [8.x]
-    
-    name: Build
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1.1.2
-        with:
-          node-version: ${{ matrix.node-version }}
-      - name: Install NPM and Meteor
-        run: |
-          curl https://install.meteor.com/ | sh
-          npm install --production
-      - name: Build bundle
-        run: meteor build --server localhost:8265 --directory ../tdarr-osx-x64 --architecture os.osx.x86_64
-      - uses: actions/upload-artifact@v1
-        with:
-          name: tdarr-osx-x64
-          path: ../tdarr-osx-x64
+          name: tdarr-${{ matrix.os }}
+          path: ../tdarr-${{ matrix.os }}
