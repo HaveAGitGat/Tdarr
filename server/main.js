@@ -2588,21 +2588,11 @@ function main() {
 
 
 
-                    if (pluginsSelected.length == 0) {
-
-                      processFile = false
-                      preset = ''
-                      container = ''
-                      handBrakeMode = ''
-                      FFmpegMode = ''
-                      reQueueAfter = ''
-                      cliLogAdd += '☒No pre-processing plugins selected!  \n'
-
-                      TranscodeDecisionMaker = "Transcode error"
 
 
+                    var preProcPluginSelected = false
 
-                    } else {
+
 
                       for (var i = 0; i < pluginsSelected.length; i++) {
 
@@ -2637,6 +2627,8 @@ function main() {
 
                           //run if pre-processing plugin
                           if (plugin.details().Stage == undefined || plugin.details().Stage == 'Pre-processing') {
+
+                            preProcPluginSelected = true
 
                             var response = plugin.plugin(firstItem, librarySettings, pluginInputs, otherArguments);
                             if (response && response.removeFromDB == true) {
@@ -2719,7 +2711,21 @@ function main() {
 
                         }
                       }
-                    }
+                    
+
+                      if(preProcPluginSelected == false){
+
+                        processFile = false
+                        preset = ''
+                        container = ''
+                        handBrakeMode = ''
+                        FFmpegMode = ''
+                        reQueueAfter = ''
+                        cliLogAdd += '☒No pre-processing plugins selected!  \n'
+  
+                       
+
+                      }
 
 
                     //
@@ -2966,11 +2972,7 @@ function main() {
                     pluginsSelected = pluginsSelected.filter(row => row.checked);
 
 
-                    if (pluginsSelected.length == 0) {
-
-                      console.log('No post-processing plugins selected!')
-
-                    } else {
+                    var postProcPluginSelected = false
 
                       for (var i = 0; i < pluginsSelected.length; i++) {
 
@@ -2998,6 +3000,7 @@ function main() {
                           var pluginInputs = SettingsDB.find({ _id: firstItem.DB }, { sort: { createdAt: 1 } }).fetch()[0].pluginIDs.filter(row => row._id == pluginID)[0].InputsDB
 
                           if (plugin.details().Stage == 'Post-processing') {
+                            postProcPluginSelected = true
                             var response = plugin.plugin(firstItem, librarySettings, pluginInputs, otherArguments);
                             if (response && response.removeFromDB == true) {
                               Meteor.call('modifyFileDB', 'removeOne', response.file._id, (error, result) => { })
@@ -3015,13 +3018,22 @@ function main() {
                           console.log('final post processing failed' + i)
                         }
                       }
-                    }
+                    
 
                   } catch (err) {
                     console.log(err)
                     console.log('final post processing failed')
                   }
                 }
+
+
+                  if (preProcPluginSelected == false && postProcPluginSelected == false ) {
+                    cliLogAdd += '☒No pre or post-processing plugins selected!  \n'
+                    TranscodeDecisionMaker = "Transcode error"
+
+                  }
+
+                
 
 
                   //TranscodeDecisionMaker status first depends on if error encountered during plugins, else depends on
