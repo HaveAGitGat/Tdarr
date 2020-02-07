@@ -180,23 +180,23 @@ class App extends Component {
 
           }, {
 
-              Header: () => (
-                <div className="pluginTableHeader">
-                  <p>Stage</p>
-                </div>
-              ),
-              accessor: 'Stage',
-              width: 100,
-              getProps: (state, rowInfo, column) => {
-                return {
-                  style: {
-                    color: "#e1e1e1",
-                    fontSize: "14px",
-                  },
-                }
+            Header: () => (
+              <div className="pluginTableHeader">
+                <p>Stage</p>
+              </div>
+            ),
+            accessor: 'Stage',
+            width: 100,
+            getProps: (state, rowInfo, column) => {
+              return {
+                style: {
+                  color: "#e1e1e1",
+                  fontSize: "14px",
+                },
               }
+            }
 
-            }, {
+          }, {
 
             Header: () => (
               <div className="pluginTableHeader">
@@ -287,39 +287,57 @@ class App extends Component {
             accessor: row => {
 
               if (row.Inputs == undefined) {
-
                 return <p></p>
-
               }
 
               var variableArray = row.Inputs
 
 
-              var desc = variableArray.map(row => <p><Modal
-                trigger={<Button variant="outline-light" ><span className="buttonTextSize">i</span></Button>}
-                modal
-                closeOnDocumentClick
-              >
-                <div className="modalContainer">
-                  <div className="frame">
-                    <div className="scroll">
+              var desc = variableArray.map(row => {
 
-                      <div className="modalText">
-                        <p>Tip:</p>
-                        <p></p>
-                        <p></p>
-                        <p>{row.tooltip}</p>
+                var tooltip = row.tooltip.split('\\n')
 
+
+
+                for (var i = 0; i < tooltip.length; i++) {
+
+                  var current = i
+
+                  if (tooltip[i].includes('Example:') && i+1 < tooltip.length) {
+                    tooltip[i + 1] = <div className="toolTipHighlight"><p>{tooltip[i + 1]}</p></div>
+                    i++
+                  }
+
+                  tooltip[current] = <p>{tooltip[current]}</p>
+                }
+
+                return <div><Modal
+                  trigger={<Button variant="outline-light" ><span className="buttonTextSize">i</span></Button>}
+                  modal
+                  closeOnDocumentClick
+                >
+                  <div className="modalContainer">
+                    <div className="frame">
+                      <div className="scroll">
+
+                        <div className="modalText">
+                          <p>Usage:</p>
+                          <p></p>
+                          <p></p>
+                          {tooltip}
+
+
+                        </div>
                       </div>
-
                     </div>
                   </div>
-                </div>
-              </Modal><span>{row.name}</span></p>)
+                </Modal><span><p>{row.name}</p></span></div>
+              })
 
               return desc
 
-            }
+            },
+            style: { 'whiteSpace': 'unset' }
           },
           {
 
