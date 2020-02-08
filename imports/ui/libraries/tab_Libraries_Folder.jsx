@@ -1,22 +1,22 @@
-import {css} from '@emotion/core';
+import { css } from '@emotion/core';
 import Checkbox from '@material-ui/core/Checkbox';
-import {Meteor} from 'meteor/meteor';
-import {withTracker} from 'meteor/react-meteor-data';
-import React, {Component} from 'react';
-import {Button, Dropdown} from 'react-bootstrap';
+import { Meteor } from 'meteor/meteor';
+import { withTracker } from 'meteor/react-meteor-data';
+import React, { Component } from 'react';
+import { Button, Dropdown } from 'react-bootstrap';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import Modal from "reactjs-popup";
-import ReactDOM, {render} from 'react-dom';
+import ReactDOM, { render } from 'react-dom';
 import InputRange from 'react-input-range';
 import ToggleButton from 'react-toggle-button';
 
-import {GlobalSettingsDB, SettingsDB, StatisticsDB} from '../../api/tasks.js';
+import { GlobalSettingsDB, SettingsDB, StatisticsDB } from '../../api/tasks.js';
 import AudioCodec from './AudioCodec.jsx';
 import Plugin from './Plugin.jsx';
 import ScheduleBlock from './ScheduleBlock.jsx';
 import VideoCodec from './VideoCodec.jsx';
 
-const borderRadiusStyle = {borderRadius: 2};
+const borderRadiusStyle = { borderRadius: 2 };
 
 import ScaleLoader from 'react-spinners/ScaleLoader';
 
@@ -36,7 +36,8 @@ class Folder extends Component {
       cacheBrowser: false,
       outputBrowser: false,
       navItemSelected: 'navSourceFolder',
-      pluginStackCopyList:',,'
+      pluginStackCopyList: ',,',
+      pluginsStored: [],
     };
 
     this.scanFiles = this.scanFiles.bind(this);
@@ -67,8 +68,27 @@ class Folder extends Component {
       this.props.libraryItem._id + 'o'
     );
 
-    this.interval2 = setInterval(() =>this.getServerTime(), 1000);
+    this.interval2 = setInterval(() => this.getServerTime(), 1000);
+
+    Meteor.call('searchPlugins', '', 'Local', (error, result) => {
+      this.setState({
+        pluginsStored: result[0]
+      });
+
+    })
+
+    Meteor.call('searchPlugins', '', 'Community', (error, result) => {
+
+      var arr = this.state.pluginsStored
+
+      arr = arr.concat(result[0])
+      this.setState({
+        pluginsStored: arr
+      });
+
+    })
   };
+
 
   getServerTime = () => {
     Meteor.call('getTimeNow', (error, result) => {
@@ -83,83 +103,18 @@ class Folder extends Component {
 
   verifyFolder = (folderPath, type, refType) => {
 
-    try{
+    try {
 
-    Meteor.call(
-      'verifyFolder',
-      folderPath,
-      this.props.libraryItem._id,
-      type + 'Valid',
-      (error, result) => {
-        if (result === undefined) {
-          // no-op
-        } else if (result.length == 0) {
-          render(
-            <Button
-              variant="outline-light"
-              onClick={() => {
-                var temp = ReactDOM.findDOMNode(this.refs[refType]).value;
-                temp = temp.replace(/\\/g, '/');
-
-                temp = temp.split('/');
-                var idx = temp.length - 1;
-                temp.splice(idx, 1);
-                temp = temp.join('/');
-
-                SettingsDB.upsert(this.props.libraryItem._id, {
-                  $set: {
-                    [type]: temp,
-                  },
-                });
-
-                ReactDOM.findDOMNode(this.refs[refType]).value = temp;
-                this.verifyFolder(temp, type, refType);
-              }}
-            >
-              Back
-            </Button>,
-
-            document.getElementById(refType + 'Results')
-          );
-        } else {
-          var results = result.map((row, i) => {
-            return (
-              <tr key={`${row.fullPath}-${i}`}>
-                <td>
-                  <p>{row.folder}</p>
-                </td>
-
-                <td>
-                  {' '}
-                  <Button
-                    variant="outline-light"
-                    onClick={() => {
-                      SettingsDB.upsert(this.props.libraryItem._id, {
-                        $set: {
-                          [type]: row.fullPath.replace(/\\/g, '/'),
-                        },
-                      });
-
-                      ReactDOM.findDOMNode(
-                        this.refs[refType]
-                      ).value = row.fullPath.replace(/\\/g, '/');
-
-                      this.verifyFolder(
-                        row.fullPath.replace(/\\/g, '/'),
-                        type,
-                        refType
-                      );
-                    }}
-                  >
-                    →
-                  </Button>
-                </td>
-              </tr>
-            );
-          });
-
-          render(
-            <div>
+      Meteor.call(
+        'verifyFolder',
+        folderPath,
+        this.props.libraryItem._id,
+        type + 'Valid',
+        (error, result) => {
+          if (result === undefined) {
+            // no-op
+          } else if (result.length == 0) {
+            render(
               <Button
                 variant="outline-light"
                 onClick={() => {
@@ -182,26 +137,91 @@ class Folder extends Component {
                 }}
               >
                 Back
+            </Button>,
+
+              document.getElementById(refType + 'Results')
+            );
+          } else {
+            var results = result.map((row, i) => {
+              return (
+                <tr key={`${row.fullPath}-${i}`}>
+                  <td>
+                    <p>{row.folder}</p>
+                  </td>
+
+                  <td>
+                    {' '}
+                    <Button
+                      variant="outline-light"
+                      onClick={() => {
+                        SettingsDB.upsert(this.props.libraryItem._id, {
+                          $set: {
+                            [type]: row.fullPath.replace(/\\/g, '/'),
+                          },
+                        });
+
+                        ReactDOM.findDOMNode(
+                          this.refs[refType]
+                        ).value = row.fullPath.replace(/\\/g, '/');
+
+                        this.verifyFolder(
+                          row.fullPath.replace(/\\/g, '/'),
+                          type,
+                          refType
+                        );
+                      }}
+                    >
+                      →
+                  </Button>
+                  </td>
+                </tr>
+              );
+            });
+
+            render(
+              <div>
+                <Button
+                  variant="outline-light"
+                  onClick={() => {
+                    var temp = ReactDOM.findDOMNode(this.refs[refType]).value;
+                    temp = temp.replace(/\\/g, '/');
+
+                    temp = temp.split('/');
+                    var idx = temp.length - 1;
+                    temp.splice(idx, 1);
+                    temp = temp.join('/');
+
+                    SettingsDB.upsert(this.props.libraryItem._id, {
+                      $set: {
+                        [type]: temp,
+                      },
+                    });
+
+                    ReactDOM.findDOMNode(this.refs[refType]).value = temp;
+                    this.verifyFolder(temp, type, refType);
+                  }}
+                >
+                  Back
               </Button>
 
-              <table>
-                <tbody>{results}</tbody>
-              </table>
-            </div>,
-            document.getElementById(refType + 'Results')
-          );
+                <table>
+                  <tbody>{results}</tbody>
+                </table>
+              </div>,
+              document.getElementById(refType + 'Results')
+            );
+          }
         }
-      }
-    );
+      );
 
-    }catch(err){}
+    } catch (err) { }
   };
 
   handleChange(event) {
-    const {name, value} = event.target;
-    const {_id} = this.props.libraryItem;
+    const { name, value } = event.target;
+    const { _id } = this.props.libraryItem;
 
-   
+
 
     //turn off folder watcher if folder name change detected
     if (name == 'folder') {
@@ -237,8 +257,8 @@ class Folder extends Component {
   }
 
   handleChangeChkBx(event) {
-    const {name, checked} = event.target;
-    const {_id} = this.props.libraryItem;
+    const { name, checked } = event.target;
+    const { _id } = this.props.libraryItem;
 
     SettingsDB.upsert(_id, {
       $set: {
@@ -322,42 +342,64 @@ class Folder extends Component {
     plugins = plugins.filter(
       setting => setting._id == this.props.libraryItem._id
     );
-    plugins = plugins[0].pluginIDs.sort(function(a, b) {
+    plugins = plugins[0].pluginIDs.sort(function (a, b) {
       return a.priority - b.priority;
     });
 
-    Meteor.call('buildPluginStack', plugins, (error, result) => {
-      //console.log(result)
 
-      result = result.sort(function(a, b) {
-        return a.priority - b.priority;
-      });
+    var pluginsStored = this.state.pluginsStored
+    for (var i = 0; i < plugins.length; i++) {
+      var thisPlugin = pluginsStored.filter(row => row.source == plugins[i].source && row.id == plugins[i]._id)
+      if (thisPlugin.length == 1) {
 
-      var pluginStackCopy = ''
+        plugins[i] = { ...plugins[i], ...thisPlugin[0] }
 
-      var stack = result.map(pluginItem => {
+      } else {
 
-        pluginStackCopy += `${pluginItem.source},${pluginItem._id},,`
+        var obj = {
+          Name: "Read error",
+          Type: "Read error",
+          Operation: "Read error",
+          Description: 'Read error',
+          Version: "Read error",
+          Link: "Read error"
+        }
+        plugins[i] = { ...plugins[i], ...obj }
 
-
-
-
-
-        return (
-          <Plugin
-            key={pluginItem._id}
-            pluginItem={pluginItem}
-            DB_id={this.props.libraryItem._id}
-          />
-        );
-      });
-
-      if (pluginStackCopy != this.state.pluginStackCopyList) {
-
-        this.setState({
-          pluginStackCopyList: pluginStackCopy,
-        });
       }
+    }
+
+
+
+    var result = plugins
+
+    var pluginStackCopy = ''
+
+    var stack = result.map(pluginItem => {
+
+      pluginStackCopy += `${pluginItem.source},${pluginItem._id},,`
+
+
+
+
+
+      return (
+        <Plugin
+          key={pluginItem._id}
+          pluginItem={pluginItem}
+          DB_id={this.props.libraryItem._id}
+        />
+      );
+    });
+
+    if (pluginStackCopy != this.state.pluginStackCopyList) {
+
+      this.setState({
+        pluginStackCopyList: pluginStackCopy,
+      });
+    }
+
+    try {
 
 
       render(
@@ -427,7 +469,9 @@ class Folder extends Component {
 
         document.getElementById(this.props.libraryItem._id + 'PluginStack')
       );
-    });
+
+    } catch (err) { console.log(err) }
+    // });
   };
 
   renderVideoCodecsExclude() {
@@ -636,10 +680,10 @@ class Folder extends Component {
   addPlugin(event) {
     event.preventDefault();
 
-   console.log(event.target.name)
+    // console.log(event.target.name)
 
 
-    if(event.target.name == 'Single'){
+    if (event.target.name == 'Single') {
       const text = ReactDOM.findDOMNode(this.refs.addPluginText).value.trim();
 
       var source;
@@ -660,23 +704,23 @@ class Folder extends Component {
       ReactDOM.findDOMNode(this.refs.addPluginText).value = '';
 
 
-    }else  if(event.target.name == 'Stack'){
+    } else if (event.target.name == 'Stack') {
 
       const text = ReactDOM.findDOMNode(this.refs.addStackText).value.trim();
 
-      var arr = text.split(',,') 
+      var arr = text.split(',,')
 
       console.log(arr)
 
       var priority = this.props.libraryItem.pluginIDs.length
 
-      for(var i = 0; i < arr.length; i++){
+      for (var i = 0; i < arr.length; i++) {
 
         var plugin = arr[i].split(',')
 
 
         //check plugin text is valid
-        if(plugin.length == 2 && (plugin[0] === 'Local' || plugin[0] === 'Community')){
+        if (plugin.length == 2 && (plugin[0] === 'Local' || plugin[0] === 'Community')) {
 
           Meteor.call(
             'addPluginInclude',
@@ -687,13 +731,13 @@ class Folder extends Component {
           );
 
           priority++
-         
+
         }
         ReactDOM.findDOMNode(this.refs.addStackText).value = '';
       }
     }
 
-   
+
 
     // var thisLibraryPlugins = SettingsDB.find(
     //   {_id: this.props.libraryItem._id},
@@ -710,7 +754,7 @@ class Folder extends Component {
 
 
 
-   
+
   }
 
   addVideoCodecExclude(event) {
@@ -807,92 +851,92 @@ class Folder extends Component {
             </Dropdown.Toggle>
 
             <Dropdown.Menu>
-            <div className="optionsDropdown">
-              <div
-                className={this.props.libraryItem.scanButtons ? '' : 'd-none'}
-              >
-                <Dropdown.Item
-                  style={{color: 'green', fontSize: '14px'}}
-                  onClick={() => this.scanFiles(0)}
+              <div className="optionsDropdown">
+                <div
+                  className={this.props.libraryItem.scanButtons ? '' : 'd-none'}
                 >
-                  Scan (Find new)
+                  <Dropdown.Item
+                    style={{ color: 'green', fontSize: '14px' }}
+                    onClick={() => this.scanFiles(0)}
+                  >
+                    Scan (Find new)
                 </Dropdown.Item>
-                <Dropdown.Item
-                  style={{color: 'green', fontSize: '14px'}}
-                  onClick={() => this.scanFiles(1)}
-                >
-                  Scan (Fresh)
-                </Dropdown.Item>
-
-                <Dropdown.Item
-                  onClick={() => this.setAllStatus('TranscodeDecisionMaker')}
-                >
-                  <span className="buttonTextSize">
-                    Requeue all items (transcode)
-                  </span>
-                </Dropdown.Item>
-                <Dropdown.Item
-                  onClick={() => this.setAllStatus('HealthCheck')}
-                >
-                  <span className="buttonTextSize">
-                    Requeue all items (health check)
-                  </span>
+                  <Dropdown.Item
+                    style={{ color: 'green', fontSize: '14px' }}
+                    onClick={() => this.scanFiles(1)}
+                  >
+                    Scan (Fresh)
                 </Dropdown.Item>
 
-                <Dropdown.Item
-                  style={{color: '#bb86fc', fontSize: '14px'}}
-                  onClick={() => {
-                    if (
-                      confirm(
-                        "Are you sure you want to reset this library's stats?"
-                      )
-                    ) {
-                      SettingsDB.upsert(this.props.libraryItem._id, {
-                        $set: {
-                          totalTranscodeCount: 0,
-                          sizeDiff: 0,
-                          totalHealthCheckCount: 0,
+                  <Dropdown.Item
+                    onClick={() => this.setAllStatus('TranscodeDecisionMaker')}
+                  >
+                    <span className="buttonTextSize">
+                      Requeue all items (transcode)
+                  </span>
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    onClick={() => this.setAllStatus('HealthCheck')}
+                  >
+                    <span className="buttonTextSize">
+                      Requeue all items (health check)
+                  </span>
+                  </Dropdown.Item>
+
+                  <Dropdown.Item
+                    style={{ color: '#bb86fc', fontSize: '14px' }}
+                    onClick={() => {
+                      if (
+                        confirm(
+                          "Are you sure you want to reset this library's stats?"
+                        )
+                      ) {
+                        SettingsDB.upsert(this.props.libraryItem._id, {
+                          $set: {
+                            totalTranscodeCount: 0,
+                            sizeDiff: 0,
+                            totalHealthCheckCount: 0,
+                          }
                         }
+                        );
+
                       }
-                    );
+                    }
+
+                    }>Reset stats: All</Dropdown.Item>
+
+                  <Dropdown.Item style={{ color: 'white', fontSize: '14px' }} onClick={() => {
+
+                    var priority = SettingsDB.find({}, { sort: { createdAt: 1 } }).fetch().length
+                    var thisLibrary = (SettingsDB.find({ _id: this.props.libraryItem._id }, { sort: { createdAt: 1 } }).fetch())[0]
+
+                    thisLibrary.name = thisLibrary.name + " (Duplicate)"
+                    thisLibrary.priority = priority
+
+                    delete thisLibrary._id;
+                    SettingsDB.insert(thisLibrary)
+
 
                   }
-                }
 
-                }>Reset stats: All</Dropdown.Item>
-
-<Dropdown.Item style={{ color: 'white', fontSize: '14px' }} onClick={() => {
-
-var priority = SettingsDB.find({}, { sort: { createdAt: 1 } }).fetch().length
-var thisLibrary = (SettingsDB.find({ _id: this.props.libraryItem._id }, { sort: { createdAt: 1 } }).fetch())[0]
-
-thisLibrary.name = thisLibrary.name +" (Duplicate)"
-thisLibrary.priority = priority
-
-delete thisLibrary._id;
-SettingsDB.insert(thisLibrary)
-
-
-}
-
-}>Duplicate library</Dropdown.Item>
+                  }>Duplicate library</Dropdown.Item>
 
 
 
-                <Dropdown.Item style={{ color: '#bb86fc', fontSize: '14px' }} onClick={() => {
+                  <Dropdown.Item style={{ color: '#bb86fc', fontSize: '14px' }} onClick={() => {
 
-                  if (confirm('Are you sure you want to clear this library? Your files will not be affected.')) {
-                    this.removeLibrary(this.props.libraryItem._id)
+                    if (confirm('Are you sure you want to clear this library? Your files will not be affected.')) {
+                      this.removeLibrary(this.props.libraryItem._id)
+                    }
                   }
-                }
 
-                }>Clear library</Dropdown.Item>
-
-
-                <Dropdown.Item style={{ color: '#bb86fc', fontSize: '14px' }} onClick={this.deleteThisLibrary.bind(this)}>Delete library</Dropdown.Item>
+                  }>Clear library</Dropdown.Item>
 
 
-              </div>
+                  <Dropdown.Item style={{ color: '#bb86fc', fontSize: '14px' }} onClick={this.deleteThisLibrary.bind(this)}>Delete library</Dropdown.Item>
+
+
+                </div>
               </div>
             </Dropdown.Menu>
           </Dropdown>
@@ -1005,7 +1049,7 @@ SettingsDB.insert(thisLibrary)
                   },
                 });
               }}
-              style={{cursor: 'pointer'}}
+              style={{ cursor: 'pointer' }}
               className={
                 this.props.libraryItem.navItemSelected == 'navSourceFolder'
                   ? 'selectedNav'
@@ -1022,7 +1066,7 @@ SettingsDB.insert(thisLibrary)
                   },
                 });
               }}
-              style={{cursor: 'pointer'}}
+              style={{ cursor: 'pointer' }}
               className={
                 this.props.libraryItem.navItemSelected == 'navCacheFolder'
                   ? 'selectedNav'
@@ -1039,7 +1083,7 @@ SettingsDB.insert(thisLibrary)
                   },
                 });
               }}
-              style={{cursor: 'pointer'}}
+              style={{ cursor: 'pointer' }}
               className={
                 this.props.libraryItem.navItemSelected == 'navOutputFolder'
                   ? 'selectedNav'
@@ -1056,7 +1100,7 @@ SettingsDB.insert(thisLibrary)
                   },
                 });
               }}
-              style={{cursor: 'pointer'}}
+              style={{ cursor: 'pointer' }}
               className={
                 this.props.libraryItem.navItemSelected == 'navContainers'
                   ? 'selectedNav'
@@ -1073,7 +1117,7 @@ SettingsDB.insert(thisLibrary)
                   },
                 });
               }}
-              style={{cursor: 'pointer'}}
+              style={{ cursor: 'pointer' }}
               className={
                 this.props.libraryItem.navItemSelected == 'navTranscode'
                   ? 'selectedNav'
@@ -1090,7 +1134,7 @@ SettingsDB.insert(thisLibrary)
                   },
                 });
               }}
-              style={{cursor: 'pointer'}}
+              style={{ cursor: 'pointer' }}
               className={
                 this.props.libraryItem.navItemSelected == 'navHealthCheck'
                   ? 'selectedNav'
@@ -1107,7 +1151,7 @@ SettingsDB.insert(thisLibrary)
                   },
                 });
               }}
-              style={{cursor: 'pointer'}}
+              style={{ cursor: 'pointer' }}
               className={
                 this.props.libraryItem.navItemSelected == 'navSchedule'
                   ? 'selectedNav'
@@ -1361,7 +1405,7 @@ SettingsDB.insert(thisLibrary)
             >
               <p>
                 Under normal operation Tdarr is designed to work directly on
-                your library, replacing original files so you don't need to touch these options. You can enable folder to folder conversion below however 
+                your library, replacing original files so you don't need to touch these options. You can enable folder to folder conversion below however
                 this doesn't fit in with how Tdarr operates. Please test before using. {' '}
               </p>
 
@@ -1377,77 +1421,77 @@ SettingsDB.insert(thisLibrary)
               <p>
 
 
-              <span className="buttonTextSize mr-2">Output Folder:</span>
-                  <div style={libButtonStyle}>
-             
-               
-                <ToggleButton
-                  thumbStyle={borderRadiusStyle}
-                  trackStyle={borderRadiusStyle}
-                  value={
-                    this.props.libraryItem.folderToFolderConversion ===
-                    undefined
-                      ? false
-                      : !!this.props.libraryItem.folderToFolderConversion
-                  }
-                  onToggle={() => {
-                    SettingsDB.upsert(this.props.libraryItem._id, {
-                      $set: {
-                        folderToFolderConversion: !this.props.libraryItem
-                          .folderToFolderConversion,
-                      },
-                    });
-                  }}
-                />
+                <span className="buttonTextSize mr-2">Output Folder:</span>
+                <div style={libButtonStyle}>
 
 
-</div>
+                  <ToggleButton
+                    thumbStyle={borderRadiusStyle}
+                    trackStyle={borderRadiusStyle}
+                    value={
+                      this.props.libraryItem.folderToFolderConversion ===
+                        undefined
+                        ? false
+                        : !!this.props.libraryItem.folderToFolderConversion
+                    }
+                    onToggle={() => {
+                      SettingsDB.upsert(this.props.libraryItem._id, {
+                        $set: {
+                          folderToFolderConversion: !this.props.libraryItem
+                            .folderToFolderConversion,
+                        },
+                      });
+                    }}
+                  />
 
-<span className="buttonTextSize mr-2">Copy to output if conditions already met:</span>
-<div style={libButtonStyle}>
-         
-                <ToggleButton
-                  thumbStyle={borderRadiusStyle}
-                  trackStyle={borderRadiusStyle}
-                  value={
-                    this.props.libraryItem.copyIfConditionsMet ===
-                    undefined
-                      ? true
-                      : !!this.props.libraryItem.copyIfConditionsMet
-                  }
-                  onToggle={() => {
-                    SettingsDB.upsert(this.props.libraryItem._id, {
-                      $set: {
-                        copyIfConditionsMet: !this.props.libraryItem
-                          .copyIfConditionsMet,
-                      },
-                    });
-                  }}
-                />
+
+                </div>
+
+                <span className="buttonTextSize mr-2">Copy to output if conditions already met:</span>
+                <div style={libButtonStyle}>
+
+                  <ToggleButton
+                    thumbStyle={borderRadiusStyle}
+                    trackStyle={borderRadiusStyle}
+                    value={
+                      this.props.libraryItem.copyIfConditionsMet ===
+                        undefined
+                        ? true
+                        : !!this.props.libraryItem.copyIfConditionsMet
+                    }
+                    onToggle={() => {
+                      SettingsDB.upsert(this.props.libraryItem._id, {
+                        $set: {
+                          copyIfConditionsMet: !this.props.libraryItem
+                            .copyIfConditionsMet,
+                        },
+                      });
+                    }}
+                  />
                 </div>
 
 
-<span className="buttonTextSize mr-2">Delete source file:</span>
-<div style={libButtonStyle}>
-         
-                <ToggleButton
-                  thumbStyle={borderRadiusStyle}
-                  trackStyle={borderRadiusStyle}
-                  value={
-                    this.props.libraryItem.folderToFolderConversionDeleteSource ===
-                    undefined
-                      ? false
-                      : !!this.props.libraryItem.folderToFolderConversionDeleteSource
-                  }
-                  onToggle={() => {
-                    SettingsDB.upsert(this.props.libraryItem._id, {
-                      $set: {
-                        folderToFolderConversionDeleteSource: !this.props.libraryItem
-                          .folderToFolderConversionDeleteSource,
-                      },
-                    });
-                  }}
-                />
+                <span className="buttonTextSize mr-2">Delete source file:</span>
+                <div style={libButtonStyle}>
+
+                  <ToggleButton
+                    thumbStyle={borderRadiusStyle}
+                    trackStyle={borderRadiusStyle}
+                    value={
+                      this.props.libraryItem.folderToFolderConversionDeleteSource ===
+                        undefined
+                        ? false
+                        : !!this.props.libraryItem.folderToFolderConversionDeleteSource
+                    }
+                    onToggle={() => {
+                      SettingsDB.upsert(this.props.libraryItem._id, {
+                        $set: {
+                          folderToFolderConversionDeleteSource: !this.props.libraryItem
+                            .folderToFolderConversionDeleteSource,
+                        },
+                      });
+                    }}
+                  />
                 </div>
               </p>
 
@@ -1748,7 +1792,7 @@ SettingsDB.insert(thisLibrary)
 
                 <center>
 
-                  {this.renderPlugins()}
+                  {this.state.pluginsStored ? this.renderPlugins() : null}
                   <div id={this.props.libraryItem._id + 'PluginStack'} className="scheduleContainer">
 
                   </div>
@@ -1762,10 +1806,10 @@ SettingsDB.insert(thisLibrary)
                   this.props.libraryItem.decisionMaker.pluginFilter
                     ? 'hidden'
                     : this.props.libraryItem.decisionMaker.videoFilter
-                    ? ''
-                    : this.props.libraryItem.decisionMaker.audioFilter
-                    ? ''
-                    : 'hidden'
+                      ? ''
+                      : this.props.libraryItem.decisionMaker.audioFilter
+                        ? ''
+                        : 'hidden'
                 }
               >
                 <br />
@@ -1775,7 +1819,7 @@ SettingsDB.insert(thisLibrary)
 
                 <center><p>Output file container: </p></center>
 
-               <center> <input
+                <center> <input
                   type="text"
                   name="container"
                   className="folderPaths3"
@@ -1800,7 +1844,7 @@ SettingsDB.insert(thisLibrary)
                   </p>{' '}
                 </center>
 
-               <center> <p>CLI arguments/preset: </p></center>
+                <center> <p>CLI arguments/preset: </p></center>
                 <input
                   type="text"
                   name="preset"
@@ -1825,9 +1869,9 @@ SettingsDB.insert(thisLibrary)
                     name="ExcludeSwitch"
                     checked={
                       this.props.libraryItem.decisionMaker.videoExcludeSwitch !=
-                      undefined
+                        undefined
                         ? this.props.libraryItem.decisionMaker
-                            .videoExcludeSwitch
+                          .videoExcludeSwitch
                         : true
                     }
                     onChange={event => this.handleChangeChkBx2(event, 'video')}
@@ -1837,9 +1881,9 @@ SettingsDB.insert(thisLibrary)
                     name="IncludeSwitch"
                     checked={
                       this.props.libraryItem.decisionMaker.videoExcludeSwitch !=
-                      undefined
+                        undefined
                         ? !this.props.libraryItem.decisionMaker
-                            .videoExcludeSwitch
+                          .videoExcludeSwitch
                         : false
                     }
                     onChange={event => this.handleChangeChkBx2(event, 'video')}
@@ -1847,7 +1891,7 @@ SettingsDB.insert(thisLibrary)
                   transcode videos in these codecs:
                 </p></center>
 
-               <center> <form onSubmit={this.addVideoCodecExclude.bind(this)}>
+                <center> <form onSubmit={this.addVideoCodecExclude.bind(this)}>
                   <input
                     type="text"
                     ref="addVideoCodecExcludeText"
@@ -1943,9 +1987,9 @@ SettingsDB.insert(thisLibrary)
                     name="ExcludeSwitch"
                     checked={
                       this.props.libraryItem.decisionMaker.audioExcludeSwitch !=
-                      undefined
+                        undefined
                         ? this.props.libraryItem.decisionMaker
-                            .audioExcludeSwitch
+                          .audioExcludeSwitch
                         : true
                     }
                     onChange={event => this.handleChangeChkBx2(event, 'audio')}
@@ -1955,9 +1999,9 @@ SettingsDB.insert(thisLibrary)
                     name="IncludeSwitch"
                     checked={
                       this.props.libraryItem.decisionMaker.audioExcludeSwitch !=
-                      undefined
+                        undefined
                         ? !this.props.libraryItem.decisionMaker
-                            .audioExcludeSwitch
+                          .audioExcludeSwitch
                         : false
                     }
                     onChange={event => this.handleChangeChkBx2(event, 'audio')}
@@ -2077,6 +2121,6 @@ export default withTracker(() => {
   Meteor.subscribe('SettingsDB');
 
   return {
-    settings: SettingsDB.find({}, {sort: {priority: 1}}).fetch(),
+    settings: SettingsDB.find({}, { sort: { priority: 1 } }).fetch(),
   };
 })(Folder);

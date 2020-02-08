@@ -1020,12 +1020,23 @@ function main() {
 
             var obj = plugin.details();
 
-
+            obj.source = pluginType
 
             plugins.push(obj)
 
           } catch (err) {
             console.log(err.stack)
+            var obj = {
+              Name: "Read error",
+              Type: "Read error",
+              Operation: "Read error",
+              Description: 'Read error',
+              Version: "Read error",
+              Link: "Read error",
+              source: pluginType,
+            }
+            plugins.push(obj)
+
           }
 
         });
@@ -1084,7 +1095,7 @@ function main() {
 
     },
 
-    'buildPluginStack'(plugins) {
+    'buildPluginStack'() {
 
       for (var i = 0; i < plugins.length; i++) {
 
@@ -1118,6 +1129,42 @@ function main() {
         }
       }
       return plugins
+
+
+    //
+
+    // for (var i = 0; i < plugins.length; i++) {
+
+    //   try {
+
+
+    //     var pluginLocalPath = path.join(process.cwd(), `/assets/app/plugins/${plugins[i].source}/` + plugins[i]._id + '.js')
+    //     fsextra.copySync(homePath + `/Tdarr/Plugins/${plugins[i].source}/` + plugins[i]._id + ".js", pluginLocalPath)
+
+    //     var plugin = importFresh(pluginLocalPath)
+
+    //     var obj = plugin.details();
+
+    //     plugins[i] = { ...plugins[i], ...obj };
+
+    //   } catch (err) {
+
+    //     var obj = {
+    //       Name: "Read error",
+    //       Type: "Read error",
+    //       Operation: "Read error",
+    //       Description: 'Read error',
+    //       Version: "Read error",
+    //       Link: "Read error"
+    //     }
+
+    //     //console.log(err.stack)
+
+    //     plugins[i] = { ...plugins[i], ...obj };
+
+    //   }
+    // }
+    // return plugins
 
     },
 
