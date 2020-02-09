@@ -20,12 +20,12 @@ jobs:
         if: matrix.os == 'ubuntu-18.04' || matrix.os == 'macos-10.15'
         run: |
           curl https://install.meteor.com/ | sh
-          npm install --production
+          npm install --production --no-optional
       - name: Install NPM and Meteor (win)
         if: matrix.os == 'windows-2019'
         run: |
           choco install meteor
-          npm install --production
+          npm install --production --no-optional
           echo "::add-path::C:\Users\runneradmin\AppData\Local\.meteor"
       
       - name: Build bundle
@@ -55,10 +55,17 @@ jobs:
               server/npm/node_modules/nodegit/vendor/plink.exe \
               server/npm/node_modules/nodegit/vendor/pageant.exe
 
-      - name: Pack ${{ matrix.os }}.zip
+      - name: Pack ${{ matrix.os }}.zip (sh)
+        if: matrix.os == 'ubuntu-18.04' || matrix.os == 'macos-10.15'
         run: |
             mkdir ../out
             zip -r -q ../out/tdarr-${{ matrix.os }}.zip ../tdarr-${{ matrix.os }}/
+
+      - name: Pack ${{ matrix.os }}.zip (win)
+        if: matrix.os == 'windows-2019'
+        run: |
+            mkdir ..\out
+            7z a -r ..\out\tdarr-${{ matrix.os }}.zip ..\tdarr-${{ matrix.os }}\
 
       - uses: actions/upload-artifact@v1
         with:
