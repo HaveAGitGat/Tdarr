@@ -26,6 +26,7 @@ jobs:
         run: |
           choco install meteor
           npm install --production
+          echo "::add-path::C:\Users\runneradmin\AppData\Local\.meteor"
       
       - name: Build bundle
         run: meteor build --server localhost:8265 --directory ../tdarr-${{ matrix.os }}
