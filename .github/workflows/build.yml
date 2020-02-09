@@ -47,7 +47,12 @@ jobs:
               server/npm/node_modules/nodegit/vendor/plink.exe \
               server/npm/node_modules/nodegit/vendor/pageant.exe
 
+      - name: Pack ${{ matrix.os }}.zip
+        run: |
+            mkdir ../out
+            zip -r -q ../out/tdarr-${{ matrix.os }}.zip ../tdarr-${{ matrix.os }}/
+
       - uses: actions/upload-artifact@v1
         with:
           name: tdarr-${{ matrix.os }}
-          path: ../tdarr-${{ matrix.os }}
+          path: ../out/tdarr-${{ matrix.os }}
