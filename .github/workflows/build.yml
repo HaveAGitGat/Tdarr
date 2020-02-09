@@ -55,4 +55,4 @@ jobs:
       - uses: actions/upload-artifact@v1
         with:
           name: tdarr-${{ matrix.os }}
-          path: ../out/tdarr-${{ matrix.os }}
+          path: ../out/
