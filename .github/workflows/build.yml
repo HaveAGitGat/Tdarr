@@ -7,7 +7,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-10.15, ubuntu-18.04]
+        os: [macos-10.15, ubuntu-18.04, windows-2019]
         node-version: [8.x]
     
     name: Build ${{ matrix.os }}
@@ -16,10 +16,17 @@ jobs:
       - uses: actions/setup-node@v1.1.2
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Install NPM and Meteor
+      - name: Install NPM and Meteor (sh)
+        if: matrix.os == 'ubuntu-18.04' || matrix.os == 'macos-10.15'
         run: |
           curl https://install.meteor.com/ | sh
           npm install --production
+      - name: Install NPM and Meteor (win)
+        if: matrix.os == 'windows-2019'
+        run: |
+          choco install meteor
+          npm install --production
+      
       - name: Build bundle
         run: meteor build --server localhost:8265 --directory ../tdarr-${{ matrix.os }}
 
