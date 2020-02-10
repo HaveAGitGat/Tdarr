@@ -71,3 +71,36 @@ jobs:
         with:
           name: tdarr-${{ matrix.os }}
           path: ../out/
+
+  Release:
+    needs: Build
+    runs-on: ubuntu-18.04
+    if: github.ref == 'refs/heads/dev' # TODO: CHANGE
+    steps:
+      - uses: actions/checkout@v2
+      - name: Get version and changelog
+        run: |
+            echo "::set-env name=version::$(grep "newVersion, setNewVersion" imports/ui/App.jsx | awk -F"[()]" '{print $2}')"
+            echo "::set-env name=relname::$(cat latest.txt | head -1)"
+            echo "::set-env name=changelog::$(tail -n +2 latest.txt)"
+
+      - name: Create tag
+        run:  git tag v${version}
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          tags: true
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: v${version}
+          release_name: ${relname}
+          body: ${changelog}
+          draft: false
+          prerelease: false
