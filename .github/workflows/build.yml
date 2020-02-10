@@ -86,7 +86,7 @@ jobs:
             echo "::set-env name=changelog::$(tail -n +2 latest.txt)"
 
       - name: Create tag
-        run:  git tag v${version}-Beta
+        run:  git tag v${version}-Beta -m ${changelog}
 
       - name: Push changes
         uses: ad-m/github-push-action@master
@@ -104,4 +104,4 @@ jobs:
           release_name: ${relname}
           body: ${changelog}
           draft: false
-          prerelease: false
+          prerelease: true
