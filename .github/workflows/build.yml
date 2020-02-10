@@ -3,6 +3,7 @@ on: [push]
 
 jobs:
   Build:
+    name: Build ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -10,13 +11,12 @@ jobs:
         os: [macos-10.15, ubuntu-18.04, windows-2019]
         node-version: [8.x]
 
-    name: Build ${{ matrix.os }}
     steps:
       - name: Checkout
-      - uses: actions/checkout@v2
+        uses: actions/checkout@v2
 
       - name: Setup node enviroment
-      - uses: actions/setup-node@v1.1.2
+        uses: actions/setup-node@v1.1.2
         with:
           node-version: ${{ matrix.node-version }}
 
@@ -73,7 +73,7 @@ jobs:
             7z a -r ..\out\tdarr-${{ matrix.os }}.zip ..\tdarr-${{ matrix.os }}\
 
       - name: Upload tdarr-${{ matrix.os }}.zip
-      - uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v1
         with:
           name: tdarr-${{ matrix.os }}
           path: ../out/
@@ -84,7 +84,7 @@ jobs:
     if: github.ref == 'refs/heads/master'
     steps:
       - name: Get version and changelog
-      - uses: actions/checkout@v2
+        uses: actions/checkout@v2
         id: meta_gathering
         run: |
             echo "::set-output name=version::v$(grep "newVersion, setNewVersion" imports/ui/App.jsx | awk -F"[()]" '{print $2}')-Beta"
@@ -107,7 +107,7 @@ jobs:
         run: mkdir ../upload
 
       - name: Download Linux artifict
-      - uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v1
         with:
           name: tdarr-ubuntu-18.04
           path: ../upload
@@ -123,7 +123,7 @@ jobs:
           asset_content_type: application/zip
 
       - name: Download macOS artifict
-      - uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v1
         with:
           name: tdarr-macos-10.15
           path: ../upload
@@ -139,7 +139,7 @@ jobs:
           asset_content_type: application/zip
 
       - name: Download Windows artifict
-      - uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v1
         with:
           name: tdarr-windows-2019
           path: ../upload
