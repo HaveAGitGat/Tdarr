@@ -78,34 +78,45 @@ jobs:
     runs-on: ubuntu-18.04
     if: github.ref == 'refs/heads/master'
     steps:
-      - uses: actions/checkout@v2
-      - name: Get version and changelog
-        id: meta_gathering
-        run: |
-            echo "::set-output name=version::$(grep "newVersion, setNewVersion" imports/ui/App.jsx | awk -F"[()]" '{print $2}')"
-            echo "::set-output name=relname::$(cat latest.txt | head -1)"
-            echo "::set-output name=changelog::$(tail -n +2 latest.txt)"
+      # - uses: actions/checkout@v2
+      # - name: Get version and changelog
+      #   id: meta_gathering
+      #   run: |
+      #       echo "::set-output name=version::$(grep "newVersion, setNewVersion" imports/ui/App.jsx | awk -F"[()]" '{print $2}')"
+      #       echo "::set-output name=relname::$(cat latest.txt | head -1)"
+      #       echo "::set-output name=changelog::$(tail -n +2 latest.txt)"
 
-      - name: Create tag
-        run:  |
-            git config --global user.email $(git log -1 --format="%ae")
-            git config --global user.name $(git log -1 --format="%an")
-            git tag v${{ steps.meta_gathering.outputs.version }}-Beta -F latest.txt
+      # - name: Create tag
+      #   run:  |
+      #       git config --global user.email $(git log -1 --format="%ae")
+      #       git config --global user.name $(git log -1 --format="%an")
+      #       git tag v${{ steps.meta_gathering.outputs.version }}-Beta -F latest.txt
 
-      - name: Push changes
-        uses: ad-m/github-push-action@master
+      # - name: Push changes
+      #   uses: ad-m/github-push-action@master
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     tags: true
+
+      # - name: Create Release
+      #   id: create_release
+      #   uses: actions/create-release@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+      #   with:
+      #     tag_name: v${{ steps.meta_gathering.outputs.version }}-Beta
+      #     release_name: ${{ steps.meta_gathering.outputs.relname }}
+      #     body: ${{ steps.meta_gathering.outputs.changelog }}
+      #     draft: true
+      #     prerelease: true
+
+      - name: Prep artifact download
+        run: mkdir ../upload ../prep
+
+      - uses: actions/download-artifact@v1
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          tags: true
+          name: tdarr-ubuntu-18.04
+          path: ../prep
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-        with:
-          tag_name: v${{ steps.meta_gathering.outputs.version }}-Beta
-          release_name: ${{ steps.meta_gathering.outputs.relname }}
-          body: ${{ steps.meta_gathering.outputs.changelog }}
-          draft: true
-          prerelease: true
+      - name: Unpack artifacts
+        run: ls ../prep
