@@ -294,10 +294,18 @@ class App extends Component {
   componentDidMount() {
 
     this.interval = setInterval(() => this.renderWorkers(), 500);
+    this.interval2 = setInterval(() =>this.getServerTime(), 1000);
 
 
   }
 
+
+  getServerTime = () => {
+    Meteor.call('getTimeNow', (error, result) => {
+      render(result, document.getElementById('serverTime'));
+    })
+
+  }
 
   renderWorkers = () => {
 
@@ -715,6 +723,7 @@ class App extends Component {
                 <td><p><b>Total</b>: {this.renderStat('DBTotalTime')}</p></td>
                 <td><p><b>Backlog</b>: {this.renderStat('DBQueue')}</p></td>
                 <td><p><b>Load</b>: {this.renderStat('DBLoadStatus')}</p></td>
+                <td><p><b>Server time</b>:<span id='serverTime'></span></p></td>
 
               </tr>
 

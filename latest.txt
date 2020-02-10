@@ -1,0 +1,39 @@
+Beta v1.104 release [7th Feb 2020]:
+
+Changes:
+
+-[New] Option to copy/paste plugin stack
+-[New] Option to rescan individual files
+-[New] Server time added to dashboard/schedule tab to help with schedule debugging
+
+
+-[New] Current plugins now referred to as 'Pre-processing' plugins
+-[New] onTranscodeError, onTranscodeSuccess availability added to Pre-processing plugins
+-[New]'Post-processing' plugins now possible - execute at very end of plugin stack
+
+
+
+-[New] More information passed to plugins (<b>custom inputs configurable from plugin stack UI</b>, library settings)
+
+
+
+-[New] Plugins can update/remove files in database
+-[New] Workers now show that a file is being copied after transcoding has finished
+-[New] Plugin stack progress added to workers. E.g (3/5)
+-[New] Cache cleaner run on startup
+-[New] HandBrakeCLI updated to 1.3.1 on Windows and tdarr_aio
+-[New] FFmpeg 4.2 is now default on tdarr_aio
+
+
+-[New][TESTING]Tdarr_Plugin_075a_Transcode_Customisable
+-[New][TESTING]Tdarr_Plugin_076a_re_order_audio_streams
+-[New][TESTING]Tdarr_Plugin_076b_re_order_subtitle_streams
+-[New][TESTING]Tdarr_Plugin_z18s_rename_files_based_on_codec
+-[New][TESTING]Tdarr_Plugin_43az_add_to_radarr
+-[New][TESTING]Tdarr_Plugin_e5c3_CnT_Keep_Preferred_Audio
+
+
+
+
+-[Fix] Prevent file scanner crashing on certain files
+-[Fix] Prevent problem with one database collection stopping other collection backups

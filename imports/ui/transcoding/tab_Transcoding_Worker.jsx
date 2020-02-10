@@ -132,6 +132,13 @@ export default class Worker extends Component {
 
               </div>
 
+              
+              <div className="grid-item" style={ButtonStyle}>
+
+                  <p>{this.props.worker.lastPluginDetails.number ? this.props.worker.lastPluginDetails.number : ''}</p>
+
+              </div>
+
 
 
 

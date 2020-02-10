@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { Button } from 'react-bootstrap';
 
+import LatestDevNotes from './tab_Dev_latest.jsx';
+
 
 
 
@@ -120,6 +122,8 @@ export default class App extends Component {
 
               <p>Change log</p>
 
+
+              <LatestDevNotes />
 
               <p>Beta v1.103 release [27th Jan 2020]:
             
