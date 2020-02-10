@@ -36,7 +36,7 @@ const tabs = [
   {path: '/', text: 'Dev', component: TabDev},
 ];
 
-const AppRouter = () => {
+export default AppRouter = () => {
 
 
 
@@ -171,4 +171,3 @@ const AppRouter = () => {
   );
 };
 
-export default AppRouter;

@@ -5,6 +5,8 @@ import { Button } from 'react-bootstrap';
 
 import LatestDevNotes from './tab_Dev_latest.jsx';
 
+import LocalImage from './Local_Image.jsx';
+
 
 
 
@@ -55,7 +57,7 @@ export default class App extends Component {
 
             <p align="center">
 
-              <img src="/images/icon_dark.png" />
+              <LocalImage link="/images/icon_dark.png"/>
 
             </p>
 
@@ -85,7 +87,7 @@ export default class App extends Component {
             <p></p>
 
             <p align="center">
-              <img src="/images/example_file_replacement.png" height="300" />
+              <LocalImage link="/images/example_file_replacement.png" height="300" />
             </p>
 
             <p></p>

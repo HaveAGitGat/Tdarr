@@ -9,6 +9,8 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import { render } from 'react-dom';
 import ReactDOM from 'react-dom'
 
+import LocalImage from './Local_Image.jsx';
+
 
 
 
@@ -63,7 +65,7 @@ export default class App extends Component {
 
 
 
-  runHelpCommand = (mode, input ) => {
+  runHelpCommand = (mode, input) => {
 
     var text = ReactDOM.findDOMNode(this.refs[input]).value.trim()
 
@@ -93,35 +95,37 @@ export default class App extends Component {
 
 
 
-          <center>
+        <center>
 
 
-            <table>
-
+          <table>
             <tbody>
-      <tr>
-        <td><div className="iconContainer">
-            <img src={"/images/icons/D.svg"} onClick={() => window.open("https://discord.gg/GF8X8cq", "_blank")} alt='icon' height="60" width="60" />
-          </div></td>
-        <td><div className="iconContainer">
-            <img src={"/images/icons/G.png"} onClick={() => window.open("https://github.com/HaveAGitGat/Tdarr/wiki", "_blank")} alt='icon' height="60" width="60" />
-          </div>
-
-</td>
-        <td>       <div className="iconContainer">
-            <img src={"/images/icons/R.png"} onClick={() => window.open("https://www.reddit.com/r/Tdarr", "_blank")} alt='icon' height="60" width="60" />
-          </div></td>
-      </tr>
-
+              <tr>
+                <td>
+                  <div className="iconContainer" onClick={() => window.open("https://discord.gg/GF8X8cq", "_blank")} >
+                    <LocalImage link="/images/icons/D.svg" alt='icon' height="60" width="60" />
+                  </div>
+                </td>
+                <td>
+                  <div className="iconContainer" onClick={() => window.open("https://github.com/HaveAGitGat/Tdarr/wiki", "_blank")}>
+                    <LocalImage link="/images/icons/G.png" alt='icon' height="60" width="60" />
+                  </div>
+                </td>
+                <td>
+                  <div className="iconContainer" onClick={() => window.open("https://www.reddit.com/r/Tdarr", "_blank")}>
+                    <LocalImage link="/images/icons/R.png" alt='icon' height="60" width="60" />
+                  </div>
+                </td>
+              </tr>
             </tbody>
-            </table>
+          </table>
 
 
-          </center>
+        </center>
 
 
-          <br></br>
-          <br></br>
+        <br></br>
+        <br></br>
 
 
         <p>unRAID: Enable NVENC: https://forums.unraid.net/topic/77813-plugin-linuxserverio-unraid-nvidia/</p>
@@ -131,69 +135,71 @@ export default class App extends Component {
         <br></br>
 
 
-      
 
 
 
 
-       
+
+
 
         <br />
 
         <div className="tabWrap" >
 
-<p>Terminal:</p>
-        <Tabs>
-          <TabList>
-            <Tab><p>FFmpeg</p></Tab>
-            <Tab><p>HandBrake</p></Tab>
-          </TabList>
+          <p>Terminal:</p>
+          <Tabs>
+            <TabList>
+              <Tab><p>FFmpeg</p></Tab>
+              <Tab><p>HandBrake</p></Tab>
+            </TabList>
 
-          <TabPanel><div className="tabContainer" >
-
-
+            <TabPanel><div className="tabContainer" >
 
 
 
-            <form onSubmit={(event) => {
-                
-              event.preventDefault();
-              this.runHelpCommand("ffmpeg", "ffmpegCommand")}}  >
-
-              <center>
-
-              <p>FFmpeg</p><input type="text" className="folderPaths" ref="ffmpegCommand" defaultValue={"--help"}></input>
-                <p></p>
-                <Button variant="outline-light" onClick={() => this.runHelpCommand("ffmpeg", "ffmpegCommand")} ><span className="buttonTextSize">Run</span></Button>
-              </center>
 
 
+              <form onSubmit={(event) => {
 
-            </form>
+                event.preventDefault();
+                this.runHelpCommand("ffmpeg", "ffmpegCommand")
+              }}  >
+
+                <center>
+
+                  <p>FFmpeg</p><input type="text" className="folderPaths" ref="ffmpegCommand" defaultValue={"--help"}></input>
+                  <p></p>
+                  <Button variant="outline-light" onClick={() => this.runHelpCommand("ffmpeg", "ffmpegCommand")} ><span className="buttonTextSize">Run</span></Button>
+                </center>
 
 
-            <div id="FFmpegHelp"></div>
-         </div> </TabPanel>
-          <TabPanel><div className="tabContainer" >
+
+              </form>
 
 
-            <form onSubmit={() => {
-              event.preventDefault();
-              this.runHelpCommand("handbrake", "handbrakeCommand")}}  >
+              <div id="FFmpegHelp"></div>
+            </div> </TabPanel>
+            <TabPanel><div className="tabContainer" >
 
-              <center>
-              <p>HandBrakeCLI</p><input type="text" className="folderPaths" ref="handbrakeCommand" defaultValue={"--help"}></input>
-                <p></p>
-                <Button variant="outline-light" onClick={() => this.runHelpCommand("handbrake", "handbrakeCommand")} ><span className="buttonTextSize">Run</span></Button>
 
-              </center>
+              <form onSubmit={() => {
+                event.preventDefault();
+                this.runHelpCommand("handbrake", "handbrakeCommand")
+              }}  >
 
-            </form>
+                <center>
+                  <p>HandBrakeCLI</p><input type="text" className="folderPaths" ref="handbrakeCommand" defaultValue={"--help"}></input>
+                  <p></p>
+                  <Button variant="outline-light" onClick={() => this.runHelpCommand("handbrake", "handbrakeCommand")} ><span className="buttonTextSize">Run</span></Button>
 
-            <div id="HandBrakeHelp"></div>
+                </center>
 
-         </div> </TabPanel>
-        </Tabs>
+              </form>
+
+              <div id="HandBrakeHelp"></div>
+
+            </div> </TabPanel>
+          </Tabs>
         </div>
 
 
