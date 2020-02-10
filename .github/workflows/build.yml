@@ -7,8 +7,7 @@ jobs:
 
     strategy:
       matrix:
-        #os: [macos-10.15, ubuntu-18.04, windows-2019]
-        os: [ubuntu-18.04]
+        os: [macos-10.15, ubuntu-18.04, windows-2019]
         node-version: [8.x]
     
     name: Build ${{ matrix.os }}
@@ -86,18 +85,6 @@ jobs:
             echo "::set-output name=relname::$(cat latest.txt | head -1)"
             echo "::set-output name=changelog::$(tail -n +2 latest.txt)"
 
-      # - name: Create tag
-      #   run:  |
-      #       git config --global user.email $(git log -1 --format="%ae")
-      #       git config --global user.name $(git log -1 --format="%an")
-      #       git tag ${{ steps.meta_gathering.outputs.version }} -F latest.txt
-
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          tags: true
-
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -113,12 +100,13 @@ jobs:
       - name: Prep artifact download
         run: mkdir ../upload
 
+      - name: Download Linux artifict
       - uses: actions/download-artifact@v1
         with:
           name: tdarr-ubuntu-18.04
           path: ../upload
 
-      - name: Upload Release Asset
+      - name: Upload Linux Asset
         id: upload-release-asset 
         uses: actions/upload-release-asset@v1
         env:
@@ -127,4 +115,38 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
           asset_path: ../upload/tdarr-ubuntu-18.04.zip
           asset_name: Tdarr-Linux-${{ steps.meta_gathering.outputs.version }}.zip
+          asset_content_type: application/zip
+
+      - name: Download macOS artifict
+      - uses: actions/download-artifact@v1
+        with:
+          name: tdarr-macos-10.15
+          path: ../upload
+
+      - name: Upload macOS Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: ../upload/tdarr-macos-10.15.zip
+          asset_name: Tdarr-macOS-${{ steps.meta_gathering.outputs.version }}.zip
+          asset_content_type: application/zip
+
+      - name: Download Windows artifict
+      - uses: actions/download-artifact@v1
+        with:
+          name: tdarr-windows-2019
+          path: ../upload
+
+      - name: Upload Windows Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: ../upload/tdarr-windows-2019.zip
+          asset_name: Tdarr-Windows-${{ steps.meta_gathering.outputs.version }}.zip
           asset_content_type: application/zip
