@@ -83,8 +83,10 @@ jobs:
     runs-on: ubuntu-18.04
     if: github.ref == 'refs/heads/master'
     steps:
-      - name: Get version and changelog
+      - name: Checkout
         uses: actions/checkout@v2
+
+      - name: Get version and changelog
         id: meta_gathering
         run: |
             echo "::set-output name=version::v$(grep "newVersion, setNewVersion" imports/ui/App.jsx | awk -F"[()]" '{print $2}')-Beta"
