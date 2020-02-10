@@ -34,8 +34,10 @@ jobs:
           echo ::add-path::C:\Users\runneradmin\AppData\Local\.meteor
       
       - name: Build bundle
-        run: meteor build --server localhost:8265 --directory ../tdarr-${{ matrix.os }}
-
+        run: |
+            meteor build --server localhost:8265 --directory ../tdarr-${{ matrix.os }}
+            echo "Done"
+      
       - name: Clean Linux
         if: matrix.os == 'ubuntu-18.04'
         run: |
