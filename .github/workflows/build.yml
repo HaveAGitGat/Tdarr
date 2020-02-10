@@ -107,5 +107,5 @@ jobs:
           tag_name: v${{ steps.meta_gathering.outputs.version }}-Beta
           release_name: ${{ steps.meta_gathering.outputs.relname }}
           body: ${{ steps.meta_gathering.outputs.changelog }}
-          draft: false
+          draft: true
           prerelease: true
