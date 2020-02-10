@@ -3,24 +3,29 @@ on: [push]
 
 jobs:
   Build:
+    name: Build ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
         os: [macos-10.15, ubuntu-18.04, windows-2019]
         node-version: [8.x]
-    
-    name: Build ${{ matrix.os }}
+
     steps:
+      - name: Checkout
       - uses: actions/checkout@v2
+
+      - name: Setup node enviroment
       - uses: actions/setup-node@v1.1.2
         with:
           node-version: ${{ matrix.node-version }}
+
       - name: Install NPM and Meteor (sh)
         if: matrix.os == 'ubuntu-18.04' || matrix.os == 'macos-10.15'
         run: |
           curl https://install.meteor.com/ | sh
           npm install --production --no-optional
+
       - name: Install NPM and Meteor (win)
         if: matrix.os == 'windows-2019'
         run: |
@@ -67,6 +72,7 @@ jobs:
             mkdir ..\out
             7z a -r ..\out\tdarr-${{ matrix.os }}.zip ..\tdarr-${{ matrix.os }}\
 
+      - name: Upload tdarr-${{ matrix.os }}.zip
       - uses: actions/upload-artifact@v1
         with:
           name: tdarr-${{ matrix.os }}
@@ -77,8 +83,8 @@ jobs:
     runs-on: ubuntu-18.04
     if: github.ref == 'refs/heads/master'
     steps:
-      - uses: actions/checkout@v2
       - name: Get version and changelog
+      - uses: actions/checkout@v2
         id: meta_gathering
         run: |
             echo "::set-output name=version::v$(grep "newVersion, setNewVersion" imports/ui/App.jsx | awk -F"[()]" '{print $2}')-Beta"
