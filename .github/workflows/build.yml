@@ -76,7 +76,7 @@ jobs:
   Release:
     needs: Build
     runs-on: ubuntu-18.04
-    if: github.ref == 'refs/heads/dev' # TODO: CHANGE
+    if: github.ref == 'refs/heads/master' # TODO: CHANGE
     steps:
       - uses: actions/checkout@v2
       - name: Get version and changelog
