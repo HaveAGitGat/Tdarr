@@ -82,7 +82,7 @@ jobs:
       - name: Get version and changelog
         id: meta_gathering
         run: |
-            echo "::set-output name=version::$(grep "newVersion, setNewVersion" imports/ui/App.jsx | awk -F"[()]" '{print $2}')"
+            echo "::set-output name=version::v$(grep "newVersion, setNewVersion" imports/ui/App.jsx | awk -F"[()]" '{print $2}')-Beta"
             echo "::set-output name=relname::$(cat latest.txt | head -1)"
             echo "::set-output name=changelog::$(tail -n +2 latest.txt)"
 
@@ -90,7 +90,7 @@ jobs:
         run:  |
             git config --global user.email $(git log -1 --format="%ae")
             git config --global user.name $(git log -1 --format="%an")
-            git tag v{{ steps.meta_gathering.outputs.version }}-Beta -F latest.txt
+            git tag ${{ steps.meta_gathering.outputs.version }} -F latest.txt
 
       - name: Push changes
         uses: ad-m/github-push-action@master
@@ -104,7 +104,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: v${{ steps.meta_gathering.outputs.version }}-Beta
+          tag_name: ${{ steps.meta_gathering.outputs.version }}
           release_name: ${{ steps.meta_gathering.outputs.relname }}
           body: ${{ steps.meta_gathering.outputs.changelog }}
           draft: false
@@ -126,5 +126,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
           asset_path: ./tdarr-ubuntu-18.04.zip
-          asset_name: Tdarr-Linux-v${{ steps.meta_gathering.outputs.version }}-Beta.zip
+          asset_name: Tdarr-Linux-${{ steps.meta_gathering.outputs.version }}.zip
           asset_content_type: application/zip
