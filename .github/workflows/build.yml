@@ -20,20 +20,22 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Install NPM and Meteor (sh)
+      - name: Install Meteor (sh)
         if: matrix.os == 'ubuntu-18.04' || matrix.os == 'macos-10.15'
         run: |
           curl https://install.meteor.com/ | sh
-          npm install --production --no-optional
-          meteor build --server localhost:8265 --directory ../tdarr-${{ matrix.os }}
 
-      - name: Install NPM and Meteor (win)
+      - name: Install Meteor (win)
         if: matrix.os == 'windows-2019'
         run: |
           choco install meteor -y
-          npm install --production --no-optional
           echo ::add-path::C:\Users\runneradmin\AppData\Local\.meteor
+      
+      - name: Build bundle
+        run: |
+          npm install --production --no-optional
           meteor build --server localhost:8265 --directory ../tdarr-${{ matrix.os }}
+          echo "Done"
       
       - name: Clean Linux
         if: matrix.os == 'ubuntu-18.04'
