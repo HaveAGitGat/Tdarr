@@ -2,13 +2,13 @@ name: Build bundles
 on: [push]
 
 jobs:
-  Build:
+  Build_win:
     name: Build ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
-        os: [macos-10.15, ubuntu-18.04, windows-2019]
+        os: [windows-2019]
         node-version: [8.x]
 
     steps:
@@ -20,27 +20,52 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Install NPM, Meteor and build (sh)
-        if: matrix.os == 'ubuntu-18.04' || matrix.os == 'macos-10.15'
+      - name: Install NPM and Meteor
+        run: |
+          choco install meteor -y
+          npm install --production
+          echo ::add-path::C:\Users\runneradmin\AppData\Local\.meteor
+      
+      - name: Build bundle
+        shell: cmd
+        run: |
+          meteor build --server localhost:8265 --directory ..\tdarr-${{ matrix.os }}
+
+      - name: Pack ${{ matrix.os }}.zip
+        run: |
+            mkdir ..\out
+            7z a -r ..\out\tdarr-${{ matrix.os }}.zip ..\tdarr-${{ matrix.os }}
+
+      - name: Upload tdarr-${{ matrix.os }}.zip
+        uses: actions/upload-artifact@v1
+        with:
+          name: tdarr-${{ matrix.os }}
+          path: ..\out\
+
+  Build_sh:
+    name: Build ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [macos-10.15, ubuntu-18.04]
+        node-version: [8.x]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup node enviroment
+        uses: actions/setup-node@v1.1.2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install NPM, Meteor and build
         run: |
           curl https://install.meteor.com/ | sh
           npm install --production
           meteor build --server localhost:8265 --directory ../tdarr-${{ matrix.os }}
 
-      - name: Install NPM, Meteor (win)
-        if: matrix.os == 'windows-2019'
-        run: |
-          choco install meteor -y
-          echo ::add-path::C:\Users\runneradmin\AppData\Local\.meteor
-      
-      - name: Build bundle (win)
-        if: matrix.os == 'windows-2019'
-        shell: cmd
-        run: |
-          npm install --production
-          meteor build --server localhost:8265 --directory ../tdarr-${{ matrix.os }}
-
-      
       - name: Clean Linux
         if: matrix.os == 'ubuntu-18.04'
         run: |
@@ -71,20 +96,14 @@ jobs:
             mkdir ../out
             zip -r -q ../out/tdarr-${{ matrix.os }}.zip ../tdarr-${{ matrix.os }}/
 
-      - name: Pack ${{ matrix.os }}.zip (win)
-        if: matrix.os == 'windows-2019'
-        run: |
-            mkdir ..\out
-            7z a -r ..\out\tdarr-${{ matrix.os }}.zip ..\tdarr-${{ matrix.os }}\
-
       - name: Upload tdarr-${{ matrix.os }}.zip
         uses: actions/upload-artifact@v1
         with:
           name: tdarr-${{ matrix.os }}
-          path: ../out/
+          path: ../out
 
   Release:
-    needs: Build
+    needs: [Build_win, Build_sh]
     runs-on: ubuntu-18.04
     if: github.ref == 'refs/heads/master'
     steps:
@@ -111,13 +130,13 @@ jobs:
           prerelease: true
 
       - name: Prep artifact download
-        run: mkdir /upload
+        run: mkdir ../upload
 
       - name: Download Linux artifict
         uses: actions/download-artifact@v1
         with:
           name: tdarr-ubuntu-18.04
-          path: /upload
+          path: ../upload
 
       - name: Upload Linux Asset
         uses: actions/upload-release-asset@v1
@@ -125,7 +144,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: /upload/tdarr-ubuntu-18.04.zip
+          asset_path: ../upload/tdarr-ubuntu-18.04.zip
           asset_name: Tdarr-Linux-${{ steps.meta_gathering.outputs.version }}.zip
           asset_content_type: application/zip
 
@@ -133,7 +152,7 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: tdarr-macos-10.15
-          path: /upload
+          path: ../upload
 
       - name: Upload macOS Asset
         uses: actions/upload-release-asset@v1
@@ -141,7 +160,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} 
-          asset_path: /upload/tdarr-macos-10.15.zip
+          asset_path: ../upload/tdarr-macos-10.15.zip
           asset_name: Tdarr-macOS-${{ steps.meta_gathering.outputs.version }}.zip
           asset_content_type: application/zip
 
@@ -149,7 +168,7 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: tdarr-windows-2019
-          path: /upload
+          path: ../upload
 
       - name: Upload Windows Asset
         uses: actions/upload-release-asset@v1
@@ -157,6 +176,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: /upload/tdarr-windows-2019.zip
+          asset_path: ../upload/tdarr-windows-2019.zip
           asset_name: Tdarr-Windows-${{ steps.meta_gathering.outputs.version }}.zip
           asset_content_type: application/zip
