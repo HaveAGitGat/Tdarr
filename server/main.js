@@ -56,7 +56,7 @@ var filesBeingProcessed = []
 
 var backupStatus = false
 
-var hasFilesDBChanged = true
+var hasDBChanged = true
 
 var workerLaunched = 0
 
@@ -334,8 +334,7 @@ Meteor.methods({
     }
 
 
-    Meteor.call('FilesDBHasChanged', (error, result) => { })
-
+    Meteor.call('DBHasChanged', (error, result) => { })
 
   },
 
@@ -881,13 +880,15 @@ function main() {
 
   Meteor.methods({
 
-    'FilesDBHasChanged'() {
+    'DBHasChanged'() {
+
+      //console.log('DBHasChanged')
 
       setTimeout(Meteor.bindEnvironment(setHasFilesDBChanged), 1000);
 
       function setHasFilesDBChanged() {
 
-        hasFilesDBChanged = true
+        hasDBChanged = true
 
       }
 
@@ -3931,12 +3932,12 @@ function main() {
       if (doTablesUpdate == false) {
 
 
-      } else if (hasFilesDBChanged === true) {
+      } else if (hasDBChanged === true) {
 
         //console.log('Updating queues')
 
 
-        hasFilesDBChanged = false
+        hasDBChanged = false
 
         addFilesToDB = false
 
@@ -4718,19 +4719,19 @@ function main() {
     added: function (document) {
       if (!initialising) {
         //console.log('doc added');
-        Meteor.call('FilesDBHasChanged', (error, result) => { })
+        Meteor.call('DBHasChanged', (error, result) => { })
       }
     },
     changed: function (new_document, old_document) {
       if (!initialising) {
         //console.log('doc changed');
-        Meteor.call('FilesDBHasChanged', (error, result) => { })
+        Meteor.call('DBHasChanged', (error, result) => { })
       }
     },
     removed: function (document) {
       if (!initialising) {
         //console.log('doc removed');
-        Meteor.call('FilesDBHasChanged', (error, result) => { })
+        Meteor.call('DBHasChanged', (error, result) => { })
       }
     }
   });
@@ -4739,19 +4740,19 @@ function main() {
     added: function (document) {
       if (!initialising) {
         //console.log('doc added');
-        Meteor.call('FilesDBHasChanged', (error, result) => { })
+        Meteor.call('DBHasChanged', (error, result) => { })
       }
     },
     changed: function (new_document, old_document) {
       if (!initialising) {
         //console.log('doc changed');
-        Meteor.call('FilesDBHasChanged', (error, result) => { })
+        Meteor.call('DBHasChanged', (error, result) => { })
       }
     },
     removed: function (document) {
       if (!initialising) {
         //console.log('doc removed');
-        Meteor.call('FilesDBHasChanged', (error, result) => { })
+        Meteor.call('DBHasChanged', (error, result) => { })
       }
     }
   });
