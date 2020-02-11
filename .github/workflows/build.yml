@@ -20,15 +20,15 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Install NPM and Meteor
+      - name: Install Meteor
         run: |
           choco install meteor -y
-          npm install --production
           echo ::add-path::C:\Users\runneradmin\AppData\Local\.meteor
       
-      - name: Build bundle
+      - name: Initialize NPM, and build bundle
         shell: cmd
         run: |
+          npm install --production
           meteor build --server localhost:8265 --directory .\tdarr-${{ matrix.os }}
 
       - name: Pack ${{ matrix.os }}.zip
