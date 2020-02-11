@@ -13,30 +13,33 @@ export default class App extends Component {
   constructor(props) {
     super(props);
 
-    this.state = { isShowState: true }
+    this.state = {
+      lastUpdate: 0,
+    }
 
   }
 
   triggerLoadState = () => {
 
+    var tempObj = {
+      lastUpdate: (new Date())
+
+    }
+    Meteor.call('modifyFileDB', 'update', this.props.file.file, tempObj, (error, result) => { })
 
     this.setState({
-      ...this.state,
-      isShowState: false,
-      isLoadState: true
+      lastUpdate: (new Date()).getTime(),
     })
 
-    setTimeout(this.reset, 1000);
+    // setTimeout(this.reset, 1000);
   }
 
-  reset = () => {
-    this.setState({
-      ...this.state,
-      isShowState: true,
-      isLoadState: false
-    })
+  // reset = () => {
+  //   this.setState({
+  //     lastUpdate:0,
+  //   })
 
-  }
+  // }
 
 
 
@@ -48,31 +51,30 @@ export default class App extends Component {
 
     // }
 
+    var serverTime = this.props.time
+    var lastUpdate = this.props.file.lastUpdate ? this.props.file.lastUpdate.getTime() : 0
+
+
     if (this.props.type == "updateDBAction") {
 
       return (
 
         <div>
-          {this.state.isShowState && <Button variant="outline-light" onClick={() => {
+          {serverTime >= this.state.lastUpdate ? <Button variant="outline-light" onClick={() => {
 
 
             this.triggerLoadState();
 
 
-            Meteor.call('modifyFileDB','update',this.props.file,this.props.obj, (error, result) => {})
+            Meteor.call('modifyFileDB', 'update', this.props.file.file, this.props.obj, (error, result) => { })
 
-          }}><span className="buttonTextSize">{this.props.symbol}</span></Button>}
+          }}><span className="buttonTextSize">{this.props.symbol}</span></Button> : <ClipLoader
 
-          {this.state.isLoadState && <ClipLoader
-
-            sizeUnit={"px"}
-            size={25}
-            color={'white'}
-            loading={true}
-          />}
-
-
-
+              sizeUnit={"px"}
+              size={25}
+              color={'white'}
+              loading={true}
+            />}
 
 
         </div>
@@ -86,23 +88,25 @@ export default class App extends Component {
       return (
 
         <div>
-          {this.state.isShowState && <Button variant="outline-light" onClick={() => {
+          {true ? <Button variant="outline-light" onClick={() => {
 
 
             this.triggerLoadState();
 
-           Meteor.call('createSample', this.props.file, (error, result) => {})
+            Meteor.call('createSample', this.props.file.file, (error, result) => {
+              alert('Sample created for '+this.props.file.file)
+             })
 
 
-          }}><span className="buttonTextSize">{this.props.symbol}</span></Button>}
+          }}><span className="buttonTextSize">{this.props.symbol}</span></Button> : <ClipLoader
 
-          {this.state.isLoadState && <ClipLoader
+              sizeUnit={"px"}
+              size={25}
+              color={'white'}
+              loading={true}
+            />}
 
-            sizeUnit={"px"}
-            size={25}
-            color={'white'}
-            loading={true}
-          />}
+
 
 
 
@@ -119,65 +123,67 @@ export default class App extends Component {
       return (
 
         <div>
-          {this.state.isShowState && <Button variant="outline-light" onClick={() => {
+          {true ? <Button variant="outline-light" onClick={() => {
 
 
             this.triggerLoadState();
 
-            Meteor.call('modifyFileDB','removeOne',this.props.file._id, (error, result) => {})
-           
+            Meteor.call('modifyFileDB', 'removeOne', this.props.file._id, (error, result) => { })
 
-          }}><span className="buttonTextSize">{this.props.symbol}</span></Button>}
 
-          {this.state.isLoadState && <ClipLoader
+          }}><span className="buttonTextSize">{this.props.symbol}</span></Button> : <ClipLoader
 
-            sizeUnit={"px"}
-            size={25}
-            color={'white'}
-            loading={true}
-          />}
-
-        </div>
-
-      )}
-
-      if (this.props.type == "reScan") {
-
-        return (
-  
-          <div>
-            {this.state.isShowState && <Button variant="outline-light" onClick={() => {
-  
-  
-              this.triggerLoadState();
-  
-             Meteor.call('modifyFileDB','removeOne',this.props.file._id, (error, result) => {})
-             
-              var obj = {
-                HealthCheck: "Queued",
-                TranscodeDecisionMaker: "Queued",
-                cliLog: "",
-                bumped: false,
-                history: ""
-              }
-              Meteor.call('scanFiles', this.props.file.DB, [this.props.file._id], 0, 3, obj, function (error, result) { });
-
-  
-            }}><span className="buttonTextSize">{this.props.symbol}</span></Button>}
-  
-            {this.state.isLoadState && <ClipLoader
-  
               sizeUnit={"px"}
               size={25}
               color={'white'}
               loading={true}
             />}
-  
-          </div>
-  
-        )}
 
-    
+
+
+        </div>
+
+      )
+    }
+
+    if (this.props.type == "reScan") {
+
+      return (
+
+        <div>
+          {true ? <Button variant="outline-light" onClick={() => {
+
+
+            this.triggerLoadState();
+
+            Meteor.call('modifyFileDB', 'removeOne', this.props.file._id, (error, result) => { })
+
+            var obj = {
+              HealthCheck: "Queued",
+              TranscodeDecisionMaker: "Queued",
+              cliLog: "",
+              bumped: false,
+              history: ""
+            }
+            Meteor.call('scanFiles', this.props.file.DB, [this.props.file._id], 0, 3, obj, function (error, result) { });
+
+
+          }}><span className="buttonTextSize">{this.props.symbol}</span></Button> : <ClipLoader
+
+              sizeUnit={"px"}
+              size={25}
+              color={'white'}
+              loading={true}
+            />}
+
+
+
+        </div>
+
+      )
+    }
+
+
 
   }
 }

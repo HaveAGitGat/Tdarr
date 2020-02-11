@@ -29,6 +29,17 @@ import { Markup } from 'interweave';
 
 
 
+import {
+  BumpButton,
+  SkipButton,
+  SkipHealthCheckButton,
+  CancelBumpButton,
+  RedoButton,
+  ForceProcessingButton,
+  CancelForceProcessingButton,
+  IgnoreButton
+} from '../ButtonLibrary/Buttons.jsx'
+
 
 
 var ButtonStyle = {
@@ -46,7 +57,12 @@ class App extends Component {
   constructor(props) {
     super(props);
 
-    this.state = { value: true, lowCPU: true, x: 1, }
+    this.state = {
+      value: true,
+      lowCPU: true,
+      x: 1,
+      lastQueueUpdateTime: 1
+    }
 
 
 
@@ -56,54 +72,54 @@ class App extends Component {
 
 
 
-  alterWorkerLimit(process,workerType){
+  alterWorkerLimit(process, workerType) {
 
 
 
     var globsettings = this.props.globalSettings[0]
-    globsettings= globsettings
+    globsettings = globsettings
 
-    if(process == "increase"){
+    if (process == "increase") {
 
 
       GlobalSettingsDB.update("globalsettings",
-          {
-            $inc: { [workerType]: 1 }
-          }
-        );
-
-    }else if(process == "decrease"){
-
-      if(globsettings[workerType] > 0){
-
-        GlobalSettingsDB.update("globalsettings",
         {
-          $inc: { [workerType]: -1 }
+          $inc: { [workerType]: 1 }
         }
       );
+
+    } else if (process == "decrease") {
+
+      if (globsettings[workerType] > 0) {
+
+        GlobalSettingsDB.update("globalsettings",
+          {
+            $inc: { [workerType]: -1 }
+          }
+        );
 
       }
     }
   }
 
 
-  renderSlider(slider,sliderColour,sliderColour2) {
+  renderSlider(slider, sliderColour, sliderColour2) {
 
-    if(slider == 'generalWorkerLimit'){
+    if (slider == 'generalWorkerLimit') {
 
       var title = 'General'
 
-    }else if(slider == 'transcodeWorkerLimit'){
+    } else if (slider == 'transcodeWorkerLimit') {
 
       var title = 'Transcode'
 
 
-    }else if(slider == 'healthcheckWorkerLimit'){
+    } else if (slider == 'healthcheckWorkerLimit') {
 
       var title = 'Health check'
 
     }
-    
+
 
     return this.props.globalSettings.map((item, i) => (
 
@@ -111,7 +127,7 @@ class App extends Component {
 
 
         {/* <center> <p>{title}({item[slider]})</p></center> */}
-      
+
         <Slider
           axis="x"
           xstep={1}
@@ -133,14 +149,14 @@ class App extends Component {
 
           styles={{
             track: {
-              width:'100%',
+              width: '100%',
               opacity: 1,
               backgroundColor: sliderColour2,
             },
             active: {
               opacity: 1,
               backgroundColor: sliderColour,
-             
+
             },
             thumb: {
               width: 25,
@@ -151,7 +167,7 @@ class App extends Component {
             }
           }}
         />
-        
+
       </span>
 
     ));
@@ -192,28 +208,28 @@ class App extends Component {
 
   renderLowCPUButton() {
 
-   
+
     return this.props.globalSettings.map((item, i) => (
 
       <ToggleButton
-      thumbStyle={borderRadiusStyle}
-      trackStyle={borderRadiusStyle}
-      
-      value={item.lowCPUPriority} onToggle={() => {
+        thumbStyle={borderRadiusStyle}
+        trackStyle={borderRadiusStyle}
 
-        GlobalSettingsDB.upsert('globalsettings',
-          {
-            $set: {
-              lowCPUPriority: !item.lowCPUPriority,
+        value={item.lowCPUPriority} onToggle={() => {
+
+          GlobalSettingsDB.upsert('globalsettings',
+            {
+              $set: {
+                lowCPUPriority: !item.lowCPUPriority,
+              }
             }
-          }
-        );
-      }
-      } />
+          );
+        }
+        } />
     ));
   }
 
-  renderSortBox(type){
+  renderSortBox(type) {
 
     return this.props.globalSettings.map((item, i) => (
 
@@ -248,7 +264,7 @@ class App extends Component {
 
       <Checkbox name={type} checked={item[type]} onChange={(event) => {
 
-        if(type == `alternateLibraries` && event.target.checked){
+        if (type == `alternateLibraries` && event.target.checked) {
 
           GlobalSettingsDB.upsert(
             "globalsettings",
@@ -258,16 +274,16 @@ class App extends Component {
               }
             }
           );
-          
+
         }
-    
-        if(type == `prioritiseLibraries` && event.target.checked){
-    
+
+        if (type == `prioritiseLibraries` && event.target.checked) {
+
           GlobalSettingsDB.upsert(
             "globalsettings",
             {
               $set: {
-               alternateLibraries: false,
+                alternateLibraries: false,
               }
             }
           );
@@ -293,10 +309,15 @@ class App extends Component {
 
   componentDidMount() {
 
-    this.interval = setInterval(() => this.renderWorkers(), 500);
-    this.interval2 = setInterval(() =>this.getServerTime(), 1000);
+    this.interval = setInterval(() => this.renderWorkers(), 500)
+    this.interval2 = setInterval(() => this.getServerTime(), 1000)
 
 
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
+    clearInterval(this.interval2);
   }
 
 
@@ -306,6 +327,8 @@ class App extends Component {
     })
 
   }
+
+
 
   renderWorkers = () => {
 
@@ -347,6 +370,31 @@ class App extends Component {
 
 
 
+    try {
+
+      const g = GlobalSettingsDB.find({}).fetch()[0]
+
+      if (g.lastQueueUpdateTime != undefined) {
+
+        var a = this.state.lastQueueUpdateTime
+        var b = g.lastQueueUpdateTime
+
+        if (a != b) {
+          this.setState({
+            lastQueueUpdateTime: b,
+          })
+
+        }
+
+      }
+    } catch (err) {
+
+    }
+
+
+
+
+
     var tables = this.props.clientDB
 
 
@@ -384,46 +432,46 @@ class App extends Component {
       if (mode == "TranscodeDecisionMaker") {
 
 
-   
-       
 
-      return data.map((row, i) => {
 
-        if(row.file_size != undefined){
-          var file_size =  parseFloat((row.file_size/1000).toPrecision(4))
-        }else{
-          var file_size = "-"
+
+        return data.map((row, i) => {
+
+          if (row.file_size != undefined) {
+            var file_size = parseFloat((row.file_size / 1000).toPrecision(4))
+          } else {
+            var file_size = "-"
+          }
+
+          // <td>{row.bumped ? row.bumped.toISOString() : "-"}</td>
+
+
+
+          return <tr key={row._id}>
+            <td><p>{i + 1}</p></td><td><p>{row.file}</p></td><td><p>{row.forceProcessing === true ? <CancelForceProcessingButton file={row} lastQueueUpdateTime={this.state.lastQueueUpdateTime} /> : <ForceProcessingButton file={row} lastQueueUpdateTime={this.state.lastQueueUpdateTime} />}</p></td><td><p>{row.video_codec_name}</p></td><td><p>{row.video_resolution}</p></td><td><p>{file_size}</p></td><td><p>{!(row.bumped instanceof Date) ? <BumpButton file={row} lastQueueUpdateTime={this.state.lastQueueUpdateTime} /> : <CancelBumpButton file={row} lastQueueUpdateTime={this.state.lastQueueUpdateTime} />}</p></td><td><p><SkipButton file={row} lastQueueUpdateTime={this.state.lastQueueUpdateTime} /></p></td>
+          </tr>
+
         }
-
-        // <td>{row.bumped ? row.bumped.toISOString() : "-"}</td>
-
-   
-
-       return <tr key={row._id}>
-          <td><p>{i + 1}</p></td><td><p>{row.file}</p></td><td><p>{row.forceProcessing === true ? this.renderCancelForceProcessingButton(row.file) : this.renderForceProcessingButton(row.file)}</p></td><td><p>{row.video_codec_name}</p></td><td><p>{row.video_resolution}</p></td><td><p>{file_size}</p></td><td><p>{ !(row.bumped instanceof Date) ? this.renderBumpButton(row.file):this.renderCancelBumpButton(row.file) }</p></td><td><p>{this.renderSkipButton(row.file)}</p></td>
-          </tr>
-
-      }
-      );
+        );
 
 
 
 
-    }else{
+      } else {
 
-      return data.map((row, i) => {
+        return data.map((row, i) => {
 
-       return <tr key={row._id}>
-          <td><p>{i + 1}</p></td><td><p>{row.file}</p></td><td><p>{!(row.bumped instanceof Date) ? this.renderBumpButton(row.file):this.renderCancelBumpButton(row.file) }</p></td><td><p>{this.renderSkipHealthCheckButton(row.file)}</p></td>
+          return <tr key={row._id}>
+            <td><p>{i + 1}</p></td><td><p>{row.file}</p></td><td><p>{!(row.bumped instanceof Date) ? <BumpButton file={row} lastQueueUpdateTime={this.state.lastQueueUpdateTime} /> : <CancelBumpButton file={row} lastQueueUpdateTime={this.state.lastQueueUpdateTime} />}</p></td><td><p><SkipHealthCheckButton file={row} lastQueueUpdateTime={this.state.lastQueueUpdateTime} /></p></td>
           </tr>
 
 
 
 
-      }
-      );
+        }
+        );
 
-    }
+      }
     }
 
     if (type == "success") {
@@ -434,30 +482,30 @@ class App extends Component {
 
         return data.map((row, i) => {
 
-          if(row.lastTranscodeDate != undefined){
+          if (row.lastTranscodeDate != undefined) {
             var lastTranscodeDate = this.toTime(row.lastTranscodeDate)
-          }else{
+          } else {
             var lastTranscodeDate = "-"
           }
 
-          if(row.oldSize != undefined){
-            var oldSize =  parseFloat((row.oldSize).toPrecision(4))
-          }else{
+          if (row.oldSize != undefined) {
+            var oldSize = parseFloat((row.oldSize).toPrecision(4))
+          } else {
             var oldSize = "-"
           }
 
-          if(row.newSize != undefined){
-            var newSize  =  parseFloat((row.newSize).toPrecision(4))
-          }else{
+          if (row.newSize != undefined) {
+            var newSize = parseFloat((row.newSize).toPrecision(4))
+          } else {
             var newSize = "-"
           }
 
 
 
-   
 
-         return <tr key={row._id}>
-            <td><p>{i + 1}</p></td><td><p>{lastTranscodeDate}</p></td><td><p>{row.file}</p></td><td><p>{row.video_codec_name}</p></td><td><p>{row.video_resolution}</p></td><td><p>{row.TranscodeDecisionMaker}</p></td><td><p>{oldSize}</p></td><td><p>{newSize}</p></td><td><p>{this.renderRedoButton(row.file, mode)}</p></td><td><p>{this.renderInfoButton(row.cliLog)}</p></td><td><p>{this.renderHistoryButton(row)}</p></td>
+
+          return <tr key={row._id}>
+            <td><p>{i + 1}</p></td><td><p>{lastTranscodeDate}</p></td><td><p>{row.file}</p></td><td><p>{row.video_codec_name}</p></td><td><p>{row.video_resolution}</p></td><td><p>{row.TranscodeDecisionMaker}</p></td><td><p>{oldSize}</p></td><td><p>{newSize}</p></td><td><p><RedoButton file={row} lastQueueUpdateTime={this.state.lastQueueUpdateTime} mode={mode} /></p></td><td><p>{this.renderInfoButton(row.cliLog)}</p></td><td><p>{this.renderHistoryButton(row)}</p></td>
           </tr>
 
 
@@ -467,14 +515,14 @@ class App extends Component {
 
         return data.map((row, i) => {
 
-          if(row.lastHealthCheckDate != undefined){
+          if (row.lastHealthCheckDate != undefined) {
             var lastHealthCheckDate = this.toTime(row.lastHealthCheckDate)
-          }else{
+          } else {
             var lastHealthCheckDate = "-"
           }
-  
-         return <tr key={row._id}>
-            <td><p>{i + 1}</p></td><td><p>{lastHealthCheckDate}</p></td><td><p>{row.file}</p></td><td><p>{this.renderRedoButton(row.file, mode)}</p></td><td><p>{this.renderInfoButton(row.cliLog)}</p></td>
+
+          return <tr key={row._id}>
+            <td><p>{i + 1}</p></td><td><p>{lastHealthCheckDate}</p></td><td><p>{row.file}</p></td><td><p><RedoButton file={row} lastQueueUpdateTime={this.state.lastQueueUpdateTime} mode={mode} /></p></td><td><p>{this.renderInfoButton(row.cliLog)}</p></td>
           </tr>
 
 
@@ -488,39 +536,39 @@ class App extends Component {
 
       if (mode == "TranscodeDecisionMaker") {
 
-      return data.map((row, i) => {
+        return data.map((row, i) => {
 
-        if(row.lastTranscodeDate != undefined){
-          var lastTranscodeDate = this.toTime(row.lastTranscodeDate)
-        }else{
-          var lastTranscodeDate = "-"
-        }
-
-
-       return <tr key={row._id}>
-          <td><p>{i + 1}</p></td><td><p>{lastTranscodeDate}</p></td><td><p>{row.file}</p></td><td><p>{this.renderRedoButton(row.file, mode)}</p></td><td><p>{this.renderIgnoreButton(row.file, mode)}</p></td><td><p>{this.renderInfoButton(row.cliLog)}</p></td>
-        </tr>
+          if (row.lastTranscodeDate != undefined) {
+            var lastTranscodeDate = this.toTime(row.lastTranscodeDate)
+          } else {
+            var lastTranscodeDate = "-"
+          }
 
 
-      });
+          return <tr key={row._id}>
+            <td><p>{i + 1}</p></td><td><p>{lastTranscodeDate}</p></td><td><p>{row.file}</p></td><td><p><RedoButton file={row} lastQueueUpdateTime={this.state.lastQueueUpdateTime} mode={mode} /></p></td><td><p><IgnoreButton file={row} lastQueueUpdateTime={this.state.lastQueueUpdateTime} mode={mode} /></p></td><td><p>{this.renderInfoButton(row.cliLog)}</p></td>
+          </tr>
 
-      }else{
+
+        });
+
+      } else {
 
         return data.map((row, i) => {
 
-          
-        if(row.lastHealthCheckDate != undefined){
-          var lastHealthCheckDate = this.toTime(row.lastHealthCheckDate)
-        }else{
-          var lastHealthCheckDate = "-"
-        }
 
-         return <tr key={row._id}>
-            <td><p>{i + 1}</p></td><td><p>{lastHealthCheckDate}</p></td><td><p>{row.file}</p></td><td><p>{this.renderRedoButton(row.file, mode)}</p></td><td><p>{this.renderIgnoreButton(row.file, mode)}</p></td><td><p>{this.renderInfoButton(row.cliLog)}</p></td>
+          if (row.lastHealthCheckDate != undefined) {
+            var lastHealthCheckDate = this.toTime(row.lastHealthCheckDate)
+          } else {
+            var lastHealthCheckDate = "-"
+          }
+
+          return <tr key={row._id}>
+            <td><p>{i + 1}</p></td><td><p>{lastHealthCheckDate}</p></td><td><p>{row.file}</p></td><td><p><RedoButton file={row} lastQueueUpdateTime={this.state.lastQueueUpdateTime} mode={mode} /></p></td><td><p><IgnoreButton file={row} lastQueueUpdateTime={this.state.lastQueueUpdateTime} mode={mode} /></p></td><td><p>{this.renderInfoButton(row.cliLog)}</p></td>
           </tr>
-  
-  
-      });
+
+
+        });
 
 
 
@@ -545,62 +593,62 @@ class App extends Component {
   }
 
 
-  renderBumpButton(file) {
-    var obj = {
-      bumped: new Date(),
-    }
-    return <ItemButton file={file} obj={obj} symbol={'↑'} type="updateDBAction" />
-  }
+  // renderBumpButton(file) {
+  //   var obj = {
+  //     bumped: new Date(),
+  //   }
+  //   return <ItemButton file={file.file} obj={obj} symbol={'↑'} type="updateDBAction" time={this.state.lastQueueUpdateTime} />
+  // }
 
-  renderSkipButton(file) {
-    var obj = {
-      TranscodeDecisionMaker:"Transcode success",
-      lastTranscodeDate: new Date(),
-    }
-    return <ItemButton file={file} obj={obj} symbol={'⤳'} type="updateDBAction" />
-  }
+  // renderSkipButton(file) {
+  //   var obj = {
+  //     TranscodeDecisionMaker: "Transcode success",
+  //     lastTranscodeDate: new Date(),
+  //   }
+  //   return <ItemButton file={file} obj={obj} symbol={'⤳'} type="updateDBAction" time={this.state.lastQueueUpdateTime} />
+  // }
 
-  renderSkipHealthCheckButton(file) {
-    var obj = {
-      HealthCheck: "Success",
-      lastHealthCheckDate: new Date(),
-    }
-    return <ItemButton file={file} obj={obj} symbol={'⤳'} type="updateDBAction" />
-  }
+  // renderSkipHealthCheckButton(file) {
+  //   var obj = {
+  //     HealthCheck: "Success",
+  //     lastHealthCheckDate: new Date(),
+  //   }
+  //   return <ItemButton file={file.file} obj={obj} symbol={'⤳'} type="updateDBAction" time={this.state.lastQueueUpdateTime} />
+  // }
 
-  renderCancelBumpButton(file) {
-    var obj = {
-      bumped: false,
-    }
-    return <ItemButton file={file} obj={obj} symbol={'X'} type="updateDBAction" />
-  }
+  // renderCancelBumpButton(file) {
+  //   var obj = {
+  //     bumped: false,
+  //   }
+  //   return <ItemButton file={file.file} obj={obj} symbol={'X'} type="updateDBAction" time={this.state.lastQueueUpdateTime} />
+  // }
 
-  renderRedoButton(file, mode) {
-
-
-    var obj = {
-      [mode]: "Queued",
-      processingStatus: false,
-      createdAt: new Date(),
-    }
+  // renderRedoButton(file, mode) {
 
 
-    return <ItemButton file={file} obj={obj} symbol={'↻'} type="updateDBAction" />
-  }
+  //   var obj = {
+  //     [mode]: "Queued",
+  //     processingStatus: false,
+  //     createdAt: new Date(),
+  //   }
 
-  renderForceProcessingButton(file) {
-    var obj = {
-      forceProcessing: true,
-    }
-    return <ItemButton file={file} obj={obj} symbol={'No'} type="updateDBAction" />
-  }
-  
-  renderCancelForceProcessingButton(file) {
-    var obj = {
-      forceProcessing: false,
-    }
-    return <ItemButton file={file} obj={obj} symbol={'Yes'} type="updateDBAction" />
-  }
+
+  //   return <ItemButton file={file.file} obj={obj} symbol={'↻'} type="updateDBAction" time={this.state.lastQueueUpdateTime} />
+  // }
+
+  // renderForceProcessingButton(file) {
+  //   var obj = {
+  //     forceProcessing: true,
+  //   }
+  //   return <ItemButton file={file.file} obj={obj} symbol={'No'} type="updateDBAction" time={this.state.lastQueueUpdateTime} />
+  // }
+
+  // renderCancelForceProcessingButton(file) {
+  //   var obj = {
+  //     forceProcessing: false,
+  //   }
+  //   return <ItemButton file={file.file} obj={obj} symbol={'Yes'} type="updateDBAction" time={this.state.lastQueueUpdateTime} />
+  // }
 
 
   renderIgnoreButton(file, mode) {
@@ -610,38 +658,38 @@ class App extends Component {
       processingStatus: false,
       createdAt: new Date(),
     }
-    return <ItemButton file={file} obj={obj} symbol={'Ignore'} type="updateDBAction" />
+    return <ItemButton file={file.file} obj={obj} symbol={'Ignore'} type="updateDBAction" time={this.state.lastQueueUpdateTime} />
 
 
   }
 
   renderInfoButton(cliLog) {
 
-   
-    try{
 
-    cliLog = cliLog.split("\n")
+    try {
 
-    cliLog = cliLog.map( row => <p>{row}</p> )
+      cliLog = cliLog.split("\n")
 
-    return <Modal
-      trigger={<Button variant="outline-light" ><span className="buttonTextSize">i</span></Button>}
-      modal
-      closeOnDocumentClick
-    >
-       <div className="modalContainer">
-       <div className="frame">
-    <div className="scroll"> 
-    <div className="modalText">
-   {cliLog}
-      
-    </div>
-  </div>
-  </div>
-  </div>
-    </Modal>
+      cliLog = cliLog.map(row => <p>{row}</p>)
 
-    }catch(err){
+      return <Modal
+        trigger={<Button variant="outline-light" ><span className="buttonTextSize">i</span></Button>}
+        modal
+        closeOnDocumentClick
+      >
+        <div className="modalContainer">
+          <div className="frame">
+            <div className="scroll">
+              <div className="modalText">
+                {cliLog}
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </Modal>
+
+    } catch (err) {
 
       return null
 
@@ -652,21 +700,21 @@ class App extends Component {
   renderHistoryButton(row) {
 
 
-    if(row.history == undefined){
-      result =""
-      
-    }else{
+    if (row.history == undefined) {
+      result = ""
+
+    } else {
 
       var result = row.history
       result = result.split("\n")
-       result = result.map((row, i) => (
-   
-           <Markup content={row} />
-         ));
-   
+      result = result.map((row, i) => (
+
+        <Markup content={row} />
+      ));
 
 
-    } 
+
+    }
 
 
     return <Modal
@@ -675,24 +723,24 @@ class App extends Component {
       closeOnDocumentClick
     >
       <div className="modalContainer">
-      <div className="frame">
-        <div className="scroll">
-        <div className="modalText">
-          {result}
+        <div className="frame">
+          <div className="scroll">
+            <div className="modalText">
+              {result}
 
+            </div>
           </div>
         </div>
-      </div>
       </div>
     </Modal>
   }
 
 
-  setAllStatus(mode,table,processStatus,text) {
+  setAllStatus(mode, table, processStatus, text) {
 
     if (confirm(`Are you sure you want to ${text} all files?`)) {
 
-      Meteor.call('setAllStatus', 'all', mode,table,processStatus, function (error, result) { })
+      Meteor.call('setAllStatus', 'all', mode, table, processStatus, function (error, result) { })
 
     }
   }
@@ -738,168 +786,168 @@ class App extends Component {
         <div className="container">
 
 
-        <div className="libraryContainer" >
-        <br/>
-        
-<center><Modal
-      trigger={<Button variant="outline-light" ><span className="buttonTextSize">i</span></Button>}
-      modal
-      closeOnDocumentClick
-    >
-       <div className="modalContainer">
-       <div className="frame">
-    <div className="scroll"> 
+          <div className="libraryContainer" >
+            <br />
 
-    <div className="modalText">
- 
-    <p>Use the sliders to tell Tdarr to start up and maintain the specified number of workers. </p>
-    <p>Workers which are toggled 'Off' will finish their current item before closing down.</p>
-    <p>If you cancel an item, the worker will move onto the next item in the queue.</p>
+            <center><Modal
+              trigger={<Button variant="outline-light" ><span className="buttonTextSize">i</span></Button>}
+              modal
+              closeOnDocumentClick
+            >
+              <div className="modalContainer">
+                <div className="frame">
+                  <div className="scroll">
 
-    <p></p>
-    <p>Workers process newest items first and cycle between your libraries.</p>
+                    <div className="modalText">
 
-    <p>General workers process both transcode and health check items. They prioritise health check </p>
-    <p></p>
-    <p></p>
-    <p></p>
+                      <p>Use the sliders to tell Tdarr to start up and maintain the specified number of workers. </p>
+                      <p>Workers which are toggled 'Off' will finish their current item before closing down.</p>
+                      <p>If you cancel an item, the worker will move onto the next item in the queue.</p>
 
-    <p>Important: Workers will not process items unless they are within the scheduled times set in the library settings.</p>
-    </div>
-      
-    </div>
-  </div>
-  </div>
+                      <p></p>
+                      <p>Workers process newest items first and cycle between your libraries.</p>
 
-    </Modal></center>
+                      <p>General workers process both transcode and health check items. They prioritise health check </p>
+                      <p></p>
+                      <p></p>
+                      <p></p>
 
-        <center><p>Workers:</p></center>
+                      <p>Important: Workers will not process items unless they are within the scheduled times set in the library settings.</p>
+                    </div>
 
-
-        
-
-<div className="sliderGrid-container">
-
-<div className="sliderGrid-item1">
-<p>General</p>
-</div>
-
-
-<div className="sliderGrid-item1">
-<p>({this.props.globalSettings && this.props.globalSettings[0] && this.props.globalSettings[0].generalWorkerLimit ? this.props.globalSettings[0].generalWorkerLimit : 0})</p>
-</div>
-
-
-
-
-<div className="sliderGrid-item">
-{this.renderSlider('generalWorkerLimit','black','#808080')}
-</div>
-
-<div className="sliderGrid-item2">
-<Button   variant="outline-light" onClick={() => this.alterWorkerLimit("decrease","generalWorkerLimit")} ><span className="buttonTextSize">-</span></Button>
-<Button   variant="outline-light" onClick={() => this.alterWorkerLimit("increase","generalWorkerLimit")} ><span className="buttonTextSize">+</span></Button>
-</div>
-
-
-
-
-
-<div className="sliderGrid-item1">
-<p>Transcode</p>
-</div>
-
-<div className="sliderGrid-item1">
-<p>({this.props.globalSettings && this.props.globalSettings[0] && this.props.globalSettings[0].transcodeWorkerLimit ? this.props.globalSettings[0].transcodeWorkerLimit : 0})</p>
-</div>
-
-
-
-
-<div className="sliderGrid-item">
-{this.renderSlider('transcodeWorkerLimit','#66ccff','#B3E6FF')}
-</div>
-
-<div className="sliderGrid-item2">
-<Button   variant="outline-light" onClick={() => this.alterWorkerLimit("decrease","transcodeWorkerLimit")} ><span className="buttonTextSize">-</span></Button>
-<Button   variant="outline-light" onClick={() => this.alterWorkerLimit("increase","transcodeWorkerLimit")} ><span className="buttonTextSize">+</span></Button>
-</div>
-
-
-
-
-
-<div className="sliderGrid-item1">
-<p>Health Check</p>
-</div>
-
-<div className="sliderGrid-item1">
-<p>({this.props.globalSettings && this.props.globalSettings[0] && this.props.globalSettings[0].healthcheckWorkerLimit ? this.props.globalSettings[0].healthcheckWorkerLimit : 0})</p>
-</div>
-
-
-
-<div className="sliderGrid-item">
-{this.renderSlider('healthcheckWorkerLimit','#4CAF50','#A6D7A8')}
-</div>
-
-<div className="sliderGrid-item2">
-<Button   variant="outline-light" onClick={() => this.alterWorkerLimit("decrease","healthcheckWorkerLimit")} ><span className="buttonTextSize">-</span></Button>
-<Button   variant="outline-light" onClick={() => this.alterWorkerLimit("increase","healthcheckWorkerLimit")} ><span className="buttonTextSize">+</span></Button>
-</div>
-
-</div>
-
-
-
-          <center>
-
-
-
-          <div style={ButtonStyle} className="workerButtoncontainer">
-
-            <Button variant="outline-danger" onClick={() => {
-
-              if (confirm('Are you sure you want to cancel all workers?')) {
-
-
-                Meteor.call('getWorkers', function (error, result) {
-
-                  var workers = result
-
-                  for (var i = 0; i < workers.length; i++) {
-
-                    Meteor.call('killWorker', workers[i]._id, function (error, result) { })
-                  }
-
-                });
-
-
-              }
-            }
-            } ><span className="buttonTextSize">Cancel all workers</span></Button>
-
-{'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}
-
-            <div style={ButtonStyle}>
-            <span className="buttonTextSize">Low CPU priority:<div style={ButtonStyle}>
-
-                {this.renderLowCPUButton()}
-
-
+                  </div>
+                </div>
               </div>
-              </span>
+
+            </Modal></center>
+
+            <center><p>Workers:</p></center>
+
+
+
+
+            <div className="sliderGrid-container">
+
+              <div className="sliderGrid-item1">
+                <p>General</p>
+              </div>
+
+
+              <div className="sliderGrid-item1">
+                <p>({this.props.globalSettings && this.props.globalSettings[0] && this.props.globalSettings[0].generalWorkerLimit ? this.props.globalSettings[0].generalWorkerLimit : 0})</p>
+              </div>
+
+
+
+
+              <div className="sliderGrid-item">
+                {this.renderSlider('generalWorkerLimit', 'black', '#808080')}
+              </div>
+
+              <div className="sliderGrid-item2">
+                <Button variant="outline-light" onClick={() => this.alterWorkerLimit("decrease", "generalWorkerLimit")} ><span className="buttonTextSize">-</span></Button>
+                <Button variant="outline-light" onClick={() => this.alterWorkerLimit("increase", "generalWorkerLimit")} ><span className="buttonTextSize">+</span></Button>
+              </div>
+
+
+
+
+
+              <div className="sliderGrid-item1">
+                <p>Transcode</p>
+              </div>
+
+              <div className="sliderGrid-item1">
+                <p>({this.props.globalSettings && this.props.globalSettings[0] && this.props.globalSettings[0].transcodeWorkerLimit ? this.props.globalSettings[0].transcodeWorkerLimit : 0})</p>
+              </div>
+
+
+
+
+              <div className="sliderGrid-item">
+                {this.renderSlider('transcodeWorkerLimit', '#66ccff', '#B3E6FF')}
+              </div>
+
+              <div className="sliderGrid-item2">
+                <Button variant="outline-light" onClick={() => this.alterWorkerLimit("decrease", "transcodeWorkerLimit")} ><span className="buttonTextSize">-</span></Button>
+                <Button variant="outline-light" onClick={() => this.alterWorkerLimit("increase", "transcodeWorkerLimit")} ><span className="buttonTextSize">+</span></Button>
+              </div>
+
+
+
+
+
+              <div className="sliderGrid-item1">
+                <p>Health Check</p>
+              </div>
+
+              <div className="sliderGrid-item1">
+                <p>({this.props.globalSettings && this.props.globalSettings[0] && this.props.globalSettings[0].healthcheckWorkerLimit ? this.props.globalSettings[0].healthcheckWorkerLimit : 0})</p>
+              </div>
+
+
+
+              <div className="sliderGrid-item">
+                {this.renderSlider('healthcheckWorkerLimit', '#4CAF50', '#A6D7A8')}
+              </div>
+
+              <div className="sliderGrid-item2">
+                <Button variant="outline-light" onClick={() => this.alterWorkerLimit("decrease", "healthcheckWorkerLimit")} ><span className="buttonTextSize">-</span></Button>
+                <Button variant="outline-light" onClick={() => this.alterWorkerLimit("increase", "healthcheckWorkerLimit")} ><span className="buttonTextSize">+</span></Button>
+              </div>
+
             </div>
 
-          </div>
-          </center>
+
+
+            <center>
+
+
+
+              <div style={ButtonStyle} className="workerButtoncontainer">
+
+                <Button variant="outline-danger" onClick={() => {
+
+                  if (confirm('Are you sure you want to cancel all workers?')) {
+
+
+                    Meteor.call('getWorkers', function (error, result) {
+
+                      var workers = result
+
+                      for (var i = 0; i < workers.length; i++) {
+
+                        Meteor.call('killWorker', workers[i]._id, function (error, result) { })
+                      }
+
+                    });
+
+
+                  }
+                }
+                } ><span className="buttonTextSize">Cancel all workers</span></Button>
+
+                {'\u00A0'}{'\u00A0'}{'\u00A0'}{'\u00A0'}
+
+                <div style={ButtonStyle}>
+                  <span className="buttonTextSize">Low CPU priority:<div style={ButtonStyle}>
+
+                    {this.renderLowCPUButton()}
+
+
+                  </div>
+                  </span>
+                </div>
+
+              </div>
+            </center>
 
           </div>
 
           <p></p>
-          <br/>
-          <br/>
-          <br/>
+          <br />
+          <br />
+          <br />
 
           <div className="allWorkersContainer" id="allWorkersContainerID">
 
@@ -908,49 +956,49 @@ class App extends Component {
 
         </div>
         <p></p>
-    <p></p>
-    <p></p>
+        <p></p>
+        <p></p>
 
-    <div className="tabWrap" >     
+        <div className="tabWrap" >
 
-        <Modal
-      trigger={<Button variant="outline-light" ><span className="buttonTextSize">i</span></Button>}
-      modal
-      closeOnDocumentClick
-    >
-       <div className="modalContainer">
-       <div className="frame">
-    <div className="scroll"> 
+          <Modal
+            trigger={<Button variant="outline-light" ><span className="buttonTextSize">i</span></Button>}
+            modal
+            closeOnDocumentClick
+          >
+            <div className="modalContainer">
+              <div className="frame">
+                <div className="scroll">
 
-    <div className="modalText">
- 
-    <p>All newly scanned files will be placed in the transcode and health check queues.</p>
-    
-    <p>Files in the queues will be sent to available workers.</p>
+                  <div className="modalText">
 
-    <p>For transcodes, if files already meet the codec (etc) requirements they will be marked as 'Not required' in 'Transcode: Success/Not required' tab.</p>
-    
-    
-    <p>If files don't meet the requirements they will be transcoded. If transcoding is successful files will be marked as 'Transcode success' in the  'Transcode: Success/Not required' tab.</p>
-    <p></p>
+                    <p>All newly scanned files will be placed in the transcode and health check queues.</p>
 
-    
-    <p>If transcoding fails or is cancelled then files will be marked accordingly in the 'Transcode: Error/Cancelled' tab.</p>
+                    <p>Files in the queues will be sent to available workers.</p>
+
+                    <p>For transcodes, if files already meet the codec (etc) requirements they will be marked as 'Not required' in 'Transcode: Success/Not required' tab.</p>
 
 
-    <p></p>
-    <p></p>
+                    <p>If files don't meet the requirements they will be transcoded. If transcoding is successful files will be marked as 'Transcode success' in the  'Transcode: Success/Not required' tab.</p>
+                    <p></p>
 
 
-    <p><b>The end goal of Tdarr is to be able to run it on your library and all items come out as 'Transcode:Not required', meaning nothing needed to be transcoded/remuxed etc.</b></p>
+                    <p>If transcoding fails or is cancelled then files will be marked accordingly in the 'Transcode: Error/Cancelled' tab.</p>
 
 
-    </div>
-      
-    </div>
-  </div>
-  </div>
-    </Modal>
+                    <p></p>
+                    <p></p>
+
+
+                    <p><b>The end goal of Tdarr is to be able to run it on your library and all items come out as 'Transcode:Not required', meaning nothing needed to be transcoded/remuxed etc.</b></p>
+
+
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </Modal>
 
 
 
@@ -978,197 +1026,197 @@ class App extends Component {
           </p>
 
 
-<p>Library alternation: {this.renderCheckBox('alternateLibraries')}</p>
- <p>Library prioritisation: {this.renderCheckBox('prioritiseLibraries')}</p>
+          <p>Library alternation: {this.renderCheckBox('alternateLibraries')}</p>
+          <p>Library prioritisation: {this.renderCheckBox('prioritiseLibraries')}</p>
 
-<p>Items: <input type="text" className="tableSize"  defaultValue={this.props.globalSettings && this.props.globalSettings[0] && this.props.globalSettings[0].tableSize ? this.props.globalSettings[0].tableSize : "" } onChange={(event) => {
-  
-  GlobalSettingsDB.upsert(
-    "globalsettings",
-    {
-      $set: {
-        tableSize: event.target.value,
-      }
-    }
-  );
-}}></input></p>
+          <p>Items: <input type="text" className="tableSize" defaultValue={this.props.globalSettings && this.props.globalSettings[0] && this.props.globalSettings[0].tableSize ? this.props.globalSettings[0].tableSize : ""} onChange={(event) => {
 
-
-            
-
-               
-        <Tabs>
-    <TabList>
-      <Tab><p>Transcode queue ({this.renderStat('table1Count')})</p></Tab>
-      <Tab><p>Transcode: Success/Not required ({this.renderStat('table2Count')})</p></Tab>
-      <Tab><p>Transcode: Error/Cancelled ({this.renderStat('table3Count')})</p></Tab>
+            GlobalSettingsDB.upsert(
+              "globalsettings",
+              {
+                $set: {
+                  tableSize: event.target.value,
+                }
+              }
+            );
+          }}></input></p>
 
 
 
-      <Tab><p>Health check queue ({this.renderStat('table4Count')})</p></Tab>
-      <Tab><p>Health check: Healthy ({this.renderStat('table5Count')})</p></Tab>
-      <Tab><p>Health check: Error/Cancelled ({this.renderStat('table6Count')})</p></Tab>
 
-    </TabList>
 
-    <TabPanel> <div className="tabContainer" >
-  
-    <table className="itemTable">   <tbody>
-              <tr>
-                <th><p>No.</p></th>
-                <th><p>File</p></th>
-                <th><p>Force processing<Modal
-      trigger={<Button variant="outline-light" ><span className="buttonTextSize">i</span></Button>}
-      modal
-      closeOnDocumentClick
-    >
-       <div className="modalContainer">
-       <div className="frame">
-    <div className="scroll"> 
-
-    <div className="modalText">
- 
-   <p>All new plugins created in v1.101 will have a new force processing switch which overrides filters (or you'll need to modify existing plugins).</p>
-
-   <p>It will allow for the FIRST plugin's filter in the plugin stack to be overridden. So you need to have your main transcode plugin at the top of your stack.</p>
-   <p></p>
-   <p>So a typical stack might look like:</p>
-   <p></p>
-   <p>(1) Transcode using HandBrake into h264 (Exclude files already in h264)</p>
-   <p>(2) Remove subs</p>
-   <p>(3) Remove closed captions</p>
-   <p>(4) Remux if not in mkv</p>
-   <p></p>
-   <p>Force processing will force the HandBrake transcode plugin on a file (even if it's already in h264) and then the status for force processing is reset to off.</p>
-
-    </div>
-      
-    </div>
-  </div>
-  </div>
-
-    </Modal></p></th>
-                <th><p>Codec</p></th>
-                <th><p>Resolution</p></th>
-                <th><p>Size (GB)</p></th>
-                <th><p>Bump</p></th>
-                <th><p><Button variant="outline-light" onClick={() => this.setAllStatus('TranscodeDecisionMaker','table1','Transcode success','skip')} ><span className="buttonTextSize">Skip</span></Button></p></th>
-
-              </tr>
-              {this.renderTable('table1', 'queue','TranscodeDecisionMaker')}
-            </tbody></table>
-   
+          <Tabs>
+            <TabList>
+              <Tab><p>Transcode queue ({this.renderStat('table1Count')})</p></Tab>
+              <Tab><p>Transcode: Success/Not required ({this.renderStat('table2Count')})</p></Tab>
+              <Tab><p>Transcode: Error/Cancelled ({this.renderStat('table3Count')})</p></Tab>
 
 
 
-    </div></TabPanel>
-    <TabPanel> <div className="tabContainer" >
-    <table className="itemTable"><tbody>
-              <tr>
-                <th><p>No.</p></th>
-                <th><p>Time</p></th>
-                <th><p>File</p></th>
-                <th><p>Codec</p></th>
-                <th><p>Resolution</p></th>
-                <th><p>Transcode</p></th>
-                <th><p>Old size (GB)</p></th>
-                <th><p>New size (GB)</p></th>
-                <th><p><Button variant="outline-light" onClick={() => this.setAllStatus('TranscodeDecisionMaker','table2','Queued','re-queue')} ><span className="buttonTextSize">Re-queue</span></Button></p></th>
-                <th><p>Info</p></th>
-                <th><p>History</p></th>
+              <Tab><p>Health check queue ({this.renderStat('table4Count')})</p></Tab>
+              <Tab><p>Health check: Healthy ({this.renderStat('table5Count')})</p></Tab>
+              <Tab><p>Health check: Error/Cancelled ({this.renderStat('table6Count')})</p></Tab>
 
+            </TabList>
 
-              </tr>
-              {this.renderTable('table2', 'success', 'TranscodeDecisionMaker')}
+            <TabPanel> <div className="tabContainer" >
 
-            </tbody></table>
-    </div></TabPanel>
+              <table className="itemTable">   <tbody>
+                <tr>
+                  <th><p>No.</p></th>
+                  <th><p>File</p></th>
+                  <th><p>Force processing<Modal
+                    trigger={<Button variant="outline-light" ><span className="buttonTextSize">i</span></Button>}
+                    modal
+                    closeOnDocumentClick
+                  >
+                    <div className="modalContainer">
+                      <div className="frame">
+                        <div className="scroll">
 
-    <TabPanel> <div className="tabContainer" >
+                          <div className="modalText">
 
-    <table className="itemTable">   <tbody>
-              <tr>
-                <th><p>No.</p></th>
-                <th><p>Time</p></th>
-                <th><p>File</p></th>
-                <th><p><Button variant="outline-light" onClick={() => this.setAllStatus('TranscodeDecisionMaker','table3','Queued','re-queue')} ><span className="buttonTextSize">Re-queue</span></Button></p></th>
-                <th><p>Ignore</p></th>
-                <th><p>Info</p></th>
+                            <p>All new plugins created in v1.101 will have a new force processing switch which overrides filters (or you'll need to modify existing plugins).</p>
 
+                            <p>It will allow for the FIRST plugin's filter in the plugin stack to be overridden. So you need to have your main transcode plugin at the top of your stack.</p>
+                            <p></p>
+                            <p>So a typical stack might look like:</p>
+                            <p></p>
+                            <p>(1) Transcode using HandBrake into h264 (Exclude files already in h264)</p>
+                            <p>(2) Remove subs</p>
+                            <p>(3) Remove closed captions</p>
+                            <p>(4) Remux if not in mkv</p>
+                            <p></p>
+                            <p>Force processing will force the HandBrake transcode plugin on a file (even if it's already in h264) and then the status for force processing is reset to off.</p>
 
-              </tr>
+                          </div>
 
+                        </div>
+                      </div>
+                    </div>
 
-              {this.renderTable('table3', 'error', 'TranscodeDecisionMaker')}
+                  </Modal></p></th>
+                  <th><p>Codec</p></th>
+                  <th><p>Resolution</p></th>
+                  <th><p>Size (GB)</p></th>
+                  <th><p>Bump</p></th>
+                  <th><p><Button variant="outline-light" onClick={() => this.setAllStatus('TranscodeDecisionMaker', 'table1', 'Transcode success', 'skip')} ><span className="buttonTextSize">Skip</span></Button></p></th>
 
-
-            </tbody></table>
-
-
-    </div></TabPanel>
-
-    <TabPanel> <div className="tabContainer" >
-
-    <table className="itemTable">   <tbody>
-              <tr>
-                <th><p>No.</p></th>
-                <th><p>File</p></th>
-                <th><p>Bump</p></th>
-                <th><p><Button variant="outline-light" onClick={() => this.setAllStatus('HealthCheck','table4','Success','skip')} ><span className="buttonTextSize">Skip</span></Button></p></th>
-
-              </tr>
-              {this.renderTable('table4', 'queue','HealthCheck')}
-
-            </tbody></table>
-
-
-    </div></TabPanel>
-
-    <TabPanel> <div className="tabContainer" >
-
-    <table className="itemTable">   <tbody>
-              <tr>
-                <th><p>No.</p></th>
-                <th><p>Time</p></th>
-                <th><p>File</p></th>
-                <th><p><Button variant="outline-light" onClick={() => this.setAllStatus('HealthCheck','table5','Queued','re-queue')} ><span className="buttonTextSize">Re-queue</span></Button></p></th>
-                <th><p>Info</p></th>
-              </tr>
+                </tr>
+                {this.renderTable('table1', 'queue', 'TranscodeDecisionMaker')}
+              </tbody></table>
 
 
 
-              {this.renderTable('table5', 'success', 'HealthCheck')}
+
+            </div></TabPanel>
+            <TabPanel> <div className="tabContainer" >
+              <table className="itemTable"><tbody>
+                <tr>
+                  <th><p>No.</p></th>
+                  <th><p>Time</p></th>
+                  <th><p>File</p></th>
+                  <th><p>Codec</p></th>
+                  <th><p>Resolution</p></th>
+                  <th><p>Transcode</p></th>
+                  <th><p>Old size (GB)</p></th>
+                  <th><p>New size (GB)</p></th>
+                  <th><p><Button variant="outline-light" onClick={() => this.setAllStatus('TranscodeDecisionMaker', 'table2', 'Queued', 're-queue')} ><span className="buttonTextSize">Re-queue</span></Button></p></th>
+                  <th><p>Info</p></th>
+                  <th><p>History</p></th>
 
 
-            </tbody></table>
+                </tr>
+                {this.renderTable('table2', 'success', 'TranscodeDecisionMaker')}
+
+              </tbody></table>
+            </div></TabPanel>
+
+            <TabPanel> <div className="tabContainer" >
+
+              <table className="itemTable">   <tbody>
+                <tr>
+                  <th><p>No.</p></th>
+                  <th><p>Time</p></th>
+                  <th><p>File</p></th>
+                  <th><p><Button variant="outline-light" onClick={() => this.setAllStatus('TranscodeDecisionMaker', 'table3', 'Queued', 're-queue')} ><span className="buttonTextSize">Re-queue</span></Button></p></th>
+                  <th><p>Ignore</p></th>
+                  <th><p>Info</p></th>
 
 
-    </div></TabPanel>
-
-    <TabPanel> <div className="tabContainer" >
-    <table className="itemTable">   <tbody>
-              <tr>
-                <th><p>No.</p></th>
-                <th><p>Time</p></th>
-                <th><p>File</p></th>
-                <th><p><Button   variant="outline-light" onClick={() => this.setAllStatus('HealthCheck','table6','Queued','re-queue')} ><span className="buttonTextSize">Re-queue</span></Button></p></th>
-                <th><p>Ignore</p></th>
-                <th><p>Info</p></th>
+                </tr>
 
 
-              </tr>
-
-            
+                {this.renderTable('table3', 'error', 'TranscodeDecisionMaker')}
 
 
-              {this.renderTable('table6', 'error', 'HealthCheck')}
+              </tbody></table>
 
-            </tbody></table>
 
-    </div></TabPanel>
-  </Tabs> 
-  </div>
-  </div>
+            </div></TabPanel>
+
+            <TabPanel> <div className="tabContainer" >
+
+              <table className="itemTable">   <tbody>
+                <tr>
+                  <th><p>No.</p></th>
+                  <th><p>File</p></th>
+                  <th><p>Bump</p></th>
+                  <th><p><Button variant="outline-light" onClick={() => this.setAllStatus('HealthCheck', 'table4', 'Success', 'skip')} ><span className="buttonTextSize">Skip</span></Button></p></th>
+
+                </tr>
+                {this.renderTable('table4', 'queue', 'HealthCheck')}
+
+              </tbody></table>
+
+
+            </div></TabPanel>
+
+            <TabPanel> <div className="tabContainer" >
+
+              <table className="itemTable">   <tbody>
+                <tr>
+                  <th><p>No.</p></th>
+                  <th><p>Time</p></th>
+                  <th><p>File</p></th>
+                  <th><p><Button variant="outline-light" onClick={() => this.setAllStatus('HealthCheck', 'table5', 'Queued', 're-queue')} ><span className="buttonTextSize">Re-queue</span></Button></p></th>
+                  <th><p>Info</p></th>
+                </tr>
+
+
+
+                {this.renderTable('table5', 'success', 'HealthCheck')}
+
+
+              </tbody></table>
+
+
+            </div></TabPanel>
+
+            <TabPanel> <div className="tabContainer" >
+              <table className="itemTable">   <tbody>
+                <tr>
+                  <th><p>No.</p></th>
+                  <th><p>Time</p></th>
+                  <th><p>File</p></th>
+                  <th><p><Button variant="outline-light" onClick={() => this.setAllStatus('HealthCheck', 'table6', 'Queued', 're-queue')} ><span className="buttonTextSize">Re-queue</span></Button></p></th>
+                  <th><p>Ignore</p></th>
+                  <th><p>Info</p></th>
+
+
+                </tr>
+
+
+
+
+                {this.renderTable('table6', 'error', 'HealthCheck')}
+
+              </tbody></table>
+
+            </div></TabPanel>
+          </Tabs>
+        </div>
+      </div>
 
     );
   }
@@ -1186,7 +1234,7 @@ export default withTracker(() => {
 
 
     globalSettings: GlobalSettingsDB.find({}, {}).fetch(),
-    settingsDB:GlobalSettingsDB.find({}, {}).fetch(),
+    settingsDB: GlobalSettingsDB.find({}, {}).fetch(),
 
     clientDB: ClientDB.find({}).fetch(),
     statistics: StatisticsDB.find({}).fetch(),

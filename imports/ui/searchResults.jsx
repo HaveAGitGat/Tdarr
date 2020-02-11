@@ -14,14 +14,56 @@ import { withTracker } from 'meteor/react-meteor-data';
 import JSONPretty from 'react-json-pretty';
 import 'react-json-pretty/themes/monikai.css';
 
+import {
+  BumpButton,
+  SkipButton,
+  SkipHealthCheckButton,
+  CancelBumpButton,
+  RedoButton,
+  ForceProcessingButton,
+  CancelForceProcessingButton,
+  IgnoreButton
+} from './ButtonLibrary/Buttons.jsx'
+
 
 
 
 
 class App extends Component{
 
+  constructor(props) {
+    super(props);
+    this.state = {
+        lastQueueUpdateTime:1
+       }
+  }
+
 
 renderResults(result){
+
+  try {
+
+    const g = GlobalSettingsDB.find({}).fetch()[0]
+
+    if (g.lastQueueUpdateTime != undefined) {
+
+      var a = this.state.lastQueueUpdateTime
+      var b = g.lastQueueUpdateTime
+
+      if (a != b) {
+        this.setState({
+          lastQueueUpdateTime: b,
+        })
+
+      }
+
+    }
+  } catch (err) {
+
+  }
+
+
+
 
 if ( !result || result.length == 0) {
 
@@ -347,7 +389,7 @@ return null
                   ),
                   id: 'Bump',
                   width: 'Bump'.length*10,
-                  accessor: row => !(row.bumped instanceof Date) ? this.renderBumpButton(row.file):this.renderCancelBumpButton(row.file),
+                  accessor: row => !(row.bumped instanceof Date) ? <BumpButton file={row} lastQueueUpdateTime={this.state.lastQueueUpdateTime} />:<CancelBumpButton file={row} lastQueueUpdateTime={this.state.lastQueueUpdateTime} />,
                   getProps: (state, rowInfo, column) => {
                     return {
                       style: {
@@ -368,7 +410,7 @@ return null
                   ),
                   id: 'Create sample',
                   width: 'Create sample'.length*10,
-                  accessor: row => this.renderCreateSampleButton(row.file),
+                  accessor: row => this.renderCreateSampleButton(row),
                   getProps: (state, rowInfo, column) => {
                     return {
                       style: {
@@ -389,7 +431,7 @@ return null
                   ),
                   id: 'Transcode',
                   width: 'Transcode'.length*10,
-                  accessor: row => row.TranscodeDecisionMaker == "Queued" ?  <span>Queued({row.tPosition}){this.renderSkipButton(row.file)}</span> : this.renderRedoButton(row.file, 'TranscodeDecisionMaker'),
+                  accessor: row => row.TranscodeDecisionMaker == "Queued" ?  <span>Queued({row.tPosition})<SkipButton file={row} lastQueueUpdateTime={this.state.lastQueueUpdateTime} /></span> : <RedoButton file={row} lastQueueUpdateTime={this.state.lastQueueUpdateTime} mode={'TranscodeDecisionMaker'} />,
                   getProps: (state, rowInfo, column) => {
                     return {
                       style: {
@@ -409,7 +451,7 @@ return null
                   ),
                   id: 'Health check',
                   width: 'Health check'.length*10,
-                  accessor: row => row.HealthCheck == "Queued" ? <span>Queued({row.hPosition}){this.renderSkipHealthCheckButton(row.file)}</span>: this.renderRedoButton(row.file, 'HealthCheck'),
+                  accessor: row => row.HealthCheck == "Queued" ? <span>Queued({row.hPosition})<SkipHealthCheckButton file={row} lastQueueUpdateTime={this.state.lastQueueUpdateTime} /></span>: <RedoButton file={row} lastQueueUpdateTime={this.state.lastQueueUpdateTime} mode={'HealthCheck'} />,
                   getProps: (state, rowInfo, column) => {
                     return {
                       style: {
@@ -485,7 +527,7 @@ return null
                         ),
                         id: 'forceProcessing',
                         width: 'forceProcessing'.length*10,
-                        accessor: row => row.forceProcessing === true ? this.renderCancelForceProcessingButton(row.file) : this.renderForceProcessingButton(row.file),
+                        accessor: row => row.forceProcessing === true ? <CancelForceProcessingButton file={row} lastQueueUpdateTime={this.state.lastQueueUpdateTime} /> : <ForceProcessingButton file={row} lastQueueUpdateTime={this.state.lastQueueUpdateTime} />,
                         getProps: (state, rowInfo, column) => {
                           return {
                             style: {
@@ -634,84 +676,99 @@ return null
 }
 
 
-renderBumpButton(file) {
-    var obj = {
-      bumped: new Date(),
-    }
-    return <ItemButton file={file} obj={obj} symbol={'↑'} type="updateDBAction" />
+// renderBumpButton(file) {
+//     var obj = {
+//       bumped: new Date(),
+//     }
+//     return <ItemButton file={file} obj={obj} symbol={'↑'} type="updateDBAction" time={this.state.lastQueueUpdateTime} />
 
-  }
+//   }
 
-  renderSkipButton(file) {
-    var obj = {
-      TranscodeDecisionMaker:"Transcode success",
-      lastTranscodeDate: new Date(),
-    }
-    return <ItemButton file={file} obj={obj} symbol={'⤳'} type="updateDBAction" />
-  }
+  // renderSkipButton(file) {
+  //   var obj = {
+  //     TranscodeDecisionMaker:"Transcode success",
+  //     lastTranscodeDate: new Date(),
+  //   }
+  //   return <ItemButton file={file} obj={obj} symbol={'⤳'} type="updateDBAction" time={this.state.lastQueueUpdateTime} />
+  // }
 
-  renderSkipHealthCheckButton(file) {
-    var obj = {
-      HealthCheck: "Success",
-      lastHealthCheckDate: new Date(),
-    }
-    return <ItemButton file={file} obj={obj} symbol={'⤳'} type="updateDBAction" />
-  }
+  // renderSkipHealthCheckButton(file) {
+  //   var obj = {
+  //     HealthCheck: "Success",
+  //     lastHealthCheckDate: new Date(),
+  //   }
+  //   return <ItemButton file={file} obj={obj} symbol={'⤳'} type="updateDBAction" time={this.state.lastQueueUpdateTime} />
+  // }
 
-  renderCancelBumpButton(file) {
-    var obj = {
-      bumped: false,
-    }
-    return <ItemButton file={file} obj={obj} symbol={'X'} type="updateDBAction" />
-  }
-
-  renderCreateSampleButton(file){
+  // renderCancelBumpButton(file) {
+  //   var obj = {
+  //     bumped: false,
+  //   }
+  //   return <ItemButton file={file} obj={obj} symbol={'X'} type="updateDBAction" time={this.state.lastQueueUpdateTime} />
+  // }
 
 
-    return <ItemButton file={file} symbol={'✄'} type="createSample" />
-
-  }
-
-  renderRedoButton(file, mode) {
+  // renderRedoButton(file, mode) {
 
     
-    var obj = {
-      [mode]: "Queued",
-      processingStatus: false,
-      createdAt: new Date(),
-    }
+  //   var obj = {
+  //     [mode]: "Queued",
+  //     processingStatus: false,
+  //     createdAt: new Date(),
+  //   }
 
 
-    return <ItemButton file={file} obj={obj} symbol={'↻'} type="updateDBAction" />
-  }
+  //   return <ItemButton file={file} obj={obj} symbol={'↻'} type="updateDBAction" time={this.state.lastQueueUpdateTime} />
+  // }
 
-  renderForceProcessingButton(file) {
-    var obj = {
-      forceProcessing: true,
-    }
-    return <ItemButton file={file} obj={obj} symbol={'No'} type="updateDBAction" />
-  }
+  // renderForceProcessingButton(file) {
+  //   var obj = {
+  //     forceProcessing: true,
+  //   }
+  //   return <ItemButton file={file} obj={obj} symbol={'No'} type="updateDBAction" time={this.state.lastQueueUpdateTime} />
+  // }
   
-  renderCancelForceProcessingButton(file) {
-    var obj = {
-      forceProcessing: false,
-    }
-    return <ItemButton file={file} obj={obj} symbol={'Yes'} type="updateDBAction" />
+  // renderCancelForceProcessingButton(file) {
+  //   var obj = {
+  //     forceProcessing: false,
+  //   }
+  //   return <ItemButton file={file} obj={obj} symbol={'Yes'} type="updateDBAction" time={this.state.lastQueueUpdateTime} />
+  // }
+
+
+
+  // renderIgnoreButton(file, mode) {
+
+  //   var obj = {
+  //     [mode]: "Ignored",
+  //     processingStatus: false,
+  //     createdAt: new Date(),
+  //   }
+  //   return <ItemButton file={file} obj={obj} symbol={'Ignore'} type="updateDBAction" time={this.state.lastQueueUpdateTime} />
+
+
+  // }
+
+
+  
+  renderCreateSampleButton(file){
+
+    return <ItemButton file={file} symbol={'✄'} type="createSample" time={this.state.lastQueueUpdateTime} />
+
   }
 
+  renderRemoveButton(file) {
 
-
-  renderIgnoreButton(file, mode) {
-
-    var obj = {
-      [mode]: "Ignored",
-      processingStatus: false,
-      createdAt: new Date(),
-    }
-    return <ItemButton file={file} obj={obj} symbol={'Ignore'} type="updateDBAction" />
-
+    return <ItemButton file={file}  symbol={'X'} type="removeFile" time={this.state.lastQueueUpdateTime} />
 
   }
+
+  renderReScanButton(file) {
+    
+    return <ItemButton file={file}  symbol={'Re-scan'} type="reScan" time={this.state.lastQueueUpdateTime} />
+
+  }
+
 
   renderInfoButton(row) {
     var result = []
@@ -799,17 +856,7 @@ renderBumpButton(file) {
     </Modal>
   }
 
-  renderRemoveButton(file) {
 
-    return <ItemButton file={file}  symbol={'X'} type="removeFile" />
-
-  }
-
-  renderReScanButton(file) {
-    
-    return <ItemButton file={file}  symbol={'Re-scan'} type="reScan" />
-
-  }
 
   handleChange(event){
 
