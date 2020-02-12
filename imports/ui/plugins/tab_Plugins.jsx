@@ -37,14 +37,36 @@ class App extends Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+      pluginsStored: [],
+    };
+
   }
 
   componentDidMount() {
 
-    //this.searchPlugins()
+    this.loadPlugins()
 
-    this.searchPlugins(event, 'Community')
-    this.searchPlugins(event, 'Local')
+  }
+
+  loadPlugins = () => {
+
+    Meteor.call('searchPlugins', '', 'Local', (error, result) => {
+      this.setState({
+        pluginsStored: result[0]
+      });
+
+    })
+
+    Meteor.call('searchPlugins', '', 'Community', (error, result) => {
+
+      var arr = this.state.pluginsStored
+      arr = arr.concat(result[0])
+      this.setState({
+        pluginsStored: arr
+      });
+
+    })
 
   }
 
@@ -62,7 +84,7 @@ class App extends Component {
 
 
     Meteor.call('updatePlugins', ReactDOM.findDOMNode(this.refs.searchStringCommunity).value.trim(), (error, result) => {
-      setTimeout((event) => this.searchPlugins(event, 'Community'), 5000);
+      //setTimeout((event) => this.searchPlugins(event, 'Community'), 5000);
     })
   }
 
@@ -150,303 +172,344 @@ class App extends Component {
         }
       );
 
+
       var string = "searchString" + pluginType
+      var searchTerm = ReactDOM.findDOMNode(this.refs[string]).value.trim()
 
-      Meteor.call('searchPlugins', ReactDOM.findDOMNode(this.refs[string]).value.trim(), pluginType, (error, result) => {
+      var result = this.state.pluginsStored.filter(row => {
 
-
-
-        if (result[0].length == 0) {
-
-          render(<center><p>No results</p></center>, document.getElementById('searchResults' + result[1]));
-        } else {
+        var string = JSON.stringify(row).toLocaleLowerCase()
 
 
-          var data = result[0]
-          var pluginType = result[1]
+        if (row.source == pluginType && string.includes(searchTerm.toLocaleLowerCase())) {
 
-          const columns = [{
-            Header: () => (
-              <div className="pluginTableHeader">
-                <p>id</p>
-              </div>
-            ),
-            id: 'id',
-            width: 80,
-            accessor: d => <CopyToClipboard text={d.id}>
-              <Button variant="outline-light" ><span className="buttonTextSize">Copy id</span></Button>
-            </CopyToClipboard>,
+          return true
+        }
+
+        return false
+
+      })
 
 
-          }, {
 
-            Header: () => (
-              <div className="pluginTableHeader">
-                <p>Stage</p>
-              </div>
-            ),
-            accessor: 'Stage',
-            width: 100,
-            getProps: (state, rowInfo, column) => {
-              return {
-                style: {
-                  color: "#e1e1e1",
-                  fontSize: "14px",
-                },
-              }
+      if (result.length == 0) {
+
+        render(<center><p>No results</p></center>, document.getElementById('searchResults' + pluginType));
+      } else {
+
+
+        var data = result
+        var pluginType = pluginType
+
+        const columns = [{
+          Header: () => (
+            <div className="pluginTableHeader">
+              <p>id</p>
+            </div>
+          ),
+          id: 'id',
+          width: 80,
+          accessor: d => <CopyToClipboard text={d.id}>
+            <Button variant="outline-light" ><span className="buttonTextSize">Copy id</span></Button>
+          </CopyToClipboard>,
+
+
+        }, {
+
+          Header: () => (
+            <div className="pluginTableHeader">
+              <p>Stage</p>
+            </div>
+          ),
+          accessor: 'Stage',
+          width: 100,
+          getProps: (state, rowInfo, column) => {
+            return {
+              style: {
+                color: "#e1e1e1",
+                fontSize: "14px",
+              },
+            }
+          }
+
+        }, {
+
+          Header: () => (
+            <div className="pluginTableHeader">
+              <p>Type</p>
+            </div>
+          ),
+          accessor: 'Type',
+          width: 100,
+          getProps: (state, rowInfo, column) => {
+            return {
+              style: {
+                color: "#e1e1e1",
+                fontSize: "14px",
+              },
+            }
+          }
+
+        }, {
+
+          Header: () => (
+            <div className="pluginTableHeader">
+              <p>Operation</p>
+            </div>
+          ),
+          accessor: 'Operation',
+          width: 100,
+          getProps: (state, rowInfo, column) => {
+            return {
+              style: {
+                color: "#e1e1e1",
+                fontSize: "14px",
+              },
+            }
+          }
+
+        }, {
+
+          Header: () => (
+            <div className="pluginTableHeader">
+              <p>Name</p>
+            </div>
+          ),
+          accessor: 'Name',
+          width: 200,
+          getProps: (state, rowInfo, column) => {
+            return {
+              style: {
+                color: "#e1e1e1",
+                fontSize: "14px",
+              },
+            }
+          }
+
+        },
+
+        {
+
+          Header: () => (
+            <div className="pluginTableHeader">
+              <p>Description</p>
+            </div>
+          ),
+          accessor: 'Description',
+
+          id: 'Description',
+          style: { 'white-space': 'unset' },
+
+
+          getProps: (state, rowInfo, column) => {
+            return {
+              style: {
+                color: "#e1e1e1",
+                fontSize: "14px",
+                background: rowInfo && rowInfo.row.Description.includes("BUG") ? '#c72c53' : rowInfo && rowInfo.row.Description.includes("TESTING") ? '#ffa500' : null,
+              },
+            }
+          }
+
+        },
+        {
+          Header: () => (
+            <div className="pluginTableHeader">
+              <p>Inputs</p>
+            </div>
+          ),
+          id: 'Inputs',
+          width: 80,
+          accessor: row => {
+
+            if (row.Inputs == undefined) {
+              return <p></p>
             }
 
-          }, {
-
-            Header: () => (
-              <div className="pluginTableHeader">
-                <p>Type</p>
-              </div>
-            ),
-            accessor: 'Type',
-            width: 100,
-            getProps: (state, rowInfo, column) => {
-              return {
-                style: {
-                  color: "#e1e1e1",
-                  fontSize: "14px",
-                },
-              }
-            }
-
-          }, {
-
-            Header: () => (
-              <div className="pluginTableHeader">
-                <p>Operation</p>
-              </div>
-            ),
-            accessor: 'Operation',
-            width: 100,
-            getProps: (state, rowInfo, column) => {
-              return {
-                style: {
-                  color: "#e1e1e1",
-                  fontSize: "14px",
-                },
-              }
-            }
-
-          }, {
-
-            Header: () => (
-              <div className="pluginTableHeader">
-                <p>Name</p>
-              </div>
-            ),
-            accessor: 'Name',
-            width: 200,
-            getProps: (state, rowInfo, column) => {
-              return {
-                style: {
-                  color: "#e1e1e1",
-                  fontSize: "14px",
-                },
-              }
-            }
-
-          },
-
-          {
-
-            Header: () => (
-              <div className="pluginTableHeader">
-                <p>Description</p>
-              </div>
-            ),
-            accessor: 'Description',
-
-            id: 'Description',
-            style: { 'white-space': 'unset' },
+            var variableArray = row.Inputs
 
 
-            getProps: (state, rowInfo, column) => {
-              return {
-                style: {
-                  color: "#e1e1e1",
-                  fontSize: "14px",
-                  background: rowInfo && rowInfo.row.Description.includes("BUG") ? '#c72c53' : rowInfo && rowInfo.row.Description.includes("TESTING") ? '#ffa500'  : null,
-                },
-              }
-            }
+            var desc = variableArray.map(row => {
 
-          },
-          {
-            Header: () => (
-              <div className="pluginTableHeader">
-                <p>Inputs</p>
-              </div>
-            ),
-            id: 'Inputs',
-            width: 80,
-            accessor: row => {
-
-              if (row.Inputs == undefined) {
-                return <p></p>
-              }
-
-              var variableArray = row.Inputs
-
-
-              var desc = variableArray.map(row => {
-
-                var tooltip = row.tooltip.split('\\n')
+              var tooltip = row.tooltip.split('\\n')
 
 
 
-                for (var i = 0; i < tooltip.length; i++) {
+              for (var i = 0; i < tooltip.length; i++) {
 
-                  var current = i
+                var current = i
 
-                  if (tooltip[i].includes('Example:') && i+1 < tooltip.length) {
-                    tooltip[i + 1] = <div className="toolTipHighlight"><p>{tooltip[i + 1]}</p></div>
-                    i++
-                  }
-
-                  tooltip[current] = <p>{tooltip[current]}</p>
+                if (tooltip[i].includes('Example:') && i + 1 < tooltip.length) {
+                  tooltip[i + 1] = <div className="toolTipHighlight"><p>{tooltip[i + 1]}</p></div>
+                  i++
                 }
 
-                return <div><Modal
-                  trigger={<Button variant="outline-light" ><span className="buttonTextSize">i</span></Button>}
-                  modal
-                  closeOnDocumentClick
-                >
-                  <div className="modalContainer">
-                    <div className="frame">
-                      <div className="scroll">
+                tooltip[current] = <p>{tooltip[current]}</p>
+              }
 
-                        <div className="modalText">
-                          <p>Usage:</p>
-                          <p></p>
-                          <p></p>
-                          {tooltip}
+              return <div><Modal
+                trigger={<Button variant="outline-light" ><span className="buttonTextSize">i</span></Button>}
+                modal
+                closeOnDocumentClick
+              >
+                <div className="modalContainer">
+                  <div className="frame">
+                    <div className="scroll">
+
+                      <div className="modalText">
+                        <p>Usage:</p>
+                        <p></p>
+                        <p></p>
+                        {tooltip}
 
 
-                        </div>
                       </div>
                     </div>
                   </div>
-                </Modal><span><p>{row.name}</p></span></div>
-              })
+                </div>
+              </Modal><span><p>{row.name}</p></span></div>
+            })
 
-              return desc
+            return desc
 
-            },
-            style: { 'whiteSpace': 'unset' }
           },
-          {
+          style: { 'whiteSpace': 'unset' }
+        },
+        {
 
-            Header: () => (
-              <div className="pluginTableHeader">
-                <p>Version</p>
-              </div>
-            ),
-            accessor: 'Version',
-            width: 100,
+          Header: () => (
+            <div className="pluginTableHeader">
+              <p>Version</p>
+            </div>
+          ),
+          accessor: 'Version',
+          width: 100,
 
-            getProps: (state, rowInfo, column) => {
-              return {
-                style: {
-                  color: "#e1e1e1",
-                  fontSize: "14px",
-                },
-              }
+          getProps: (state, rowInfo, column) => {
+            return {
+              style: {
+                color: "#e1e1e1",
+                fontSize: "14px",
+              },
             }
-
-          }, {
-            show: pluginType == "Local" ? true : false,
-            Header: () => (
-              <div className="pluginTableHeader">
-                <p>Delete</p>
-              </div>
-            ),
-            accessor: '',
-            id: 'Delete',
-            width: 70,
-            accessor: d => <Button variant="outline-light" onClick={() => {
-              Meteor.call('deletePlugin', d.id, (error, result) => {
-                if (result === true) {
-
-                  alert('Plugin deleted successfully!')
-
-                } else {
-
-                  alert('Error deleting plugin. Please delete manually.')
-
-                }
-
-                this.searchPlugins(event, 'Local')
-
-              })
-            }} ><span className="buttonTextSize">X</span></Button>,
-
-
-          }, {
-
-            show: pluginType == "Community" ? true : false,
-            Header: () => (
-              <div className="pluginTableHeader">
-                <p>Stars</p>
-              </div>
-            ),
-            accessor: 'Stars',
-            width: 100,
-            getProps: (state, rowInfo, column) => {
-              return {
-                style: {
-                  color: "#e1e1e1",
-                  fontSize: "14px",
-                },
-              }
-            }
-
-          }, {
-            show: pluginType == "Community" ? true : false,
-            Header: () => (
-              <div className="pluginTableHeader">
-                <p>Link</p>
-              </div>
-            ),
-            id: 'Link',
-            accessor: row => <p><a href={row.Link} onClick={(e) => {
-              e.preventDefault();
-              window.open(row.Link, "_blank")
-            }}>{row.Link}</a></p>,
-            width: 100,
-            getProps: (state, rowInfo, column) => {
-              return {
-                style: {
-                  color: "#e1e1e1",
-                  fontSize: "14px",
-                },
-              }
-            }
-
           }
 
+        }, {
+          show: pluginType == "Local" ? true : false,
+          Header: () => (
+            <div className="pluginTableHeader">
+              <p>Delete</p>
+            </div>
+          ),
+          accessor: '',
+          id: 'Delete',
+          width: 70,
+          accessor: d => <Button variant="outline-light" onClick={() => {
 
-          ]
+          
 
-          render(<div className="libraryContainer" >
-            <ReactTable
-              data={data}
-              columns={columns}
-              defaultPageSize={100}
-              pageSizeOptions={[10, 100, 1000]}
-            />
-          </div>, document.getElementById('searchResults' + result[1]));
+            var arr = this.state.pluginsStored
+
+            var idx = arr.findIndex(row => row.id == d.id)
+
+            if(idx != -1){
+
+               arr.splice(idx,1)
+
+            }
+           
+            this.setState({
+              pluginsStored: arr
+            });
 
 
+            Meteor.call('deletePlugin', d.id, (error, result) => {
+              if (result === true) {
 
+                alert('Plugin deleted successfully!')
+
+              } else {
+
+                alert('Error deleting plugin. Please delete manually.')
+
+              }
+
+              this.searchPlugins(event, 'Local')
+
+            })
+          }} ><span className="buttonTextSize">X</span></Button>,
+
+
+        }, {
+
+          show: pluginType == "Community" ? true : false,
+          Header: () => (
+            <div className="pluginTableHeader">
+              <p>Stars</p>
+            </div>
+          ),
+          accessor: 'Stars',
+          width: 100,
+          getProps: (state, rowInfo, column) => {
+            return {
+              style: {
+                color: "#e1e1e1",
+                fontSize: "14px",
+              },
+            }
+          }
+
+        }, {
+          show: pluginType == "Community" ? true : false,
+          Header: () => (
+            <div className="pluginTableHeader">
+              <p>Link</p>
+            </div>
+          ),
+          id: 'Link',
+          accessor: row => <p><a href={row.Link} onClick={(e) => {
+            e.preventDefault();
+            window.open(row.Link, "_blank")
+          }}>{row.Link}</a></p>,
+          width: 100,
+          getProps: (state, rowInfo, column) => {
+            return {
+              style: {
+                color: "#e1e1e1",
+                fontSize: "14px",
+              },
+            }
+          }
 
         }
 
-      })
+
+        ]
+
+        render(<div className="libraryContainer" >
+          <ReactTable
+            data={data}
+            columns={columns}
+            defaultPageSize={100}
+            pageSizeOptions={[10, 100, 1000]}
+          />
+        </div>, document.getElementById('searchResults' + pluginType));
+
+
+
+
+
+
+      }
+
+      GlobalSettingsDB.upsert('globalsettings',
+      {
+        $set: {
+          pluginSearchLoading: false,
+        }
+      }
+    );
+
     } catch (err) {
       GlobalSettingsDB.upsert('globalsettings',
         {
