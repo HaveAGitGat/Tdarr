@@ -437,6 +437,7 @@ input[type="text"]
   display: 'inline-block';
 
   border-radius: 5px;
+  width:400px;
 }
 
 .borderStyleGeneral{
@@ -948,6 +949,44 @@ table.sliderTable td {
 }
 
 
+.box {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.pluginCard{
+
+  border: 1px solid white;
+  border-radius: 5px;
+  margin:1em;
+  width:300px;
+  height:400px;
+  word-wrap: break-word;
+  padding:0.5em;
+  position: relative;
+  box-shadow: 3px 3px grey;
+
+
+}
+
+.pluginCardBottom{
+  position: absolute;
+  bottom: 1px;
+  left: 2px;
+}
+
+.pluginModal{
+
+  border-bottom: 1px solid black;
+
+}
+
+.pluginInput{
+  color:green;
+}
+
+
+
 table.sliderTable {
   border-radius: 5px;
   width: 100%;
@@ -1086,8 +1125,7 @@ table.pluginStackTable td {
 .pluginTabGrid-itemRight {
 
   width:100%;
-  padding: 0 0 0 2em
-
+  padding: 0 0 0 2em;
 }
 
 
