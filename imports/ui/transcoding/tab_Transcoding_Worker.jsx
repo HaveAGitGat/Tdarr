@@ -10,7 +10,7 @@ import { render } from 'react-dom';
 
 import ToggleButton from 'react-toggle-button'
 
-var path = require('path')
+const path = require('path')
 
 var ButtonStyle = {
   display: 'inline-block',
