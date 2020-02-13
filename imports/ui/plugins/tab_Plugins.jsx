@@ -109,10 +109,7 @@ class App extends Component {
 
 
           <Button variant="outline-light" onClick={(event) => this.searchPlugins(event, pluginType)} style={ButtonStyle}><span className="buttonTextSize">Search</span></Button>{'\u00A0'}
-          {/* <Button variant="outline-light" onClick={() => {
 
-            render('', document.getElementById('searchResults' + pluginType));
-          }} style={ButtonStyle}><span className="buttonTextSize">Clear</span></Button>{'\u00A0'} */}
 
 
           {pluginType == "Community" ? <Button variant="outline-light" onClick={this.updatePlugins} style={ButtonStyle}><span className="buttonTextSize">Update community plugins</span></Button> : null}
@@ -180,8 +177,7 @@ class App extends Component {
       var string = "searchString" + pluginType
       var searchTerm = ReactDOM.findDOMNode(this.refs[string]).value.trim()
 
-      //row.source == pluginType && 
-
+  
       var result = this.state.pluginsStored.filter(row => {
         var string = JSON.stringify(row).toLowerCase()
         if (string.includes(searchTerm.toLowerCase())) {
@@ -311,7 +307,7 @@ class App extends Component {
               <p></p>
 
 
-
+              <PluginCategory pluginType={'Local'} pluginsStoredFiltered={this.state.pluginsStoredFiltered}/>
 
 
             </div>
