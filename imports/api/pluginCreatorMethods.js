@@ -6,8 +6,8 @@ import { Meteor } from 'meteor/meteor';
 const shortid = require('shortid');
 
 //Globals
-var fs = require('fs');
-var path = require('path');
+const fs = require('fs');
+const path = require('path');
 
 
 

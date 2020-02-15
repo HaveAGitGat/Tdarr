@@ -59,9 +59,8 @@ foldersToIgnore = foldersToIgnore.split(",")
 updateConsole(scannerID, "Online.")
 
 
-
-var path = require("path");
-var fs = require('fs');
+const path = require("path");
+const fs = require('fs');
 
 if (fs.existsSync(path.join(process.cwd(), "/npm"))) {
     var rootModules = path.join(process.cwd(), '/npm/node_modules/')
@@ -309,7 +308,6 @@ function isInIgnoredFolder(filePath) {
 function checkContainer(newFile) {
 
     try {
-        var path = require('path');
         var fileType = ((path.extname(newFile)).split(".")).join("")
 
         for (var j = 0; j < allowedContainers.length; j++) {
@@ -362,9 +360,6 @@ function ffprobeLaunch(filesToScan) {
 
     updateConsole(scannerID, `ffprobeLaunch received these files:${filesToScan} `)
 
-
-    var path = require("path");
-    var ffprobeStaticPath = require(rootModules + 'ffprobe-static').path
     const exiftool = require(rootModules + "exiftool-vendored").exiftool
 
 
@@ -411,16 +406,18 @@ function ffprobeLaunch(filesToScan) {
                             extractDataError(filepath, fileInfo.ffProbeData.data)
                         }
 
-                        i++;
-                        if (i < filesToScan.length) {
-                            loopArray(filesToScan, i);
-                        } else {
-                            exiftool.end()
-                        }
-
                     } catch (err) {
                         console.log(err)
                     }
+
+                    i++;
+                    if (i < filesToScan.length) {
+                        loopArray(filesToScan, i);
+                    } else {
+                        exiftool.end()
+                    }
+
+
 
                 }
 
@@ -463,7 +460,6 @@ function ffprobeLaunch(filesToScan) {
 
         var thisFileObject = {}
 
-        var path = require('path');
         var container = ((path.extname(filepath)).split(".")).join("")
         thisFileObject.container = container.toLowerCase();
 
@@ -514,9 +510,6 @@ function ffprobeLaunch(filesToScan) {
 
         updateConsole(scannerID, `Beginning extractData on:${filepath}`)
 
-
-
-        var path = require('path');
         var container = ((path.extname(filepath)).split(".")).join("")
         thisFileObject.container = container.toLowerCase();
 

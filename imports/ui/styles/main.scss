@@ -198,12 +198,6 @@ input[type="text"]
     size:14px;
     }
 
-    .resultColumnOptions {
-
-      width: 100px;
-      display: inline-block;
- 
-      }
 
         .filterByDate {
 
@@ -1046,10 +1040,25 @@ table.pluginStackTable td {
 }
 
 .optionsDropdown{
-
   background-color: #383838;
 
 }
+
+.optionsDropdownSR{
+
+  background-color: black;
+
+}
+
+
+.resultColumnOptions {
+
+  width: 100px;
+  display: inline-block;
+
+  }
+
+
 
 .dropdownScan{
   color:green;

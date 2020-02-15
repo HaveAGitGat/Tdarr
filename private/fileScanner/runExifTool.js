@@ -7,7 +7,7 @@ if (fs.existsSync(path.join(process.cwd(), "/npm"))) {
     var rootModules = ''
 }
 
-module.exports = function runExifTool(filepath,exiftool) {
+module.exports = function runExifTool(filepath, exiftool) {
 
     //const exiftool = require(rootModules + "exiftool-vendored").exiftool
 
@@ -16,7 +16,7 @@ module.exports = function runExifTool(filepath,exiftool) {
             exiftool
                 .read(filepath)
                 .then((tags /*: Tags */) => {
-                    
+
                     resolve(
                         {
                             result: 'success',
@@ -36,7 +36,7 @@ module.exports = function runExifTool(filepath,exiftool) {
 
         } catch (err) {
 
-            
+
             resolve(
                 {
                     result: 'error',

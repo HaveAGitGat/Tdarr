@@ -80,7 +80,6 @@ class Folder extends Component {
     Meteor.call('searchPlugins', '', 'Community', (error, result) => {
 
       var arr = this.state.pluginsStored
-
       arr = arr.concat(result[0])
       this.setState({
         pluginsStored: arr
@@ -88,6 +87,11 @@ class Folder extends Component {
 
     })
   };
+
+  componentWillUnmount() {
+    clearInterval(this.interval2);
+}
+
 
 
   getServerTime = () => {

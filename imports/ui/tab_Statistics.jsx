@@ -4,8 +4,6 @@ import { FileDB,StatisticsDB,GlobalSettingsDB } from '../api/tasks.js';
 import ReactDOM from 'react-dom';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { Button } from 'react-bootstrap';
-import Modal from "reactjs-popup";
-import ItemButton from './item_Button.jsx'
 import { render } from 'react-dom';
 import SearchResults from './searchResults.jsx'
 
