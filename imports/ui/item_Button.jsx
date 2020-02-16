@@ -4,7 +4,6 @@ import ReactDOM from 'react-dom';
 import { Button } from 'react-bootstrap';
 import ClipLoader from 'react-spinners/ClipLoader';
 
-
 import { FileDB } from '../api/tasks.js';
 
 
@@ -15,9 +14,43 @@ export default class App extends Component {
 
     this.state = {
       lastUpdate: 0,
+      showButton:true,
     }
 
   }
+
+  componentDidMount() {
+
+   // this.getDBStatus()
+
+  }
+
+  getDBStatus = () => {
+
+    Meteor.subscribe('FileDB', () => {
+
+
+      var file = FileDB.find({ _id: this.props.file._id }).fetch()[0]
+
+      if (this.props.time >= file.lastUpdate) {
+        this.setState({
+          showButton: true,
+        })
+
+      } else {
+
+        this.setState({
+          showButton: false,
+        })
+
+      }
+
+
+
+    });
+
+  }
+
 
   triggerLoadState = () => {
 
@@ -41,6 +74,7 @@ export default class App extends Component {
 
   // }
 
+ 
 
 
 
@@ -53,6 +87,8 @@ export default class App extends Component {
 
     var serverTime = this.props.time
     var lastUpdate = this.props.file.lastUpdate ? this.props.file.lastUpdate.getTime() : 0
+    //this.props.time >= this.state.lastUpdate
+    //this.state.showButton
 
 
     if (this.props.type == "updateDBAction") {
@@ -60,7 +96,7 @@ export default class App extends Component {
       return (
 
         <div>
-          {serverTime >= this.state.lastUpdate ? <Button variant="outline-light" onClick={() => {
+          {this.props.time >= this.state.lastUpdate ? <Button variant="outline-light" onClick={() => {
 
 
             this.triggerLoadState();
