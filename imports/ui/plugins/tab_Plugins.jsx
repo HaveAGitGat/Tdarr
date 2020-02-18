@@ -165,13 +165,13 @@ class App extends Component {
       }
 
 
-      GlobalSettingsDB.upsert('globalsettings',
-        {
-          $set: {
-            pluginSearchLoading: true,
-          }
-        }
-      );
+      // GlobalSettingsDB.upsert('globalsettings',
+      //   {
+      //     $set: {
+      //       pluginSearchLoading: true,
+      //     }
+      //   }
+      // );
 
 
       var string = "searchString" + pluginType
@@ -196,26 +196,26 @@ class App extends Component {
 
 
 
-      GlobalSettingsDB.upsert('globalsettings',
-        {
-          $set: {
-            pluginSearchLoading: false,
-          }
-        }
-      );
+      // GlobalSettingsDB.upsert('globalsettings',
+      //   {
+      //     $set: {
+      //       pluginSearchLoading: false,
+      //     }
+      //   }
+      // );
 
 
       
 
     } catch (err) {
       console.log(err)
-      GlobalSettingsDB.upsert('globalsettings',
-        {
-          $set: {
-            pluginSearchLoading: false,
-          }
-        }
-      );
+      // GlobalSettingsDB.upsert('globalsettings',
+      //   {
+      //     $set: {
+      //       pluginSearchLoading: false,
+      //     }
+      //   }
+      // );
 
      
     }

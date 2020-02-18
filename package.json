@@ -7,7 +7,8 @@
     "test-app": "TEST_WATCH=1 meteor test --full-app --driver-package meteortesting:mocha",
     "visualize": "meteor --production --extra-packages bundle-visualizer",
     "lint": "eslint {imports,tests}/**/* --ext .{{t,j}s{,x}}",
-    "lint:fix": "eslint {imports,tests}/**/* --ext .{{t,j}s{,x}} --fix"
+    "lint:fix": "eslint {imports,tests}/**/* --ext .{{t,j}s{,x}} --fix",
+    "desktop": "meteor-desktop"
   },
   "dependencies": {
     "@babel/runtime": "^7.8.4",
@@ -80,5 +81,9 @@
       "server": "server/main.js"
     },
     "testModule": "tests/main.js"
+  },
+  "devDependencies": {
+    "electron": "6.1.7",
+    "electron-builder": "21.2.0"
   }
 }
