@@ -3109,7 +3109,7 @@ function main() {
 
 
 
-                  removeFromProcessing(firstItem.file)
+                  removeFromProcessing(originalID)
 
 
                   var messageOut = [
@@ -4336,13 +4336,20 @@ function main() {
           }
         );
 
-
-
-
       }
+
+      GlobalSettingsDB.upsert(
+        "globalsettings",
+        {
+          $set: {
+            lastQueueUpdateTime: (new Date()).getTime(),
+          }
+        }
+      );
 
 
       setTimeout(Meteor.bindEnvironment(tablesUpdate), DBPollPeriod > 1000 ? DBPollPeriod : 1000);
+
 
     } catch (err) {
 
@@ -4351,6 +4358,8 @@ function main() {
       setTimeout(Meteor.bindEnvironment(tablesUpdate), 10000);
 
     }
+
+    
 
 
     setTimeout(Meteor.bindEnvironment(() => { addFilesToDB = true }), 1000);
