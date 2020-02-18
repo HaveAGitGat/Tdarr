@@ -345,11 +345,15 @@ Meteor.methods({
       fs.readdirSync(homePath + `/Tdarr/Backups/`).forEach(file => {
         if (file.includes('.zip')) {
 
-          var sizeInMbytes = (((fs.statSync(homePath + `/Tdarr/Backups/` + file)).size) / 1000000.0).toPrecision(2);
+          var fullPath = homePath + `/Tdarr/Backups/` + file
+          var statSync = fs.statSync(fullPath)
+          var sizeInMbytes = ((statSync.size) / 1000000.0).toPrecision(2);
+         
 
           backups.push({
             name: file,
             size: sizeInMbytes,
+            statSync : statSync ,
           })
 
         }
@@ -358,7 +362,65 @@ Meteor.methods({
     } catch (err) {
       console.log(err.stack)
     }
+
+
+    backups = backups.sort(function (a, b) {
+      return new Date(b.statSync.ctime) - new Date(a.statSync.ctime);
+    });
+
     return backups
+
+  },
+
+  'trimBackups'() {
+
+    try {
+      var backups = []
+      fs.readdirSync(homePath + `/Tdarr/Backups/`).forEach(file => {
+        if (file.includes('.zip')) {
+
+          var fullPath = homePath + `/Tdarr/Backups/` + file
+          var statSync = fs.statSync(fullPath)
+
+          backups.push({
+            fullPath: fullPath,
+            statSync : statSync ,
+          })
+
+        }
+      });
+
+
+      backups = backups.sort(function (a, b) {
+        return new Date(a.statSync.ctime) - new Date(b.statSync.ctime);
+      });
+
+      var backupLimit = (GlobalSettingsDB.find({}, {}).fetch())[0].backupLimit
+
+      if (backupLimit == undefined) {
+        backupLimit = 30
+      }
+
+      console.log(`Num backups:${backups.length}, Backup limit:${backupLimit}`)
+
+
+      while (backups.length > backupLimit) {
+
+
+        console.log('Deleting backup:' + backups[0].fullPath)
+
+        fs.unlinkSync(backups[0].fullPath)
+        backups.splice(0, 1)
+
+      }
+
+
+
+
+
+    } catch (err) {
+      console.log(err.stack)
+    }
 
   },
 
@@ -579,7 +641,9 @@ Meteor.methods({
 //Backup
 var dailyBackup = schedule.scheduleJob('0 0 0 * * *', Meteor.bindEnvironment(function () {
 
-  Meteor.call('createBackup', (error, result) => { })
+  Meteor.call('createBackup', (error, result) => {
+    Meteor.call('trimBackups', (error, result) => { })
+  })
 
 }));
 
@@ -596,10 +660,12 @@ var dailyBackup = schedule.scheduleJob('0 0 0 * * *', Meteor.bindEnvironment(fun
 
 
 
-setTimeout(Meteor.bindEnvironment(main), 10000);
+setTimeout(Meteor.bindEnvironment(main), 1000);
 
 
 function main() {
+
+  
 
 
   console.log("Initialising DB")
