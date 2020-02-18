@@ -1675,7 +1675,7 @@ function main() {
 
 
 
-        var scannerPath = "assets/app/fileScanner.js"
+        var scannerPath = "assets/app/fileScanner/fileScanner.js"
 
         var childProcess = require("child_process");
         var child_argv = [
@@ -2297,11 +2297,8 @@ function main() {
 
     //var workerPath = "/imports/api/worker1.js"
     var workerPath = "assets/app/worker1.js"
-
-
-
     var childProcess = require("child_process");
-    //var path = require("path");
+
 
 
 
