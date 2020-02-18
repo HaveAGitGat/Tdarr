@@ -2499,6 +2499,8 @@ function main() {
 
                 filesBeingProcessed.push(firstItem.file + "")
 
+                var originalID = firstItem._id
+
                 var tempObj = {
                   _id: firstItem.file,
                   processingStatus: true
@@ -2684,10 +2686,11 @@ function main() {
                             var response = plugin.plugin(firstItem, librarySettings, pluginInputs, otherArguments);
                             if (response && response.removeFromDB == true) {
                               Meteor.call('modifyFileDB', 'removeOne', response.file._id, (error, result) => { })
+                              Meteor.call('modifyFileDB', 'removeOne', originalID, (error, result) => { })
                             }
                             if (response && response.updateDB == true) {
                               Meteor.call('modifyFileDB', 'removeOne', response.file._id, (error, result) => { })
-                              //Meteor.call('modifyFileDB', 'update', response.file._id, response.file, (error, result) => { })
+                              Meteor.call('modifyFileDB', 'removeOne', originalID, (error, result) => { })
                               Meteor.call('modifyFileDB', 'insert', response.file._id, response.file, (error, result) => { })
                               firstItem = { ...firstItem, ...response.file };
                             }
@@ -2704,10 +2707,11 @@ function main() {
 
                                 if (temp && temp.removeFromDB == true) {
                                   Meteor.call('modifyFileDB', 'removeOne', temp.file._id, (error, result) => { })
+                                  Meteor.call('modifyFileDB', 'removeOne', originalID, (error, result) => { })
                                 }
                                 if (temp && temp.updateDB == true) {
                                   Meteor.call('modifyFileDB', 'removeOne', temp.file._id, (error, result) => { })
-                                  //Meteor.call('modifyFileDB', 'update', temp.file._id, temp.file, (error, result) => { })
+                                  Meteor.call('modifyFileDB', 'removeOne', originalID, (error, result) => { })
                                   Meteor.call('modifyFileDB', 'insert', temp.file._id, temp.file, (error, result) => { })
                                   firstItem = { ...firstItem, ...temp.file };
                                 }
@@ -2720,6 +2724,9 @@ function main() {
                             console.dir(response)
 
                             processFile = response.processFile
+                            if(processFile === undefined){
+                              throw 'No proceesFile value returned from plugin!'
+                            }
                             preset = response.preset
                             container = response.container
                             handBrakeMode = response.handBrakeMode
@@ -3059,10 +3066,13 @@ function main() {
                             var response = plugin.plugin(firstItem, librarySettings, pluginInputs, otherArguments);
                             if (response && response.removeFromDB == true) {
                               Meteor.call('modifyFileDB', 'removeOne', response.file._id, (error, result) => { })
+                              Meteor.call('modifyFileDB', 'removeOne', originalID, (error, result) => { })
+
+                              
                             }
                             if (response && response.updateDB == true) {
                               Meteor.call('modifyFileDB', 'removeOne', response.file._id, (error, result) => { })
-                              //Meteor.call('modifyFileDB', 'update', response.file._id, response.file, (error, result) => { })
+                              Meteor.call('modifyFileDB', 'removeOne', originalID, (error, result) => { })
                               Meteor.call('modifyFileDB', 'insert', response.file._id, response.file, (error, result) => { })
                               firstItem = { ...firstItem, ...response.file };
                             }
