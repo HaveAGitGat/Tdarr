@@ -282,14 +282,10 @@ export default class App extends Component {
 
 
             <p onClick={() => {
-              this.setState({ selectedNav: 'Radarr' })
-            }} className={this.state && this.state.selectedNav == "Radarr" ? 'selectedNav' : 'unselectedNav'}>Radarr ({this.renderPlugins(true, this.props.pluginType, 'radarr')})</p>
+              this.setState({ selectedNav: '3rd Party' })
+            }} className={this.state && this.state.selectedNav == "3rd Party" ? 'selectedNav' : 'unselectedNav'}>3rd Party ({this.renderPlugins(true, this.props.pluginType, '3rd party')})</p>
 
-            <p onClick={() => {
-              this.setState({ selectedNav: 'Sonarr' })
-            }} className={this.state && this.state.selectedNav == "Sonarr" ? 'selectedNav' : 'unselectedNav'}>Sonarr ({this.renderPlugins(true, this.props.pluginType, 'sonarr')})</p>
-
-
+        
             <br />
             
 
@@ -380,14 +376,12 @@ export default class App extends Component {
             </div>
 
 
-            <div className={this.state && this.state.selectedNav == "Radarr" ? '' : 'd-none'}>
-              {this.renderPlugins(false, this.props.pluginType, 'radarr')}
+            <div className={this.state && this.state.selectedNav == "3rd Party" ? '' : 'd-none'}>
+              {this.renderPlugins(false, this.props.pluginType, '3rd party')}
             </div>
 
 
-            <div className={this.state && this.state.selectedNav == "Sonarr" ? '' : 'd-none'}>
-              {this.renderPlugins(false, this.props.pluginType, 'sonarr')}
-            </div>
+      
 
 
             <div className={this.state && this.state.selectedNav == "Pre-processing" ? '' : 'd-none'}>
