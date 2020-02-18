@@ -336,6 +336,7 @@ Meteor.methods({
 
     Meteor.call('DBHasChanged', (error, result) => { })
 
+    
   },
 
   'getBackups'() {
@@ -1069,13 +1070,13 @@ function main() {
       }
 
 
-      GlobalSettingsDB.upsert('globalsettings',
-        {
-          $set: {
-            pluginSearchLoading: false,
-          }
-        }
-      );
+      // GlobalSettingsDB.upsert('globalsettings',
+      //   {
+      //     $set: {
+      //       pluginSearchLoading: false,
+      //     }
+      //   }
+      // );
 
 
       return [plugins, pluginType]
