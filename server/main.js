@@ -4235,13 +4235,15 @@ function main() {
 
         }
 
+        var tab1Length = table1data.length
+
 
         StatisticsDB.upsert('statistics',
           {
             $set: {
               tdarrScore: ((table2data.length * 100.00) / (table1data.length + table2data.length + table3data.length)).toPrecision(4),
               healthCheckScore: ((table5data.length * 100.00) / (table4data.length + table5data.length + table6data.length)).toPrecision(4),
-              table1Count: table1data.length,
+              // table1Count: table1data.length,
               table2Count: table2data.length,
               table3Count: table3data.length,
               table4Count: table4data.length,
@@ -4282,10 +4284,15 @@ function main() {
         timeIdx = parseInt(timeIdx) + (d * 24)
 
 
+        var libNotice = ' -Libraries OFF:'
+
+
         for (var i = 0; i < settings.length; i++) {
 
           try {
             if ((settings[i].schedule[timeIdx] !== undefined && settings[i].schedule[timeIdx].checked === false) || settings[i].processLibrary === false) {
+
+              libNotice += (i+1)+','
 
               generalFiles = generalFiles.filter(row => row.DB != settings[i]._id);
               transcodeFiles = transcodeFiles.filter(row => row.DB != settings[i]._id);
@@ -4302,6 +4309,20 @@ function main() {
         }
 
         //old
+
+
+        if(libNotice == ' -Libraries OFF:'){
+          libNotice = ''
+        }
+
+
+        StatisticsDB.upsert('statistics',
+        {
+          $set: {
+            table1Count: tab1Length +libNotice,
+          }
+        }
+      );
 
 
 
