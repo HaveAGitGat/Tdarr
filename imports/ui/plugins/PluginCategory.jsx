@@ -91,15 +91,16 @@ export default class App extends Component {
 
       result = result.map(row =>   <div><div className={this.state.showPlugin ? '' : 'd-none'}><div className="pluginCard">
 
-        <center><p>{row.Name}</p></center>
+         <center><div className="pluginID"><p>{row.id}</p></div></center>
+        <center><div className="pluginTitle"><p>{row.Name}</p></div></center>
 
-        <br />
-        <p>{row.Description}</p>
+        <div className="pluginDesc"><p>{row.Description}</p></div>
 
 
         <div className="pluginCardBottom">
-          <div className="box">
-            <CopyToClipboard text={row.id}>
+
+        <center>
+        <CopyToClipboard text={row.id}>
               <Button variant="outline-light" ><span className="buttonTextSize">Copy id</span></Button>
             </CopyToClipboard>{'\u00A0'}
             {row.Inputs ? <Modal
@@ -154,7 +155,9 @@ export default class App extends Component {
                   </div>
                 </div>
               </div>
-            </Modal> : null}
+            </Modal> : null}</center>
+          <div className="box">
+
 
           <p>Tags:{row.Tags}</p> 
 
