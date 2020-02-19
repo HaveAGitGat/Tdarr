@@ -46,6 +46,8 @@ module.exports = function runExifTool(filepath, exiftool) {
 
         }
     });
+
+    
 }
 
 

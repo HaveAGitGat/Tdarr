@@ -386,15 +386,53 @@ function ffprobeLaunch(filesToScan) {
                             ccextractorData: '',
                         }
 
-                        fileInfo.ffProbeData = await runFFprobe(filepath);
+
+                        updateConsole(scannerID, 'Running ffmpeg on file')
+
+                        await runFFprobe(filepath)
+                            .then((res) => {
+                                fileInfo.ffProbeData = res
+                            }).catch((err) => {
+                                console.log(err)
+                                fileInfo.ffProbeData = {
+                                    result: 'error',
+                                    data: 'FFprobe encountered an error ' + err,
+                                }
+                            })
 
                         if (fileInfo.ffProbeData.result != 'error') {
 
-                            fileInfo.exifToolData = await runExifTool(filepath, exiftool);
+                            updateConsole(scannerID, 'Running exiftool on file')
+
+                            await runExifTool(filepath, exiftool)
+                                .then((res) => {
+                                    fileInfo.exifToolData = res
+                                })
+                                .catch((err) => {
+                                    console.log(err)
+                                    fileInfo.exifToolData = {
+                                        result: 'error',
+                                        data: 'Exiftool encountered an error ' + err,
+                                    }
+                                })
 
 
                             if (closedCaptionScan == 'true') {
-                                fileInfo.ccextractorData = await runCCExtractor(filepath);
+
+                                updateConsole(scannerID, 'Running ccextractor on file')
+                                await runCCExtractor(filepath)
+                                    .then((res) => {
+                                        fileInfo.ccextractorData = res
+                                    })
+                                    .catch((err) => {
+                                        console.log(err)
+                                        fileInfo.ccextractorData = {
+                                            result: 'error',
+                                            data: 'CCextractor encountered an error ' + err,
+                                        }
+                                    })
+
+
                                 extractData(filepath, fileInfo.ffProbeData.data, fileInfo.exifToolData.data, fileInfo.ccextractorData.data)
 
                             } else {
@@ -477,7 +515,7 @@ function ffprobeLaunch(filesToScan) {
 
         } catch (err) { }
 
-        thisFileObject.cliLog = "FFprobe was unable to extract data from this file. It is highly likely that the file is corrupt."
+        thisFileObject.cliLog = "FFprobe was unable to extract data from this file. It is likely that the file is corrupt."
 
         updateConsole(scannerID, `FFprobe was unable to extract data from this file:${filepath}`)
 
