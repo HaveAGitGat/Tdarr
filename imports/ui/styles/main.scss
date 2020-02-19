@@ -473,6 +473,7 @@ input[type="text"]
     .libraryContainer2{
       
       margin:0em 4em;
+      width:auto;
 
     }
 
@@ -741,8 +742,9 @@ input[type="text"]
 
       border: 2px solid black;
       border-radius: 5px;
-
-      overflow: auto;
+      display:inline-block;
+      background:#373737;
+     
       padding:2em;
 
 
@@ -946,11 +948,12 @@ table.sliderTable td {
 .box {
   display: flex;
   flex-wrap: wrap;
+  height:auto;
 }
 
 .pluginCard{
 
-  border: 1px solid white;
+  border: 1px solid #222b44;
   border-radius: 5px;
   margin:1em;
   width:300px;
@@ -963,6 +966,37 @@ table.sliderTable td {
 
 
 }
+
+
+
+.pluginCard ::-webkit-scrollbar {
+  width: 12px;
+
+  /* for vertical scrollbars */
+  height: 12px;
+
+  /* for horizontal scrollbars */
+}
+
+.pluginCard ::-webkit-scrollbar-track {
+  background: #222b44;
+}
+
+.pluginCard ::-webkit-scrollbar-thumb {
+  background: #096b9c;
+}
+
+
+.pluginDesc{
+
+  overflow-y:auto;
+  overflow-y:scroll;
+  height:200px;
+  }
+
+  .pluginDesc p{
+    color:rgb(199, 198, 198);
+    }
 
 .pluginCardLoading{
 
@@ -984,6 +1018,15 @@ table.sliderTable td {
 
 .pluginInput{
   color:green;
+}
+
+.pluginTitle p{
+  color:rgb(27, 117, 158);
+}
+
+.pluginID p{
+  font-size:0.5em;
+  color:rgb(74, 73, 104);
 }
 
 
@@ -1011,21 +1054,37 @@ table.searchResultsTable td {
 
 }
 
-table.pluginStackTable th {
 
 
-  border: 1px solid white;
-  color: black;
+.pluginStackGrid{
+
+  display: grid;
+  grid-template-columns: auto auto 100px auto auto auto 100px 200px auto auto auto;
+  word-wrap: break-word;
+
+  
+  border: 2px solid black;
+  border-radius: 5px;
+  background:#373737;
+  width:200%;
+
 
 }
 
-table.pluginStackTable td {
+.pluginStackCol1{
 
+  border-bottom: 1px solid black;
+  border-right: 1px solid black;
+  padding:0.5em;
 
-  border: 1px solid white;
-  color: black;
 
 }
+
+.priorityButtonsGrid{
+  display: grid;
+  grid-template-columns: auto;
+}
+
 
 .iconContainer {
   background-color: grey;

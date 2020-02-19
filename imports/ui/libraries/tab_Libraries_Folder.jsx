@@ -24,6 +24,11 @@ var libButtonStyle = {
   display: 'inline-block',
 };
 
+
+var tabCol1 = {
+  width:'200px',
+};
+
 const override = css``;
 
 class Folder extends Component {
@@ -407,71 +412,36 @@ class Folder extends Component {
 
 
       render(
-        <table className="pluginStackTable">
-          <tbody>
-            <tr>
-              <th>
-                <center>
-                  <p>Source</p>
-                </center>
-              </th>
-              <th>
-                <center>
-                  <p>Enabled</p>
-                </center>
-              </th>
-              <th>
-                <center>
-                  <p>id</p>
-                </center>
-              </th>
-              <th>
-                <center>
-                  <p>Stage</p>
-                </center>
-              </th>
-              <th>
-                <center>
-                  <p>Type</p>
-                </center>
-              </th>
-              <th>
-                <center>
-                  <p>Operation</p>
-                </center>
-              </th>
-              <th>
-                <center>
-                  <p>Name</p>
-                </center>
-              </th>
-              <th>
-                <center>
-                  <p>Description</p>
-                </center>
-              </th>
-              <th>
-                <center>
-                  <p>Inputs</p>
-                </center>
-              </th>
-              <th>
-                <center>
-                  <p>Priority</p>
-                </center>
-              </th>
-              <th>
-                <center>
-                  <p>Remove</p>
-                </center>
-              </th>
-            </tr>
 
-            {stack}
-          </tbody>
-        </table>,
+        <div className="pluginStackGrid">
 
-        document.getElementById(this.props.libraryItem._id + 'PluginStack')
+        <div className="pluginStackCol1"><p>Source</p></div>
+
+        <div className="pluginStackCol1"><p>Enabled</p></div>
+
+        <div className="pluginStackCol1"><p>id</p></div>
+        
+        <div className="pluginStackCol1"><p>Stage</p></div>
+
+        <div className="pluginStackCol1"><p>Type</p></div>
+
+        <div className="pluginStackCol1"><p>Operation</p></div>
+
+        <div className="pluginStackCol1"><p>Name</p></div>
+
+        <div className="pluginStackCol1"><p>Description</p></div>
+
+        <div className="pluginStackCol1"><p>Inputs</p></div>
+
+        <div className="pluginStackCol1"><p>Priority</p></div>
+
+        <div className="pluginStackCol1"><p>Remove</p></div>
+
+        {stack}
+
+
+
+        </div>,document.getElementById(this.props.libraryItem._id + 'PluginStack')
       );
 
     } catch (err) { console.log(err) }
@@ -1797,7 +1767,7 @@ class Folder extends Component {
                 <center>
 
                   {this.state.pluginsStored ? this.renderPlugins() : null}
-                  <div id={this.props.libraryItem._id + 'PluginStack'} className="scheduleContainer">
+                  <div id={this.props.libraryItem._id + 'PluginStack'} >
 
                   </div>
                 </center>
