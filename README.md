@@ -48,6 +48,11 @@ Currently in Beta but looking for feedback/suggestions.
 
 ![Screenshot](https://i.imgur.com/8vEmI7d.png)
 
+---------------------------------------------------------------------------------------
+#Plugins
+
+![Screenshot](https://i.imgur.com/MTiHGrc.png)
+
 
 Requirements (MongoDB + NodeJS 8.x)
 
