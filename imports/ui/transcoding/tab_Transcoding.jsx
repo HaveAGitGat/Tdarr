@@ -771,7 +771,7 @@ class App extends Component {
                 <td><p><b>Total</b>: {this.renderStat('DBTotalTime')}</p></td>
                 <td><p><b>Backlog</b>: {this.renderStat('DBQueue')}</p></td>
                 <td><p><b>Load</b>: {this.renderStat('DBLoadStatus')}</p></td>
-                <td><p><b>Server time</b>:<span id='serverTime'></span></p></td>
+                <td><p><b>Server clock</b>:<span id='serverTime'></span></p></td>
 
               </tr>
 
@@ -949,12 +949,13 @@ class App extends Component {
           <br />
           <br />
 
-          <div className="allWorkersContainer" id="allWorkersContainerID">
-
-
-          </div>
+        
 
         </div>
+
+      <center> <div className="allWorkersContainer" id="allWorkersContainerID"></div></center> 
+
+
         <p></p>
         <p></p>
         <p></p>

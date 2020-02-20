@@ -183,7 +183,10 @@ input[type="text"]
             }
             
 
-
+.workerPercentage{
+  position:relative;
+  text-align:left;
+}
         
   .tableSize {
 
@@ -746,6 +749,9 @@ input[type="text"]
       background:#373737;
      
       padding:2em;
+      left:2em;
+      position: absolute;
+      width:96%;
 
 
     }
@@ -830,13 +836,14 @@ td.dbStatusContainer {
 
 
 table.itemTable th {
-  background-color: #373737;;
+  background-color: #373737;
   color: black;
 }
 
 table.itemTable td {
 
   color: black;
+  background-color: #373737;
   /* font-family: "Courier New" */
 }
 
@@ -1059,14 +1066,18 @@ table.searchResultsTable td {
 .pluginStackGrid{
 
   display: grid;
-  grid-template-columns: auto auto 100px auto auto auto 100px 200px auto auto auto;
+  grid-template-columns: max-content max-content auto max-content max-content max-content 200px max-content max-content max-content;
+
+  //grid-template-columns:repeat( 11, max-content );
   word-wrap: break-word;
 
   
   border: 2px solid black;
   border-radius: 5px;
   background:#373737;
-  width:200%;
+  left:2em;
+  position: absolute;
+  width:96%;
 
 
 }
@@ -1076,6 +1087,7 @@ table.searchResultsTable td {
   border-bottom: 1px solid black;
   border-right: 1px solid black;
   padding:0.5em;
+  background:#373737;
 
 
 }

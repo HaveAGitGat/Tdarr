@@ -162,7 +162,8 @@ export default class Worker extends Component {
 
 
             <div className={this.props.worker.percentage <= 100 ? '' : 'd-none'}>
-              <Progress percent={parseInt(this.props.worker.percentage)} status="default"
+            <div className="workerPercentage">
+              <Progress  percent={parseInt(this.props.worker.percentage)} status="default"
 
                 theme={
                   {
@@ -174,12 +175,13 @@ export default class Worker extends Component {
                   }
                 }
               />
-
+ </div>
             </div>
 
 
             <div className={this.props.worker.percentage > 100 ? '' : 'd-none'}>
 
+              <div className="workerPercentage">
               <Progress percent={100} status="default"
 
                 theme={
@@ -191,7 +193,7 @@ export default class Worker extends Component {
                     },
                   }
                 }
-              />
+              /></div>
               <center >
               <p> Frame: {this.props.worker.percentage / 100}</p>
               </center>

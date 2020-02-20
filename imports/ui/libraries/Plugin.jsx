@@ -136,11 +136,10 @@ export default class Plugin extends Component {
     var stack = [
       <div className="pluginStackCol1"><span className="buttonTextSize">{this.props.pluginItem.source != undefined ? this.props.pluginItem.source : "-"}</span></div>,
       <div className="pluginStackCol1"><Checkbox checked={!!this.props.pluginItem.checked} onChange={this.toggleChecked} /></div>,
-      <div className="pluginStackCol1"><span className="buttonTextSize">{this.props.pluginItem._id}</span></div>,
-      <div className="pluginStackCol1"><span className="buttonTextSize">{this.props.pluginItem.Stage}</span></div>,
+      <div className="pluginStackCol1"><span className="buttonTextSize">{this.props.pluginItem._id} <br/>{this.props.pluginItem.Name != undefined ? this.props.pluginItem.Name : "-"}</span></div>,
+      <div className="pluginStackCol1"><span className="buttonTextSize">{this.props.pluginItem.Stage == 'Pre-processing' ? 'Pre' : this.props.pluginItem.Stage == 'Post-processing' ? 'Post' : ''}</span></div>,
       <div className="pluginStackCol1"><span className="buttonTextSize">{this.props.pluginItem.Type}</span></div>,
       <div className="pluginStackCol1"><span className="buttonTextSize">{this.props.pluginItem.Operation != undefined ? this.props.pluginItem.Operation : "-"}</span></div>,
-      <div className="pluginStackCol1"><span className="buttonTextSize">{this.props.pluginItem.Name != undefined ? this.props.pluginItem.Name : "-"}</span></div>,
       <div className="pluginStackCol1"><span className="buttonTextSize">{this.props.pluginItem.Description != undefined ? this.props.pluginItem.Description : "-"}</span></div>,
       <div className="pluginStackCol1"><span className="buttonTextSize">{this.props.pluginItem.Inputs != undefined ? this.renderInputs(this.props.pluginItem.Inputs) : "-"}</span></div>,
       <div className="pluginStackCol1">

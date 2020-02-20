@@ -130,11 +130,11 @@ class App extends Component {
 
                   <div className="modalText">
                     <p></p>
-                    <p>Copy a community plugin id into the 'Plugin ID:' section of one of your libraries. Make sure the 'Community' checkbox is selected.</p>
+                    <p>Copy a {pluginType} plugin id into the 'Plugin ID:' section of one of your libraries. Make sure the '{pluginType}' checkbox is selected.</p>
                     <p></p>
                     <p></p>
 
-                    <p>For information on creating community and local plugins, have a look at:https://github.com/HaveAGitGat/Tdarr_Plugins</p>
+                    <p>For information on manually creating community and local plugins, have a look at:https://github.com/HaveAGitGat/Tdarr_Plugins</p>
 
                     <p>Community plugins are stored in 'Tdarr\Plugins\Community'. Any modifications will be overwritten when the plugins are updated.</p>
                     <p>Local plugins are stored in 'Tdarr\Plugins\Local'.</p>

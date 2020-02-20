@@ -419,15 +419,13 @@ class Folder extends Component {
 
         <div className="pluginStackCol1"><p>Enabled</p></div>
 
-        <div className="pluginStackCol1"><p>id</p></div>
+        <div className="pluginStackCol1"><p>id/Name</p></div>
         
         <div className="pluginStackCol1"><p>Stage</p></div>
 
         <div className="pluginStackCol1"><p>Type</p></div>
 
         <div className="pluginStackCol1"><p>Operation</p></div>
-
-        <div className="pluginStackCol1"><p>Name</p></div>
 
         <div className="pluginStackCol1"><p>Description</p></div>
 
@@ -1098,7 +1096,7 @@ class Folder extends Component {
                   : 'unselectedNav'
               }
             >
-              Transcode
+              Transcode options
             </p>
             <p
               onClick={() => {
@@ -2055,7 +2053,7 @@ class Folder extends Component {
               <p>Schedule: </p>
 
 
-              <p><b>Server time</b>:<span id='serverTime'></span></p>
+              <p><b>Server clock</b>:<span id='serverTime'></span></p>
 
               <Button
                 variant="outline-light"
@@ -2076,6 +2074,15 @@ class Folder extends Component {
                 Toggle all
               </Button>
 
+              <br />
+              <br />
+              <br />
+              <br />
+              <br />
+              <br />
+              <br />
+              <br />
+              <br />
               <br />
               <br />
               <br />
