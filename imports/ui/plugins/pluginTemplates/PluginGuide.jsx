@@ -67,9 +67,9 @@ class App extends Component {
 
         <br />
 
-        <p align="center">
-          <LocalImage link="/images/example_plugin_stack_flow.png" height="500" />
-        </p>
+        <center>
+          <LocalImage height="500" link="/images/example_plugin_stack_flow.png" />
+        </center>
 
 
         <br />

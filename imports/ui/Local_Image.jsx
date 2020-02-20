@@ -3,32 +3,55 @@
 import React, { Component } from 'react';
 import { GlobalSettingsDB } from '../api/tasks.js';
 
-export default LocalImage = (props) => {
+
+export default class LocalImage extends Component {
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      link: '',
+
+    }
 
 
-  const [link, setLink] = React.useState('');
+  }
 
-  React.useEffect(() => {
-
+  componentDidMount() {
 
     Meteor.subscribe('GlobalSettingsDB', () => {
 
+      this.setImgLink()
 
-      const basePath = GlobalSettingsDB.find({}).fetch()[0].basePath;
+    })
 
-      var updatedLink = basePath + props.link
-  
-      setLink(updatedLink);
 
-    });
+  }
 
-  });
 
-  return (
+  setImgLink = () => {
 
-    <img src={link ? link : null} height={props.height ? props.height : null} width={props.width ? props.width : null} alt={props.alt ? props.alt : null}></img>
+    var basePath = GlobalSettingsDB.find({}).fetch()[0].basePath;
 
-  );
+    if (basePath != undefined) {
+      var updatedLink = basePath + this.props.link
+    } else {
+      var updatedLink = this.props.link
+    }
 
+
+    this.setState({
+      link: updatedLink
+    })
+
+    console.log(updatedLink)
+
+  }
+
+  render() {
+
+    return <img src={this.state.link ? this.state.link : this.props.link} height={this.props.height ? this.props.height : null} width={this.props.width ? this.props.width : null} alt={this.props.alt ? this.props.alt : null}></img>
+  }
 }
+
 
