@@ -1071,7 +1071,7 @@ table.searchResultsTable td {
 .pluginStackGrid{
 
   display: grid;
-  grid-template-columns: max-content max-content auto max-content max-content max-content 200px max-content max-content max-content;
+  grid-template-columns: max-content max-content max-content max-content max-content max-content auto max-content max-content max-content;
 
   word-wrap: break-word;
 
@@ -1227,9 +1227,19 @@ table.searchResultsTable td {
 
 
 
+
+
+
 table.scheduleTable {
 
-  width: 100%;
+
+   background:#373737;
+ 
+   left:2em;
+   position: absolute;
+   width:96%;
+
+
 }
 
 table.scheduleTable tr:hover {

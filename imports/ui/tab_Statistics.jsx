@@ -102,6 +102,7 @@ try{
         <ResponsiveContainer height='100%' width='99%'>
           <PieChart onMouseEnter={this.onPieEnter}>
             <Pie
+              dataKey="value" 
               data={data}
               stroke="none"
               innerRadius={60}
@@ -110,7 +111,11 @@ try{
               paddingAngle={5}
              
               label={renderLabel}
+              isAnimationActive={false}
+
+          
               
+
             >
               {
                 data.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} 
@@ -119,6 +124,7 @@ try{
                   
                   if (confirm('Are you sure you want to load all files from this pie segment?')) {
 
+               
                     
 
         render(<center><ClipLoader

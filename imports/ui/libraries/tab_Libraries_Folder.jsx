@@ -2087,9 +2087,8 @@ class Folder extends Component {
               <br />
               <br />
 
-              <div className="scheduleContainer">
+             
                 {this.renderScheduleBlocks()}
-              </div>
             </div>
           </div>
         </div>
