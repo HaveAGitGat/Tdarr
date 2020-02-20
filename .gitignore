@@ -2,3 +2,4 @@ node_modules
 .meteor/local
 
 .idea
+version.desktop

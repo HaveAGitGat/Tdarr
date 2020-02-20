@@ -22,30 +22,30 @@ class App extends Component {
   handleChange = (event) => {
 
 
+    var value = event.target.value
+
     if (event.target.name == "basePath") {
 
-      var URL = event.target.value
 
-      if (URL.charAt(0) !== "/") {
 
-        URL = "/" + URL
+      if (value.charAt(0) !== "/") {
+
+        value = "/" + value
 
       }
 
-
-      GlobalSettingsDB.upsert(
-
-        "globalsettings",
-        {
-          $set: {
-            [event.target.name]: URL,
-          }
-        }
-      );
-
-
-
     }
+
+
+    GlobalSettingsDB.upsert(
+
+      "globalsettings",
+      {
+        $set: {
+          [event.target.name]: value,
+        }
+      }
+    );
 
 
   }
@@ -124,11 +124,12 @@ class App extends Component {
             } />
         </div>
 
-
-
-
-
-
+        <br />
+        <br />
+        <br />
+          <p>Backup limit (default 30): </p>
+         
+           <input type="text" className="folderPaths" name="backupLimit" defaultValue={settings != undefined && settings.backupLimit != undefined ? settings.backupLimit : "30"} onChange={this.handleChange}></input>
 
 
       </div>

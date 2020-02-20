@@ -13,6 +13,7 @@ import Modal from "reactjs-popup";
 
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 
+import LocalImage from '../Local_Image.jsx';
 
 
 
@@ -45,9 +46,7 @@ class App extends Component {
           }
         }
       );
-
     }
-
   }
 
 
@@ -813,7 +812,11 @@ class App extends Component {
 
 <p>Provide a base folder path and the folder browser will show subfolders which you can navigate to using the buttons.</p>
 
-<img src="/images/example_folder_browser.png"/>
+
+<LocalImage link="/images/example_folder_browser.png"/>
+
+<p>Make sure to set a transcode cache folder</p>
+<p></p>
 
 <p>'Scan (Find new)' does 2 things - it removes files from the database which don't exist anymore, and adds newly detected files. Turn on 'Folder watch' to automate this process. New files will be scanned for every 30 seconds or so.</p>
 <p>All new files will be added to both the transcode queues and the health check queues. If you're not interested in using one or the other, then just make sure not to fire up any workers for that respective queue.</p>
@@ -824,7 +827,8 @@ class App extends Component {
 <p>In the library transcode settings, you can either use plugins or manually set either video file or audio file transcode settings.</p>
 
 <p>You can stack plugins but this will increase the number of transcode/remux passes on a file. It's best to use/create a plugin which can do what you need all at once.</p>
-<img src="/images/example_plugin_stack.png"/>
+
+<LocalImage link="/images/example_plugin_stack.png"/>
 
 
 <p>See the plugins tab for plugins info on creating a plugin.</p>

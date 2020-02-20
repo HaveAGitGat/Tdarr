@@ -36,7 +36,7 @@ const tabs = [
   {path: '/', text: 'Dev', component: TabDev},
 ];
 
-const AppRouter = () => {
+export default AppRouter = () => {
 
 
 
@@ -44,7 +44,7 @@ const AppRouter = () => {
 
   const [currentVersion, setVersion] = React.useState('');
 
-  const [newVersion, setNewVersion] = React.useState(1.104);
+  const [newVersion, setNewVersion] = React.useState(1.105);
 
   
 
@@ -171,4 +171,3 @@ const AppRouter = () => {
   );
 };
 
-export default AppRouter;

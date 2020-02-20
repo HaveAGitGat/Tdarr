@@ -12,6 +12,7 @@ export class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     console.error(error);
+    console.error(error.stack);
     console.log(errorInfo);
   }
 

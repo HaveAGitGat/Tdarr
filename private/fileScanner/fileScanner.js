@@ -59,22 +59,22 @@ foldersToIgnore = foldersToIgnore.split(",")
 updateConsole(scannerID, "Online.")
 
 
-
-var path = require("path");
-var fs = require('fs');
+const path = require("path");
+const fs = require('fs');
 
 if (fs.existsSync(path.join(process.cwd(), "/npm"))) {
-
     var rootModules = path.join(process.cwd(), '/npm/node_modules/')
-
 } else {
     var rootModules = ''
 }
 
 
 const isDocker = require(rootModules + 'is-docker');
-const exiftool = require(rootModules + "exiftool-vendored").exiftool
-var shell = require(rootModules + 'shelljs');
+const importFresh = require(rootModules + 'import-fresh');
+
+const runFFprobe = importFresh('./runFFprobe.js')
+const runExifTool = importFresh('./runExifTool.js')
+const runCCExtractor = importFresh('./runCCExtractor.js')
 
 
 var home = require("os").homedir();
@@ -224,9 +224,6 @@ if (arrayOrPathSwitch == 1) {
 
 
 
-
-
-
                     } else {
 
                         if (checkContainer(fullPath) == true && isInIgnoredFolder(fullPath) == false) {
@@ -311,7 +308,6 @@ function isInIgnoredFolder(filePath) {
 function checkContainer(newFile) {
 
     try {
-        var path = require('path');
         var fileType = ((path.extname(newFile)).split(".")).join("")
 
         for (var j = 0; j < allowedContainers.length; j++) {
@@ -364,14 +360,7 @@ function ffprobeLaunch(filesToScan) {
 
     updateConsole(scannerID, `ffprobeLaunch received these files:${filesToScan} `)
 
-
-    var ffprobe = require(rootModules + 'ffprobe'),
-        ffprobeStatic = require(rootModules + 'ffprobe-static');
-    var path = require("path");
-    var ffprobeStaticPath = ''
-
-
-    ffprobeStaticPath = require(rootModules + 'ffprobe-static').path
+    const exiftool = require(rootModules + "exiftool-vendored").exiftool
 
 
     var k = 0;
@@ -380,231 +369,101 @@ function ffprobeLaunch(filesToScan) {
     function loopArray(filesToScan, i) {
 
 
-
-
-
-
         var filepath = filesToScan[i]
-
-
 
 
         try {
             if (fs.existsSync(filepath)) {
 
-                // Meteor.call('logthis', "Extracting data from this file:" + filepath, function (error, result) { });
-
-
                 updateConsole(scannerID, `Launching FFprobe on this file: ${filepath}`)
 
-                ffprobe(filepath, { path: ffprobeStaticPath }, function (err, jsonData) {
-                    //if (err) return done(err);
+                async function runExtractions(filepath) {
 
-
-
-                    if (err) {
-
-                        updateConsole(scannerID, `FFprobe extract error on this file:${filepath}`)
-
-                        extractDataError(filepath, err)
-
-                        i++;
-                        if (i < filesToScan.length) {
-                            loopArray(filesToScan, i);
-                        } else {
-                            exiftool.end()
+                    try {
+                        var fileInfo = {
+                            ffProbeData: '',
+                            exifToolData: '',
+                            ccextractorData: '',
                         }
 
 
-                    }
-
-                    if (jsonData) {
-
-                        updateConsole(scannerID, `FFprobe extract success on this file:${filepath}. Launching exiftool`)
-
-                        exiftool
-                            .read(filepath)
-                            .then((tags /*: Tags */) => {
-                                // console.log(
-                                //     `Title: ${tags.Title}`
-                                //)
-                                updateConsole(scannerID, `exiftool finished on this file:${filepath}`)
-
-                                //  extractData(filepath, jsonData, tags)
-
-
-                                //
-
-
-
-
-                                if (closedCaptionScan == 'true') {
-
-
-
-                                    var CCExtractorPath
-                                    var workerCommand
-
-                                    if (process.platform == 'win32') {
-
-                                        if (fs.existsSync(path.join(process.cwd(), "/npm"))) {
-                                            CCExtractorPath = path.join(process.cwd(), '/assets/app/ccextractor/ccextractorwin.exe')
-                                        } else {
-                                            CCExtractorPath = path.join(process.cwd(), '/private/ccextractor/ccextractorwin.exe')
-                                        }
-
-                                        workerCommand = CCExtractorPath + " -debug  -stdout -endat 01:00 --screenfuls 1 -out=null \"" + filepath + "\""
-
-                                    }
-
-                                    if (process.platform == 'linux') {
-                                        if (fs.existsSync(path.join(process.cwd(), "/npm"))) {
-                                            CCExtractorPath = path.join(process.cwd(), '/assets/app/ccextractor/ccextractor')
-                                        } else {
-                                            CCExtractorPath = path.join(process.cwd(), '/private/ccextractor/ccextractor')
-                                        }
-
-                                        var filepathUnix = filepath.replace(/'/g, '\'\"\'\"\'');
-
-                                        workerCommand = CCExtractorPath + " -debug  -stdout -endat 01:00 --screenfuls 1 -out=null '" + filepathUnix + "'"
-
-
-
-                                    }
-
-                                    if (process.platform == 'darwin') {
-                                        workerCommand = ""
-
-                                    }
-
-
-
-                                    //  console.log(workerCommand)
-
-                                    var CCExtractorOutput = ""
-
-                                    // console.log("Checking for captions")
-
-                                    updateConsole(scannerID, `Checking for captions`)
-
-
-                                    //
-
-                                    var childProcess = require('child_process');
-
-                                    var workerPath = "assets/app/ccextractor.js"
-
-                                    var hasClosedCaptions = false
-
-
-                                    shellThreadModule = childProcess.fork(workerPath, [], {
-                                        silent: true,
-
-                                    });
-
-
-                                    var infoArray = [
-                                        "processFile",
-                                        workerCommand
-                                    ];
-
-
-                                    shellThreadModule.send(infoArray);
-
-                                    var killFlag = false
-
-
-                                    shellThreadModule.stderr.on('data', function (data) {
-
-                                        //console.log(data)
-                                        // console.log(data.toString())
-
-                                        if (data.includes('Permission denied') || data.includes('error while loading')) {
-                                            console.log(data.toString())
-                                        }
-
-                                        if (data.includes('XDS:') || data.includes('Caption block')) {
-
-                                            var infoArray = [
-                                                "exitThread",
-                                                "itemCancelled",
-                                            ];
-
-                                            try {
-                                                killFlag = true
-                                                if (shellThreadModule != "") {
-                                                    shellThreadModule.send(infoArray);
-                                                }
-                                            } catch (err) { }
-
-                                            hasClosedCaptions = true
-
-                                        }
-
-                                    });
-
-                                    // setTimeout(killCCExtractor, 1000);
-
-                                    function killCCExtractor() {
-                                        var infoArray = [
-                                            "exitThread",
-                                            "itemCancelled",
-                                        ];
-
-                                        if (killFlag == false) {
-
-                                            try {
-                                                if (shellThreadModule != "") {
-                                                    shellThreadModule.send(infoArray);
-                                                }
-                                            } catch (err) { }
-                                        }
-
-                                    }
-
-
-
-                                    shellThreadModule.on("exit", function (code, ) {
-
-                                        ('ccextractor:', code);
-
-                                        extractData(filepath, jsonData, tags, hasClosedCaptions)
-
-                                        i++;
-                                        if (i < filesToScan.length) {
-                                            loopArray(filesToScan, i);
-                                        } else {
-                                            exiftool.end()
-                                        }
-
-
-                                    });
-
-
-
-                                } else {
-
-
-                                    extractData(filepath, jsonData, tags)
-
-                                    i++;
-                                    if (i < filesToScan.length) {
-                                        loopArray(filesToScan, i);
-                                    } else {
-                                        exiftool.end()
-                                    }
-
-
-
+                        updateConsole(scannerID, 'Running ffmpeg on file')
+
+                        await runFFprobe(filepath)
+                            .then((res) => {
+                                fileInfo.ffProbeData = res
+                            }).catch((err) => {
+                                console.log(err)
+                                fileInfo.ffProbeData = {
+                                    result: 'error',
+                                    data: 'FFprobe encountered an error ' + err,
                                 }
-
-
-
-                                //
                             })
+
+                        if (fileInfo.ffProbeData.result != 'error') {
+
+                            updateConsole(scannerID, 'Running exiftool on file')
+
+                            await runExifTool(filepath, exiftool)
+                                .then((res) => {
+                                    fileInfo.exifToolData = res
+                                })
+                                .catch((err) => {
+                                    console.log(err)
+                                    fileInfo.exifToolData = {
+                                        result: 'error',
+                                        data: 'Exiftool encountered an error ' + err,
+                                    }
+                                })
+
+
+                            if (closedCaptionScan == 'true') {
+
+                                updateConsole(scannerID, 'Running ccextractor on file')
+                                await runCCExtractor(filepath)
+                                    .then((res) => {
+                                        fileInfo.ccextractorData = res
+                                    })
+                                    .catch((err) => {
+                                        console.log(err)
+                                        fileInfo.ccextractorData = {
+                                            result: 'error',
+                                            data: 'CCextractor encountered an error ' + err,
+                                        }
+                                    })
+
+
+                                extractData(filepath, fileInfo.ffProbeData.data, fileInfo.exifToolData.data, fileInfo.ccextractorData.data)
+
+                            } else {
+                                extractData(filepath, fileInfo.ffProbeData.data, fileInfo.exifToolData.data, null)
+                            }
+
+
+                        } else {
+                            extractDataError(filepath, fileInfo.ffProbeData.data)
+                        }
+
+                    } catch (err) {
+                        console.log(err)
                     }
-                });
+
+                    i++;
+                    if (i < filesToScan.length) {
+                        loopArray(filesToScan, i);
+                    } else {
+                        exiftool.end()
+                    }
+
+
+
+                }
+
+                runExtractions(filepath)
+
+
             }
+
         } catch (err) {
 
             console.error(err.stack);
@@ -616,8 +475,6 @@ function ffprobeLaunch(filesToScan) {
             } else {
                 exiftool.end()
             }
-
-
         }
     }
 
@@ -626,8 +483,8 @@ function ffprobeLaunch(filesToScan) {
 
 
     if (!Array.isArray(filesToScan) || !filesToScan.length) {
-
         exiftool.end()
+
 
     } else {
 
@@ -641,7 +498,6 @@ function ffprobeLaunch(filesToScan) {
 
         var thisFileObject = {}
 
-        var path = require('path');
         var container = ((path.extname(filepath)).split(".")).join("")
         thisFileObject.container = container.toLowerCase();
 
@@ -659,7 +515,7 @@ function ffprobeLaunch(filesToScan) {
 
         } catch (err) { }
 
-        thisFileObject.cliLog = "FFprobe was unable to extract data from this file. It is highly likely that the file is corrupt."
+        thisFileObject.cliLog = "FFprobe was unable to extract data from this file. It is likely that the file is corrupt."
 
         updateConsole(scannerID, `FFprobe was unable to extract data from this file:${filepath}`)
 
@@ -692,9 +548,6 @@ function ffprobeLaunch(filesToScan) {
 
         updateConsole(scannerID, `Beginning extractData on:${filepath}`)
 
-
-
-        var path = require('path');
         var container = ((path.extname(filepath)).split(".")).join("")
         thisFileObject.container = container.toLowerCase();
 
@@ -736,9 +589,9 @@ function ffprobeLaunch(filesToScan) {
         //if (!!("video_codec_name" in thisFileObject)) {
 
 
-        try{
+        try {
             var exifToolVerdict = thisFileObject.meta.MIMEType.includes('video')
-        }catch(err){
+        } catch (err) {
             var exifToolVerdict = true
         }
 

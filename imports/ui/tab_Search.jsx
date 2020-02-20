@@ -53,46 +53,46 @@ class App extends Component {
 
         return <div >
 
-          <Button variant="outline-light" onClick={this.searchDB}  style={ButtonStyle}><span className="buttonTextSize">Search</span></Button>{'\u00A0'}
+          <Button variant="outline-light" onClick={this.searchDB} style={ButtonStyle}><span className="buttonTextSize">Search</span></Button>{'\u00A0'}
           <Button variant="outline-light" onClick={() => {
 
             render('', document.getElementById('searchResults'));
-          }}  style={ButtonStyle}><span className="buttonTextSize">Clear</span></Button>{'\u00A0'}
-           <Modal
-          trigger={<Button variant="outline-light" ><span className="buttonTextSize">i</span></Button>}
-          modal
-          closeOnDocumentClick
-        >
-         
-         <div className="modalContainer">
-          <div className="frame">
-            <div className="scroll">
-           
+          }} style={ButtonStyle}><span className="buttonTextSize">Clear</span></Button>{'\u00A0'}
+          <Modal
+            trigger={<Button variant="outline-light" ><span className="buttonTextSize">i</span></Button>}
+            modal
+            closeOnDocumentClick
+          >
 
-            <div className="modalText">
-             <p>Search for files based on hundreds of properties</p>
-              
-                <p>Codec suggestions: h264,hevc,mpeg4,mpeg2video,vp9,vp8,theora,aac,ac3,dts</p>
-                <p>Other suggestions: subtitle,mp4,mkv,shrek,stereo,1080p</p>
-
-             <p>Search for files with multiple properties by separating search terms with a comma. E.g.:</p>
-
-            <p>shrek,aac,h264,subtitle</p>
+            <div className="modalContainer">
+              <div className="frame">
+                <div className="scroll">
 
 
-            <p></p>
+                  <div className="modalText">
+                    <p>Search for files based on hundreds of properties</p>
 
-            <p>Create a 30 second sample using the '✄' button. The sample will be placed in the 'Samples' folder in the Tdarr documents/data folder with suffix '- TdarrSample'. Use the sample to test plugins/transcode settings and to help when reporting bugs.</p>
+                    <p>Codec suggestions: h264,hevc,mpeg4,mpeg2video,vp9,vp8,theora,aac,ac3,dts</p>
+                    <p>Other suggestions: subtitle,mp4,mkv,shrek,stereo,1080p</p>
 
-            <p></p>
+                    <p>Search for files with multiple properties by separating search terms with a comma. E.g.:</p>
 
-            <p>To return a list of all files, leave the search bar empty.</p>
+                    <p>shrek,aac,h264,subtitle</p>
 
+
+                    <p></p>
+
+                    <p>Create a 30 second sample using the '✄' button. The sample will be placed in the 'Samples' folder in the Tdarr documents/data folder with suffix '- TdarrSample'. Use the sample to test plugins/transcode settings and to help when reporting bugs.</p>
+
+                    <p></p>
+
+                    <p>To return a list of all files, leave the search bar empty.</p>
+
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-          </div>
-          </div>
-        </Modal>
+          </Modal>
 
         </div>
 
@@ -120,10 +120,10 @@ class App extends Component {
 
     Meteor.call('searchDB', ReactDOM.findDOMNode(this.refs.searchString).value.trim(), (error, result) => {
 
-     
 
 
-render( <div className="libraryContainer" ><SearchResults results={result} /></div>, document.getElementById('searchResults'));
+
+      render(<div className="libraryContainer" ><SearchResults results={result} /></div>, document.getElementById('searchResults'));
 
 
     })
@@ -145,28 +145,28 @@ render( <div className="libraryContainer" ><SearchResults results={result} /></d
       <div className="containerGeneral">
 
         <center>
-        <header>
-          <h1>Search </h1>       
-        </header>
+          <header>
+            <h1>Search </h1>
+          </header>
         </center>
 
         <p></p>
 
-       
+
         <p></p>
         <form onSubmit={this.searchDB}  >
 
-        <center>
+          <center>
 
-          <input type="text" className="searchBar" ref="searchString" placeholder="Search for files by any property. E.g. h264,aac,test.mp4,mkv" style={ButtonStyle} ></input>
+            <input type="text" className="searchBar" ref="searchString" placeholder="Search for files by any property. E.g. h264,aac,test.mp4,mkv" style={ButtonStyle} ></input>
 
           </center>
 
           <center>
-      
-          <p></p>
 
-          {this.renderSearchButtons()}
+            <p></p>
+
+            {this.renderSearchButtons()}
 
           </center>
 
@@ -174,9 +174,9 @@ render( <div className="libraryContainer" ><SearchResults results={result} /></d
         </form>
 
 
-      
 
-       
+
+
 
         <div id="searchResults" ref="searchResults"></div>
 
