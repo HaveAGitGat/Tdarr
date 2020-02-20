@@ -35,21 +35,21 @@ Currently in Beta but looking for feedback/suggestions.
 
 
 ---------------------------------------------------------------------------------------
-#Search
+## Search
 
 ![Screenshot](https://i.imgur.com/m5aQ9cJ.png)
 ---------------------------------------------------------------------------------------
-#Stats
+## Stats
 
 ![Screenshot](https://i.imgur.com/zofsBP5.png)
 
 ---------------------------------------------------------------------------------------
-#Transcode management
+## Transcode management
 
 ![Screenshot](https://i.imgur.com/8vEmI7d.png)
 
 ---------------------------------------------------------------------------------------
-#Plugins
+## Plugins
 
 ![Screenshot](https://i.imgur.com/MTiHGrc.png)
 
