@@ -211,6 +211,7 @@ class App extends Component {
               style: {
                 color: "#e1e1e1",
                 fontSize: "14px",
+                
               },
             }
           }
@@ -606,7 +607,7 @@ class App extends Component {
       }
 
 
-      return <div>
+      return <div className="searchResults">
 
         <br />
 
@@ -667,6 +668,7 @@ class App extends Component {
           pageSizeOptions={[10, 100, 1000, 10000]}
           filterable={true}
           defaultFilterMethod={(filter, row) => filterMethod(filter, row)}
+          
         />
       </div>
 

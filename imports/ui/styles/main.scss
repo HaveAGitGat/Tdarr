@@ -411,18 +411,14 @@ input[type="text"]
   width: 100%;
   min-height:150px;
 
-
-
-  top:0;
-  bottom: 0;
-  left: 0;
-  right: 0;
     
   margin: auto;
   display: 'inline-block';
 
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
 }
 
 .workerItemsGrid{
@@ -1045,6 +1041,15 @@ table.sliderTable {
   white-space: normal;
 
 }
+
+.searchResults{
+
+  word-wrap: break-word;
+  background:#373737;
+  display: inline-block;
+
+
+}
 table.searchResultsTable th {
 
 
@@ -1068,7 +1073,6 @@ table.searchResultsTable td {
   display: grid;
   grid-template-columns: max-content max-content auto max-content max-content max-content 200px max-content max-content max-content;
 
-  //grid-template-columns:repeat( 11, max-content );
   word-wrap: break-word;
 
   
@@ -1241,6 +1245,8 @@ table.workerDetailTable td {
  
   color: black;
   vertical-align: text-top;
+  word-wrap: break-word;
+  word-break: break-all;
 
 }
 
