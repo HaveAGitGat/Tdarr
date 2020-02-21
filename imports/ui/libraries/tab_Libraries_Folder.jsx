@@ -774,11 +774,8 @@ class Folder extends Component {
         this.props.libraryItem.priority == libraries.length - 1 &&
         this.props.libraryItem.priority !== 0
       ) {
-        GlobalSettingsDB.upsert('globalsettings', {
-          $set: {
-            selectedLibrary: this.props.libraryItem.priority - 1,
-          },
-        });
+
+        this.props.setSelectedLibrary(this.props.libraryItem.priority - 1)
       }
 
       SettingsDB.remove(this.props.libraryItem._id);
@@ -924,11 +921,9 @@ class Folder extends Component {
                 if (this.props.libraryItem.priority == 0) {
                   // no-op
                 } else {
-                  GlobalSettingsDB.upsert('globalsettings', {
-                    $set: {
-                      selectedLibrary: this.props.libraryItem.priority - 1,
-                    },
-                  });
+
+
+                  this.props.setSelectedLibrary(this.props.libraryItem.priority - 1)
 
                   SettingsDB.upsert(this.props.libraryItem._id, {
                     $set: {
@@ -960,11 +955,8 @@ class Folder extends Component {
                 if (this.props.libraryItem.priority == libraries.length - 1) {
                   // no-op
                 } else {
-                  GlobalSettingsDB.upsert('globalsettings', {
-                    $set: {
-                      selectedLibrary: this.props.libraryItem.priority + 1,
-                    },
-                  });
+
+                  this.props.setSelectedLibrary(this.props.libraryItem.priority + 1)
 
                   SettingsDB.upsert(this.props.libraryItem._id, {
                     $set: {
@@ -1015,15 +1007,11 @@ class Folder extends Component {
           <div className="libraryGrid-itemLeft">
             <p
               onClick={() => {
-                SettingsDB.upsert(this.props.libraryItem._id, {
-                  $set: {
-                    navItemSelected: 'navSourceFolder',
-                  },
-                });
+                this.setState({navItemSelected: 'navSourceFolder'})
               }}
               style={{ cursor: 'pointer' }}
               className={
-                this.props.libraryItem.navItemSelected == 'navSourceFolder'
+                this.state.navItemSelected == 'navSourceFolder'
                   ? 'selectedNav'
                   : 'unselectedNav'
               }
@@ -1032,15 +1020,11 @@ class Folder extends Component {
             </p>
             <p
               onClick={() => {
-                SettingsDB.upsert(this.props.libraryItem._id, {
-                  $set: {
-                    navItemSelected: 'navCacheFolder',
-                  },
-                });
+                this.setState({navItemSelected: 'navCacheFolder'})
               }}
               style={{ cursor: 'pointer' }}
               className={
-                this.props.libraryItem.navItemSelected == 'navCacheFolder'
+                this.state.navItemSelected == 'navCacheFolder'
                   ? 'selectedNav'
                   : 'unselectedNav'
               }
@@ -1049,15 +1033,11 @@ class Folder extends Component {
             </p>
             <p
               onClick={() => {
-                SettingsDB.upsert(this.props.libraryItem._id, {
-                  $set: {
-                    navItemSelected: 'navOutputFolder',
-                  },
-                });
+                this.setState({navItemSelected: 'navOutputFolder'})
               }}
               style={{ cursor: 'pointer' }}
               className={
-                this.props.libraryItem.navItemSelected == 'navOutputFolder'
+                this.state.navItemSelected == 'navOutputFolder'
                   ? 'selectedNav'
                   : 'unselectedNav'
               }
@@ -1066,15 +1046,11 @@ class Folder extends Component {
             </p>
             <p
               onClick={() => {
-                SettingsDB.upsert(this.props.libraryItem._id, {
-                  $set: {
-                    navItemSelected: 'navContainers',
-                  },
-                });
+                this.setState({navItemSelected: 'navContainers'})
               }}
               style={{ cursor: 'pointer' }}
               className={
-                this.props.libraryItem.navItemSelected == 'navContainers'
+                this.state.navItemSelected == 'navContainers'
                   ? 'selectedNav'
                   : 'unselectedNav'
               }
@@ -1083,15 +1059,11 @@ class Folder extends Component {
             </p>
             <p
               onClick={() => {
-                SettingsDB.upsert(this.props.libraryItem._id, {
-                  $set: {
-                    navItemSelected: 'navTranscode',
-                  },
-                });
+                this.setState({navItemSelected: 'navTranscode'})
               }}
               style={{ cursor: 'pointer' }}
               className={
-                this.props.libraryItem.navItemSelected == 'navTranscode'
+                this.state.navItemSelected == 'navTranscode'
                   ? 'selectedNav'
                   : 'unselectedNav'
               }
@@ -1100,15 +1072,11 @@ class Folder extends Component {
             </p>
             <p
               onClick={() => {
-                SettingsDB.upsert(this.props.libraryItem._id, {
-                  $set: {
-                    navItemSelected: 'navHealthCheck',
-                  },
-                });
+                this.setState({navItemSelected: 'navHealthCheck'})
               }}
               style={{ cursor: 'pointer' }}
               className={
-                this.props.libraryItem.navItemSelected == 'navHealthCheck'
+                this.state.navItemSelected == 'navHealthCheck'
                   ? 'selectedNav'
                   : 'unselectedNav'
               }
@@ -1117,15 +1085,11 @@ class Folder extends Component {
             </p>
             <p
               onClick={() => {
-                SettingsDB.upsert(this.props.libraryItem._id, {
-                  $set: {
-                    navItemSelected: 'navSchedule',
-                  },
-                });
+                this.setState({navItemSelected: 'navSchedule'})
               }}
               style={{ cursor: 'pointer' }}
               className={
-                this.props.libraryItem.navItemSelected == 'navSchedule'
+                this.state.navItemSelected == 'navSchedule'
                   ? 'selectedNav'
                   : 'unselectedNav'
               }
@@ -1137,7 +1101,7 @@ class Folder extends Component {
           <div className="libraryGrid-itemRight">
             <div
               className={
-                this.props.libraryItem.navItemSelected == 'navSourceFolder'
+                this.state.navItemSelected == 'navSourceFolder'
                   ? ''
                   : 'hidden'
               }
@@ -1314,7 +1278,7 @@ class Folder extends Component {
 
             <div
               className={
-                this.props.libraryItem.navItemSelected == 'navCacheFolder'
+                this.state.navItemSelected == 'navCacheFolder'
                   ? ''
                   : 'hidden'
               }
@@ -1370,7 +1334,7 @@ class Folder extends Component {
 
             <div
               className={
-                this.props.libraryItem.navItemSelected == 'navOutputFolder'
+                this.state.navItemSelected == 'navOutputFolder'
                   ? ''
                   : 'hidden'
               }
@@ -1516,7 +1480,7 @@ class Folder extends Component {
 
             <div
               className={
-                this.props.libraryItem.navItemSelected == 'navContainers'
+                this.state.navItemSelected == 'navContainers'
                   ? ''
                   : 'hidden'
               }
@@ -1534,7 +1498,7 @@ class Folder extends Component {
 
             <div
               className={
-                this.props.libraryItem.navItemSelected == 'navTranscode'
+                this.state.navItemSelected == 'navTranscode'
                   ? ''
                   : 'hidden'
               }
@@ -2021,7 +1985,7 @@ class Folder extends Component {
 
             <div
               className={
-                this.props.libraryItem.navItemSelected == 'navHealthCheck'
+                this.state.navItemSelected == 'navHealthCheck'
                   ? ''
                   : 'hidden'
               }
@@ -2045,7 +2009,7 @@ class Folder extends Component {
 
             <div
               className={
-                this.props.libraryItem.navItemSelected == 'navSchedule'
+                this.state.navItemSelected == 'navSchedule'
                   ? ''
                   : 'hidden'
               }

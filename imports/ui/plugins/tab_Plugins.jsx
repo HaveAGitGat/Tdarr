@@ -39,6 +39,8 @@ class App extends Component {
     this.state = {
       pluginsStored: [],
       pluginsStoredFiltered:[],
+      selectedTab:0,
+      navSelectedPluginCreatorItem:'navPluginGuide'
     };
 
   }
@@ -233,15 +235,8 @@ class App extends Component {
         <div className="tabWrap" >
 
 
-          <Tabs selectedIndex={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].selectedPluginTab != undefined ? this.props.globalSettings[0].selectedPluginTab : 0} onSelect={tabIndex => {
-
-            GlobalSettingsDB.upsert('globalsettings',
-              {
-                $set: {
-                  selectedPluginTab: tabIndex,
-                }
-              }
-            );
+          <Tabs selectedIndex={this.state.selectedTab} onSelect={tabIndex => {
+            this.setState({selectedTab: tabIndex})
           }}>
             <TabList>
               <Tab ><p>Community</p></Tab>
@@ -331,29 +326,15 @@ class App extends Component {
                     <br />
 
                     <p onClick={() => {
-                      GlobalSettingsDB.upsert(
-                        "globalsettings",
-                        {
-                          $set: {
-                            navSelectedPluginCreatorItem: "navPluginGuide",
-                          }
-                        }
-                      );
-                    }} className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navPluginGuide" ? 'selectedNav' : 'unselectedNav'}>Guide</p>
+                      this.setState({navSelectedPluginCreatorItem: "navPluginGuide"})
+                    }} className={this.state.navSelectedPluginCreatorItem == "navPluginGuide" ? 'selectedNav' : 'unselectedNav'}>Guide</p>
 
 
                     <br />
 
                     <p onClick={() => {
-                      GlobalSettingsDB.upsert(
-                        "globalsettings",
-                        {
-                          $set: {
-                            navSelectedPluginCreatorItem: "navGeneral",
-                          }
-                        }
-                      );
-                    }} className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navGeneral" ? 'selectedNav' : 'unselectedNav'}>Create</p>
+                      this.setState({navSelectedPluginCreatorItem: "navGeneral"})
+                    }} className={this.state.navSelectedPluginCreatorItem == "navGeneral" ? 'selectedNav' : 'unselectedNav'}>Create</p>
 
 
 
@@ -377,7 +358,7 @@ class App extends Component {
 
                   <div className="pluginTabGrid-itemRight">
 
-                    <div className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navPluginGuide" ? '' : 'd-none'}>
+                    <div className={this.state.navSelectedPluginCreatorItem == "navPluginGuide" ? '' : 'd-none'}>
                       <PluginGuide />
                     </div>
 
@@ -385,7 +366,7 @@ class App extends Component {
 
 
 
-                    <div className={this.props.globalSettings != undefined && this.props.globalSettings[0] != undefined && this.props.globalSettings[0].navSelectedPluginCreatorItem == "navGeneral" ? '' : 'd-none'}>
+                    <div className={this.state.navSelectedPluginCreatorItem == "navGeneral" ? '' : 'd-none'}>
                       <General />
                     </div>
 

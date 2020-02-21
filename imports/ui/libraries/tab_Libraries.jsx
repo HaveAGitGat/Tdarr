@@ -27,8 +27,10 @@ class App extends Component {
     super(props);
     this.clearFiles = this.clearFiles.bind(this);
 
-    this.state = { listItems: [1, 2],
-      ready: false
+    this.state = { 
+      listItems: [1, 2],
+      ready: false,
+      selectedLibrary:0,
     
     };
   }
@@ -39,14 +41,16 @@ class App extends Component {
     if (confirm('Are you sure you want to delete all libraries?')) {
       Meteor.call('remove', function (error, result) { });
 
-      GlobalSettingsDB.upsert('globalsettings',
-        {
-          $set: {
-            selectedLibrary: 0,
-          }
-        }
-      );
+
+      this.setState({selectedLibrary: 0})
     }
+  }
+
+
+  setSelectedLibrary = (number) => {
+
+    this.setState({selectedLibrary: number})
+
   }
 
 
@@ -646,14 +650,8 @@ class App extends Component {
       ]
     });
 
-    GlobalSettingsDB.upsert('globalsettings',
-    {
-      $set: {
-        selectedLibrary: count,
-      }
-    }
-  );
 
+  this.setState({selectedLibrary: count})
 
 
   }
@@ -746,7 +744,8 @@ class App extends Component {
           <Folder
             key={item._id}
             libraryItem={item}
-            backgroundColour={COLORS[(i+1) % 2]}         
+            backgroundColour={COLORS[(i+1) % 2]}
+            setSelectedLibrary={this.setSelectedLibrary}         
           />
            </div></TabPanel>
          
@@ -755,15 +754,9 @@ class App extends Component {
           ));
 
         
-    return  <div className="tabWrap" > <Tabs selectedIndex={ this.props.globalSettings[0].selectedLibrary != undefined ? this.props.globalSettings[0].selectedLibrary : 0} onSelect={tabIndex => {
+    return  <div className="tabWrap" > <Tabs selectedIndex={ this.state.selectedLibrary != undefined ? this.state.selectedLibrary : 0} onSelect={tabIndex => {
 
-      GlobalSettingsDB.upsert('globalsettings',
-      {
-        $set: {
-          selectedLibrary: tabIndex,
-        }
-      }
-    );
+    this.setState({selectedLibrary: tabIndex})
     }}>
     <TabList>
 
