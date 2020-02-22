@@ -80,15 +80,16 @@ export default class App extends Component {
 
   render() {
 
-    // var temp ={
-    //   createdAt: new Date()
-
-    // }
 
     var serverTime = this.props.time
-    var lastUpdate = this.props.file.lastUpdate ? this.props.file.lastUpdate.getTime() : 0
-    //this.props.time >= this.state.lastUpdate
-    //this.state.showButton
+
+
+    //dates are stringified when backup created:
+    try {
+      var lastUpdate = this.props.file.lastUpdate ? new Date(this.props.file.lastUpdate).getTime() : 0
+    } catch (err) {
+      var lastUpdate = 0
+    }
 
 
     if (this.props.type == "updateDBAction") {
