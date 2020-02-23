@@ -5003,7 +5003,10 @@ function main() {
     changed: function (new_document, old_document) {
       if (!initialising) {
         //console.log('doc changed');
-        Meteor.call('DBHasChanged', (error, result) => { })
+        if(new_document.lastQueueUpdateTime == old_document.lastQueueUpdateTime){
+          Meteor.call('DBHasChanged', (error, result) => { })
+        }
+        
       }
     },
     removed: function (document) {
