@@ -872,6 +872,28 @@ class Folder extends Component {
                       }
                     }
 
+                    }>Reset stats: This library</Dropdown.Item>
+
+<Dropdown.Item
+                    style={{ color: '#bb86fc', fontSize: '14px' }}
+                    onClick={() => {
+                      if (
+                        confirm(
+                          "Are you sure you want to reset the 'All' tab stats?"
+                        )
+                      ) {
+                        StatisticsDB.upsert('statistics', {
+                          $set: {
+                            totalTranscodeCount: 0,
+                            sizeDiff: 0,
+                            totalHealthCheckCount: 0,
+                          }
+                        }
+                        );
+
+                      }
+                    }
+
                     }>Reset stats: All</Dropdown.Item>
 
                   <Dropdown.Item style={{ color: 'white', fontSize: '14px' }} onClick={() => {

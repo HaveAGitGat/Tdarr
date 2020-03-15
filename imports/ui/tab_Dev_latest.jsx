@@ -33,7 +33,7 @@ export default class App extends Component {
             
             <br />Changes:
 
-            <br />-[Improvement] Tab state no longer saved for plugin, library and library sub-section tabs.
+            <br />-[Improvement] Tab state no longer saved for plugin, library and library sub-section tabs
 
             <br />-[Fix] Text breaking in worker UI
             <br />-[Fix] CPU spikes when idle
