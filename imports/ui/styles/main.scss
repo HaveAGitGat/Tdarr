@@ -181,6 +181,25 @@ input[type="text"]
               margin:0 1em;
               width:90%;
             }
+
+
+            .resGrid {
+              display: grid;
+              grid-template-columns: auto auto auto auto auto;
+
+            }
+
+            .resBounds {
+
+              display: inline-block;
+              border: 1px solid black;
+              border-radius: 4px;
+              box-sizing: border-box;
+              background-color:grey;
+              color: white;
+              size:14px;
+              
+              }
             
 
 .workerPercentage{
@@ -424,6 +443,7 @@ input[type="text"]
 .workerItemsGrid{
   display: grid;
   grid-template-columns: repeat(4, 1fr);
+  margin:1em;
 }
 
 .workerContainer{
