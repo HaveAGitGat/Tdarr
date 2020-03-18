@@ -736,6 +736,8 @@ function main() {
       );
 
     }
+  }
+
 
     //Search result columns
 
@@ -758,9 +760,6 @@ function main() {
         info: true,
         history: true,
         remove: true,
-
-
-
 
       }
 
@@ -847,7 +846,67 @@ function main() {
       );
     }
 
+
+  if (count[0].resBoundaries == undefined) {
+
+    var resBoundaries = {
+      res480p:{
+        widthMin:100,
+        widthMax:792,
+        heightMin:100,
+        heightMax:528,
+      },
+      res576p:{
+        widthMin:100,
+        widthMax:792,
+        heightMin:100,
+        heightMax:634,
+      },
+      res720p:{
+        widthMin:100,
+        widthMax:1408,
+        heightMin:100,
+        heightMax:792,
+      },
+      res1080p:{
+        widthMin:100,
+        widthMax:2112,
+        heightMin:100,
+        heightMax:1188,
+      },
+      res4KUHD:{
+        widthMin:100,
+        widthMax:4224,
+        heightMin:100,
+        heightMax:2376,
+      },
+      resDCI4K:{
+        widthMin:100,
+        widthMax:4506,
+        heightMin:100,
+        heightMax:2376,
+      },
+      res8KUHD:{
+        widthMin:100,
+        widthMax:8448,
+        heightMin:100,
+        heightMax:5752,
+      },
+
+    }
+
+    GlobalSettingsDB.upsert(
+      "globalsettings",
+      {
+        $set: {
+          resBoundaries: resBoundaries,
+        }
+      }
+    );
+
   }
+
+
 
   GlobalSettingsDB.upsert('globalsettings',
     {
@@ -1893,6 +1952,10 @@ function main() {
         var foldersToIgnore = thisItemsLib[0].foldersToIgnore
 
 
+        var globSettings = GlobalSettingsDB.find({}, {}).fetch()[0]
+        var resBoundaries = globSettings.resBoundaries
+
+
 
         var scannerPath = "assets/app/fileScanner/fileScanner.js"
 
@@ -1908,6 +1971,7 @@ function main() {
           homePath,
           closedCaptionScan,
           foldersToIgnore,
+          JSON.stringify(resBoundaries),
         ]
 
         fileScanners[scannerID] = childProcess.fork(scannerPath, child_argv);
