@@ -2328,7 +2328,7 @@ function main() {
 
   //runScheduledManualScan()
   //run find-new scan every hour
-  setTimeout(Meteor.bindEnvironment(runScheduledManualScan), 3600000);
+  setTimeout(Meteor.bindEnvironment(runScheduledManualScan), 86400000);
 
   function runScheduledManualScan() {
 
@@ -2342,7 +2342,7 @@ function main() {
 
       for (var i = 0; i < settingsInit.length; i++) {
 
-        if (settingsInit[i].folderWatching == true && settingsInit[i].scanOnStart !== false) {
+        if (settingsInit[i].scanOnStart !== false) {
 
           var obj = {
             HealthCheck: "Queued",
