@@ -67,6 +67,31 @@ export default class App extends Component {
 
     }
   }
+
+  
+
+
+  deletePlugin = (id) => {
+
+    if (confirm('Are you sure you want to delete this local plugin?')) {
+
+
+      Meteor.call('deletePlugin', id, (error, result) => { 
+
+        if(result[0] == true){
+          var pluginStates = this.state.pluginStates
+          pluginStates[result[1]] = false
+
+          alert('Plugin successfully deleted!')
+          this.setState({pluginStates:pluginStates})
+        }else{
+          alert('Error: plugin not deleted, please delete manually.')
+        }
+      })
+
+      }
+
+  }
   }
 
   renderPlugins(returnCount, pluginType, cattags) {

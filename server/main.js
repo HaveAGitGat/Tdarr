@@ -1212,11 +1212,11 @@ function main() {
       try {
         fs.unlinkSync(homePath + `/Tdarr/Plugins/Local/` + pluginID + ".js")
 
-        return true
+        return [true,pluginID]
       } catch (err) {
         console.log(err)
 
-        return false
+        return [false,pluginID]
       }
 
     },
