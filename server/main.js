@@ -1221,6 +1221,27 @@ function main() {
 
     },
 
+    'copyCommunityToLocal'(pluginID, forceOverwrite) {
+
+      var comPath = homePath + `/Tdarr/Plugins/Community/` + pluginID + ".js"
+      var locPath = homePath + `/Tdarr/Plugins/Local/` + pluginID + ".js"
+
+      if (forceOverwrite == false && fs.existsSync(locPath)) {
+        return ["exist", pluginID]
+      } else {
+
+        try {
+          fsextra.copySync(comPath, locPath)
+          return [true, pluginID]
+        } catch (err) {
+          console.log(err)
+
+          return [false, pluginID]
+        }
+
+      }
+
+    },
     'buildPluginStack'() {
 
       for (var i = 0; i < plugins.length; i++) {
