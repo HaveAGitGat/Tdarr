@@ -1242,6 +1242,45 @@ function main() {
       }
 
     },
+
+
+    'readPluginText'(pluginID) {
+
+      var locPath = homePath + `/Tdarr/Plugins/Local/` + pluginID + ".js"
+
+
+      try {
+        var text = fs.readFileSync(locPath, 'utf8')
+        return [true, pluginID, text]
+      } catch (err) {
+        console.log(err)
+        return [false, pluginID]
+      }
+
+    },
+
+    'savePluginText'(pluginID, text) {
+
+      var locPath = homePath + `/Tdarr/Plugins/Local/` + pluginID + ".js"
+
+      try {
+        //var text = fs.readFileSync(locPath, 'utf8')
+        if (fs.existsSync(locPath)) {
+          fs.unlinkSync(locPath)
+        }
+
+        fs.writeFileSync(locPath, text, 'utf8');
+
+
+        return [true, pluginID, text]
+      } catch (err) {
+        console.log(err)
+        return [false, pluginID]
+      }
+
+    },
+
+
     'buildPluginStack'() {
 
       for (var i = 0; i < plugins.length; i++) {

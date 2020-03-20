@@ -3,6 +3,7 @@ import { Button } from 'react-bootstrap';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import Modal from "reactjs-popup";
 import ClipLoader from 'react-spinners/ClipLoader';
+import ReactDOM from 'react-dom';
 
 // App component - represents the whole app
 export default class App extends Component {
@@ -14,6 +15,9 @@ export default class App extends Component {
       selectedNav: 'All',
       showPlugin:false,
       pluginStates:{},
+      showEditWindow:false,
+      lastReadID:'',
+      lastReadText:'',
     };
 
   }
@@ -27,7 +31,6 @@ export default class App extends Component {
   }
 
   showPluginCard = () => {
-    this.setState({showPlugin:true,})
 
 
     var plugins = this.props.pluginsStoredFiltered.filter(row => {
@@ -127,6 +130,44 @@ export default class App extends Component {
 
 
   }
+
+
+  editPlugin(id){
+
+    this.setState({lastReadID:id})
+
+    Meteor.call('readPluginText', id, (error, result) => {
+      
+      if (result[0] == true) {
+        this.setState({lastReadText:result[2]})
+        this.setState({showEditWindow:true})
+      }else{
+        this.setState({lastReadText:'Reading plugin failed'})
+      }
+
+    })
+
+
+  }
+
+
+  savePlugin(id) {
+
+    this.setState({ lastReadID: id })
+
+    var text = ReactDOM.findDOMNode(this.refs.editText).value
+
+    Meteor.call('savePluginText', id, text, (error, result) => {
+
+      if (result[0] == true) {
+        alert('Plugin edit saved!')
+        this.setState({ showEditWindow: false })
+        location.reload()
+      } else {
+        alert('Error saving edit')
+      }
+    })
+
   }
 
   renderPlugins(returnCount, pluginType, cattags) {
@@ -257,9 +298,11 @@ export default class App extends Component {
                   </div>
                 </div>
               </div>
-            </Modal> : null}</center>
+            </Modal> : null}
             {this.props.pluginType == "Local" ? <Button variant="outline-light" onClick={() => this.deletePlugin(row.id)}><span className="buttonTextSize">X</span></Button> : null }
+            {this.props.pluginType == "Local" ? <Button variant="outline-light" onClick={() => this.editPlugin(row.id)}><span className="buttonTextSize">Edit</span></Button> : null }
             {this.props.pluginType == "Community" ? <Button variant="outline-light" onClick={() => this.copyCommunityToLocal(row.id)}><span className="buttonTextSize">Copy to Local</span></Button> : null }
+            </center>
           <div className="box">
 
 
@@ -306,6 +349,23 @@ export default class App extends Component {
       <div className="libraryContainer2">
 
 
+        <div className={this.state && this.state.showEditWindow == true ? '' : 'd-none'}>
+          <div className="editWindow">
+            <Button variant="outline-light" onClick={() => this.setState({ showEditWindow: false })}><span className="buttonTextSize">Cancel</span></Button>
+            {this.state.lastReadText != 'Reading plugin failed' ? <Button variant="outline-light" onClick={() => this.savePlugin(this.state.lastReadID)}><span className="buttonTextSize">Save</span></Button> : null}
+
+            <br />
+            <p>Plugin ID: {this.state.lastReadID}</p>
+            <textarea id="editText" ref="editText" className="editTextArea" defaultValue={this.state.lastReadText}>
+
+
+            </textarea>
+
+
+          </div>
+        </div>
+
+
         <div className="pluginTabGrid-container">
 
           <div className="pluginTabGrid-itemLeft">
@@ -350,6 +410,19 @@ export default class App extends Component {
 
 
             <br />
+
+            <p onClick={() => {
+              this.setState({ selectedNav: 'QSV H265' })
+            }} className={this.state && this.state.selectedNav == "QSV H265" ? 'selectedNav' : 'unselectedNav'}>QSV H265 ({this.renderPlugins(true, this.props.pluginType, 'qsv h265')})</p>
+
+
+
+            <p onClick={() => {
+              this.setState({ selectedNav: 'QSV H264' })
+            }} className={this.state && this.state.selectedNav == "QSV H264" ? 'selectedNav' : 'unselectedNav'}>QSV H264 ({this.renderPlugins(true, this.props.pluginType, 'qsv h264')})</p>
+
+
+            <br />
             
 
 
@@ -365,6 +438,11 @@ export default class App extends Component {
             <p onClick={() => {
               this.setState({ selectedNav: 'Subtitle only' })
             }} className={this.state && this.state.selectedNav == "Subtitle only" ? 'selectedNav' : 'unselectedNav'}>Subtitle only ({this.renderPlugins(true, this.props.pluginType, 'subtitle only')})</p>
+
+
+            <p onClick={() => {
+              this.setState({ selectedNav: 'Filter only' })
+            }} className={this.state && this.state.selectedNav == "Filter only" ? 'selectedNav' : 'unselectedNav'}>Filter only ({this.renderPlugins(true, this.props.pluginType, 'filter only')})</p>
 
 
 
@@ -385,6 +463,8 @@ export default class App extends Component {
 
 
             <br />
+
+
             
 
 
@@ -458,6 +538,15 @@ export default class App extends Component {
               {this.renderPlugins(false, this.props.pluginType, 'nvenc h264')}
             </div>
 
+            <div className={this.state && this.state.selectedNav == "QSV H265" ? '' : 'd-none'}>
+              {this.renderPlugins(false, this.props.pluginType, 'qsv h265')}
+            </div>
+
+
+            <div className={this.state && this.state.selectedNav == "QSV H264" ? '' : 'd-none'}>
+              {this.renderPlugins(false, this.props.pluginType, 'qsv h264')}
+            </div>
+
 
             <div className={this.state && this.state.selectedNav == "Video only" ? '' : 'd-none'}>
               {this.renderPlugins(false, this.props.pluginType, 'video only')}
@@ -470,6 +559,10 @@ export default class App extends Component {
 
             <div className={this.state && this.state.selectedNav == "Subtitle only" ? '' : 'd-none'}>
               {this.renderPlugins(false, this.props.pluginType, 'subtitle only')}
+            </div>
+
+            <div className={this.state && this.state.selectedNav == "Filter only" ? '' : 'd-none'}>
+              {this.renderPlugins(false, this.props.pluginType, 'filter only')}
             </div>
 
 
