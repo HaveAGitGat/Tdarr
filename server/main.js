@@ -739,158 +739,158 @@ function main() {
   }
 
 
-    //Search result columns
+  //Search result columns
 
-    if (count[0].searchResultColumns == undefined) {
+  if (count[0].searchResultColumns == undefined) {
 
-      var searchResultColumns = {
-        index: true,
-        fileName: true,
-        streams: true,
-        closedCaptions: true,
-        codec: true,
-        resolution: true,
-        size: true,
-        bitrate: true,
-        duration: true,
-        bump: true,
-        createSample: true,
-        transcode: true,
-        healthCheck: true,
-        info: true,
-        history: true,
-        remove: true,
+    var searchResultColumns = {
+      index: true,
+      fileName: true,
+      streams: true,
+      closedCaptions: true,
+      codec: true,
+      resolution: true,
+      size: true,
+      bitrate: true,
+      duration: true,
+      bump: true,
+      createSample: true,
+      transcode: true,
+      healthCheck: true,
+      info: true,
+      history: true,
+      remove: true,
 
+    }
+
+    GlobalSettingsDB.upsert(
+      "globalsettings",
+      {
+        $set: {
+          searchResultColumns: searchResultColumns,
+        }
       }
+    );
 
-      GlobalSettingsDB.upsert(
-        "globalsettings",
-        {
-          $set: {
-            searchResultColumns: searchResultColumns,
-          }
+  }
+
+  //UI queue size
+
+  if (count[0].tableSize == undefined) {
+
+    GlobalSettingsDB.upsert(
+      "globalsettings",
+      {
+        $set: {
+          tableSize: 20,
         }
-      );
+      }
+    );
 
-    }
+  }
 
-    //UI queue size
 
-    if (count[0].tableSize == undefined) {
 
-      GlobalSettingsDB.upsert(
-        "globalsettings",
-        {
-          $set: {
-            tableSize: 20,
-          }
+
+
+  //init sort vars
+
+  if (count[0].queueSortType == undefined) {
+
+    GlobalSettingsDB.upsert(
+      "globalsettings",
+      {
+        $set: {
+          queueSortType: "sortDateNewest",
         }
-      );
+      }
+    );
 
-    }
+  }
 
+  if (count[0].prioritiseLibraries == undefined) {
 
-
-
-
-    //init sort vars
-
-    if (count[0].queueSortType == undefined) {
-
-      GlobalSettingsDB.upsert(
-        "globalsettings",
-        {
-          $set: {
-            queueSortType: "sortDateNewest",
-          }
+    GlobalSettingsDB.upsert(
+      "globalsettings",
+      {
+        $set: {
+          prioritiseLibraries: false,
         }
-      );
+      }
+    );
 
-    }
+  }
 
-    if (count[0].prioritiseLibraries == undefined) {
+  if (count[0].alternateLibraries == undefined) {
 
-      GlobalSettingsDB.upsert(
-        "globalsettings",
-        {
-          $set: {
-            prioritiseLibraries: false,
-          }
+    GlobalSettingsDB.upsert(
+      "globalsettings",
+      {
+        $set: {
+          alternateLibraries: true,
         }
-      );
+      }
+    );
+  }
 
-    }
 
-    if (count[0].alternateLibraries == undefined) {
+  if (count[0].basePath == undefined) {
 
-      GlobalSettingsDB.upsert(
-        "globalsettings",
-        {
-          $set: {
-            alternateLibraries: true,
-          }
+    GlobalSettingsDB.upsert(
+      "globalsettings",
+      {
+        $set: {
+          basePath: "",
         }
-      );
-    }
-
-
-    if (count[0].basePath == undefined) {
-
-      GlobalSettingsDB.upsert(
-        "globalsettings",
-        {
-          $set: {
-            basePath: "",
-          }
-        }
-      );
-    }
+      }
+    );
+  }
 
 
   if (count[0].resBoundaries == undefined) {
 
     var resBoundaries = {
-      res480p:{
-        widthMin:100,
-        widthMax:792,
-        heightMin:100,
-        heightMax:528,
+      res480p: {
+        widthMin: 100,
+        widthMax: 792,
+        heightMin: 100,
+        heightMax: 528,
       },
-      res576p:{
-        widthMin:100,
-        widthMax:792,
-        heightMin:100,
-        heightMax:634,
+      res576p: {
+        widthMin: 100,
+        widthMax: 792,
+        heightMin: 100,
+        heightMax: 634,
       },
-      res720p:{
-        widthMin:100,
-        widthMax:1408,
-        heightMin:100,
-        heightMax:792,
+      res720p: {
+        widthMin: 100,
+        widthMax: 1408,
+        heightMin: 100,
+        heightMax: 792,
       },
-      res1080p:{
-        widthMin:100,
-        widthMax:2112,
-        heightMin:100,
-        heightMax:1188,
+      res1080p: {
+        widthMin: 100,
+        widthMax: 2112,
+        heightMin: 100,
+        heightMax: 1188,
       },
-      res4KUHD:{
-        widthMin:100,
-        widthMax:4224,
-        heightMin:100,
-        heightMax:2376,
+      res4KUHD: {
+        widthMin: 100,
+        widthMax: 4224,
+        heightMin: 100,
+        heightMax: 2376,
       },
-      resDCI4K:{
-        widthMin:100,
-        widthMax:4506,
-        heightMin:100,
-        heightMax:2376,
+      resDCI4K: {
+        widthMin: 100,
+        widthMax: 4506,
+        heightMin: 100,
+        heightMax: 2376,
       },
-      res8KUHD:{
-        widthMin:100,
-        widthMax:8448,
-        heightMin:100,
-        heightMax:5752,
+      res8KUHD: {
+        widthMin: 100,
+        widthMax: 8448,
+        heightMin: 100,
+        heightMax: 5752,
       },
 
     }
@@ -1212,11 +1212,11 @@ function main() {
       try {
         fs.unlinkSync(homePath + `/Tdarr/Plugins/Local/` + pluginID + ".js")
 
-        return [true,pluginID]
+        return [true, pluginID]
       } catch (err) {
         console.log(err)
 
-        return [false,pluginID]
+        return [false, pluginID]
       }
 
     },
@@ -1410,94 +1410,94 @@ function main() {
         fsextra.removeSync(homePath + '/Tdarr/Plugins/temp')
       } catch (err) { console.log(err.stack) }
 
-     
-
-        (async function clonePlugins() {
-
-          console.log('Cloning plugins')
 
 
-          var downloadStatus
+      (async function clonePlugins() {
 
-          await downloadNew()
+        console.log('Cloning plugins')
+
+
+        var downloadStatus
+
+        await downloadNew()
+          .then((res) => {
+            downloadStatus = res
+          })
+          .catch((err) => {
+            console.log(err)
+            downloadStatus = 'Error!'
+          })
+
+
+        if (downloadStatus == 'Done!') {
+
+          var unzipStatus
+
+          await unzip()
             .then((res) => {
-              downloadStatus = res
+              unzipStatus = res
             })
             .catch((err) => {
               console.log(err)
-              downloadStatus = 'Error!'
+              unzipStatus = 'Error!'
             })
 
+          await waitUnzip()
 
-          if (downloadStatus == 'Done!') {
+          if (unzipStatus == 'Done!') {
 
-            var unzipStatus
+            try {
+              fsextra.copySync(homePath + '/Tdarr/Plugins/temp/Tdarr_Plugins-master/Community', homePath + "/Tdarr/Plugins/Community", { overwrite: true })
+            } catch (err) { console.log(err.stack) }
 
-            await unzip()
-              .then((res) => {
-                unzipStatus = res
-              })
-              .catch((err) => {
-                console.log(err)
-                unzipStatus = 'Error!'
-              })
-
-            await waitUnzip()
-
-            if (unzipStatus == 'Done!') {
-
-              try {
-                fsextra.copySync(homePath + '/Tdarr/Plugins/temp/Tdarr_Plugins-master/Community', homePath + "/Tdarr/Plugins/Community", { overwrite: true })
-              } catch (err) { console.log(err.stack) }
-
-              try {
-                //COMMENT OUT WHEN WORKING ON LIBRARY FITLERS/ACTIONS
-                fsextra.copySync(homePath + '/Tdarr/Plugins/temp/Tdarr_Plugins-master/methods', homePath + '/Tdarr/Plugins/methods', { overwrite: true })
-              } catch (err) { console.log(err.stack) }
+            try {
+              //COMMENT OUT WHEN WORKING ON LIBRARY FITLERS/ACTIONS
+              fsextra.copySync(homePath + '/Tdarr/Plugins/temp/Tdarr_Plugins-master/methods', homePath + '/Tdarr/Plugins/methods', { overwrite: true })
+            } catch (err) { console.log(err.stack) }
 
 
 
-              try {
-                fsextra.copySync(homePath + '/Tdarr/Plugins/methods', path.join(process.cwd(), `/assets/app/plugins/methods`), { overwrite: true })
-              } catch (err) { console.log(err.stack) }
+            try {
+              fsextra.copySync(homePath + '/Tdarr/Plugins/methods', path.join(process.cwd(), `/assets/app/plugins/methods`), { overwrite: true })
+            } catch (err) { console.log(err.stack) }
 
 
-              try {
-                fsextra.removeSync(homePath + '/Tdarr/Plugins/temp.zip')
-              } catch (err) { console.log(err.stack) }
+            try {
+              fsextra.removeSync(homePath + '/Tdarr/Plugins/temp.zip')
+            } catch (err) { console.log(err.stack) }
 
 
-              try {
-                fsextra.removeSync(homePath + '/Tdarr/Plugins/temp')
-              } catch (err) { console.log(err.stack) }
+            try {
+              fsextra.removeSync(homePath + '/Tdarr/Plugins/temp')
+            } catch (err) { console.log(err.stack) }
 
 
-              console.log('Plugin update finished')
+            console.log('Plugin update finished')
 
 
 
-              GlobalSettingsDB.upsert('globalsettings',
-                {
-                  $set: {
-                    pluginSearchLoading: false,
-                  }
+            GlobalSettingsDB.upsert('globalsettings',
+              {
+                $set: {
+                  pluginSearchLoading: false,
                 }
-              );
-
-
-            } else {
-              console.log('Plugin unzip failed!')
-            }
-
+              }
+            );
 
 
           } else {
-            console.log('Plugin download failed!')
+            console.log('Plugin unzip failed!')
           }
 
 
 
-        })();
+        } else {
+          console.log('Plugin download failed!')
+        }
+
+
+
+      })();
 
 
 
@@ -5127,10 +5127,10 @@ function main() {
     changed: function (new_document, old_document) {
       if (!initialising) {
         //console.log('doc changed');
-        if(new_document.lastQueueUpdateTime == old_document.lastQueueUpdateTime){
+        if (new_document.lastQueueUpdateTime == old_document.lastQueueUpdateTime) {
           Meteor.call('DBHasChanged', (error, result) => { })
         }
-        
+
       }
     },
     removed: function (document) {

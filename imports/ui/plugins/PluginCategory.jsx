@@ -13,16 +13,16 @@ export default class App extends Component {
 
     this.state = {
       selectedNav: 'All',
-      showPlugin:false,
-      pluginStates:{},
-      showEditWindow:false,
-      lastReadID:'',
-      lastReadText:'',
+      showPlugin: false,
+      pluginStates: {},
+      showEditWindow: false,
+      lastReadID: '',
+      lastReadText: '',
     };
 
   }
 
-  
+
 
   componentDidMount() {
 
@@ -42,7 +42,7 @@ export default class App extends Component {
 
 
 
-   // console.log(plugins)
+    // console.log(plugins)
     if (plugins.length == 0) {
 
       setTimeout(this.showPluginCard, 100);
@@ -71,7 +71,7 @@ export default class App extends Component {
     }
   }
 
-  
+
 
 
   deletePlugin = (id) => {
@@ -79,20 +79,20 @@ export default class App extends Component {
     if (confirm('Are you sure you want to delete this local plugin?')) {
 
 
-      Meteor.call('deletePlugin', id, (error, result) => { 
+      Meteor.call('deletePlugin', id, (error, result) => {
 
-        if(result[0] == true){
+        if (result[0] == true) {
           var pluginStates = this.state.pluginStates
           pluginStates[result[1]] = false
 
           alert('Plugin successfully deleted!')
-          this.setState({pluginStates:pluginStates})
-        }else{
+          this.setState({ pluginStates: pluginStates })
+        } else {
           alert('Error: plugin not deleted, please delete manually.')
         }
       })
 
-      }
+    }
 
   }
 
@@ -132,17 +132,17 @@ export default class App extends Component {
   }
 
 
-  editPlugin(id){
+  editPlugin(id) {
 
-    this.setState({lastReadID:id})
+    this.setState({ lastReadID: id })
 
     Meteor.call('readPluginText', id, (error, result) => {
-      
+
       if (result[0] == true) {
-        this.setState({lastReadText:result[2]})
-        this.setState({showEditWindow:true})
-      }else{
-        this.setState({lastReadText:'Reading plugin failed'})
+        this.setState({ lastReadText: result[2] })
+        this.setState({ showEditWindow: true })
+      } else {
+        this.setState({ lastReadText: 'Reading plugin failed' })
       }
 
     })
@@ -232,9 +232,9 @@ export default class App extends Component {
 
 
 
-      result = result.map(row =>   <div><div className={this.state.pluginStates[row.id] === true ? '' : 'd-none'}><div className="pluginCard">
+      result = result.map(row => <div><div className={this.state.pluginStates[row.id] === true ? '' : 'd-none'}><div className="pluginCard">
 
-         <center><div className="pluginID"><p>{row.id}</p></div></center>
+        <center><div className="pluginID"><p>{row.id}</p></div></center>
         <center><div className="pluginTitle"><p>{row.Name}</p></div></center>
 
         <div className="pluginDesc"><p>{row.Description}</p></div>
@@ -242,8 +242,8 @@ export default class App extends Component {
 
         <div className="pluginCardBottom">
 
-        <center>
-        <CopyToClipboard text={row.id}>
+          <center>
+            <CopyToClipboard text={row.id}>
               <Button variant="outline-light" ><span className="buttonTextSize">Copy id</span></Button>
             </CopyToClipboard>{'\u00A0'}
             {row.Inputs ? <Modal
@@ -299,20 +299,20 @@ export default class App extends Component {
                 </div>
               </div>
             </Modal> : null}
-            {this.props.pluginType == "Local" ? <Button variant="outline-light" onClick={() => this.deletePlugin(row.id)}><span className="buttonTextSize">X</span></Button> : null }
-            {this.props.pluginType == "Local" ? <Button variant="outline-light" onClick={() => this.editPlugin(row.id)}><span className="buttonTextSize">Edit</span></Button> : null }
-            {this.props.pluginType == "Community" ? <Button variant="outline-light" onClick={() => this.copyCommunityToLocal(row.id)}><span className="buttonTextSize">Copy to Local</span></Button> : null }
-            </center>
+            {this.props.pluginType == "Local" ? <Button variant="outline-light" onClick={() => this.deletePlugin(row.id)}><span className="buttonTextSize">X</span></Button> : null}
+            {this.props.pluginType == "Local" ? <Button variant="outline-light" onClick={() => this.editPlugin(row.id)}><span className="buttonTextSize">Edit</span></Button> : null}
+            {this.props.pluginType == "Community" ? <Button variant="outline-light" onClick={() => this.copyCommunityToLocal(row.id)}><span className="buttonTextSize">Copy to Local</span></Button> : null}
+          </center>
           <div className="box">
 
 
-          <p>Tags:{row.Tags}</p> 
+            <p>Tags:{row.Tags}</p>
 
           </div>
 
-          </div>
         </div>
-        </div>
+      </div>
+      </div>
 
         <div className={this.state.pluginStates[row.id] === undefined ? '' : 'd-none'} >
           <div className="pluginCardLoading">
@@ -380,7 +380,7 @@ export default class App extends Component {
 
 
             <br />
-            
+
 
             <p onClick={() => {
               this.setState({ selectedNav: 'H265/HEVC' })
@@ -394,7 +394,7 @@ export default class App extends Component {
 
 
             <br />
-            
+
 
 
 
@@ -423,7 +423,7 @@ export default class App extends Component {
 
 
             <br />
-            
+
 
 
             <p onClick={() => {
@@ -447,7 +447,7 @@ export default class App extends Component {
 
 
             <br />
-            
+
 
 
 
@@ -465,16 +465,16 @@ export default class App extends Component {
             <br />
 
 
-            
+
 
 
             <p onClick={() => {
               this.setState({ selectedNav: '3rd Party' })
             }} className={this.state && this.state.selectedNav == "3rd Party" ? 'selectedNav' : 'unselectedNav'}>3rd Party ({this.renderPlugins(true, this.props.pluginType, '3rd party')})</p>
 
-        
+
             <br />
-            
+
 
 
             <p onClick={() => {
@@ -581,7 +581,7 @@ export default class App extends Component {
             </div>
 
 
-      
+
 
 
             <div className={this.state && this.state.selectedNav == "Pre-processing" ? '' : 'd-none'}>

@@ -38,9 +38,9 @@ class App extends Component {
 
     this.state = {
       pluginsStored: [],
-      pluginsStoredFiltered:[],
-      selectedTab:0,
-      navSelectedPluginCreatorItem:'navPluginGuide'
+      pluginsStoredFiltered: [],
+      selectedTab: 0,
+      navSelectedPluginCreatorItem: 'navPluginGuide'
     };
 
   }
@@ -179,7 +179,7 @@ class App extends Component {
       var string = "searchString" + pluginType
       var searchTerm = ReactDOM.findDOMNode(this.refs[string]).value.trim()
 
-  
+
       var result = this.state.pluginsStored.filter(row => {
         var string = JSON.stringify(row).toLowerCase()
         if (string.includes(searchTerm.toLowerCase())) {
@@ -192,7 +192,7 @@ class App extends Component {
 
 
       this.setState({
-        pluginsStoredFiltered:result
+        pluginsStoredFiltered: result
       })
 
 
@@ -207,7 +207,7 @@ class App extends Component {
       // );
 
 
-      
+
 
     } catch (err) {
       console.log(err)
@@ -219,10 +219,10 @@ class App extends Component {
       //   }
       // );
 
-     
+
     }
 
-    
+
   }
 
 
@@ -236,7 +236,7 @@ class App extends Component {
 
 
           <Tabs selectedIndex={this.state.selectedTab} onSelect={tabIndex => {
-            this.setState({selectedTab: tabIndex})
+            this.setState({ selectedTab: tabIndex })
           }}>
             <TabList>
               <Tab ><p>Community</p></Tab>
@@ -271,7 +271,7 @@ class App extends Component {
               <p></p>
               <p></p>
 
-              <PluginCategory pluginType={'Community'} pluginsStoredFiltered={this.state.pluginsStoredFiltered}/>
+              <PluginCategory pluginType={'Community'} pluginsStoredFiltered={this.state.pluginsStoredFiltered} />
 
 
             </div>
@@ -302,7 +302,7 @@ class App extends Component {
               <p></p>
 
 
-              <PluginCategory pluginType={'Local'} pluginsStoredFiltered={this.state.pluginsStoredFiltered}/>
+              <PluginCategory pluginType={'Local'} pluginsStoredFiltered={this.state.pluginsStoredFiltered} />
 
 
             </div>
@@ -326,14 +326,14 @@ class App extends Component {
                     <br />
 
                     <p onClick={() => {
-                      this.setState({navSelectedPluginCreatorItem: "navPluginGuide"})
+                      this.setState({ navSelectedPluginCreatorItem: "navPluginGuide" })
                     }} className={this.state.navSelectedPluginCreatorItem == "navPluginGuide" ? 'selectedNav' : 'unselectedNav'}>Guide</p>
 
 
                     <br />
 
                     <p onClick={() => {
-                      this.setState({navSelectedPluginCreatorItem: "navGeneral"})
+                      this.setState({ navSelectedPluginCreatorItem: "navGeneral" })
                     }} className={this.state.navSelectedPluginCreatorItem == "navGeneral" ? 'selectedNav' : 'unselectedNav'}>Create</p>
 
 
