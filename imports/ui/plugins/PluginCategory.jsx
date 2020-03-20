@@ -13,6 +13,7 @@ export default class App extends Component {
     this.state = {
       selectedNav: 'All',
       showPlugin:false,
+      pluginStates:{},
     };
 
   }
@@ -21,17 +22,58 @@ export default class App extends Component {
 
   componentDidMount() {
 
-    setTimeout(this.showPluginCard, 1000);
+    setTimeout(this.showPluginCard, 100);
 
   }
 
   showPluginCard = () => {
     this.setState({showPlugin:true,})
+
+
+    var plugins = this.props.pluginsStoredFiltered.filter(row => {
+      if (row.source == this.props.pluginType) {
+        return true
+      }
+      return false
+    })
+
+
+
+   // console.log(plugins)
+    if (plugins.length == 0) {
+
+      setTimeout(this.showPluginCard, 100);
+
+    } else {
+
+      var timeout = 200
+      var interval = 2
+
+      const showP = (id) => {
+        var pluginStates = this.state.pluginStates
+        pluginStates[id] = true
+        this.setState({ pluginStates: pluginStates })
+      };
+
+
+      for (var i = 0; i < plugins.length; i++) {
+        var id = plugins[i].id
+
+        setTimeout(showP, timeout, id)
+        timeout += (100 - interval)
+        interval += 2
+
+      }
+
+    }
+  }
   }
 
   renderPlugins(returnCount, pluginType, cattags) {
 
     //'h265,hevc'
+
+    //console.log(returnCount, pluginType, cattags)
 
 
     var result = this.props.pluginsStoredFiltered
@@ -89,7 +131,7 @@ export default class App extends Component {
 
 
 
-      result = result.map(row =>   <div><div className={this.state.showPlugin ? '' : 'd-none'}><div className="pluginCard">
+      result = result.map(row =>   <div><div className={this.state.pluginStates[row.id] === true ? '' : 'd-none'}><div className="pluginCard">
 
          <center><div className="pluginID"><p>{row.id}</p></div></center>
         <center><div className="pluginTitle"><p>{row.Name}</p></div></center>
@@ -167,7 +209,7 @@ export default class App extends Component {
         </div>
         </div>
 
-        <div className={!this.state.showPlugin ? '' : 'd-none'} >
+        <div className={this.state.pluginStates[row.id] === undefined ? '' : 'd-none'} >
           <div className="pluginCardLoading">
             <center>
               <ClipLoader
