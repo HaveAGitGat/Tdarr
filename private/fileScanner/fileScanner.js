@@ -56,6 +56,8 @@ var closedCaptionScan = process.argv[10]
 var foldersToIgnore = process.argv[11]
 foldersToIgnore = foldersToIgnore.split(",")
 
+var resBoundaries = JSON.parse(process.argv[12])
+
 updateConsole(scannerID, "Online.")
 
 
@@ -622,19 +624,19 @@ function ffprobeLaunch(filesToScan) {
 
 
 
-                if (vidWidth >= 100 && vidWidth <= 792 && vidHeight >= 100 && vidHeight <= 528) {
+                if (vidWidth >= resBoundaries.res480p.widthMin && vidWidth <= resBoundaries.res480p.widthMax && vidHeight >= resBoundaries.res480p.heightMin && vidHeight <= resBoundaries.res480p.heightMax) {
                     videoResolution = "480p"
-                } else if (vidWidth >= 100 && vidWidth <= 792 && vidHeight >= 100 && vidHeight <= 634) {
+                } else if (vidWidth >= resBoundaries.res576p.widthMin && vidWidth <= resBoundaries.res576p.widthMax && vidHeight >= resBoundaries.res576p.heightMin && vidHeight <= resBoundaries.res576p.heightMax) {
                     videoResolution = "576p"
-                } else if (vidWidth >= 100 && vidWidth <= 1408 && vidHeight >= 100 && vidHeight <= 792) {
+                } else if (vidWidth >= resBoundaries.res720p.widthMin && vidWidth <= resBoundaries.res720p.widthMax && vidHeight >= resBoundaries.res720p.heightMin && vidHeight <= resBoundaries.res720p.heightMax) {
                     videoResolution = "720p"
-                } else if (vidWidth >= 100 && vidWidth <= 2112 && vidHeight >= 100 && vidHeight <= 1188) {
+                } else if (vidWidth >= resBoundaries.res1080p.widthMin && vidWidth <= resBoundaries.res1080p.widthMax && vidHeight >= resBoundaries.res1080p.heightMin && vidHeight <= resBoundaries.res1080p.heightMax) {
                     videoResolution = "1080p"
-                } else if (vidWidth >= 100 && vidWidth <= 4224 && vidHeight >= 100 && vidHeight <= 2376) {
+                } else if (vidWidth >= resBoundaries.res4KUHD.widthMin && vidWidth <= resBoundaries.res4KUHD.widthMax && vidHeight >= resBoundaries.res4KUHD.heightMin && vidHeight <= resBoundaries.res4KUHD.heightMax) {
                     videoResolution = "4KUHD"
-                } else if (vidWidth >= 100 && vidWidth <= 4506 && vidHeight >= 100 && vidHeight <= 2376) {
+                } else if (vidWidth >= resBoundaries.resDCI4K.widthMin && vidWidth <= resBoundaries.resDCI4K.widthMax && vidHeight >= resBoundaries.resDCI4K.heightMin && vidHeight <= resBoundaries.resDCI4K.heightMax) {
                     videoResolution = "DCI4K"
-                } else if (vidWidth >= 100 && vidWidth <= 8448 && vidHeight >= 100 && vidHeight <= 5752) {
+                } else if (vidWidth >= resBoundaries.res8KUHD.widthMin && vidWidth <= resBoundaries.res8KUHD.widthMax && vidHeight >= resBoundaries.res8KUHD.heightMin && vidHeight <= resBoundaries.res8KUHD.heightMax) {
                     videoResolution = "8KUHD"
                 } else {
                     videoResolution = "Other"
