@@ -92,6 +92,41 @@ export default class App extends Component {
       }
 
   }
+
+
+  copyCommunityToLocal = (id) => {
+
+    Meteor.call('copyCommunityToLocal', id, false, (error, result) => {
+
+      if (result[0] == "exist") {
+
+        if (confirm('Local copy already exists. Overwrite?')) {
+
+          Meteor.call('copyCommunityToLocal', id, true, (error, result) => {
+            alertResult(result)
+          })
+
+
+        }
+      } else {
+        alertResult(result)
+      }
+
+    })
+
+
+    function alertResult(result) {
+      if (result[0] == true) {
+        alert('Plugin successfully copied!')
+        location.reload()
+      } else {
+        alert('Error: plugin not copied, please copy manually.')
+      }
+    }
+
+
+
+  }
   }
 
   renderPlugins(returnCount, pluginType, cattags) {
@@ -223,6 +258,8 @@ export default class App extends Component {
                 </div>
               </div>
             </Modal> : null}</center>
+            {this.props.pluginType == "Local" ? <Button variant="outline-light" onClick={() => this.deletePlugin(row.id)}><span className="buttonTextSize">X</span></Button> : null }
+            {this.props.pluginType == "Community" ? <Button variant="outline-light" onClick={() => this.copyCommunityToLocal(row.id)}><span className="buttonTextSize">Copy to Local</span></Button> : null }
           <div className="box">
 
 
