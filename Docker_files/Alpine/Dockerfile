@@ -31,6 +31,7 @@ RUN export uid=1000 gid=1000 && \
 USER Tdarr    
 ENV HOME /home/Tdarr
 
+RUN cp /usr/bin/ffmpeg /app/Tdarr/bundle/programs/server/assets/app/ffmpeg/ffmpeg42/ffmpeg
 
 EXPOSE 8265
 WORKDIR /app/Tdarr/bundle
