@@ -815,6 +815,7 @@ class App extends Component {
 <p>All new files will be added to both the transcode queues and the health check queues. If you're not interested in using one or the other, then just make sure not to fire up any workers for that respective queue.</p>
 
 <p></p>
+<p>If the 'Scan on start' option is turned on, Tdarr will scan the library on start-up and then scan the library daily.</p>
 <p></p>
 <p></p>
 <p>In the library transcode settings, you can either use plugins or manually set either video file or audio file transcode settings.</p>
