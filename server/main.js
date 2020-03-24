@@ -432,7 +432,6 @@ Meteor.methods({
 
     ]
 
-    if (fs.existsSync(homePath + "/Tdarr/Data/env.json")) {
     if (fs.existsSync(homePath + `/Tdarr/Backups/${name}-unzip`)) {
 
       try {
@@ -496,11 +495,20 @@ Meteor.methods({
 
                     var id = dbItems[j]._id
 
+                   
+                    //console.dir(dbItems[j])
+                    
+                   try{
                     collections[i][0].upsert(id,
                       {
                         $set: dbItems[j]
                       }
                     );
+                   }catch(err){
+                    console.log(j)
+                    console.log(dbItems[j]._id)
+                   
+                   }
 
                   }
                 }
