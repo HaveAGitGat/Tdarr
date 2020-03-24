@@ -433,6 +433,7 @@ Meteor.methods({
     ]
 
     if (fs.existsSync(homePath + "/Tdarr/Data/env.json")) {
+    if (fs.existsSync(homePath + `/Tdarr/Backups/${name}-unzip`)) {
 
       try {
         fsextra.removeSync(homePath + `/Tdarr/Backups/${name}-unzip`)
