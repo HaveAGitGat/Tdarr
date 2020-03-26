@@ -74,9 +74,14 @@ class App extends Component {
 
         <br />
 
-        <p>It is best practice to put video transcode plugins at the top of your stack and then your other plugins. Think logically
-          about how your files will be processed. For example, let's say you have 2 plugins:
-</p>
+        <p>The following is a guideline on how to arrange your plugins to minimise the number of processing cycles:</p>
+        <p>Re-order streams</p>
+        <p>Video transcode related</p>
+        <p>Audio transcode related</p>
+        <p>Remux</p>
+          
+        <br />
+        <p>Think logically about how your files will be processed. For example, let's say you have 2 plugins:</p>
         <p>(1) Transcode non hevc files into hevc mkv</p>
         <p>(2) Remux non-mkv files into mkv</p>
         <p>It would not makes sense to put the remux plugin above the transcode plugin. In the above stack if, for example, a h264 MP4 file enters the stack, only the transcode plugin would need to be used. If the remux plugin was above the transcode plugin, 2 plugins would need to be used, resulting in additional processing time and more disk read/writes.</p>

@@ -1741,7 +1741,7 @@ class Folder extends Component {
 
                 <center>
                   <p>
-                    See the 'Plugins' tab guide for how the plugin stack works and for creating plugins.<b>It is best practice to put video transcode plugins at the top of your stack.</b>
+                    See the 'Plugins' tab guide for how the plugin stack works and for creating plugins.
                   </p>
                 </center>
 
