@@ -462,67 +462,65 @@ Meteor.methods({
           backupStatus[0].status = "Complete"
 
           for (var i = 0; i < collections.length; i++) {
-
-            var count = 0
-
-            backupStatus.push({ name: collections[i][1] })
-            backupStatus[i + 1].status = "Cleaning existing DB"
+            if (i != 1) {
 
 
-            collections[i][0].remove({});
 
-            backupStatus[i + 1].status = "Existing DB cleaned"
+              var count = 0
 
-            try {
+              backupStatus.push({ name: collections[i][1] })
+              backupStatus[i + 1].status = "Cleaning existing DB"
 
-              var dbItems = fs.readFileSync(homePath + `/Tdarr/Backups/${file}-unzip/${collections[i][1]}.txt`, dbItems, 'utf8');
 
-              backupStatus[i + 1].status = "Reading backup file"
+              collections[i][0].remove({});
 
-              dbItems = JSON.parse(dbItems)
+              backupStatus[i + 1].status = "Existing DB cleaned"
 
-              if (dbItems.length > 0) {
+              try {
 
-                for (var j = 0; j < dbItems.length; j++) {
+                var dbItems = fs.readFileSync(homePath + `/Tdarr/Backups/${file}-unzip/${collections[i][1]}.txt`, dbItems, 'utf8');
 
-                  count++
+                backupStatus[i + 1].status = "Reading backup file"
 
-                  backupStatus[i + 1].status = "Restoring:" + count
+                dbItems = JSON.parse(dbItems)
 
-                  // backupStatus = "Restoring: "+ count
+                if (dbItems.length > 0) {
 
-                  if (dbItems[j]._id) {
+                  for (var j = 0; j < dbItems.length; j++) {
 
-                    var id = dbItems[j]._id
+                    count++
 
-                   
-                    //console.dir(dbItems[j])
-                    
-                   try{
-                    collections[i][0].upsert(id,
-                      {
-                        $set: dbItems[j]
+                    backupStatus[i + 1].status = "Restoring:" + count + "/" + dbItems.length
+
+                    if (dbItems[j]._id) {
+
+                      var id = dbItems[j]._id
+
+                      try {
+                        collections[i][0].upsert(id,
+                          {
+                            $set: dbItems[j]
+                          }
+                        );
+                      } catch (err) {
+                        console.log("Error restoring item:")
+                        console.log(j)
+                        console.log(dbItems[j]._id)
                       }
-                    );
-                   }catch(err){
-                    console.log(j)
-                    console.log(dbItems[j]._id)
-                   
-                   }
 
+                    }
                   }
+
+                } else {
+                  backupStatus[i + 1].status = "No items to restore!"
                 }
 
-              } else {
-                backupStatus[i + 1].status = "No items to restore!"
+              } catch (err) {
+                console.log(err)
+                backupStatus[i + 1].status = "Error:" + JSON.stringify(err)
               }
 
-            } catch (err) {
-              console.log(err)
-              backupStatus[i + 1].status = "Error:" + JSON.stringify(err)
             }
-
-
           }
 
 
