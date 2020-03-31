@@ -87,15 +87,17 @@ watchers[DB_id]
   .on('add', newFile => {
 
     newFile = newFile.replace(/\\/g, "/");
-
-
     updateConsole("Folder watcher: File detected, adding to queue:" + newFile)
-
     watcherFilesToScan[DB_id].filesToScan.push(newFile)
 
+  })
+  .on('change', newFile => {
+
+    newFile = newFile.replace(/\\/g, "/");
+    updateConsole("Folder watcher: File detected, adding to queue:" + newFile)
+    watcherFilesToScan[DB_id].filesToScan.push(newFile)
 
   })
-  // .on('change', path => log(`File ${path} has been changed`))
   .on('unlink', path => {
 
     path = path.replace(/\\/g, "/");

@@ -4188,7 +4188,7 @@ function main() {
             updateConsole(`Adding file to DB: ${filesToAddToDB[i]._id}`, true)
 
             var tempObj = filesToAddToDB[i]
-            Meteor.call('modifyFileDB', 'insert', filesToAddToDB[i]._id, tempObj, (error, result) => { })
+            Meteor.call('modifyFileDB', 'upsert', filesToAddToDB[i]._id, tempObj, (error, result) => { })
 
 
 
