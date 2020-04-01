@@ -809,6 +809,7 @@ class App extends Component {
 <LocalImage link="/images/example_folder_browser.png"/>
 
 <p>Make sure to set a transcode cache folder</p>
+
 <p></p>
 
 <p>'Scan (Find new)' does 2 things - it removes files from the database which don't exist anymore, and adds newly detected files. Turn on 'Folder watch' to automate this process. New files will be scanned for every 30 seconds or so.</p>
@@ -855,7 +856,7 @@ class App extends Component {
 <p>-Z "Fast 1080p30" -e nvenc_h265 </p>
 <p>-Z "Very Fast 1080p30" --all-subtitles --all-audio</p>       
 <p>-Z "Very Fast 480p30"</p>
-<p>--preset-import-file "C:\Users\HaveAGitGat\Desktop\testpreset.json" -Z "My Preset"</p>
+<p>--preset-import-file "C:/Users/HaveAGitGat/Desktop/testpreset.json" -Z "My Preset"</p>
 
 <p>You can learn more about HandBrake presets here:</p>
 

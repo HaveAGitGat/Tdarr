@@ -32,6 +32,7 @@ export default class App extends Component {
 
 
     var preset = ReactDOM.findDOMNode(this.refs.preset).value
+    preset = preset.replace(/\\/g, "/");
 
     var container = ReactDOM.findDOMNode(this.refs.container).value
 
@@ -40,6 +41,8 @@ export default class App extends Component {
       container = "." + container
 
     }
+
+    
 
 
     var obj = {
@@ -150,7 +153,7 @@ export default class App extends Component {
         <p>-Z "Fast 1080p30" -e nvenc_h265 </p>
         <p>-Z "Very Fast 1080p30" --all-subtitles --all-audio</p>
         <p>-Z "Very Fast 480p30"</p>
-        <p>--preset-import-file "C:\Users\HaveAGitGat\Desktop\testpreset.json" -Z "My Preset"</p>
+        <p>--preset-import-file "C:/Users/HaveAGitGat/Desktop/testpreset.json" -Z "My Preset"</p>
 
         <p>You can learn more about HandBrake presets here:</p>
 
