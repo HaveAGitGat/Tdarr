@@ -2218,39 +2218,13 @@ function main() {
 
 
 
-      if (process.platform == 'win32' && mode == "handbrake") {
-        workerCommand = handBrakeCLIPath + " " + text
-      } else if (process.platform == 'win32' && mode == "ffmpeg") {
-        workerCommand = ffmpegPath + " " + text
-      }
-
-      if (process.platform == 'linux' && mode == "handbrake") {
-        workerCommand = "HandBrakeCLI" + " " + text
-      } else if (process.platform == 'linux' && mode == "ffmpeg") {
-
-        workerCommand = ffmpegPathLinux42 + " " + text
-
-      }
-
-      if (process.platform == 'darwin' && mode == "handbrake") {
-        workerCommand = "/usr/local/bin/HandBrakeCLI" + " " + text
-      } else if (process.platform == 'darwin' && mode == "ffmpeg") {
-        workerCommand = ffmpegPath + " " + text
-      }
-
-      var ffmpegNVENCBinary = (GlobalSettingsDB.find({}, {}).fetch())[0].ffmpegNVENCBinary
-
-      if (ffmpegNVENCBinary == true) {
-        if (process.platform == 'linux' && mode == "handbrake") {
-          // workerCommand = "/usr/local/bin/HandBrakeCLI " + text
-        } else if (process.platform == 'linux' && mode == "ffmpeg") {
-          workerCommand = ffmpegPathLinux345 + " " + text
-        }
+      if (mode == "handbrake") {
+        workerCommand = getHandBrakePath() + " " + text
+      } else if (mode == "ffmpeg") {
+        workerCommand = getFFmpegPath() + " " + text
       }
 
       console.log(workerCommand)
-
-
 
       fs.writeFileSync(homePath + "/Tdarr/Data/" + mode + ".txt", "", 'utf8');
 
@@ -2318,15 +2292,9 @@ function main() {
 
 
       if (process.platform == 'win32') {
-        workerCommand = ffmpegPath + " " + preset1 + " -i \"" + inputFile + "\" " + preset2 + " \"" + outputFile + "\" "
-      }
-
-      if (process.platform == 'linux') {
-        workerCommand = ffmpegPathLinux42 + " " + preset1 + " -i '" + inputFileUnix + "' " + preset2 + " '" + outputFileUnix + "' "
-      }
-
-      if (process.platform == 'darwin') {
-        workerCommand = ffmpegPathUnix + " " + preset1 + " -i '" + inputFileUnix + "' " + preset2 + " '" + outputFileUnix + "' "
+        workerCommand = getFFmpegPath() + " " + preset1 + " -i \"" + inputFile + "\" " + preset2 + " \"" + outputFile + "\" "
+      }else{
+        workerCommand = getFFmpegPath() + " " + preset1 + " -i '" + inputFileUnix + "' " + preset2 + " '" + outputFileUnix + "' "
       }
 
       var shellWorker = shell.exec(workerCommand, function (code, stdout, stderr, stdin) {
@@ -2453,6 +2421,54 @@ function main() {
 
   ffmpegPathLinux345 = ffmpegPathLinux345.replace(/'/g, '\'\"\'\"\'');
   ffmpegPathLinux42 = ffmpegPathLinux42.replace(/'/g, '\'\"\'\"\'');
+
+
+  function getHandBrakePath() {
+
+    var path
+
+    if (process.platform == 'win32') {
+      path = handBrakeCLIPath
+    }
+    if (process.platform == 'linux') {
+      path = "HandBrakeCLI"
+    }
+
+    if (process.platform == 'darwin') {
+      path = "/usr/local/bin/HandBrakeCLI"
+    }
+
+    return path
+  }
+
+  function getFFmpegPath() {
+
+    var path
+
+    if (process.platform == 'win32') {
+      path = ffmpegPath
+    }
+
+    if (process.platform == 'linux') {
+      path = ffmpegPathLinux42
+    }
+
+    if (process.platform == 'darwin') {
+      path = ffmpegPath
+    }
+
+
+    var ffmpegNVENCBinary = (GlobalSettingsDB.find({}, {}).fetch())[0].ffmpegNVENCBinary
+
+    if (ffmpegNVENCBinary == true) {
+      if (process.platform == 'linux') {
+        path = ffmpegPathLinux345
+      }
+    }
+
+
+    return path
+  }
 
 
   var shell = require('shelljs');
