@@ -33,8 +33,9 @@ export default class App extends Component {
             
             <br />Changes:
 
+            <br />-[New] tdarr_aio ffmpeg updated to 4.2.2 with libaom enabled
             <br />-[New] Small UI changes and help info updates
-            <br />-[New] Folder watch: Option to use file system events (FSE) instead of polling (try if polling causes high CPU). FSE may not work with all drives/shares.
+            <br />-[New] Folder watch: Option to use file system events (FSE) instead of polling (try if polling causes high CPU/disk IO). FSE may not work with all drives/shares.
             <br />-[New] HandBrake and FFmpeg binary paths passed to plugins
             <br />-[Improvement] Error shown if problem with reading plugin
             <br />-[Improvement] New files appended with '.partial' while copying to source to prevent app/services scanning temp file

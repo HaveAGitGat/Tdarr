@@ -1300,7 +1300,7 @@ class Folder extends Component {
               <p></p>
 
               <div>
-                <span className="buttonTextSize mr-2">Use FsEvents (try if folder watch polling causes high CPU):</span>
+                <span className="buttonTextSize mr-2">Folder watch: Use file system events (try if folder watch polling causes high CPU/disk IO):</span>
                 <div style={libButtonStyle}>
                   <ToggleButton
                     thumbStyle={borderRadiusStyle}
