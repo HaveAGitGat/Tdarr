@@ -78,6 +78,7 @@ class App extends Component {
       containerFilter:"mkv,mp4,mov,m4v,mpg,mpeg,avi,flv,webm,wmv,vob,evo,iso,m2ts,ts",
       createdAt: new Date(),
       folderWatching:false,
+      useFsEvents:false,
       processLibrary:true,
       scanOnStart:true,
       scanButtons:true,

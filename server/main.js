@@ -4091,7 +4091,9 @@ function main() {
     var watcherID = DB_id
 
 
-    var folderWatchScanInterval = SettingsDB.find({ _id: DB_id }, { sort: { createdAt: 1 } }).fetch()[0].folderWatchScanInterval
+    var librarySettings = SettingsDB.find({ _id: DB_id }, { sort: { createdAt: 1 } }).fetch()[0]
+    var folderWatchScanInterval = librarySettings.folderWatchScanInterval
+    var useFsEvents = librarySettings.useFsEvents
     console.log(folderWatchScanInterval)
 
     var watcherPath = "assets/app/folderWatcher.js"
@@ -4101,7 +4103,8 @@ function main() {
       watcherID,
       Folder,
       DB_id,
-      folderWatchScanInterval
+      folderWatchScanInterval,
+      useFsEvents
 
     ]
 
