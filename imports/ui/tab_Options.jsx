@@ -59,10 +59,10 @@ class App extends Component {
     var type = details[1]
     var value = event.target.value
 
-    console.log(name,type,value)
+    console.log(name, type, value)
 
-    
-  
+
+
     var resBoundaries = GlobalSettingsDB.find({}, {}).fetch()[0].resBoundaries
 
 
@@ -159,71 +159,71 @@ class App extends Component {
         <br />
         <br />
         <br />
-          <p>Backup limit (default 30): </p>
-         
-           <input type="text" className="folderPaths" name="backupLimit" defaultValue={settings != undefined && settings.backupLimit != undefined ? settings.backupLimit : "30"} onChange={this.handleChange}></input>
+        <p>Backup limit (default 30): </p>
 
-           <br />
-           <p>Resolution boundaries: </p>
+        <input type="text" className="folderPaths" name="backupLimit" defaultValue={settings != undefined && settings.backupLimit != undefined ? settings.backupLimit : "30"} onChange={this.handleChange}></input>
 
-           <div className="resGrid">
+        <br />
+        <p>Resolution boundaries: </p>
 
-             <div></div>
-             <div><p>Width Min</p></div>
-             <div><p>Width Max</p></div>
-             <div><p>Height Min</p></div>
-             <div><p>Height Max</p></div>
+        <div className="resGrid">
+
+          <div></div>
+          <div><p>Width Min</p></div>
+          <div><p>Width Max</p></div>
+          <div><p>Height Min</p></div>
+          <div><p>Height Max</p></div>
 
 
-             <div><p>480p</p></div>
-             <div><input type="text" className="resBounds" name="res480p,widthMin"  defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res480p.widthMin : ""} onChange={this.updateResBoundaries}></input></div>
-             <div><input type="text" className="resBounds" name="res480p,widthMax"  defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res480p.widthMax : ""} onChange={this.updateResBoundaries}></input></div>
-             <div><input type="text" className="resBounds" name="res480p,heightMin" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res480p.heightMin : ""} onChange={this.updateResBoundaries}></input></div>
-             <div><input type="text" className="resBounds" name="res480p,heightMax" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res480p.heightMax : ""} onChange={this.updateResBoundaries}></input></div>
-           
-           
-             <div><p>576p</p></div>
-             <div><input type="text" className="resBounds" name="res576p,widthMin"  defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res576p.widthMin : ""} onChange={this.updateResBoundaries}></input></div>
-             <div><input type="text" className="resBounds" name="res576p,widthMax"  defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res576p.widthMax : ""} onChange={this.updateResBoundaries}></input></div>
-             <div><input type="text" className="resBounds" name="res576p,heightMin" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res576p.heightMin : ""} onChange={this.updateResBoundaries}></input></div>
-             <div><input type="text" className="resBounds" name="res576p,heightMax" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res576p.heightMax : ""} onChange={this.updateResBoundaries}></input></div>
-           
-           
-             <div><p>720p</p></div>
-             <div><input type="text" className="resBounds" name="res720p,widthMin"  defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res720p.widthMin : ""} onChange={this.updateResBoundaries}></input></div>
-             <div><input type="text" className="resBounds" name="res720p,widthMax"  defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res720p.widthMax : ""} onChange={this.updateResBoundaries}></input></div>
-             <div><input type="text" className="resBounds" name="res720p,heightMin" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res720p.heightMin : ""} onChange={this.updateResBoundaries}></input></div>
-             <div><input type="text" className="resBounds" name="res720p,heightMax" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res720p.heightMax : ""} onChange={this.updateResBoundaries}></input></div>
-           
-           
-             <div><p>1080p</p></div>
-             <div><input type="text" className="resBounds" name="res1080p,widthMin"  defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res1080p.widthMin : ""} onChange={this.updateResBoundaries}></input></div>
-             <div><input type="text" className="resBounds" name="res1080p,widthMax"  defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res1080p.widthMax : ""} onChange={this.updateResBoundaries}></input></div>
-             <div><input type="text" className="resBounds" name="res1080p,heightMin" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res1080p.heightMin : ""} onChange={this.updateResBoundaries}></input></div>
-             <div><input type="text" className="resBounds" name="res1080p,heightMax" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res1080p.heightMax : ""} onChange={this.updateResBoundaries}></input></div>
-           
-           
-             <div><p>4KUHD</p></div>
-             <div><input type="text" className="resBounds" name="res4KUHD,widthMin"  defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res4KUHD.widthMin : ""} onChange={this.updateResBoundaries}></input></div>
-             <div><input type="text" className="resBounds" name="res4KUHD,widthMax"  defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res4KUHD.widthMax : ""} onChange={this.updateResBoundaries}></input></div>
-             <div><input type="text" className="resBounds" name="res4KUHD,heightMin" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res4KUHD.heightMin : ""} onChange={this.updateResBoundaries}></input></div>
-             <div><input type="text" className="resBounds" name="res4KUHD,heightMax" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res4KUHD.heightMax : ""} onChange={this.updateResBoundaries}></input></div>
-           
-           
-             <div><p>DCI4K</p></div>
-             <div><input type="text" className="resBounds" name="resDCI4K,widthMin"  defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.resDCI4K.widthMin : ""} onChange={this.updateResBoundaries}></input></div>
-             <div><input type="text" className="resBounds" name="resDCI4K,widthMax"  defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.resDCI4K.widthMax : ""} onChange={this.updateResBoundaries}></input></div>
-             <div><input type="text" className="resBounds" name="resDCI4K,heightMin" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.resDCI4K.heightMin : ""} onChange={this.updateResBoundaries}></input></div>
-             <div><input type="text" className="resBounds" name="resDCI4K,heightMax" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.resDCI4K.heightMax : ""} onChange={this.updateResBoundaries}></input></div>
-           
-             <div><p>8KUHD</p></div>
-             <div><input type="text" className="resBounds" name="res8KUHD,widthMin"  defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res8KUHD.widthMin : ""} onChange={this.updateResBoundaries}></input></div>
-             <div><input type="text" className="resBounds" name="res8KUHD,widthMax"  defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res8KUHD.widthMax : ""} onChange={this.updateResBoundaries}></input></div>
-             <div><input type="text" className="resBounds" name="res8KUHD,heightMin" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res8KUHD.heightMin : ""} onChange={this.updateResBoundaries}></input></div>
-             <div><input type="text" className="resBounds" name="res8KUHD,heightMax" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res8KUHD.heightMax : ""} onChange={this.updateResBoundaries}></input></div>
-           
-          
-          </div>
+          <div><p>480p</p></div>
+          <div><input type="text" className="resBounds" name="res480p,widthMin" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res480p.widthMin : ""} onChange={this.updateResBoundaries}></input></div>
+          <div><input type="text" className="resBounds" name="res480p,widthMax" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res480p.widthMax : ""} onChange={this.updateResBoundaries}></input></div>
+          <div><input type="text" className="resBounds" name="res480p,heightMin" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res480p.heightMin : ""} onChange={this.updateResBoundaries}></input></div>
+          <div><input type="text" className="resBounds" name="res480p,heightMax" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res480p.heightMax : ""} onChange={this.updateResBoundaries}></input></div>
+
+
+          <div><p>576p</p></div>
+          <div><input type="text" className="resBounds" name="res576p,widthMin" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res576p.widthMin : ""} onChange={this.updateResBoundaries}></input></div>
+          <div><input type="text" className="resBounds" name="res576p,widthMax" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res576p.widthMax : ""} onChange={this.updateResBoundaries}></input></div>
+          <div><input type="text" className="resBounds" name="res576p,heightMin" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res576p.heightMin : ""} onChange={this.updateResBoundaries}></input></div>
+          <div><input type="text" className="resBounds" name="res576p,heightMax" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res576p.heightMax : ""} onChange={this.updateResBoundaries}></input></div>
+
+
+          <div><p>720p</p></div>
+          <div><input type="text" className="resBounds" name="res720p,widthMin" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res720p.widthMin : ""} onChange={this.updateResBoundaries}></input></div>
+          <div><input type="text" className="resBounds" name="res720p,widthMax" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res720p.widthMax : ""} onChange={this.updateResBoundaries}></input></div>
+          <div><input type="text" className="resBounds" name="res720p,heightMin" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res720p.heightMin : ""} onChange={this.updateResBoundaries}></input></div>
+          <div><input type="text" className="resBounds" name="res720p,heightMax" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res720p.heightMax : ""} onChange={this.updateResBoundaries}></input></div>
+
+
+          <div><p>1080p</p></div>
+          <div><input type="text" className="resBounds" name="res1080p,widthMin" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res1080p.widthMin : ""} onChange={this.updateResBoundaries}></input></div>
+          <div><input type="text" className="resBounds" name="res1080p,widthMax" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res1080p.widthMax : ""} onChange={this.updateResBoundaries}></input></div>
+          <div><input type="text" className="resBounds" name="res1080p,heightMin" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res1080p.heightMin : ""} onChange={this.updateResBoundaries}></input></div>
+          <div><input type="text" className="resBounds" name="res1080p,heightMax" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res1080p.heightMax : ""} onChange={this.updateResBoundaries}></input></div>
+
+
+          <div><p>4KUHD</p></div>
+          <div><input type="text" className="resBounds" name="res4KUHD,widthMin" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res4KUHD.widthMin : ""} onChange={this.updateResBoundaries}></input></div>
+          <div><input type="text" className="resBounds" name="res4KUHD,widthMax" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res4KUHD.widthMax : ""} onChange={this.updateResBoundaries}></input></div>
+          <div><input type="text" className="resBounds" name="res4KUHD,heightMin" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res4KUHD.heightMin : ""} onChange={this.updateResBoundaries}></input></div>
+          <div><input type="text" className="resBounds" name="res4KUHD,heightMax" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res4KUHD.heightMax : ""} onChange={this.updateResBoundaries}></input></div>
+
+
+          <div><p>DCI4K</p></div>
+          <div><input type="text" className="resBounds" name="resDCI4K,widthMin" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.resDCI4K.widthMin : ""} onChange={this.updateResBoundaries}></input></div>
+          <div><input type="text" className="resBounds" name="resDCI4K,widthMax" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.resDCI4K.widthMax : ""} onChange={this.updateResBoundaries}></input></div>
+          <div><input type="text" className="resBounds" name="resDCI4K,heightMin" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.resDCI4K.heightMin : ""} onChange={this.updateResBoundaries}></input></div>
+          <div><input type="text" className="resBounds" name="resDCI4K,heightMax" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.resDCI4K.heightMax : ""} onChange={this.updateResBoundaries}></input></div>
+
+          <div><p>8KUHD</p></div>
+          <div><input type="text" className="resBounds" name="res8KUHD,widthMin" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res8KUHD.widthMin : ""} onChange={this.updateResBoundaries}></input></div>
+          <div><input type="text" className="resBounds" name="res8KUHD,widthMax" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res8KUHD.widthMax : ""} onChange={this.updateResBoundaries}></input></div>
+          <div><input type="text" className="resBounds" name="res8KUHD,heightMin" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res8KUHD.heightMin : ""} onChange={this.updateResBoundaries}></input></div>
+          <div><input type="text" className="resBounds" name="res8KUHD,heightMax" defaultValue={settings != undefined && settings.resBoundaries != undefined ? settings.resBoundaries.res8KUHD.heightMax : ""} onChange={this.updateResBoundaries}></input></div>
+
+
+        </div>
 
       </div>
 
@@ -245,10 +245,16 @@ class App extends Component {
 
       <div className="containerGeneral">
 
-        <br /><br />
-
-
         <div className="tabWrap" >
+
+
+          <center>
+            <header>
+              <h1>Options</h1>
+            </header>
+          </center> <br />
+
+          <div className="libraryContainer">
 
           <div className="optionsDiv">
 
@@ -256,6 +262,7 @@ class App extends Component {
 
 
 
+          </div>
           </div>
 
 

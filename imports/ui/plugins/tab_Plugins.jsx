@@ -234,6 +234,12 @@ class App extends Component {
       <div className="containerGeneral">
         <div className="tabWrap" >
 
+        <center>
+            <header>
+              <h1>Plugins</h1>
+            </header>
+          </center>
+
 
           <Tabs selectedIndex={this.state.selectedTab} onSelect={tabIndex => {
             this.setState({ selectedTab: tabIndex })

@@ -1482,8 +1482,14 @@ table.streamsTable tr {
   border-radius: 5px;
   margin:2em;
   background:#222222;
-  padding:0em 0em 2em 0em;
+  padding:2em 0em;
 
+}
+
+.tabWrapLib{
+  border: 1px solid black;
+  border-radius: 5px;
+  background:#222222;
 }
 
 .tabContainer{
@@ -1547,6 +1553,20 @@ table.streamsTable tr {
 .consoleDivClass p {
     color: white;
     font-family: monospace;
+}
+
+.hire{
+
+  padding:2em 0em;
+
+}
+
+.hireBody{
+
+  padding:2em 20% 2em 20%;
+  text-align: left;
+  background-color: #373737;
+
 }
 
 

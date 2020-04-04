@@ -1535,7 +1535,7 @@ class Folder extends Component {
 
               <input
                 type="text"
-                className="folderPaths2"
+                className="folderPaths"
                 name="containerFilter"
                 defaultValue={this.props.libraryItem.containerFilter}
                 onChange={this.handleChange}

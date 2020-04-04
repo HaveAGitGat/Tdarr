@@ -404,52 +404,59 @@ class App extends Component {
 
 
             <div className="containerGeneral">
+                <div className="tabWrap" >
 
-                <center>
-                    <header>
-                        <h1>Logs</h1>
-                    </header>
-                </center>
+                    <center>
+                        <header>
+                            <h1>Logs</h1>
+                        </header>
+                    </center>
 
-                <p></p>
+                    <p></p>
 
-                <center>
-                    <p>Stored in: {(this.props && this.props.globalSettings[0] ? this.props.globalSettings[0].homePath.replace(/\\/g, '/') : null)}/Tdarr/Logs</p>
-                </center>
-                <center>
-                    <div style={ButtonStyle}>
-                        <p>Verbose logs (large size, debug only):</p>
+                    <div className="libraryContainer">
 
-                        {this.renderVerboseLogsButton()}
+                   
 
+                    <center>
+                        <p>Stored in: {(this.props && this.props.globalSettings[0] ? this.props.globalSettings[0].homePath.replace(/\\/g, '/') : null)}/Tdarr/Logs</p>
+                    </center>
+                    <center>
+                        <div style={ButtonStyle}>
+                            <p>Verbose logs (large size, debug only):</p>
+
+                            {this.renderVerboseLogsButton()}
+
+                        </div>
+                    </center>
+
+                    <p></p>
+                    <p></p>
+
+
+                    <center>
+                        {/* {this.renderLogButtons()} */}
+                    </center>
+
+
+
+                    <p><div id="rawLog">
+                    </div></p>
+
+
+                    <div id="logDiv">
                     </div>
-                </center>
 
-                <p></p>
-                <p></p>
+                    <div className="memGraph" id="memGraphDiv">
+                    </div>
 
+                    <div className="memGraph" id="sysmemGraphDiv">
+                    </div>
 
-                <center>
-                    {/* {this.renderLogButtons()} */}
-                </center>
-
-
-
-                <p><div id="rawLog">
-                </div></p>
-
-
-                <div id="logDiv">
+                    <div className="memGraph" id="syscpuGraphDiv">
+                    </div>
                 </div>
-
-                <div className="memGraph" id="memGraphDiv">
-                </div>
-
-                <div className="memGraph" id="sysmemGraphDiv">
-                </div>
-
-                <div className="memGraph" id="syscpuGraphDiv">
-                </div>
+            </div>
             </div>
 
         );

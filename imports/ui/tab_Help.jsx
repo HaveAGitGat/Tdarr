@@ -84,127 +84,128 @@ export default class App extends Component {
 
 
       <div className="containerGeneral">
-        <center>
-          <header>
-            <h1>Help</h1>
-          </header>
-        </center>
-
-        <br></br>
-        <br></br>
-
-
-
-        <center>
-
-
-          <table>
-            <tbody>
-              <tr>
-                <td>
-                  <div className="iconContainer" onClick={() => window.open("https://discord.gg/GF8X8cq", "_blank")} >
-                    <LocalImage link="/images/icons/D.svg" alt='icon' height="60" width="60" />
-                  </div>
-                </td>
-                <td>
-                  <div className="iconContainer" onClick={() => window.open("https://github.com/HaveAGitGat/Tdarr/wiki", "_blank")}>
-                    <LocalImage link="/images/icons/G.png" alt='icon' height="60" width="60" />
-                  </div>
-                </td>
-                <td>
-                  <div className="iconContainer" onClick={() => window.open("https://www.reddit.com/r/Tdarr", "_blank")}>
-                    <LocalImage link="/images/icons/R.png" alt='icon' height="60" width="60" />
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-
-        </center>
-
-
-        <br></br>
-        <br></br>
-
-
-        <p>unRAID: Enable NVENC: https://forums.unraid.net/topic/77813-plugin-linuxserverio-unraid-nvidia/</p>
-        <p>unRAID: Enable Intel QSV: https://forums.unraid.net/topic/77943-guide-plex-hardware-acceleration-using-intel-quick-sync/ </p>
-
-        <br></br>
-        <br></br>
-
-
-
-
-
-
-
-
-
-        <br />
-
         <div className="tabWrap" >
+          <center>
+            <header>
+              <h1>Help</h1>
+            </header>
+          </center>
 
-          <p>Terminal:</p>
-          <Tabs>
-            <TabList>
-              <Tab><p>FFmpeg</p></Tab>
-              <Tab><p>HandBrake</p></Tab>
-            </TabList>
-
-            <TabPanel><div className="tabContainer" >
-
+          <br></br>
+          <br></br>
 
 
 
-
-              <form onSubmit={(event) => {
-
-                event.preventDefault();
-                this.runHelpCommand("ffmpeg", "ffmpegCommand")
-              }}  >
-
-                <center>
-
-                  <p>FFmpeg</p><input type="text" className="folderPaths" ref="ffmpegCommand" defaultValue={"--help"}></input>
-                  <p></p>
-                  <Button variant="outline-light" onClick={() => this.runHelpCommand("ffmpeg", "ffmpegCommand")} ><span className="buttonTextSize">Run</span></Button>
-                </center>
+          <center>
 
 
+            <table>
+              <tbody>
+                <tr>
+                  <td>
+                    <div className="iconContainer" onClick={() => window.open("https://discord.gg/GF8X8cq", "_blank")} >
+                      <LocalImage link="/images/icons/D.svg" alt='icon' height="60" width="60" />
+                    </div>
+                  </td>
+                  <td>
+                    <div className="iconContainer" onClick={() => window.open("https://github.com/HaveAGitGat/Tdarr/wiki", "_blank")}>
+                      <LocalImage link="/images/icons/G.png" alt='icon' height="60" width="60" />
+                    </div>
+                  </td>
+                  <td>
+                    <div className="iconContainer" onClick={() => window.open("https://www.reddit.com/r/Tdarr", "_blank")}>
+                      <LocalImage link="/images/icons/R.png" alt='icon' height="60" width="60" />
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
 
-              </form>
+
+          </center>
 
 
-              <div id="FFmpegHelp"></div>
-            </div> </TabPanel>
-            <TabPanel><div className="tabContainer" >
+          <br></br>
+          <br></br>
 
 
-              <form onSubmit={() => {
-                event.preventDefault();
-                this.runHelpCommand("handbrake", "handbrakeCommand")
-              }}  >
+          <p>unRAID: Enable NVENC: https://forums.unraid.net/topic/77813-plugin-linuxserverio-unraid-nvidia/</p>
+          <p>unRAID: Enable Intel QSV: https://forums.unraid.net/topic/77943-guide-plex-hardware-acceleration-using-intel-quick-sync/ </p>
 
-                <center>
-                  <p>HandBrakeCLI</p><input type="text" className="folderPaths" ref="handbrakeCommand" defaultValue={"--help"}></input>
-                  <p></p>
-                  <Button variant="outline-light" onClick={() => this.runHelpCommand("handbrake", "handbrakeCommand")} ><span className="buttonTextSize">Run</span></Button>
+          <br></br>
+          <br></br>
 
-                </center>
 
-              </form>
 
-              <div id="HandBrakeHelp"></div>
 
-            </div> </TabPanel>
-          </Tabs>
+
+
+
+
+
+          <br />
+
+          <div className="tabWrapLib" >
+
+            <p>Terminal:</p>
+            <Tabs>
+              <TabList>
+                <Tab><p>FFmpeg</p></Tab>
+                <Tab><p>HandBrake</p></Tab>
+              </TabList>
+
+              <TabPanel><div className="tabContainer" >
+
+
+
+
+
+                <form onSubmit={(event) => {
+
+                  event.preventDefault();
+                  this.runHelpCommand("ffmpeg", "ffmpegCommand")
+                }}  >
+
+                  <center>
+
+                    <p>FFmpeg</p><input type="text" className="folderPaths" ref="ffmpegCommand" defaultValue={"--help"}></input>
+                    <p></p>
+                    <Button variant="outline-light" onClick={() => this.runHelpCommand("ffmpeg", "ffmpegCommand")} ><span className="buttonTextSize">Run</span></Button>
+                  </center>
+
+
+
+                </form>
+
+
+                <div id="FFmpegHelp"></div>
+              </div> </TabPanel>
+              <TabPanel><div className="tabContainer" >
+
+
+                <form onSubmit={() => {
+                  event.preventDefault();
+                  this.runHelpCommand("handbrake", "handbrakeCommand")
+                }}  >
+
+                  <center>
+                    <p>HandBrakeCLI</p><input type="text" className="folderPaths" ref="handbrakeCommand" defaultValue={"--help"}></input>
+                    <p></p>
+                    <Button variant="outline-light" onClick={() => this.runHelpCommand("handbrake", "handbrakeCommand")} ><span className="buttonTextSize">Run</span></Button>
+
+                  </center>
+
+                </form>
+
+                <div id="HandBrakeHelp"></div>
+
+              </div> </TabPanel>
+            </Tabs>
+          </div>
+
+
+
         </div>
-
-
-
-
       </div>
 
     );

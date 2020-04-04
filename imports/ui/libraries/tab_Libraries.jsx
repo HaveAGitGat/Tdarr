@@ -755,7 +755,7 @@ class App extends Component {
           ));
 
         
-    return  <div className="tabWrap" > <Tabs selectedIndex={ this.state.selectedLibrary != undefined ? this.state.selectedLibrary : 0} onSelect={tabIndex => {
+    return  <div className="tabWrapLib" > <Tabs selectedIndex={ this.state.selectedLibrary != undefined ? this.state.selectedLibrary : 0} onSelect={tabIndex => {
 
     this.setState({selectedLibrary: tabIndex})
     }}>
@@ -779,6 +779,7 @@ class App extends Component {
 
 
       <div className="containerGeneral">
+         <div className="tabWrap" >
         <center>
       <header>
           <h1>Libraries</h1>
@@ -898,6 +899,7 @@ class App extends Component {
         
           {this.renderLibraries()}
         
+      </div>
       </div>
     );
   }
