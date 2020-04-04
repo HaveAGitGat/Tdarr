@@ -3427,8 +3427,6 @@ function main() {
 
                           if (plugin.details().Stage == 'Post-processing') {
                             cliLogAdd += plugin.details().id + " - Post-processing\n"
-
-
                             postProcPluginSelected = true
                             var response = plugin.plugin(firstItem, librarySettings, pluginInputs, otherArguments);
                             if (response && response.removeFromDB == true) {
@@ -3443,9 +3441,11 @@ function main() {
                               Meteor.call('modifyFileDB', 'insert', response.file._id, response.file, (error, result) => { })
                               firstItem = { ...firstItem, ...response.file };
                             }
+
+                            cliLogAdd += response.infoLog
                           }
 
-                          cliLogAdd += response.infoLog
+                          
 
                         } catch (err) {
                           console.log(err)
