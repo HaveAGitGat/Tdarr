@@ -388,6 +388,7 @@ process.on('message', (m) => {
 
         errorLogFull[0] = "Command: \r\n"
         errorLogFull[0] += workerCommand + "\r\n"
+        errorLogFull[0] += "Last 200 lines of CLI log:\r\n"
         errorLogFull[1] = ""
 
 
