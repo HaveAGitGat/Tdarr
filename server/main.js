@@ -1163,7 +1163,7 @@ function main() {
               Name: "Read error",
               Type: "Read error",
               Operation: "Read error",
-              Description: err,
+              Description: err.toString(),
               Version: "Read error",
               Link: "Read error",
               source: pluginType,
@@ -1310,7 +1310,7 @@ function main() {
             Name: "Read error",
             Type: "Read error",
             Operation: "Read error",
-            Description: err,
+            Description: err.toString(),
             Version: "Read error",
             Link: "Read error"
           }
