@@ -199,6 +199,20 @@ if (!fs.existsSync(homePath + "/Tdarr/Backups")) {
 
 }
 
+if (!fs.existsSync(homePath + "/Tdarr/Logs")) {
+  fs.mkdirSync(homePath + "/Tdarr/Logs");
+
+}
+
+GlobalSettingsDB.upsert(
+  "globalsettings",
+  {
+    $set: {
+      homePath: homePath,
+    }
+  }
+);
+
 
 //READ  variables from json file
 if (fs.existsSync(homePath + "/Tdarr/Data/env.json")) {
@@ -4174,6 +4188,9 @@ function main() {
       if (message[1] == "consoleMessage") {
 
 
+        console.log("Scanner " + message[0] + ":" + message[2] + "", true)
+
+
         updateConsole("Scanner " + message[0] + ":" + message[2] + "", true);
 
 
@@ -4193,6 +4210,8 @@ function main() {
   }
 
   dbUpdatePush();
+
+
 
 
   function dbUpdatePush() {
@@ -4247,12 +4266,16 @@ function main() {
 
             //  updateConsole(`Adding log to DB: ${logsToAddToDB[i].text}`,true)
 
-            LogDB.upsert(logsToAddToDB[i]._id,
-              {
-                $set: logsToAddToDB[i]
-              }
+            //123
 
-            );
+            // LogDB.upsert(logsToAddToDB[i]._id,
+            //   {
+            //     $set: logsToAddToDB[i]
+            //   }
+
+            // );
+
+            fs.appendFileSync(homePath + "/Tdarr/Logs/log.txt", getDateNow() + ":" + logsToAddToDB[i].text + '\n', 'utf8');
 
 
 
