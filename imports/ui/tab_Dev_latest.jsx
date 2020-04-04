@@ -29,22 +29,20 @@ export default class App extends Component {
 
       <div>
 
-          <p> Beta v1.106 release [20th March 2020]:
+          <p> Beta v1.107 release [4th April 2020]:
             
             <br />Changes:
 
-            <br />-[New] Option to copy community plugins to local
-            <br />-[New] Option to edit source code of local plugins
-            <br />-[New] A simple daily scan will occur if 'Scan on start' is enabled for library (prevents some disk IO issues some people have with the folder watcher)
-            <br />-[New] Option on 'Options' tab to change resolution boundaries
-            <br />-[New] Option to reset all stats or individual library stats
-
-            <br />-[Improvement] Tab state no longer saved for plugin, library and library sub-section tabs
-
-            <br />-[Fix] Text breaking in worker UI
-            <br />-[Fix] Small CPU spikes when idle
-            <br />-[Fix] Button error if restoring from backup
-            <br />-[Fix] Delete local plugin button restored
+            <br />-[New] Small UI changes and help info updates
+            <br />-[New] Folder watch: Option to use file system events (FSE) instead of polling (try if polling causes high CPU). FSE may not work with all drives/shares.
+            <br />-[New] HandBrake and FFmpeg binary paths passed to plugins
+            <br />-[Improvement] Error shown if problem with reading plugin
+            <br />-[Improvement] New files appended with '.partial' while copying to source to prevent app/services scanning temp file
+            <br />-[Improvement] Logs saved to txt file (inside Tdarr/Logs) instead of DB
+            <br />-[Fix] Detect if files are replaced with file of same file name+extension
+            <br />-[Fix] Limit transcode error logs to 200 lines (Sometimes 70,000+ lines which causes DB issues)
+            <br />-[Fix] Info log added for post-processing plugins
+            <br />-[Fix] Prevent corrupt item causing whole backup restore process to stop
             <br />
             <br />
 

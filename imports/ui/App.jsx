@@ -47,7 +47,7 @@ export default AppRouter = () => {
 
   const [currentVersion, setVersion] = React.useState('');
 
-  const [newVersion, setNewVersion] = React.useState(1.106);
+  const [newVersion, setNewVersion] = React.useState(1.107);
 
   
 
