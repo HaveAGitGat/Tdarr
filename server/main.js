@@ -1158,7 +1158,7 @@ function main() {
             plugins.push(obj)
 
           } catch (err) {
-            console.log(err.stack)
+           // console.log(err.stack)
             var obj = {
               Name: "Read error",
               Type: "Read error",
@@ -3027,7 +3027,9 @@ function main() {
 
 
                         var otherArguments = {
-                          homePath: homePath
+                          homePath: homePath,
+                          handbrakePath: getHandBrakePath(),
+                          ffmpegPath: getFFmpegPath()
                         }
 
                         var librarySettings = settings[0]
@@ -3413,7 +3415,9 @@ function main() {
 
 
                           var otherArguments = {
-                            homePath: homePath
+                            homePath: homePath,
+                            handbrakePath: getHandBrakePath(),
+                            ffmpegPath: getFFmpegPath()
                           }
 
                           var librarySettings = settings[0]
@@ -3645,7 +3649,9 @@ function main() {
 
 
             var otherArguments = {
-              homePath: homePath
+              homePath: homePath,
+              handbrakePath: getHandBrakePath(),
+              ffmpegPath: getFFmpegPath()
             }
 
             var plugin = importFresh(pluginLocalPath)
