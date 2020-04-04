@@ -1,13 +1,14 @@
 
 
 
-function updateConsole(watcherID, text) {
+function updateConsole(text) {
 
   var message = [
     watcherID,
     "consoleMessage",
     text,
   ];
+
   process.send(message);
 }
 
@@ -36,7 +37,6 @@ if (fs.existsSync(path.join(process.cwd(), "/npm"))) {
   var rootModules = ''
 
 }
-
 
 var watcherID = process.argv[2]
 var Folder = process.argv[3]
@@ -177,7 +177,7 @@ function scanWatcherFiles() {
 
 
 
-  updateConsole("Folder watcher:" + JSON.stringify(watcherFilesToScan))
+  //updateConsole("Folder watcher:" + JSON.stringify(watcherFilesToScan))
 
 
   Object.keys(watcherFilesToScan).forEach(function (key) {
