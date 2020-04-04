@@ -424,6 +424,7 @@ process.on('message', (m) => {
                 finalFilePathCopy = finalFilePathCopy.split(".")
                 finalFilePathCopy[finalFilePathCopy.length - 2] = finalFilePathCopy[finalFilePathCopy.length - 2] + "-TdarrNew"
                 finalFilePathCopy = finalFilePathCopy.join(".")
+                finalFilePathCopy += ".partial"
 
 
 
@@ -937,6 +938,7 @@ function workerNotEncounteredError() {
 
                 finalFilePathCopy[finalFilePathCopy.length - 2] = finalFilePathCopy[finalFilePathCopy.length - 2] + "-TdarrNew"
                 finalFilePathCopy = finalFilePathCopy.join(".")
+                finalFilePathCopy += ".partial"
 
 
                 fsextra.moveSync(currentDestinationLine, finalFilePathCopy, {
@@ -997,6 +999,7 @@ function workerNotEncounteredError() {
 
                 finalFilePathCopy[finalFilePathCopy.length - 2] = finalFilePathCopy[finalFilePathCopy.length - 2] + "-TdarrNew"
                 finalFilePathCopy = finalFilePathCopy.join(".")
+                finalFilePathCopy += ".partial"
 
 
                 fsextra.moveSync(currentDestinationLine, finalFilePathCopy, {
