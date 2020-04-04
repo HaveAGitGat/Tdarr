@@ -3445,6 +3445,8 @@ function main() {
                             }
                           }
 
+                          cliLogAdd += response.infoLog
+
                         } catch (err) {
                           console.log(err)
                           console.log('final post processing failed' + i)
