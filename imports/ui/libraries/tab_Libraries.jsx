@@ -78,6 +78,7 @@ class App extends Component {
       containerFilter:"mkv,mp4,mov,m4v,mpg,mpeg,avi,flv,webm,wmv,vob,evo,iso,m2ts,ts",
       createdAt: new Date(),
       folderWatching:false,
+      useFsEvents:false,
       processLibrary:true,
       scanOnStart:true,
       scanButtons:true,
@@ -754,7 +755,7 @@ class App extends Component {
           ));
 
         
-    return  <div className="tabWrap" > <Tabs selectedIndex={ this.state.selectedLibrary != undefined ? this.state.selectedLibrary : 0} onSelect={tabIndex => {
+    return  <div className="tabWrapLib" > <Tabs selectedIndex={ this.state.selectedLibrary != undefined ? this.state.selectedLibrary : 0} onSelect={tabIndex => {
 
     this.setState({selectedLibrary: tabIndex})
     }}>
@@ -778,6 +779,7 @@ class App extends Component {
 
 
       <div className="containerGeneral">
+         <div className="tabWrap" >
         <center>
       <header>
           <h1>Libraries</h1>
@@ -809,12 +811,14 @@ class App extends Component {
 <LocalImage link="/images/example_folder_browser.png"/>
 
 <p>Make sure to set a transcode cache folder</p>
+
 <p></p>
 
 <p>'Scan (Find new)' does 2 things - it removes files from the database which don't exist anymore, and adds newly detected files. Turn on 'Folder watch' to automate this process. New files will be scanned for every 30 seconds or so.</p>
 <p>All new files will be added to both the transcode queues and the health check queues. If you're not interested in using one or the other, then just make sure not to fire up any workers for that respective queue.</p>
 
 <p></p>
+<p>If the 'Scan on start' option is turned on, Tdarr will scan the library on start-up and then scan the library daily.</p>
 <p></p>
 <p></p>
 <p>In the library transcode settings, you can either use plugins or manually set either video file or audio file transcode settings.</p>
@@ -854,7 +858,7 @@ class App extends Component {
 <p>-Z "Fast 1080p30" -e nvenc_h265 </p>
 <p>-Z "Very Fast 1080p30" --all-subtitles --all-audio</p>       
 <p>-Z "Very Fast 480p30"</p>
-<p>--preset-import-file "C:\Users\HaveAGitGat\Desktop\testpreset.json" -Z "My Preset"</p>
+<p>--preset-import-file "C:/Users/HaveAGitGat/Desktop/testpreset.json" -Z "My Preset"</p>
 
 <p>You can learn more about HandBrake presets here:</p>
 
@@ -895,6 +899,7 @@ class App extends Component {
         
           {this.renderLibraries()}
         
+      </div>
       </div>
     );
   }

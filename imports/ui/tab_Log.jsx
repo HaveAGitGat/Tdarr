@@ -25,7 +25,7 @@ const borderRadiusStyle = { borderRadius: 2 }
 
 var ButtonStyle = {
     display: 'inline-block',
-  }
+}
 
 
 class App extends Component {
@@ -37,7 +37,7 @@ class App extends Component {
 
 
 
-    
+
 
     clearLogDB() {
 
@@ -46,12 +46,12 @@ class App extends Component {
         if (confirm('Are you sure you want to delete the logs?')) {
 
             GlobalSettingsDB.upsert('globalsettings',
-            {
-                $set: {
-                    logsLoading: true,
+                {
+                    $set: {
+                        logsLoading: true,
+                    }
                 }
-            }
-        );
+            );
 
             Meteor.call('clearLogDB', (error, result) => {
 
@@ -84,13 +84,13 @@ class App extends Component {
         Meteor.call('getLog', (error, result) => {
             render('Loading...', document.getElementById('rawLog'));
 
-            try{
+            try {
 
-            result = JSON.stringify(result)
-            //console.log(result)
-            render( <div className="libraryContainer" >{result}</div>, document.getElementById('rawLog'));
+                result = JSON.stringify(result)
+                //console.log(result)
+                render(<div className="libraryContainer" >{result}</div>, document.getElementById('rawLog'));
 
-        }catch(err){}
+            } catch (err) { }
 
 
 
@@ -130,206 +130,206 @@ class App extends Component {
             // });
 
 
-          
+
 
             var data = result
 
-try{
+            try {
 
-            const columns = [{
-                id: 'createdAt',
-                Header: () => (
-                    <div className="pluginTableHeader">  
-                    <p>Date</p>
-                    </div>
-                  ),
-                width: 200,
-        
-                accessor: d => dateFormat(d.createdAt, "isoDateTime"),
-                getProps: (state, rowInfo, column) => {
-                    return {
-                      style: {
-                        color:"#e1e1e1",
-                        fontSize  :"14px",
-                      },
+                const columns = [{
+                    id: 'createdAt',
+                    Header: () => (
+                        <div className="pluginTableHeader">
+                            <p>Date</p>
+                        </div>
+                    ),
+                    width: 200,
+
+                    accessor: d => dateFormat(d.createdAt, "isoDateTime"),
+                    getProps: (state, rowInfo, column) => {
+                        return {
+                            style: {
+                                color: "#e1e1e1",
+                                fontSize: "14px",
+                            },
+                        }
                     }
-                  }
 
 
-            }, {
-                //id
-                Header: () => (
-                    <div className="pluginTableHeader">  
-                    <p>Text</p>
-                    </div>
-                  ),
-                accessor: 'text',
-                getProps: (state, rowInfo, column) => {
-                    return {
-                      style: {
-                        color:"#e1e1e1",
-                        fontSize  :"14px",
-                      },
+                }, {
+                    //id
+                    Header: () => (
+                        <div className="pluginTableHeader">
+                            <p>Text</p>
+                        </div>
+                    ),
+                    accessor: 'text',
+                    getProps: (state, rowInfo, column) => {
+                        return {
+                            style: {
+                                color: "#e1e1e1",
+                                fontSize: "14px",
+                            },
+                        }
                     }
-                  }
-            }
-          
-
-
-            ]
-
-
-            function filterMethod(filter, row){
-                if(row[filter.id].includes(filter.value)){
-                    return true
-                }
-            }
-
-
-
-
-            render(<div className="libraryContainer" >
-                <ReactTable
-                    data={data}
-                    columns={columns}
-                    defaultPageSize={1000}
-                    pageSizeOptions={[100, 1000, 10000]}
-                    filterable={true}
-                    defaultFilterMethod ={(filter, row) => filterMethod(filter, row)}
-                />
-            </div>, document.getElementById('logDiv'));
-
-
-            // const data = [
-            //     {
-            //       name: 'Page A', uv: 4000, pv: 2400, amt: 2400,
-            //     },
-            //     {
-            //       name: 'Page B', uv: 3000, pv: 1398, amt: 2210,
-            //     },
-
-            //   ];
-
-
-            //Old graph code
-
-            var data = result.sort(function (a, b) {
-                return new Date(a.createdAt) - new Date(b.createdAt);
-            });
-
-
-            while (data.length > 100) {
-
-                data = data.filter((e, i) => i % 2)
-
-            }
-
-            var data1 = data.map((item, i) => (
-
-                {
-
-                    date: dateFormat(item.createdAt, "isoDateTime"),
-                    rss: item.nodeMem.rss / 1000000,
-                    heapTotal: item.nodeMem.heapTotal / 1000000,
-                    heapUsed: item.nodeMem.heapUsed / 1000000
                 }
 
-            ));
 
-            //   static jsfiddleUrl = 'https://jsfiddle.net/alidingling/xqjtetw0/';
 
-            render(
-                <ResponsiveContainer width="100%" height="100%">
-                    <LineChart
-                        data={data1}
-                        margin={{
-                            top: 5, right: 30, left: 20, bottom: 5,
-                        }}
-                    >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="date" />
-                        <YAxis />
-                        <Tooltip />
-                        <Label />
-                        <Legend />
-                        <Brush dataKey='date' height={30} stroke="#8884d8" />
-                        <Line type="monotone" dataKey="rss" stroke="#8884d8" />
-                        <Line type="monotone" dataKey="heapTotal" stroke="#82ca9d" />
-                        <Line type="monotone" dataKey="heapUsed" stroke="#00b5c9" />
+                ]
 
-                    </LineChart></ResponsiveContainer>, document.getElementById('memGraphDiv'));
+
+                function filterMethod(filter, row) {
+                    if (row[filter.id].includes(filter.value)) {
+                        return true
+                    }
+                }
 
 
 
-            var data2 = data.map((item, i) => (
 
-                {
-                    date: dateFormat(item.createdAt, "isoDateTime"),
-                    systemUsedMem: item.systemUsedMem,
-                    systemFreeMem: item.systemFreeMem,
+                render(<div className="libraryContainer" >
+                    <ReactTable
+                        data={data}
+                        columns={columns}
+                        defaultPageSize={1000}
+                        pageSizeOptions={[100, 1000, 10000]}
+                        filterable={true}
+                        defaultFilterMethod={(filter, row) => filterMethod(filter, row)}
+                    />
+                </div>, document.getElementById('logDiv'));
+
+
+                // const data = [
+                //     {
+                //       name: 'Page A', uv: 4000, pv: 2400, amt: 2400,
+                //     },
+                //     {
+                //       name: 'Page B', uv: 3000, pv: 1398, amt: 2210,
+                //     },
+
+                //   ];
+
+
+                //Old graph code
+
+                var data = result.sort(function (a, b) {
+                    return new Date(a.createdAt) - new Date(b.createdAt);
+                });
+
+
+                while (data.length > 100) {
+
+                    data = data.filter((e, i) => i % 2)
 
                 }
 
-            ));
+                var data1 = data.map((item, i) => (
 
-            //   static jsfiddleUrl = 'https://jsfiddle.net/alidingling/xqjtetw0/';
+                    {
 
-            render(
-                <ResponsiveContainer width="100%" height="100%">
-                    <LineChart
-                        data={data2}
-                        margin={{
-                            top: 5, right: 30, left: 20, bottom: 5,
-                        }}
-                    >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="date" />
-                        <YAxis />
-                        <Tooltip />
-                        <Label />
-                        <Legend />
-                        <Brush dataKey='date' height={30} stroke="#8884d8" />
-                        <Line type="monotone" dataKey="systemUsedMem" stroke="#8884d8" />
-                        <Line type="monotone" dataKey="systemFreeMem" stroke="#82ca9d" />
+                        date: dateFormat(item.createdAt, "isoDateTime"),
+                        rss: item.nodeMem.rss / 1000000,
+                        heapTotal: item.nodeMem.heapTotal / 1000000,
+                        heapUsed: item.nodeMem.heapUsed / 1000000
+                    }
 
+                ));
 
-                    </LineChart></ResponsiveContainer>, document.getElementById('sysmemGraphDiv'));
+                //   static jsfiddleUrl = 'https://jsfiddle.net/alidingling/xqjtetw0/';
 
+                render(
+                    <ResponsiveContainer width="100%" height="100%">
+                        <LineChart
+                            data={data1}
+                            margin={{
+                                top: 5, right: 30, left: 20, bottom: 5,
+                            }}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="date" />
+                            <YAxis />
+                            <Tooltip />
+                            <Label />
+                            <Legend />
+                            <Brush dataKey='date' height={30} stroke="#8884d8" />
+                            <Line type="monotone" dataKey="rss" stroke="#8884d8" />
+                            <Line type="monotone" dataKey="heapTotal" stroke="#82ca9d" />
+                            <Line type="monotone" dataKey="heapUsed" stroke="#00b5c9" />
 
-            var data3 = data.map((item, i) => (
-
-                {
-                    date: dateFormat(item.createdAt, "isoDateTime"),
-                    systemCPUPercentage: item.systemCPUPercentage,
-
-                }
-
-            ));
-
-            //   static jsfiddleUrl = 'https://jsfiddle.net/alidingling/xqjtetw0/';
-
-            render(
-                <ResponsiveContainer width="100%" height="100%">
-                    <LineChart
-                        data={data3}
-                        margin={{
-                            top: 5, right: 30, left: 20, bottom: 5,
-                        }}
-                    >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="date" />
-                        <YAxis />
-                        <Tooltip />
-                        <Label />
-                        <Legend />
-                        <Brush dataKey='date' height={30} stroke="#8884d8" />
-                        <Line type="monotone" dataKey="systemCPUPercentage" stroke="#8884d8" />
+                        </LineChart></ResponsiveContainer>, document.getElementById('memGraphDiv'));
 
 
-                    </LineChart></ResponsiveContainer>, document.getElementById('syscpuGraphDiv'));
+
+                var data2 = data.map((item, i) => (
+
+                    {
+                        date: dateFormat(item.createdAt, "isoDateTime"),
+                        systemUsedMem: item.systemUsedMem,
+                        systemFreeMem: item.systemFreeMem,
+
+                    }
+
+                ));
+
+                //   static jsfiddleUrl = 'https://jsfiddle.net/alidingling/xqjtetw0/';
+
+                render(
+                    <ResponsiveContainer width="100%" height="100%">
+                        <LineChart
+                            data={data2}
+                            margin={{
+                                top: 5, right: 30, left: 20, bottom: 5,
+                            }}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="date" />
+                            <YAxis />
+                            <Tooltip />
+                            <Label />
+                            <Legend />
+                            <Brush dataKey='date' height={30} stroke="#8884d8" />
+                            <Line type="monotone" dataKey="systemUsedMem" stroke="#8884d8" />
+                            <Line type="monotone" dataKey="systemFreeMem" stroke="#82ca9d" />
 
 
-}catch(err){}
+                        </LineChart></ResponsiveContainer>, document.getElementById('sysmemGraphDiv'));
+
+
+                var data3 = data.map((item, i) => (
+
+                    {
+                        date: dateFormat(item.createdAt, "isoDateTime"),
+                        systemCPUPercentage: item.systemCPUPercentage,
+
+                    }
+
+                ));
+
+                //   static jsfiddleUrl = 'https://jsfiddle.net/alidingling/xqjtetw0/';
+
+                render(
+                    <ResponsiveContainer width="100%" height="100%">
+                        <LineChart
+                            data={data3}
+                            margin={{
+                                top: 5, right: 30, left: 20, bottom: 5,
+                            }}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="date" />
+                            <YAxis />
+                            <Tooltip />
+                            <Label />
+                            <Legend />
+                            <Brush dataKey='date' height={30} stroke="#8884d8" />
+                            <Line type="monotone" dataKey="systemCPUPercentage" stroke="#8884d8" />
+
+
+                        </LineChart></ResponsiveContainer>, document.getElementById('syscpuGraphDiv'));
+
+
+            } catch (err) { }
 
 
 
@@ -345,21 +345,21 @@ try{
         return this.props.globalSettings.map((item, i) => (
 
             <ToggleButton
-            thumbStyle={borderRadiusStyle}
-            trackStyle={borderRadiusStyle}
-             value={item.verboseLogs}  style={ButtonStyle} onToggle={() => {
+                thumbStyle={borderRadiusStyle}
+                trackStyle={borderRadiusStyle}
+                value={item.verboseLogs} style={ButtonStyle} onToggle={() => {
 
-                GlobalSettingsDB.upsert('globalsettings',
-                    {
-                        $set: {
-                            verboseLogs: !item.verboseLogs,
+                    GlobalSettingsDB.upsert('globalsettings',
+                        {
+                            $set: {
+                                verboseLogs: !item.verboseLogs,
+                            }
                         }
-                    }
 
-                );
+                    );
 
-            }
-            } />
+                }
+                } />
         ));
     }
 
@@ -404,50 +404,59 @@ try{
 
 
             <div className="containerGeneral">
+                <div className="tabWrap" >
 
-<center>
-                <header>
-                    <h1>Logs</h1>
-                </header>
-                 </center>
+                    <center>
+                        <header>
+                            <h1>Logs</h1>
+                        </header>
+                    </center>
 
-                <p></p>
-                <p></p>
+                    <p></p>
 
-                <center>
-               <div  style={ButtonStyle}>
-               <p>Verbose logs (large size, debug only):</p>
+                    <div className="libraryContainer">
 
-{this.renderVerboseLogsButton()}
+                   
 
-               </div>
-                </center>
-   
-                <p></p>
-                <p></p>
+                    <center>
+                        <p>Stored in: {(this.props && this.props.globalSettings[0] ? this.props.globalSettings[0].homePath.replace(/\\/g, '/') : null)}/Tdarr/Logs</p>
+                    </center>
+                    <center>
+                        <div style={ButtonStyle}>
+                            <p>Verbose logs (large size, debug only):</p>
+
+                            {this.renderVerboseLogsButton()}
+
+                        </div>
+                    </center>
+
+                    <p></p>
+                    <p></p>
 
 
-                <center>
-                {this.renderLogButtons()}
-                </center>
+                    <center>
+                        {/* {this.renderLogButtons()} */}
+                    </center>
 
 
-               
-                <p><div id="rawLog">
-                </div></p>
 
-              
-                <div id="logDiv">
+                    <p><div id="rawLog">
+                    </div></p>
+
+
+                    <div id="logDiv">
+                    </div>
+
+                    <div className="memGraph" id="memGraphDiv">
+                    </div>
+
+                    <div className="memGraph" id="sysmemGraphDiv">
+                    </div>
+
+                    <div className="memGraph" id="syscpuGraphDiv">
+                    </div>
                 </div>
-                
-                <div className="memGraph" id="memGraphDiv">
-                </div>
-
-                <div className="memGraph" id="sysmemGraphDiv">
-                </div>
-
-                <div className="memGraph" id="syscpuGraphDiv">
-                </div>
+            </div>
             </div>
 
         );

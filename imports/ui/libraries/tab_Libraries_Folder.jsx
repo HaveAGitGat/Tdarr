@@ -26,7 +26,7 @@ var libButtonStyle = {
 
 
 var tabCol1 = {
-  width:'200px',
+  width: '200px',
 };
 
 const override = css``;
@@ -95,7 +95,7 @@ class Folder extends Component {
 
   componentWillUnmount() {
     clearInterval(this.interval2);
-}
+  }
 
 
 
@@ -415,31 +415,31 @@ class Folder extends Component {
 
         <div className="pluginStackGrid">
 
-        <div className="pluginStackCol1"><p>Source</p></div>
+          <div className="pluginStackCol1"><p>Source</p></div>
 
-        <div className="pluginStackCol1"><p>Enabled</p></div>
+          <div className="pluginStackCol1"><p>Enabled</p></div>
 
-        <div className="pluginStackCol1"><p>id/Name</p></div>
-        
-        <div className="pluginStackCol1"><p>Stage</p></div>
+          <div className="pluginStackCol1"><p>id/Name</p></div>
 
-        <div className="pluginStackCol1"><p>Type</p></div>
+          <div className="pluginStackCol1"><p>Stage</p></div>
 
-        <div className="pluginStackCol1"><p>Operation</p></div>
+          <div className="pluginStackCol1"><p>Type</p></div>
 
-        <div className="pluginStackCol1"><p>Description</p></div>
+          <div className="pluginStackCol1"><p>Operation</p></div>
 
-        <div className="pluginStackCol1"><p>Inputs</p></div>
+          <div className="pluginStackCol1"><p>Description</p></div>
 
-        <div className="pluginStackCol1"><p>Priority</p></div>
+          <div className="pluginStackCol1"><p>Inputs</p></div>
 
-        <div className="pluginStackCol1"><p>Remove</p></div>
+          <div className="pluginStackCol1"><p>Priority</p></div>
 
-        {stack}
+          <div className="pluginStackCol1"><p>Remove</p></div>
+
+          {stack}
 
 
 
-        </div>,document.getElementById(this.props.libraryItem._id + 'PluginStack')
+        </div>, document.getElementById(this.props.libraryItem._id + 'PluginStack')
       );
 
     } catch (err) { console.log(err) }
@@ -874,7 +874,7 @@ class Folder extends Component {
 
                     }>Reset stats: This library</Dropdown.Item>
 
-<Dropdown.Item
+                  <Dropdown.Item
                     style={{ color: '#bb86fc', fontSize: '14px' }}
                     onClick={() => {
                       if (
@@ -1029,7 +1029,7 @@ class Folder extends Component {
           <div className="libraryGrid-itemLeft">
             <p
               onClick={() => {
-                this.setState({navItemSelected: 'navSourceFolder'})
+                this.setState({ navItemSelected: 'navSourceFolder' })
               }}
               style={{ cursor: 'pointer' }}
               className={
@@ -1042,7 +1042,7 @@ class Folder extends Component {
             </p>
             <p
               onClick={() => {
-                this.setState({navItemSelected: 'navCacheFolder'})
+                this.setState({ navItemSelected: 'navCacheFolder' })
               }}
               style={{ cursor: 'pointer' }}
               className={
@@ -1055,7 +1055,7 @@ class Folder extends Component {
             </p>
             <p
               onClick={() => {
-                this.setState({navItemSelected: 'navOutputFolder'})
+                this.setState({ navItemSelected: 'navOutputFolder' })
               }}
               style={{ cursor: 'pointer' }}
               className={
@@ -1068,7 +1068,7 @@ class Folder extends Component {
             </p>
             <p
               onClick={() => {
-                this.setState({navItemSelected: 'navContainers'})
+                this.setState({ navItemSelected: 'navContainers' })
               }}
               style={{ cursor: 'pointer' }}
               className={
@@ -1081,7 +1081,7 @@ class Folder extends Component {
             </p>
             <p
               onClick={() => {
-                this.setState({navItemSelected: 'navTranscode'})
+                this.setState({ navItemSelected: 'navTranscode' })
               }}
               style={{ cursor: 'pointer' }}
               className={
@@ -1094,7 +1094,7 @@ class Folder extends Component {
             </p>
             <p
               onClick={() => {
-                this.setState({navItemSelected: 'navHealthCheck'})
+                this.setState({ navItemSelected: 'navHealthCheck' })
               }}
               style={{ cursor: 'pointer' }}
               className={
@@ -1107,7 +1107,7 @@ class Folder extends Component {
             </p>
             <p
               onClick={() => {
-                this.setState({navItemSelected: 'navSchedule'})
+                this.setState({ navItemSelected: 'navSchedule' })
               }}
               style={{ cursor: 'pointer' }}
               className={
@@ -1158,6 +1158,8 @@ class Folder extends Component {
                     />
                   </div>
                 </div>
+
+
 
                 <div>
                   <span className="buttonTextSize mr-2">Process Library:</span>
@@ -1293,6 +1295,28 @@ class Folder extends Component {
                 defaultValue={this.props.libraryItem.folderWatchScanInterval}
                 onChange={this.handleChange}
               ></input>
+
+
+              <p></p>
+
+              <div>
+                <span className="buttonTextSize mr-2">Folder watch: Use file system events (try if folder watch polling causes high CPU/disk IO):</span>
+                <div style={libButtonStyle}>
+                  <ToggleButton
+                    thumbStyle={borderRadiusStyle}
+                    trackStyle={borderRadiusStyle}
+                    name="useFsEvents"
+                    value={!!this.props.libraryItem.useFsEvents || false}
+                    onToggle={() => {
+                      SettingsDB.upsert(this.props.libraryItem._id, {
+                        $set: {
+                          useFsEvents: !this.props.libraryItem.useFsEvents,
+                        },
+                      });
+                    }}
+                  />
+                </div>
+              </div>
 
 
 
@@ -1511,7 +1535,7 @@ class Folder extends Component {
 
               <input
                 type="text"
-                className="folderPaths2"
+                className="folderPaths"
                 name="containerFilter"
                 defaultValue={this.props.libraryItem.containerFilter}
                 onChange={this.handleChange}
@@ -1741,7 +1765,7 @@ class Folder extends Component {
 
                 <center>
                   <p>
-                    See the 'Plugins' tab guide for how the plugin stack works and for creating plugins.<b>It is best practice to put video transcode plugins at the top of your stack.</b>
+                    See the 'Plugins' tab guide for how the plugin stack works and for creating plugins.
                   </p>
                 </center>
 
@@ -2073,8 +2097,8 @@ class Folder extends Component {
               <br />
               <br />
 
-             
-                {this.renderScheduleBlocks()}
+
+              {this.renderScheduleBlocks()}
             </div>
           </div>
         </div>

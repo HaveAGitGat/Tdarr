@@ -199,6 +199,20 @@ if (!fs.existsSync(homePath + "/Tdarr/Backups")) {
 
 }
 
+if (!fs.existsSync(homePath + "/Tdarr/Logs")) {
+  fs.mkdirSync(homePath + "/Tdarr/Logs");
+
+}
+
+GlobalSettingsDB.upsert(
+  "globalsettings",
+  {
+    $set: {
+      homePath: homePath,
+    }
+  }
+);
+
 
 //READ  variables from json file
 if (fs.existsSync(homePath + "/Tdarr/Data/env.json")) {
@@ -432,7 +446,7 @@ Meteor.methods({
 
     ]
 
-    if (fs.existsSync(homePath + "/Tdarr/Data/env.json")) {
+    if (fs.existsSync(homePath + `/Tdarr/Backups/${name}-unzip`)) {
 
       try {
         fsextra.removeSync(homePath + `/Tdarr/Backups/${name}-unzip`)
@@ -462,58 +476,63 @@ Meteor.methods({
           backupStatus[0].status = "Complete"
 
           for (var i = 0; i < collections.length; i++) {
+  
 
-            var count = 0
+              var count = 0
 
-            backupStatus.push({ name: collections[i][1] })
-            backupStatus[i + 1].status = "Cleaning existing DB"
+              backupStatus.push({ name: collections[i][1] })
+              backupStatus[i + 1].status = "Cleaning existing DB"
 
 
-            collections[i][0].remove({});
+              collections[i][0].remove({});
 
-            backupStatus[i + 1].status = "Existing DB cleaned"
+              backupStatus[i + 1].status = "Existing DB cleaned"
 
-            try {
+              try {
 
-              var dbItems = fs.readFileSync(homePath + `/Tdarr/Backups/${file}-unzip/${collections[i][1]}.txt`, dbItems, 'utf8');
+                var dbItems = fs.readFileSync(homePath + `/Tdarr/Backups/${file}-unzip/${collections[i][1]}.txt`, dbItems, 'utf8');
 
-              backupStatus[i + 1].status = "Reading backup file"
+                backupStatus[i + 1].status = "Reading backup file"
 
-              dbItems = JSON.parse(dbItems)
+                dbItems = JSON.parse(dbItems)
 
-              if (dbItems.length > 0) {
+                if (dbItems.length > 0) {
 
-                for (var j = 0; j < dbItems.length; j++) {
+                  for (var j = 0; j < dbItems.length; j++) {
 
-                  count++
+                    count++
 
-                  backupStatus[i + 1].status = "Restoring:" + count
+                    backupStatus[i + 1].status = "Restoring:" + count + "/" + dbItems.length
 
-                  // backupStatus = "Restoring: "+ count
+                    if (dbItems[j]._id) {
 
-                  if (dbItems[j]._id) {
+                      var id = dbItems[j]._id
 
-                    var id = dbItems[j]._id
-
-                    collections[i][0].upsert(id,
-                      {
-                        $set: dbItems[j]
+                      try {
+                        collections[i][0].upsert(id,
+                          {
+                            $set: dbItems[j]
+                          }
+                        );
+                      } catch (err) {
+                        console.log("Error restoring item:")
+                        console.log(j)
+                        console.log(dbItems[j]._id)
                       }
-                    );
 
+                    }
                   }
+
+                } else {
+                  backupStatus[i + 1].status = "No items to restore!"
                 }
 
-              } else {
-                backupStatus[i + 1].status = "No items to restore!"
+              } catch (err) {
+                console.log(err)
+                backupStatus[i + 1].status = "Error:" + JSON.stringify(err)
               }
 
-            } catch (err) {
-              console.log(err)
-              backupStatus[i + 1].status = "Error:" + JSON.stringify(err)
-            }
-
-
+            
           }
 
 
@@ -1151,12 +1170,12 @@ function main() {
             plugins.push(obj)
 
           } catch (err) {
-            console.log(err.stack)
+           // console.log(err.stack)
             var obj = {
               Name: "Read error",
               Type: "Read error",
               Operation: "Read error",
-              Description: 'Read error',
+              Description: err.toString(),
               Version: "Read error",
               Link: "Read error",
               source: pluginType,
@@ -1303,7 +1322,7 @@ function main() {
             Name: "Read error",
             Type: "Read error",
             Operation: "Read error",
-            Description: 'Read error',
+            Description: err.toString(),
             Version: "Read error",
             Link: "Read error"
           }
@@ -2211,39 +2230,13 @@ function main() {
 
 
 
-      if (process.platform == 'win32' && mode == "handbrake") {
-        workerCommand = handBrakeCLIPath + " " + text
-      } else if (process.platform == 'win32' && mode == "ffmpeg") {
-        workerCommand = ffmpegPath + " " + text
-      }
-
-      if (process.platform == 'linux' && mode == "handbrake") {
-        workerCommand = "HandBrakeCLI" + " " + text
-      } else if (process.platform == 'linux' && mode == "ffmpeg") {
-
-        workerCommand = ffmpegPathLinux42 + " " + text
-
-      }
-
-      if (process.platform == 'darwin' && mode == "handbrake") {
-        workerCommand = "/usr/local/bin/HandBrakeCLI" + " " + text
-      } else if (process.platform == 'darwin' && mode == "ffmpeg") {
-        workerCommand = ffmpegPath + " " + text
-      }
-
-      var ffmpegNVENCBinary = (GlobalSettingsDB.find({}, {}).fetch())[0].ffmpegNVENCBinary
-
-      if (ffmpegNVENCBinary == true) {
-        if (process.platform == 'linux' && mode == "handbrake") {
-          // workerCommand = "/usr/local/bin/HandBrakeCLI " + text
-        } else if (process.platform == 'linux' && mode == "ffmpeg") {
-          workerCommand = ffmpegPathLinux345 + " " + text
-        }
+      if (mode == "handbrake") {
+        workerCommand = getHandBrakePath() + " " + text
+      } else if (mode == "ffmpeg") {
+        workerCommand = getFFmpegPath() + " " + text
       }
 
       console.log(workerCommand)
-
-
 
       fs.writeFileSync(homePath + "/Tdarr/Data/" + mode + ".txt", "", 'utf8');
 
@@ -2311,15 +2304,9 @@ function main() {
 
 
       if (process.platform == 'win32') {
-        workerCommand = ffmpegPath + " " + preset1 + " -i \"" + inputFile + "\" " + preset2 + " \"" + outputFile + "\" "
-      }
-
-      if (process.platform == 'linux') {
-        workerCommand = ffmpegPathLinux42 + " " + preset1 + " -i '" + inputFileUnix + "' " + preset2 + " '" + outputFileUnix + "' "
-      }
-
-      if (process.platform == 'darwin') {
-        workerCommand = ffmpegPathUnix + " " + preset1 + " -i '" + inputFileUnix + "' " + preset2 + " '" + outputFileUnix + "' "
+        workerCommand = getFFmpegPath() + " " + preset1 + " -i \"" + inputFile + "\" " + preset2 + " \"" + outputFile + "\" "
+      }else{
+        workerCommand = getFFmpegPath() + " " + preset1 + " -i '" + inputFileUnix + "' " + preset2 + " '" + outputFileUnix + "' "
       }
 
       var shellWorker = shell.exec(workerCommand, function (code, stdout, stderr, stdin) {
@@ -2446,6 +2433,54 @@ function main() {
 
   ffmpegPathLinux345 = ffmpegPathLinux345.replace(/'/g, '\'\"\'\"\'');
   ffmpegPathLinux42 = ffmpegPathLinux42.replace(/'/g, '\'\"\'\"\'');
+
+
+  function getHandBrakePath() {
+
+    var path
+
+    if (process.platform == 'win32') {
+      path = handBrakeCLIPath
+    }
+    if (process.platform == 'linux') {
+      path = "HandBrakeCLI"
+    }
+
+    if (process.platform == 'darwin') {
+      path = "/usr/local/bin/HandBrakeCLI"
+    }
+
+    return path
+  }
+
+  function getFFmpegPath() {
+
+    var path
+
+    if (process.platform == 'win32') {
+      path = ffmpegPath
+    }
+
+    if (process.platform == 'linux') {
+      path = ffmpegPathLinux42
+    }
+
+    if (process.platform == 'darwin') {
+      path = ffmpegPath
+    }
+
+
+    var ffmpegNVENCBinary = (GlobalSettingsDB.find({}, {}).fetch())[0].ffmpegNVENCBinary
+
+    if (ffmpegNVENCBinary == true) {
+      if (process.platform == 'linux') {
+        path = ffmpegPathLinux345
+      }
+    }
+
+
+    return path
+  }
 
 
   var shell = require('shelljs');
@@ -3004,7 +3039,9 @@ function main() {
 
 
                         var otherArguments = {
-                          homePath: homePath
+                          homePath: homePath,
+                          handbrakePath: getHandBrakePath(),
+                          ffmpegPath: getFFmpegPath()
                         }
 
                         var librarySettings = settings[0]
@@ -3390,7 +3427,9 @@ function main() {
 
 
                           var otherArguments = {
-                            homePath: homePath
+                            homePath: homePath,
+                            handbrakePath: getHandBrakePath(),
+                            ffmpegPath: getFFmpegPath()
                           }
 
                           var librarySettings = settings[0]
@@ -3400,8 +3439,6 @@ function main() {
 
                           if (plugin.details().Stage == 'Post-processing') {
                             cliLogAdd += plugin.details().id + " - Post-processing\n"
-
-
                             postProcPluginSelected = true
                             var response = plugin.plugin(firstItem, librarySettings, pluginInputs, otherArguments);
                             if (response && response.removeFromDB == true) {
@@ -3416,7 +3453,11 @@ function main() {
                               Meteor.call('modifyFileDB', 'insert', response.file._id, response.file, (error, result) => { })
                               firstItem = { ...firstItem, ...response.file };
                             }
+
+                            cliLogAdd += response.infoLog
                           }
+
+                          
 
                         } catch (err) {
                           console.log(err)
@@ -3622,7 +3663,9 @@ function main() {
 
 
             var otherArguments = {
-              homePath: homePath
+              homePath: homePath,
+              handbrakePath: getHandBrakePath(),
+              ffmpegPath: getFFmpegPath()
             }
 
             var plugin = importFresh(pluginLocalPath)
@@ -4062,7 +4105,9 @@ function main() {
     var watcherID = DB_id
 
 
-    var folderWatchScanInterval = SettingsDB.find({ _id: DB_id }, { sort: { createdAt: 1 } }).fetch()[0].folderWatchScanInterval
+    var librarySettings = SettingsDB.find({ _id: DB_id }, { sort: { createdAt: 1 } }).fetch()[0]
+    var folderWatchScanInterval = librarySettings.folderWatchScanInterval
+    var useFsEvents = librarySettings.useFsEvents
     console.log(folderWatchScanInterval)
 
     var watcherPath = "assets/app/folderWatcher.js"
@@ -4072,7 +4117,8 @@ function main() {
       watcherID,
       Folder,
       DB_id,
-      folderWatchScanInterval
+      folderWatchScanInterval,
+      useFsEvents
 
     ]
 
@@ -4140,6 +4186,9 @@ function main() {
       if (message[1] == "consoleMessage") {
 
 
+        console.log("Scanner " + message[0] + ":" + message[2] + "", true)
+
+
         updateConsole("Scanner " + message[0] + ":" + message[2] + "", true);
 
 
@@ -4159,6 +4208,8 @@ function main() {
   }
 
   dbUpdatePush();
+
+
 
 
   function dbUpdatePush() {
@@ -4181,7 +4232,7 @@ function main() {
             updateConsole(`Adding file to DB: ${filesToAddToDB[i]._id}`, true)
 
             var tempObj = filesToAddToDB[i]
-            Meteor.call('modifyFileDB', 'insert', filesToAddToDB[i]._id, tempObj, (error, result) => { })
+            Meteor.call('modifyFileDB', 'upsert', filesToAddToDB[i]._id, tempObj, (error, result) => { })
 
 
 
@@ -4213,12 +4264,16 @@ function main() {
 
             //  updateConsole(`Adding log to DB: ${logsToAddToDB[i].text}`,true)
 
-            LogDB.upsert(logsToAddToDB[i]._id,
-              {
-                $set: logsToAddToDB[i]
-              }
+            //123
 
-            );
+            // LogDB.upsert(logsToAddToDB[i]._id,
+            //   {
+            //     $set: logsToAddToDB[i]
+            //   }
+
+            // );
+
+            fs.appendFileSync(homePath + "/Tdarr/Logs/log.txt", getDateNow() + ":" + logsToAddToDB[i].text + '\n', 'utf8');
 
 
 

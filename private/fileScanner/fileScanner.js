@@ -517,7 +517,7 @@ function ffprobeLaunch(filesToScan) {
 
         } catch (err) { }
 
-        thisFileObject.cliLog = "FFprobe was unable to extract data from this file. It is likely that the file is corrupt."
+        thisFileObject.cliLog = "FFprobe was unable to extract data from this file. It is likely that the file is corrupt else FFprobe can't handle this file."
 
         updateConsole(scannerID, `FFprobe was unable to extract data from this file:${filepath}`)
 

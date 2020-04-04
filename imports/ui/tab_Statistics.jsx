@@ -388,7 +388,7 @@ renderStats = () => {
         ));
 
       
-  return  <div className="tabWrap" > <Tabs selectedIndex={ this.props.globalSettings[0].selectedStatTab != undefined ? this.props.globalSettings[0].selectedStatTab : 0} onSelect={tabIndex => {
+  return  <div className="tabWrapLib" > <Tabs selectedIndex={ this.props.globalSettings[0].selectedStatTab != undefined ? this.props.globalSettings[0].selectedStatTab : 0} onSelect={tabIndex => {
 
     GlobalSettingsDB.upsert('globalsettings',
     {
@@ -426,8 +426,13 @@ renderStats = () => {
     return (
 
 
-      <div className="containerGeneral">
-
+   
+         <div className="tabWrap" >
+         <center>
+            <header>
+              <h1>Stats</h1>
+            </header>
+          </center>
 
 
        <div className={this.state.resultsShow ? '' : 'd-none'}>
@@ -468,6 +473,7 @@ renderStats = () => {
 
 
 
+     
 
       </div>
     );

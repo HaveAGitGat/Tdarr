@@ -138,8 +138,8 @@ class App extends Component {
 
                     <p>For information on manually creating community and local plugins, have a look at:https://github.com/HaveAGitGat/Tdarr_Plugins</p>
 
-                    <p>Community plugins are stored in 'Tdarr\Plugins\Community'. Any modifications will be overwritten when the plugins are updated.</p>
-                    <p>Local plugins are stored in 'Tdarr\Plugins\Local'.</p>
+                    <p>Community plugins are stored in {(this.props && this.props.globalSettings[0] ? this.props.globalSettings[0].homePath.replace(/\\/g, '/') : null)}/Tdarr/Plugins/Community. Any modifications will be overwritten when the plugins are updated.</p>
+                    <p>Local plugins are stored in {(this.props && this.props.globalSettings[0] ? this.props.globalSettings[0].homePath.replace(/\\/g, '/') : null)}/Tdarr/Plugins/Local.</p>
                   </div>
                 </div>
               </div>
@@ -233,6 +233,12 @@ class App extends Component {
 
       <div className="containerGeneral">
         <div className="tabWrap" >
+
+        <center>
+            <header>
+              <h1>Plugins</h1>
+            </header>
+          </center>
 
 
           <Tabs selectedIndex={this.state.selectedTab} onSelect={tabIndex => {

@@ -28,7 +28,7 @@ process.on('uncaughtException', function (err) {
 
 var shellThreadModule
 var exitRequestSent = false
-var errorLogFull
+var errorLogFull = []
 
 
 const path = require('path');
@@ -104,6 +104,23 @@ var workerType = process.argv[3]
 checkifQueuePause(true)
 updateConsole(workerNumber, "Worker online. Requesting item")
 
+function addToErrorLog(text) {
+    try {
+
+        var textLines = errorLogFull[1].split('\r\n')
+
+        textLines.push(text)
+
+        if (textLines.length > 200) {
+            textLines.shift();
+        }
+
+        errorLogFull[1] = textLines.join('\r\n')
+
+    } catch (err) {
+        console.log(err)
+    }
+}
 
 
 
@@ -369,9 +386,10 @@ process.on('message', (m) => {
             }
         }
 
-        errorLogFull = ""
-        errorLogFull += "Command: \r\n"
-        errorLogFull += workerCommand + "\r\n"
+        errorLogFull[0] = "Command: \r\n"
+        errorLogFull[0] += workerCommand + "\r\n"
+        errorLogFull[0] += "Last 200 lines of CLI log:\r\n"
+        errorLogFull[1] = ""
 
 
 
@@ -387,7 +405,7 @@ process.on('message', (m) => {
        
             try {
 
-                errorLogFull += "Attempting to move new file to output folder" + "\r\n"
+                addToErrorLog("Attempting to move new file to output folder")
                 updateConsole(workerNumber, "Attempting to move new file to output folder" + currentSourceLine)
 
 
@@ -406,6 +424,7 @@ process.on('message', (m) => {
                 finalFilePathCopy = finalFilePathCopy.split(".")
                 finalFilePathCopy[finalFilePathCopy.length - 2] = finalFilePathCopy[finalFilePathCopy.length - 2] + "-TdarrNew"
                 finalFilePathCopy = finalFilePathCopy.join(".")
+                finalFilePathCopy += ".partial"
 
 
 
@@ -414,7 +433,7 @@ process.on('message', (m) => {
                     overwrite: true
                 })
 
-                errorLogFull += "Copying file successful:" + "\r\n"
+                addToErrorLog("Copying file successful:")
                 updateConsole(workerNumber, "Copying file successful:" + currentSourceLine + " to " + finalFilePathCopy)
 
                
@@ -425,25 +444,25 @@ process.on('message', (m) => {
 
                 if(librarySettings.folderToFolderConversionDeleteSource === true && !fileToProcess.includes(folderToFolderConversionFolder)){
 
-                    errorLogFull += "Attempting to delete original file" + "\r\n"
+                    addToErrorLog("Attempting to delete original file")
                     updateConsole(workerNumber, "Attempting to delete original file" + currentSourceLine)
     
                     fs.unlinkSync(currentSourceLine)
-                    errorLogFull += "Original file deleted" + "\r\n"
+                    addToErrorLog("Original file deleted")
                     updateConsole(workerNumber, "Original file deleted" + currentSourceLine)
 
                 }
              
 
 
-                errorLogFull += "Renaming new file:" + "\r\n"
+                addToErrorLog("Renaming new file:")
                 updateConsole(workerNumber, "Renaming new file:" + finalFilePathCopy + " to " + finalFilePath)
 
                 fsextra.moveSync(finalFilePathCopy, finalFilePath, {
                     overwrite: true
                 })
 
-                errorLogFull += "Renaming new file success:" + "\r\n"
+                addToErrorLog("Renaming new file success:")
                 updateConsole(workerNumber, "Renaming new file success:" + finalFilePathCopy + " to " + finalFilePath)
 
 
@@ -483,8 +502,8 @@ process.on('message', (m) => {
 
             } catch (err) {
 
-                errorLogFull += err + "\r\n"
-                errorLogFull += "Deleting original/moving new file unsuccessful" + "\r\n"
+                addToErrorLog(err)
+                addToErrorLog("Deleting original/moving new file unsuccessful")
                 updateConsole(workerNumber, "Deleting original/moving new file unsuccessful:" + currentSourceLine + " to " + finalFilePath + " err:" + err)
 
 
@@ -495,7 +514,7 @@ process.on('message', (m) => {
                     currentSourceLine,
                     settingsDBIndex,
                     mode,
-                    errorLogFull,
+                    errorLogFull.join(''),
                     lastPluginDetails,
                     currentFileObject,
 
@@ -630,7 +649,7 @@ process.on('message', (m) => {
 
                 //('stderrorWorker: ' + data);
 
-                errorLogFull += data + "\r\n";
+                addToErrorLog(data)
 
                 var str = "" + data;
 
@@ -742,7 +761,7 @@ process.on('message', (m) => {
                             currentSourceLine,
                             settingsDBIndex,
                             mode,
-                            errorLogFull,
+                            errorLogFull.join(''),
                             lastPluginDetails,
                             currentFileObject,
 
@@ -907,7 +926,7 @@ function workerNotEncounteredError() {
 
             if (folderToFolderConversionEnabled == true) {
 
-                errorLogFull += "Attempting to move new file to output folder" + "\r\n"
+                addToErrorLog("Attempting to move new file to output folder")
                 updateConsole(workerNumber, "Attempting to move new file to output folder" + currentSourceLine)
 
 
@@ -919,13 +938,14 @@ function workerNotEncounteredError() {
 
                 finalFilePathCopy[finalFilePathCopy.length - 2] = finalFilePathCopy[finalFilePathCopy.length - 2] + "-TdarrNew"
                 finalFilePathCopy = finalFilePathCopy.join(".")
+                finalFilePathCopy += ".partial"
 
 
                 fsextra.moveSync(currentDestinationLine, finalFilePathCopy, {
                     overwrite: true
                 })
 
-                errorLogFull += "Moving file successful:" + "\r\n"
+                addToErrorLog("Moving file successful:")
                 updateConsole(workerNumber, "Moving file successful:" + currentDestinationLine + " to " + finalFilePathCopy)
 
 
@@ -933,11 +953,11 @@ function workerNotEncounteredError() {
 
                 if(librarySettings.folderToFolderConversionDeleteSource === true && !fileToProcess.includes(folderToFolderConversionFolder)){
 
-                    errorLogFull += "Attempting to delete original file" + "\r\n"
+                   addToErrorLog("Attempting to delete original file")
                     updateConsole(workerNumber, "Attempting to delete original file" + currentSourceLine)
     
                     fs.unlinkSync(currentSourceLine)
-                    errorLogFull += "Original file deleted" + "\r\n"
+                   addToErrorLog("Original file deleted")
                     updateConsole(workerNumber, "Original file deleted" + currentSourceLine)
 
                 }
@@ -947,14 +967,14 @@ function workerNotEncounteredError() {
                 
 
 
-                errorLogFull += "Renaming new file:" + "\r\n"
+               addToErrorLog("Renaming new file:")
                 updateConsole(workerNumber, "Renaming new file:" + finalFilePathCopy + " to " + finalFilePath)
 
                 fsextra.moveSync(finalFilePathCopy, finalFilePath, {
                     overwrite: true
                 })
 
-                errorLogFull += "Renaming new file success:" + "\r\n"
+                addToErrorLog("Renaming new file success:")
                 updateConsole(workerNumber, "Renaming new file success:" + finalFilePathCopy + " to " + finalFilePath)
 
 
@@ -968,7 +988,7 @@ function workerNotEncounteredError() {
 
                 updateConsole(workerNumber, "Moving file:" + currentDestinationLine + " to " + finalFilePath)
 
-                errorLogFull += "Attempting to move new file to original folder" + "\r\n"
+                addToErrorLog("Attempting to move new file to original folder")
                 updateConsole(workerNumber, "Attempting to move new file to original folder" + currentSourceLine)
 
                 var finalFilePathCopy = finalFilePath
@@ -979,34 +999,35 @@ function workerNotEncounteredError() {
 
                 finalFilePathCopy[finalFilePathCopy.length - 2] = finalFilePathCopy[finalFilePathCopy.length - 2] + "-TdarrNew"
                 finalFilePathCopy = finalFilePathCopy.join(".")
+                finalFilePathCopy += ".partial"
 
 
                 fsextra.moveSync(currentDestinationLine, finalFilePathCopy, {
                     overwrite: true
                 })
 
-                errorLogFull += "Moving file successful:" + "\r\n"
+                addToErrorLog("Moving file successful:")
                 updateConsole(workerNumber, "Moving file successful:" + currentDestinationLine + " to " + finalFilePathCopy)
 
 
-                errorLogFull += "Attempting to delete original file" + "\r\n"
+                addToErrorLog("Attempting to delete original file")
                 updateConsole(workerNumber, "Attempting to delete original file" + currentSourceLine)
 
 
 
                 fs.unlinkSync(currentSourceLine)
-                errorLogFull += "Original file deleted" + "\r\n"
+                addToErrorLog("Original file deleted")
                 updateConsole(workerNumber, "Original file deleted" + currentSourceLine)
 
 
-                errorLogFull += "Renaming new file:" + "\r\n"
+                addToErrorLog("Renaming new file:")
                 updateConsole(workerNumber, "Renaming new file:" + finalFilePathCopy + " to " + finalFilePath)
 
                 fsextra.moveSync(finalFilePathCopy, finalFilePath, {
                     overwrite: true
                 })
 
-                errorLogFull += "Renaming new file success:" + "\r\n"
+                addToErrorLog("Renaming new file success:")
                 updateConsole(workerNumber, "Renaming new file success:" + finalFilePathCopy + " to " + finalFilePath)
 
 
@@ -1075,9 +1096,9 @@ function workerNotEncounteredError() {
 
         } catch (err) {
 
-            errorLogFull += err + "\r\n"
+            addToErrorLog(err)
 
-            errorLogFull += "Deleting original file and moving new file unsuccessful" + "\r\n"
+            addToErrorLog("Deleting original file and moving new file unsuccessful")
 
             updateConsole(workerNumber, "Deleting original file and moving new file unsuccessful:" + currentDestinationLine + " to " + finalFilePath + " err:" + err)
 
@@ -1088,7 +1109,7 @@ function workerNotEncounteredError() {
                 currentSourceLine,
                 settingsDBIndex,
                 mode,
-                errorLogFull,
+                errorLogFull.join(''),
                 lastPluginDetails,
                 currentFileObject,
 
@@ -1147,7 +1168,7 @@ function workerEncounteredError(messageOne) {
                 currentSourceLine,
                 settingsDBIndex,
                 mode,
-                errorLogFull
+                errorLogFull.join('')
 
             ];
             process.send(message);
@@ -1169,7 +1190,7 @@ function workerEncounteredError(messageOne) {
                 currentSourceLine,
                 settingsDBIndex,
                 mode,
-                errorLogFull,
+                errorLogFull.join(''),
                 lastPluginDetails,
                 currentFileObject,
 

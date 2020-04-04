@@ -1,13 +1,14 @@
 
 
 
-function updateConsole(watcherID, text) {
+function updateConsole(text) {
 
   var message = [
     watcherID,
     "consoleMessage",
     text,
   ];
+
   process.send(message);
 }
 
@@ -37,11 +38,13 @@ if (fs.existsSync(path.join(process.cwd(), "/npm"))) {
 
 }
 
-
 var watcherID = process.argv[2]
 var Folder = process.argv[3]
 var DB_id = process.argv[4]
 var folderWatchScanInterval = process.argv[5]
+
+//args come through as strings
+var useFsEvents = (process.argv[6] == 'true')
 
 //seconds in milliseconds
 folderWatchScanInterval = folderWatchScanInterval * 1000
@@ -50,7 +53,6 @@ if (folderWatchScanInterval < 1000) {
 }
 
 var exitRequestSent = false
-
 
 
 const chokidar = require(rootModules + 'chokidar');
@@ -71,13 +73,14 @@ watchers[DB_id] = chokidar.watch(Folder, {
   persistent: true,
   ignoreInitial: true,
   followSymlinks: true,
-  usePolling: true,
+  usePolling: !useFsEvents,
   interval: folderWatchScanInterval,
   binaryInterval: folderWatchScanInterval,
   awaitWriteFinish: {
     stabilityThreshold: 10000,
     pollInterval: 1000
   },
+  useFsEvents:useFsEvents,
 });
 
 // Something to use when events are received.
@@ -87,15 +90,17 @@ watchers[DB_id]
   .on('add', newFile => {
 
     newFile = newFile.replace(/\\/g, "/");
-
-
     updateConsole("Folder watcher: File detected, adding to queue:" + newFile)
-
     watcherFilesToScan[DB_id].filesToScan.push(newFile)
 
+  })
+  .on('change', newFile => {
+
+    newFile = newFile.replace(/\\/g, "/");
+    updateConsole("Folder watcher: File detected, adding to queue:" + newFile)
+    watcherFilesToScan[DB_id].filesToScan.push(newFile)
 
   })
-  // .on('change', path => log(`File ${path} has been changed`))
   .on('unlink', path => {
 
     path = path.replace(/\\/g, "/");
@@ -172,7 +177,7 @@ function scanWatcherFiles() {
 
 
 
-  updateConsole("Folder watcher:" + JSON.stringify(watcherFilesToScan))
+  //updateConsole("Folder watcher:" + JSON.stringify(watcherFilesToScan))
 
 
   Object.keys(watcherFilesToScan).forEach(function (key) {
