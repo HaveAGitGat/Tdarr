@@ -426,7 +426,7 @@ renderStats = () => {
     return (
 
 
-      <div className="containerGeneral">
+   
          <div className="tabWrap" >
          <center>
             <header>
@@ -473,7 +473,7 @@ renderStats = () => {
 
 
 
-          </div>
+     
 
       </div>
     );
