@@ -476,9 +476,7 @@ Meteor.methods({
           backupStatus[0].status = "Complete"
 
           for (var i = 0; i < collections.length; i++) {
-            if (i != 1) {
-
-
+  
 
               var count = 0
 
@@ -534,7 +532,7 @@ Meteor.methods({
                 backupStatus[i + 1].status = "Error:" + JSON.stringify(err)
               }
 
-            }
+            
           }
 
 
