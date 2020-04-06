@@ -5136,7 +5136,7 @@ function main() {
 
     } catch (err) { console.log(err.stack) }
 
-    setTimeout(Meteor.bindEnvironment(workerUpdateCheck), 1000);
+    setTimeout(Meteor.bindEnvironment(workerUpdateCheck), 3000);
   }
 
   function removeFromProcessing(file) {
