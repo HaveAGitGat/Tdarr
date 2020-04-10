@@ -2116,6 +2116,9 @@ function main() {
 
             updateConsole(`Add file to DB request received for: ${jsonData._id}. Queueing`, true)
 
+
+
+
             filesToAddToDB.push(jsonData)
 
 
@@ -4224,18 +4227,39 @@ function main() {
 
         } else {
 
-
-
           try {
 
-
-            updateConsole(`Adding file to DB: ${filesToAddToDB[i]._id}`, true)
-
             var tempObj = filesToAddToDB[i]
-            Meteor.call('modifyFileDB', 'upsert', filesToAddToDB[i]._id, tempObj, (error, result) => { })
 
+            //if exact file already exists in DB then do nothing
+            //else remove existing item and insert
 
+            var existingFile = FileDB.findOne({ _id: filesToAddToDB[i]._id });
 
+            if (existingFile == undefined) {
+              updateConsole("This exact file does not exist in DB. Adding", true)
+              Meteor.call('modifyFileDB', 'insert', filesToAddToDB[i]._id, tempObj, (error, result) => { })
+              updateConsole(`Adding file to DB: ${filesToAddToDB[i]._id}`, true)
+            } else {
+
+              //compare modified time and bitrate
+
+              var mtime_new = filesToAddToDB[i].statSync.mtimeMs
+              var mtime_old = existingFile.statSync.mtimeMs
+              var br_new = filesToAddToDB[i].bit_rate
+              var br_old = existingFile.bit_rate
+
+              if (mtime_new == mtime_old && br_new == br_old) {
+                console.log("This exact file already exists in DB.")
+
+              } else {
+                updateConsole("This exact file does not exist in DB. Removing old, adding new", true)
+                Meteor.call('modifyFileDB', 'removeOne', filesToAddToDB[i]._id, (error, result) => { })
+                Meteor.call('modifyFileDB', 'insert', filesToAddToDB[i]._id, tempObj, (error, result) => { })
+                updateConsole(`Adding file to DB: ${filesToAddToDB[i]._id}`, true)
+
+              }
+            }
           } catch (err) {
 
             console.log(err.stack)
