@@ -4971,8 +4971,8 @@ function main() {
 
       if (process.platform == 'win32') {
 
-        var workerCommandFFmpeg = 'wmic process where name=\"ffmpeg.exe\" CALL setpriority \"Below normal\"'
-        var workerCommandHandBrake = 'wmic process where name=\"HandBrakeCLI.exe\" CALL setpriority \"Below normal\"'
+        var workerCommandFFmpeg = 'wmic process where name=\"ffmpeg.exe\" CALL setpriority \"Low\"'
+        var workerCommandHandBrake = 'wmic process where name=\"HandBrakeCLI.exe\" CALL setpriority \"Low\"'
       }
 
 
