@@ -48,7 +48,6 @@ var runningScans = []
 
 var workerDB = []
 var filesToAddToDB = []
-var logsToAddToDB = []
 
 //__dirname = getRootDir()
 
@@ -711,11 +710,12 @@ function main() {
 
 
 
-  process.on('uncaughtException', function (err) {
-    console.error(err.stack);
+  process.on('uncaughtException', Meteor.bindEnvironment(function (err) {
+    console.log('Error in main thread:'+err)
+    updateConsole('Error in main thread:'+err, false)
 
-    // process.exit();
-  });
+  }));
+
 
 
 
@@ -3953,55 +3953,19 @@ function main() {
 
   function updateConsole(message, skipWrite) {
 
-    //console.log(skipWrite)
 
     if (verboseLogs == true) {
       skipWrite = false
     }
 
-    //console.log(skipWrite)
 
     if (skipWrite == false) {
-
-      console.log(`Server: ${message}`)
-
-      var _id = shortid.generate()
-      var a1 = message
-      // var a2 = process.memoryUsage()
-      // var a3 = (os.totalmem()-os.freemem())/1000
-      // var a4 =(os.freemem())/1000
-      // var a5 = (v*100)
-      var a6 = new Date()
-
-      var temp = {
-
-        _id: _id,
-        text: a1,
-        // nodeMem:a2,
-        // systemUsedMem:a3,
-        // systemFreeMem:a4,
-        // systemCPUPercentage:a5,
-        createdAt: a6,
-
+      try {
+        fs.appendFileSync(homePath + "/Tdarr/Logs/log.txt", getDateNow() + ":" + message + '\n', 'utf8');
+      } catch (err) {
+        console.log(err.stack)
       }
-
-      logsToAddToDB.push(temp)
-
-
     }
-
-
-
-
-
-
-
-
-    // os.cpuUsage( Meteor.bindEnvironment(function(v){
-    //       }));
-
-
-
   }
 
 
@@ -4275,44 +4239,6 @@ function main() {
       }
 
 
-
-      for (var i = 0; i < logsToAddToDB.length; i++) {
-
-        if (addFilesToDB == false) {
-
-          break
-
-        } else {
-          try {
-
-
-            //  updateConsole(`Adding log to DB: ${logsToAddToDB[i].text}`,true)
-
-            //123
-
-            // LogDB.upsert(logsToAddToDB[i]._id,
-            //   {
-            //     $set: logsToAddToDB[i]
-            //   }
-
-            // );
-
-            fs.appendFileSync(homePath + "/Tdarr/Logs/log.txt", getDateNow() + ":" + logsToAddToDB[i].text + '\n', 'utf8');
-
-
-
-          } catch (err) {
-            console.log(err.stack)
-
-
-          }
-
-          logsToAddToDB.splice(i, 1)
-
-          i--
-
-        }
-      }
     } catch (err) {
       console.log(err.stack)
     }
@@ -4734,7 +4660,7 @@ function main() {
         statisticsUpdate();
 
 
-        filesToAddToDBLengthNew = filesToAddToDB.length + logsToAddToDB.length
+        filesToAddToDBLengthNew = filesToAddToDB.length
 
         var DBLoadStatus
 
@@ -4764,14 +4690,14 @@ function main() {
           // }
         }
 
-        DBPollPeriod = allFilesPulledTable.length + filesToAddToDB.length + logsToAddToDB.length
+        DBPollPeriod = allFilesPulledTable.length + filesToAddToDB.length
 
 
 
         //console.log("DBPollPeriod:" + DBPollPeriod)
 
         oldFetchtime = newFetchtime
-        filesToAddToDBLengthOld = filesToAddToDB.length + logsToAddToDB.length
+        filesToAddToDBLengthOld = filesToAddToDB.length
 
 
         StatisticsDB.upsert("statistics",
@@ -4781,7 +4707,7 @@ function main() {
               DBFetchTime: (newFetchtime).toFixed(1) + "s",
               DBTotalTime: ((DBPollPeriod > 1000 ? (DBPollPeriod / 1000) : 1) + newFetchtime).toFixed(1) + "s",
               DBLoadStatus: DBLoadStatus,
-              DBQueue: filesToAddToDB.length + logsToAddToDB.length
+              DBQueue: filesToAddToDB.length
             }
           }
         );
@@ -5021,7 +4947,7 @@ function main() {
   //worker will cancel item if percentage stays the same for 300 secs
   function workerUpdateCheck() {
 
-
+  
 
     try {
 
