@@ -29,21 +29,15 @@ export default class App extends Component {
 
       <div>
 
-          <p> Beta v1.107 release [4th April 2020]:
+          <p> Beta v1.108 release [18th April 2020]:
             
             <br />Changes:
 
-            <br />-[New] tdarr_aio ffmpeg updated to 4.2.2 with libaom enabled
-            <br />-[New] Small UI changes and help info updates
-            <br />-[New] Folder watch: Option to use file system events (FSE) instead of polling (try if polling causes high CPU/disk IO). FSE may not work with all drives/shares.
-            <br />-[New] HandBrake and FFmpeg binary paths passed to plugins
-            <br />-[Improvement] Error shown if problem with reading plugin
-            <br />-[Improvement] New files appended with '.partial' while copying to source to prevent app/services scanning temp file
-            <br />-[Improvement] Logs saved to txt file (inside Tdarr/Logs) instead of DB
-            <br />-[Fix] Detect if files are replaced with file of same file name+extension
-            <br />-[Fix] Limit transcode error logs to 200 lines (Sometimes 70,000+ lines which causes DB issues)
-            <br />-[Fix] Info log added for post-processing plugins
-            <br />-[Fix] Prevent corrupt item causing whole backup restore process to stop
+            <br />-[New] Add default plugins to new libraries 
+            <br />-[Improvement] Check other properties to calculate bitrate
+            <br />-[Improvement] Reduce worker spawn rate
+            <br />-[Improvement] Change process priority from "Below normal" to "Low" when switch enabled (Win)
+            <br />-[Fix] Prevent folder watcher re-adding already scanned files
             <br />
             <br />
 

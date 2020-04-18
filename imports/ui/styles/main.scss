@@ -440,42 +440,63 @@ input[type="text"]
   justify-content: center;
 }
 
-.workerItemsGrid{
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  margin:1em;
-}
 
 .workerContainer{
   display: 'inline-block';
-
   border-radius: 5px;
   width:400px;
+  margin:1em;
 }
+
+
+.workerContainerItems{
+  padding:1em 2em;
+
+}
+
+.workerItemsGrid{
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  text-align: left;
+
+}
+
+.workerDetailsGrid{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  text-align: left;
+
+}
+
+.workerGrid-item {
+
+  margin: 0 1em;
+  padding: 0 0 0 0;
+}
+
+table.workerDetailTable td {
+  color: black;
+}
+
+.workerBreakLine{
+  word-break: break-all;
+}
+
 
 .borderStyleGeneral{
   border: 2px solid black;
   border-radius: 5px;
   background-color:#373737;
-  margin:1em;
-  padding:1em;
-
 }
 .borderStyleTranscode{
   border: 2px solid #66ccff;
   border-radius: 5px;
   background-color:#373737;
-  margin:1em;
-  padding:1em;
-  
 }
 .borderStyleHealthCheck{
   border: 2px solid #4CAF50;
   border-radius: 5px;
-  background-color:#373737;
-  margin:1em;
-  padding:1em;
-  
+  background-color:#373737;  
 }
 
 
@@ -1304,14 +1325,7 @@ table.scheduleTable tr:hover {
   }
 }
 
-table.workerDetailTable td {
 
- 
-  color: black;
-  vertical-align: text-top;
-
-
-}
 
 .introText{
 

@@ -22,7 +22,6 @@ import TabPlugins from './plugins/tab_Plugins.jsx';
 import TabSearch from './tab_Search.jsx';
 import TabTranscoding from './transcoding/tab_Transcoding.jsx';
 import TabBackups from './tab_Backups.jsx';
-import TabHire from './tab_Hire.jsx';
 
 const tabs = [
   {path: '/tdarr/', text: 'Tdarr', component: TabTranscoding},
@@ -34,7 +33,6 @@ const tabs = [
   {path: '/logs/', text: 'Logs', component: TabLog},
   {path: '/help/', text: 'Help', component: TabHelp},
   {path: '/backups/', text: 'Backups', component: TabBackups},
-  {path: '/hire/', text: 'Hire', component: TabHire},
   {path: '/', text: 'Dev', component: TabDev},
 
 ];
@@ -47,7 +45,7 @@ export default AppRouter = () => {
 
   const [currentVersion, setVersion] = React.useState('');
 
-  const [newVersion, setNewVersion] = React.useState(1.107);
+  const [newVersion, setNewVersion] = React.useState(1.108);
 
   
 

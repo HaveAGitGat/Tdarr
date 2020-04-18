@@ -577,7 +577,12 @@ function ffprobeLaunch(filesToScan) {
         } catch (err) { }
 
         try {
-            var bit_rate = (8 * singleFileSize) / parseFloat(thisFileObject.ffProbeData.streams[0]["duration"])
+            if (typeof thisFileObject.meta.Duration != 'undefined') {
+                var bit_rate = (8 * singleFileSize) / parseFloat(thisFileObject.meta.Duration)
+            } else {
+                var bit_rate = (8 * singleFileSize) / parseFloat(thisFileObject.ffProbeData.streams[0]["duration"])
+            }
+
             thisFileObject.bit_rate = bit_rate
 
         } catch (err) {

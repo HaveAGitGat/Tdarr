@@ -48,7 +48,6 @@ var runningScans = []
 
 var workerDB = []
 var filesToAddToDB = []
-var logsToAddToDB = []
 
 //__dirname = getRootDir()
 
@@ -711,11 +710,12 @@ function main() {
 
 
 
-  process.on('uncaughtException', function (err) {
-    console.error(err.stack);
+  process.on('uncaughtException', Meteor.bindEnvironment(function (err) {
+    console.log('Error in main thread:'+err)
+    updateConsole('Error in main thread:'+err, false)
 
-    // process.exit();
-  });
+  }));
+
 
 
 
@@ -2115,6 +2115,9 @@ function main() {
             }
 
             updateConsole(`Add file to DB request received for: ${jsonData._id}. Queueing`, true)
+
+
+
 
             filesToAddToDB.push(jsonData)
 
@@ -3950,55 +3953,19 @@ function main() {
 
   function updateConsole(message, skipWrite) {
 
-    //console.log(skipWrite)
 
     if (verboseLogs == true) {
       skipWrite = false
     }
 
-    //console.log(skipWrite)
 
     if (skipWrite == false) {
-
-      console.log(`Server: ${message}`)
-
-      var _id = shortid.generate()
-      var a1 = message
-      // var a2 = process.memoryUsage()
-      // var a3 = (os.totalmem()-os.freemem())/1000
-      // var a4 =(os.freemem())/1000
-      // var a5 = (v*100)
-      var a6 = new Date()
-
-      var temp = {
-
-        _id: _id,
-        text: a1,
-        // nodeMem:a2,
-        // systemUsedMem:a3,
-        // systemFreeMem:a4,
-        // systemCPUPercentage:a5,
-        createdAt: a6,
-
+      try {
+        fs.appendFileSync(homePath + "/Tdarr/Logs/log.txt", getDateNow() + ":" + message + '\n', 'utf8');
+      } catch (err) {
+        console.log(err.stack)
       }
-
-      logsToAddToDB.push(temp)
-
-
     }
-
-
-
-
-
-
-
-
-    // os.cpuUsage( Meteor.bindEnvironment(function(v){
-    //       }));
-
-
-
   }
 
 
@@ -4224,18 +4191,39 @@ function main() {
 
         } else {
 
-
-
           try {
 
-
-            updateConsole(`Adding file to DB: ${filesToAddToDB[i]._id}`, true)
-
             var tempObj = filesToAddToDB[i]
-            Meteor.call('modifyFileDB', 'upsert', filesToAddToDB[i]._id, tempObj, (error, result) => { })
 
+            //if exact file already exists in DB then do nothing
+            //else remove existing item and insert
 
+            var existingFile = FileDB.findOne({ _id: filesToAddToDB[i]._id });
 
+            if (existingFile == undefined) {
+              updateConsole("This exact file does not exist in DB. Adding", true)
+              Meteor.call('modifyFileDB', 'insert', filesToAddToDB[i]._id, tempObj, (error, result) => { })
+              updateConsole(`Adding file to DB: ${filesToAddToDB[i]._id}`, true)
+            } else {
+
+              //compare modified time and bitrate
+
+              var mtime_new = filesToAddToDB[i].statSync.mtimeMs
+              var mtime_old = existingFile.statSync.mtimeMs
+              var br_new = filesToAddToDB[i].bit_rate
+              var br_old = existingFile.bit_rate
+
+              if (mtime_new == mtime_old && br_new == br_old) {
+                console.log("This exact file already exists in DB.")
+
+              } else {
+                updateConsole("This exact file does not exist in DB. Removing old, adding new", true)
+                Meteor.call('modifyFileDB', 'removeOne', filesToAddToDB[i]._id, (error, result) => { })
+                Meteor.call('modifyFileDB', 'insert', filesToAddToDB[i]._id, tempObj, (error, result) => { })
+                updateConsole(`Adding file to DB: ${filesToAddToDB[i]._id}`, true)
+
+              }
+            }
           } catch (err) {
 
             console.log(err.stack)
@@ -4251,44 +4239,6 @@ function main() {
       }
 
 
-
-      for (var i = 0; i < logsToAddToDB.length; i++) {
-
-        if (addFilesToDB == false) {
-
-          break
-
-        } else {
-          try {
-
-
-            //  updateConsole(`Adding log to DB: ${logsToAddToDB[i].text}`,true)
-
-            //123
-
-            // LogDB.upsert(logsToAddToDB[i]._id,
-            //   {
-            //     $set: logsToAddToDB[i]
-            //   }
-
-            // );
-
-            fs.appendFileSync(homePath + "/Tdarr/Logs/log.txt", getDateNow() + ":" + logsToAddToDB[i].text + '\n', 'utf8');
-
-
-
-          } catch (err) {
-            console.log(err.stack)
-
-
-          }
-
-          logsToAddToDB.splice(i, 1)
-
-          i--
-
-        }
-      }
     } catch (err) {
       console.log(err.stack)
     }
@@ -4710,7 +4660,7 @@ function main() {
         statisticsUpdate();
 
 
-        filesToAddToDBLengthNew = filesToAddToDB.length + logsToAddToDB.length
+        filesToAddToDBLengthNew = filesToAddToDB.length
 
         var DBLoadStatus
 
@@ -4740,14 +4690,14 @@ function main() {
           // }
         }
 
-        DBPollPeriod = allFilesPulledTable.length + filesToAddToDB.length + logsToAddToDB.length
+        DBPollPeriod = allFilesPulledTable.length + filesToAddToDB.length
 
 
 
         //console.log("DBPollPeriod:" + DBPollPeriod)
 
         oldFetchtime = newFetchtime
-        filesToAddToDBLengthOld = filesToAddToDB.length + logsToAddToDB.length
+        filesToAddToDBLengthOld = filesToAddToDB.length
 
 
         StatisticsDB.upsert("statistics",
@@ -4757,7 +4707,7 @@ function main() {
               DBFetchTime: (newFetchtime).toFixed(1) + "s",
               DBTotalTime: ((DBPollPeriod > 1000 ? (DBPollPeriod / 1000) : 1) + newFetchtime).toFixed(1) + "s",
               DBLoadStatus: DBLoadStatus,
-              DBQueue: filesToAddToDB.length + logsToAddToDB.length
+              DBQueue: filesToAddToDB.length
             }
           }
         );
@@ -4947,8 +4897,8 @@ function main() {
 
       if (process.platform == 'win32') {
 
-        var workerCommandFFmpeg = 'wmic process where name=\"ffmpeg.exe\" CALL setpriority \"Below normal\"'
-        var workerCommandHandBrake = 'wmic process where name=\"HandBrakeCLI.exe\" CALL setpriority \"Below normal\"'
+        var workerCommandFFmpeg = 'wmic process where name=\"ffmpeg.exe\" CALL setpriority \"Low\"'
+        var workerCommandHandBrake = 'wmic process where name=\"HandBrakeCLI.exe\" CALL setpriority \"Low\"'
       }
 
 
@@ -4997,7 +4947,7 @@ function main() {
   //worker will cancel item if percentage stays the same for 300 secs
   function workerUpdateCheck() {
 
-
+  
 
     try {
 
@@ -5136,7 +5086,7 @@ function main() {
 
     } catch (err) { console.log(err.stack) }
 
-    setTimeout(Meteor.bindEnvironment(workerUpdateCheck), 1000);
+    setTimeout(Meteor.bindEnvironment(workerUpdateCheck), 3000);
   }
 
   function removeFromProcessing(file) {
