@@ -2038,13 +2038,15 @@ class Folder extends Component {
             >
               <p>Health check type:</p>
               <p>
-                Quick:
+                Quick - (Uses HandBrake to check file headers):
                 <Checkbox
                   name="handbrakescan"
                   checked={!!this.props.libraryItem.handbrakescan}
                   onChange={this.handleChangeChkBx}
                 />
-                Thorough:
+                </p>
+                <p>
+                Thorough - (Goes through each frame of the file with FFmpeg):
                 <Checkbox
                   name="ffmpegscan"
                   checked={!!this.props.libraryItem.ffmpegscan}
