@@ -523,7 +523,7 @@ function ffprobeLaunch(filesToScan) {
 
         var obj = {
             HealthCheck: "Error",
-            TranscodeDecisionMaker: "Transcode error",
+            TranscodeDecisionMaker: "Queued",
             lastHealthCheckDate: new Date(),
             lastTranscodeDate: new Date(),
         }
