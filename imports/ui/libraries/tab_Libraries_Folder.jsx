@@ -2044,8 +2044,8 @@ class Folder extends Component {
                   checked={!!this.props.libraryItem.handbrakescan}
                   onChange={this.handleChangeChkBx}
                 />
-                </p>
-                <p>
+              </p>
+              <p>
                 Thorough - (Goes through each frame of the file with FFmpeg):
                 <Checkbox
                   name="ffmpegscan"

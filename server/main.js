@@ -2947,10 +2947,13 @@ function main() {
 
                 if (mode == "healthcheck") {
 
+                  if(handbrakescan == false &&  ffmpegscan == false ){
+                    
+                    cliLogAdd += 'Skipping health check! \n'
+
+                  }else{
+
                   cliLogAdd += 'Health check! \n'
-
-
-
 
                   if (handbrakescan == true) {
 
@@ -2993,6 +2996,8 @@ function main() {
                     null,
 
                   ]
+
+                }
 
 
                 } else if (mode == "transcode") {
@@ -3387,11 +3392,32 @@ function main() {
                 }
 
 
+                if (mode == "healthcheck" && handbrakescan == false && ffmpegscan == false) {
+
+                  var tempObj = {
+                    _id: firstItem.file,
+                    HealthCheck: "Ignored",
+                    processingStatus: false,
+                    cliLog: cliLogAdd,
+                    lastHealthCheckDate: new Date(),
+
+                  }
+                  Meteor.call('modifyFileDB', 'update', firstItem.file, tempObj, (error, result) => { })
 
 
 
+
+                  removeFromProcessing(originalID)
+                  var messageOut = [
+                    "requestNewItem",
+
+                  ]
+                  workers[message[0]].send(messageOut);
+
+
+                }
                 //File filtered out by transcode decision maker
-                if ((processFile == false && folderToFolderConversionEnabled !== true) || (processFile == false && folderToFolderConversionEnabled === true && copyIfConditionsMet === false)) {
+                else if ((processFile == false && folderToFolderConversionEnabled !== true) || (processFile == false && folderToFolderConversionEnabled === true && copyIfConditionsMet === false)) {
 
 
 
@@ -3504,8 +3530,6 @@ function main() {
 
 
                   removeFromProcessing(originalID)
-
-
                   var messageOut = [
                     "requestNewItem",
 
