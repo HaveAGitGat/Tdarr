@@ -1,9 +1,7 @@
 /* eslint-disable prettier/prettier */
-import '../imports/api/Methods.js';
+import '../imports/api/manipulateLib.js';
 import '../imports/api/pluginCreatorMethods.js';
-import '../imports/api/Logger.js';
 import '../imports/api/tasks.js';
-
 import '../imports/api/transcodeSettings.js';
 
 
@@ -81,8 +79,9 @@ function getRootDir() {
 
 var home = require("os").homedir();
 
-//console.log("process.env.DATA:" + process.env.DATA)
 
+
+//Check if different documents path has been set as env var
 if (process.env.NODE_ENV == 'production') {
 
   if (process.env.DATA) {
@@ -94,6 +93,7 @@ if (process.env.NODE_ENV == 'production') {
   }
 
 
+  //Check if base path set
   if (process.env.BASE) {
 
     GlobalSettingsDB.upsert(
@@ -120,6 +120,8 @@ if (process.env.NODE_ENV == 'production') {
 
 
 } else {
+
+  //set dev env
   var homePath = home + '/Documents'
   process.env.homePath = homePath
 
@@ -134,12 +136,6 @@ if (process.env.NODE_ENV == 'production') {
 }
 
 console.log("Tdarr documents folder:" + homePath)
-
-
-
-
-
-
 console.log("Checking directories")
 
 
@@ -194,41 +190,6 @@ if (fs.existsSync(homePath + "/Tdarr/Data/env.json")) {
 
 
 
-//Test
-//console.log("homePath:"+homePath)
-//fs.writeFileSync(homePath + "/Tdarr/Data/test.txt", "Hello", 'utf8');
-
-//
-
-
-
-function getDateNow() {
-
-  var today = new Date();
-  var dd = today.getDate();
-  var mm = today.getMonth() + 1;
-  var yyyy = today.getFullYear();
-  if (dd < 10) {
-    dd = '0' + dd
-  }
-
-  var months = ["January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"];
-
-  mm = months[mm - 1];
-  today = dd + '/' + mm + '/' + yyyy;
-  var today2 = dd + '-' + mm + '-' + yyyy;
-
-
-  var d = new Date(),
-    h = (d.getHours() < 10 ? '0' : '') + d.getHours(),
-    m = (d.getMinutes() < 10 ? '0' : '') + d.getMinutes();
-  var s = (d.getSeconds() < 10 ? '0' : '') + d.getSeconds();
-  var timenow = h + '-' + m + '-' + s;
-
-  return today2 + "-" + timenow
-
-}
 
 //No need to backup client DB
 
@@ -334,57 +295,7 @@ Meteor.methods({
 
   },
 
-  'trimBackups'() {
 
-    try {
-      var backups = []
-      fs.readdirSync(homePath + `/Tdarr/Backups/`).forEach(file => {
-        if (file.includes('.zip')) {
-
-          var fullPath = homePath + `/Tdarr/Backups/` + file
-          var statSync = fs.statSync(fullPath)
-
-          backups.push({
-            fullPath: fullPath,
-            statSync: statSync,
-          })
-
-        }
-      });
-
-
-      backups = backups.sort(function (a, b) {
-        return new Date(a.statSync.ctime) - new Date(b.statSync.ctime);
-      });
-
-      var backupLimit = (GlobalSettingsDB.find({}, {}).fetch())[0].backupLimit
-
-      if (backupLimit == undefined) {
-        backupLimit = 30
-      }
-
-      console.log(`Num backups:${backups.length}, Backup limit:${backupLimit}`)
-
-
-      while (backups.length > backupLimit) {
-
-
-        console.log('Deleting backup:' + backups[0].fullPath)
-
-        fs.unlinkSync(backups[0].fullPath)
-        backups.splice(0, 1)
-
-      }
-
-
-
-
-
-    } catch (err) {
-      console.log(err.stack)
-    }
-
-  },
 
   'restoreBackup'(name) {
 
@@ -1880,11 +1791,6 @@ function main() {
 
 
           filesInDB = filesInDB.filter(row => row.DB == DB_id);
-
-
-          // filesInDB2 = filesInDB.map(row => row._id + '\r\n')
-          //filesInDB2 = filesInDB2.join("")
-          // fs.writeFileSync(homePath + "/Tdarr/Data/test.txt", filesInDB2, 'utf8');
 
           filesInDB = filesInDB.map((file, i) => {
             if (file.file) {
@@ -3952,13 +3858,9 @@ function main() {
     if (settings[i].folderWatching == true) {
 
       console.log("Turning folder watch on for:" + settings[i].folder)
-
-
       createFolderWatch(settings[i].folder, settings[i]._id)
 
     }
-
-
   }
 
 
@@ -3986,11 +3888,6 @@ function main() {
 
 
       }
-
-
-
-
-
     }
 
   });
@@ -4026,7 +3923,6 @@ function main() {
 
 
     }
-
 
   }
 

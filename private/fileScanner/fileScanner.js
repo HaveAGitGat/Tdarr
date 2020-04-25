@@ -51,8 +51,8 @@ var shellThreadModule
 var filePropertiesToAdd = JSON.parse(process.argv[8])
 
 
-var homePath = process.argv[9]
-var closedCaptionScan = process.argv[10]
+const homePath = process.argv[9]
+const closedCaptionScan = process.argv[10]
 var foldersToIgnore = process.argv[11]
 foldersToIgnore = foldersToIgnore.split(",")
 
@@ -73,14 +73,11 @@ if (fs.existsSync(path.join(process.cwd(), "/npm"))) {
 
 const isDocker = require(rootModules + 'is-docker');
 const importFresh = require(rootModules + 'import-fresh');
-
 const runFFprobe = importFresh('./runFFprobe.js')
 const runExifTool = importFresh('./runExifTool.js')
 const runCCExtractor = importFresh('./runCCExtractor.js')
 
 
-var home = require("os").homedir();
-//var homePath = home
 
 
 
@@ -116,7 +113,6 @@ if (mode == 0) {
 
 
     arrayOrPath = arrayOrPath.split('\r\n')
-
 
     var filesInDB = []
 
