@@ -2,21 +2,16 @@
 import { Meteor } from 'meteor/meteor';
 import { SettingsDB } from './tasks.js';
 
-
-
 Meteor.methods({
 
     'remove'() {
-
-        Meteor.call('modifyFileDB','removeAll', (error, result) => {})
+        Meteor.call('modifyFileDB', 'removeAll', (error, result) => { })
         SettingsDB.remove({});
-
     },
 
     'removelibrary'(DB) {
-        Meteor.call('modifyFileDB','removeByDB',DB, (error, result) => {})
+        Meteor.call('modifyFileDB', 'removeByDB', DB, (error, result) => { })
     },
-
 });
 
 

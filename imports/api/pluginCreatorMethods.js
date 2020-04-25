@@ -1,24 +1,16 @@
 
 import { Meteor } from 'meteor/meteor';
 
-
-
-const shortid = require('shortid');
-
 //Globals
+const shortid = require('shortid');
 const fs = require('fs');
 const path = require('path');
-
-
 
 Meteor.methods({
 
   'createPlugin'(details, conditionalsString, conditionalNotes, action) {
 
-
-
     var ID = shortid.generate()
-
     var text = `
 
     var fs = require('fs');
@@ -33,7 +25,6 @@ Meteor.methods({
     const library = importFresh('../methods/library.js')
       
     module.exports.details = function details() {
-
           return {
             id: "${ID}",
             Name: "${details.Name}",
@@ -45,15 +36,10 @@ Meteor.methods({
           }
         }
 
-
-
     module.exports.plugin = function plugin(file) {
-        
-        
+
           //Must return this object at some point
-        
           var response = {
-        
              processFile : false,
              preset : '',
              container : '.mkv',
@@ -66,35 +52,24 @@ Meteor.methods({
 
           response.infoLog += ${conditionalNotes}
         
-          
           if((${conditionalsString}) || file.forceProcessing === true){
-
-             
               response.preset = ${action.preset}
               response.container = ${action.container}
               response.handBrakeMode = ${action.handBrakeMode}
               response.FFmpegMode = ${action.FFmpegMode}
-
               response.reQueueAfter = true;
               response.processFile = ${action.processFile}
               response.infoLog +=  ${action.infoLog}
               return response
-        
-        
              }else{
-
               response.processFile = false;
               response.infoLog += ${action.infoLog}
               return response
-        
-        
              }
         }
 
       `
     fs.writeFileSync(process.env.homePath + `/Tdarr/Plugins/Local/${ID}.js`, text, 'utf8');
-
-
   }
 });
 
