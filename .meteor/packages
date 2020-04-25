@@ -21,3 +21,4 @@ react-meteor-data       # React higher-order component for reactively tracking M
 fourseven:scss
 omega:meteor-desktop-watcher@=2.2.5
 omega:meteor-desktop-bundler@=2.2.5
+meteortesting:mocha
