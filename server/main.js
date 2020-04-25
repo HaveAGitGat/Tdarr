@@ -4,11 +4,15 @@ import '../imports/api/pluginCreatorMethods.js';
 import '../imports/api/Logger.js';
 import '../imports/api/tasks.js';
 
+import '../imports/api/transcodeSettings.js';
+
 
 
 
 import { LogDB, FileDB, SettingsDB, GlobalSettingsDB, StatisticsDB, ClientDB } from '../imports/api/tasks.js';
 import dateFuncs from './dateFuncs.js';
+
+import './backupFuncs.js';
 
 console.log("Tdarr started")
 
