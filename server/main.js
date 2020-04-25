@@ -8,6 +8,7 @@ import '../imports/api/tasks.js';
 
 
 import { LogDB, FileDB, SettingsDB, GlobalSettingsDB, StatisticsDB, ClientDB } from '../imports/api/tasks.js';
+import dateFuncs from './dateFuncs.js';
 
 console.log("Tdarr started")
 
@@ -529,7 +530,7 @@ Meteor.methods({
 
     try {
 
-      var currentDate = getDateNow()
+      var currentDate = dateFuncs.getDateNow()
       if (!fs.existsSync(homePath + `/Tdarr/Backups/Backup-${currentDate}`)) {
         fs.mkdirSync(homePath + `/Tdarr/Backups/Backup-${currentDate}`);
       }
@@ -3929,7 +3930,7 @@ function main() {
 
     if (skipWrite == false) {
       try {
-        fs.appendFileSync(homePath + "/Tdarr/Logs/log.txt", getDateNow() + ":" + message + '\n', 'utf8');
+        fs.appendFileSync(homePath + "/Tdarr/Logs/log.txt", dateFuncs.getDateNow() + ":" + message + '\n', 'utf8');
       } catch (err) {
         console.log(err.stack)
       }
