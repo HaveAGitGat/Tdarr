@@ -1,18 +1,19 @@
 
 
 
-function updateConsole(scannerID, text) {
+function logger(type, text) {
     var message = [
         scannerID,
         "consoleMessage",
-        text,
+        type,
+        text
     ];
     process.send(message);
 }
 
 process.on('uncaughtException', function (err) {
     console.error(err.stack);
-    updateConsole(scannerID, ":" + err.stack)
+    logger('fatal', err.stack)
 
     if (arrayOrPathSwitch == 1) {
         var message = [
@@ -41,7 +42,7 @@ var foldersToIgnore = process.argv[11]
 foldersToIgnore = foldersToIgnore.split(",")
 var resBoundaries = JSON.parse(process.argv[12])
 
-updateConsole(scannerID, "Online.")
+logger('info', "Online")
 
 const path = require("path");
 const fs = require('fs');
@@ -87,10 +88,7 @@ if (mode == 0) {
     var filesInDB = []
 }
 
-updateConsole(scannerID, `vars received:
-${process.argv}
-`
-)
+logger('info', `vars received:${process.argv}`)
 
 //console.log("arrayOrPath" + arrayOrPath)
 //console.log(arrayOrPathSwitch)
@@ -103,13 +101,13 @@ if (arrayOrPathSwitch == 0) {
     for (var i = 0; i < arrayOrPath.length; i++) {
 
         if (checkContainer(arrayOrPath[i]) != true || isInIgnoredFolder(arrayOrPath[i]) == true) {
-            updateConsole(scannerID, `File ${arrayOrPath[i]} does not meet container or ignored folder requirements.`)
+            logger('warn', `File ${arrayOrPath[i]} does not meet container or ignored folder requirements.`)
             arrayOrPath.splice(i, 1)
             i--;
         }
     }
 
-    updateConsole(scannerID, `Launching FFprobe on these files: ${arrayOrPath}`)
+    logger('info', `Launching FFprobe on these files: ${arrayOrPath}`)
     arrayOrPath = arrayOrPath.filter(row => !row.includes("TdarrNew"))
     ffprobeLaunch(arrayOrPath)
 }
@@ -134,11 +132,11 @@ if (arrayOrPathSwitch == 1) {
                         traverseDir(fullPath);
                     } catch (err) {
                         console.error(err.stack);
-                        updateConsole(scannerID, ":" + err.stack)
+                        logger('error', err.stack)
                     }
                 } else {
                     fullPath = fullPath.replace(/\\/g, "/");
-                    updateConsole(scannerID, `Found: ${fullPath}`)
+                    logger('info', `Found: ${fullPath}`)
 
                     //For Scan (Find new), check if file already in DB. Remove from array if so to increase performance.
                     if (filesInDB.includes(fullPath)) {
@@ -166,7 +164,7 @@ if (arrayOrPathSwitch == 1) {
                 }  //end current file, go to next
             } catch (err) {
                 console.error(err.stack);
-                updateConsole(scannerID, ":" + err.stack)
+                logger('error', err.stack)
             }
         });
     };
@@ -210,7 +208,7 @@ function checkContainer(newFile) {
 
     } catch (err) {
         console.error(err.stack);
-        updateConsole(scannerID, ":" + err.stack)
+        logger('error', err.stack)
     }
     return false
 }
@@ -230,7 +228,7 @@ process.on('exit', (code) => {
 
 function ffprobeLaunch(filesToScan) {
 
-    updateConsole(scannerID, `ffprobeLaunch received these files:${filesToScan} `)
+    logger('info', `ffprobeLaunch received these files:${filesToScan} `)
     const exiftool = require(rootModules + "exiftool-vendored").exiftool
     var k = 0;
 
@@ -238,7 +236,7 @@ function ffprobeLaunch(filesToScan) {
         var filepath = filesToScan[i]
         try {
             if (fs.existsSync(filepath)) {
-                updateConsole(scannerID, `Launching FFprobe on this file: ${filepath}`)
+                logger('info', `Launching FFprobe on this file: ${filepath}`)
                 async function runExtractions(filepath) {
                     try {
                         var fileInfo = {
@@ -246,7 +244,7 @@ function ffprobeLaunch(filesToScan) {
                             exifToolData: '',
                             ccextractorData: '',
                         }
-                        updateConsole(scannerID, 'Running ffmpeg on file')
+                        logger('info', 'Running ffmpeg on file')
 
                         await runFFprobe(filepath)
                             .then((res) => {
@@ -260,7 +258,7 @@ function ffprobeLaunch(filesToScan) {
                             })
 
                         if (fileInfo.ffProbeData.result != 'error') {
-                            updateConsole(scannerID, 'Running exiftool on file')
+                            logger('info', 'Running exiftool on file')
 
                             await runExifTool(filepath, exiftool)
                                 .then((res) => {
@@ -275,7 +273,7 @@ function ffprobeLaunch(filesToScan) {
                                 })
 
                             if (closedCaptionScan == 'true') {
-                                updateConsole(scannerID, 'Running ccextractor on file')
+                                logger('info', 'Running ccextractor on file')
 
                                 await runCCExtractor(filepath)
                                     .then((res) => {
@@ -311,7 +309,7 @@ function ffprobeLaunch(filesToScan) {
             }
         } catch (err) {
             console.error(err.stack);
-            updateConsole(scannerID, ":" + err.stack)
+            logger('error', err.stack)
             i++;
             if (i < filesToScan.length) {
                 loopArray(filesToScan, i);
@@ -342,7 +340,7 @@ function ffprobeLaunch(filesToScan) {
         } catch (err) { }
 
         thisFileObject.cliLog = "FFprobe was unable to extract data from this file. It is likely that the file is corrupt else FFprobe can't handle this file."
-        updateConsole(scannerID, `FFprobe was unable to extract data from this file:${filepath}`)
+        logger('error', `FFprobe was unable to extract data from this file:${filepath}`)
 
         var obj = {
             HealthCheck: "Error",
@@ -362,14 +360,14 @@ function ffprobeLaunch(filesToScan) {
         }
 
         thisFileObject.meta = tags
-        updateConsole(scannerID, `Beginning extractData on:${filepath}`)
+        logger('info', `Beginning extractData on:${filepath}`)
         var container = ((path.extname(filepath)).split(".")).join("")
         thisFileObject.container = container.toLowerCase();
         thisFileObject.ffProbeRead = "success"
         thisFileObject.ffProbeData = jsonData
-        updateConsole(scannerID, `Tagging ffprobe data:${filepath}`)
+        logger('info', `Tagging ffprobe data:${filepath}`)
         var jsonString = JSON.stringify(jsonData)
-        updateConsole(scannerID, `Tagging size data:${filepath}`)
+        logger('info', `Tagging size data:${filepath}`)
 
         try {
             var singleFileSize = fs.statSync(filepath)
@@ -387,7 +385,7 @@ function ffprobeLaunch(filesToScan) {
             thisFileObject.bit_rate = bit_rate
 
         } catch (err) {
-            updateConsole(scannerID, `Tagging bitrate data failed:${filepath}`)
+            logger('error', `Tagging bitrate data failed:${filepath}`)
         }
 
         //if (!!("video_codec_name" in thisFileObject)) {
@@ -398,7 +396,7 @@ function ffprobeLaunch(filesToScan) {
         }
 
         if (jsonString.includes('"codec_type":"video"') && exifToolVerdict === true) {
-            updateConsole(scannerID, `Tagging video res:${filepath}`)
+            logger('info', `Tagging video res:${filepath}`)
             try {
                 var vidWidth = thisFileObject.ffProbeData.streams[0]["width"]
                 var vidHeight = thisFileObject.ffProbeData.streams[0]["height"]
@@ -435,7 +433,7 @@ function ffprobeLaunch(filesToScan) {
                 thisFileObject.video_resolution = videoResolution
             } catch (err) {
 
-                updateConsole(scannerID, `Tagging video res failed:${filepath}`)
+                logger('error', `Tagging video res failed:${filepath}`)
             }
 
             thisFileObject.fileMedium = "video"
@@ -454,7 +452,7 @@ function ffprobeLaunch(filesToScan) {
 }
 
 function addFileToDB(filePath, FileObject, obj) {
-    updateConsole(scannerID, `Sending add file to DB:${filePath}`)
+    logger('info', `Sending add file to DB:${filePath}`)
     var obj = JSON.parse(JSON.stringify(obj));
     FileObject._id = filePath
     FileObject.file = filePath
