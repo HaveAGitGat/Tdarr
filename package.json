@@ -41,6 +41,7 @@
     "import-fresh": "^3.2.1",
     "interweave": "^12.5.0",
     "is-docker": "^2.0.0",
+    "log4js": "^6.2.1",
     "material-tabs": "0.0.8",
     "meteor-node-stubs": "^0.4.1",
     "mongodb": "^3.5.5",

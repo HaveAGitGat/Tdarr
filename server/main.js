@@ -7,8 +7,6 @@ import { LogDB, FileDB, SettingsDB, GlobalSettingsDB, StatisticsDB, ClientDB } f
 import dateFuncs from './dateFuncs.js';
 import './backupFuncs.js';
 
-console.log("Tdarr started")
-
 //Globals
 const shortid = require('shortid');
 const util = require('util')
@@ -43,60 +41,9 @@ var filesBeingProcessed = []
 var backupStatus = false
 var hasDBChanged = true
 var workerLaunched = 0
-var home = require("os").homedir();
-
-//Check if different documents path has been set as env var
-if (process.env.NODE_ENV == 'production') {
-
-  if (process.env.DATA) {
-    var homePath = process.env.DATA
-    process.env.homePath = homePath
-  } else {
-    var homePath = home + '/Documents'
-    process.env.homePath = homePath
-  }
-
-  //Check if base path set
-  if (process.env.BASE) {
-    GlobalSettingsDB.upsert(
-      "globalsettings",
-      {
-        $set: {
-          basePath: process.env.BASE,
-        }
-      }
-    );
-  } else {
-
-    GlobalSettingsDB.upsert(
-      "globalsettings",
-      {
-        $set: {
-          basePath: "",
-        }
-      }
-    );
-  }
-
-} else {
-  //set dev env
-  var homePath = home + '/Documents'
-  process.env.homePath = homePath
-
-  GlobalSettingsDB.upsert(
-    "globalsettings",
-    {
-      $set: {
-        basePath: "",
-      }
-    }
-  );
-}
-
-console.log("Tdarr documents folder:" + homePath)
-console.log("Checking directories")
 
 //Create Tdarr documents folder structure if not exist
+import homePath from './paths.js';
 import initFolders from './initFolders.js';
 initFolders(homePath)
 
@@ -109,12 +56,16 @@ GlobalSettingsDB.upsert(
   }
 );
 
+import logger from './logger.js';
+logger.info('Tdarr started.');
+logger.info("Tdarr documents folder:" + homePath)
+logger.info("Checking directories")
 
 //READ  variables from json file
 if (fs.existsSync(homePath + "/Tdarr/Data/env.json")) {
   try {
     jsonConfig = JSON.parse(fs.readFileSync(homePath + "/Tdarr/Data/env.json", 'utf8'))
-    console.log(jsonConfig)
+    logger.info(jsonConfig)
     if (jsonConfig.BASE != undefined) {
       GlobalSettingsDB.upsert(
         "globalsettings",
@@ -126,8 +77,8 @@ if (fs.existsSync(homePath + "/Tdarr/Data/env.json")) {
       );
     }
   } catch (err) {
-    console.log("Unable to load configuration file")
-    console.log(err.stack)
+    logger.error("Unable to load configuration file")
+    logger.error(err.stack)
   }
 }
 
@@ -175,7 +126,7 @@ Meteor.methods({
         FileDB.remove({});
       }
     } catch (err) {
-      console.log(err.stack)
+      logger.error(err.stack)
     }
     Meteor.call('DBHasChanged', (error, result) => { })
   },
@@ -197,7 +148,7 @@ Meteor.methods({
       });
 
     } catch (err) {
-      console.log(err.stack)
+      logger.error(err.stack)
     }
     return backups.sort(function (a, b) {
       return new Date(b.statSync.ctime) - new Date(a.statSync.ctime);
@@ -250,9 +201,9 @@ Meteor.methods({
                         }
                       );
                     } catch (err) {
-                      console.log("Error restoring item:")
-                      console.log(j)
-                      console.log(dbItems[j]._id)
+                      logger.error("Error restoring item:")
+                      logger.error(j)
+                      logger.error(dbItems[j]._id)
                     }
                   }
                 }
@@ -261,7 +212,7 @@ Meteor.methods({
                 backupStatus[i + 1].status = "No items to restore!"
               }
             } catch (err) {
-              console.log(err)
+              logger.error(err)
               backupStatus[i + 1].status = "Error:" + JSON.stringify(err)
             }
           }
@@ -270,7 +221,7 @@ Meteor.methods({
           backupStatus.push({ name: "Status", status: "Finished!" })
         }));
     } catch (err) {
-      console.log(err)
+      logger.error(err)
       backupStatus.push({ name: "Status", status: "Error:" + JSON.stringify(err) })
     }
 
@@ -279,7 +230,7 @@ Meteor.methods({
       fsextra.removeSync(homePath + `/Tdarr/Backups/${name}`)
       return true
     } catch (err) {
-      console.log(err)
+      logger.error(err)
       return false
     }
 
@@ -309,7 +260,7 @@ Meteor.methods({
           fs.writeFileSync(homePath + `/Tdarr/Backups/Backup-${currentDate}/${collections[i][1]}.txt`, dbItems, 'utf8');
           backupStatus[i].status = "Complete"
         } catch (err) {
-          console.log(err)
+          logger.error(err)
           backupStatus.push({ name: "Status", status: "Error:" + JSON.stringify(err) })
         }
       }
@@ -336,7 +287,7 @@ Meteor.methods({
       }));
 
     } catch (err) {
-      console.log(err)
+      logger.error(err)
     }
   }
 })
@@ -344,18 +295,23 @@ Meteor.methods({
 //Backup
 var dailyBackup = schedule.scheduleJob('0 0 0 * * *', Meteor.bindEnvironment(function () {
   Meteor.call('createBackup', (error, result) => {
-    Meteor.call('trimBackups', (error, result) => { })
+    Meteor.call('trimBackups', homePath, (error, result) => { })
   })
 }));
+
+
+Meteor.call('trimBackups', homePath, (error, result) => { })
+
+
 
 setTimeout(Meteor.bindEnvironment(main), 1000);
 
 function main() {
-  console.log("Initialising DB")
+  logger.info("Initialising DB")
   allFilesPulledTable = FileDB.find({}).fetch()
 
   for (var i = 0; i < allFilesPulledTable.length; i++) {
-    console.log("Checking file:" + (i + 1) + "/" + allFilesPulledTable.length)
+    logger.info("Checking file:" + (i + 1) + "/" + allFilesPulledTable.length)
 
     // reset processing status of files onload.
     if (allFilesPulledTable[i].processingStatus !== false) {
@@ -367,8 +323,7 @@ function main() {
   }
 
   process.on('uncaughtException', Meteor.bindEnvironment(function (err) {
-    console.log('Error in main thread:' + err)
-    updateConsole('Error in main thread:' + err, false)
+    logger.error('Error in main thread:' + err)
   }));
 
   //Set globalDB settings on init
@@ -621,10 +576,94 @@ function main() {
     }
   );
 
+  function loggerFunc(type,string){
+
+    switch (type) {
+      case 'trace':
+        logger.trace(string);
+        break;
+      case 'debug':
+        logger.debug(string);
+        break;
+      case 'info':
+        logger.info(string);
+        break;
+      case 'warn':
+        logger.warn(string);
+        break;
+      case 'error':
+        logger.error(string);
+        break;
+      case 'fatal':
+        logger.fatal(string);
+        break;
+      default:
+      logger.info(string);
+    }
+  }
+
+  if (fs.existsSync(path.join(process.cwd(), "/npm"))) {
+    var handBrakeCLIPath = path.join(process.cwd(), '/assets/app/HandBrakeCLI.exe')
+    var ffmpegPathLinux345 = path.join(process.cwd(), '/assets/app/ffmpeg/ffmpeg345/ffmpeg')
+    var ffmpegPathLinux42 = path.join(process.cwd(), '/assets/app/ffmpeg/ffmpeg42/ffmpeg')
+  } else {
+    var handBrakeCLIPath = path.join(process.cwd(), '/private/HandBrakeCLI.exe')
+    var ffmpegPathLinux345 = path.join(process.cwd(), '/private/ffmpeg/ffmpeg345/ffmpeg')
+    var ffmpegPathLinux42 = path.join(process.cwd(), '/private/ffmpeg/ffmpeg42/ffmpeg')
+  }
+
+  var ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
+  ffmpegPathLinux345 = ffmpegPathLinux345.replace(/'/g, '\'\"\'\"\'');
+  ffmpegPathLinux42 = ffmpegPathLinux42.replace(/'/g, '\'\"\'\"\'');
+
+  function getHandBrakePath() {
+    var path
+
+    if (process.platform == 'win32') {
+      path = handBrakeCLIPath
+    }
+
+    if (process.platform == 'linux') {
+      path = "HandBrakeCLI"
+    }
+
+    if (process.platform == 'darwin') {
+      path = "/usr/local/bin/HandBrakeCLI"
+    }
+
+    return path
+  }
+
+  function getFFmpegPath() {
+    var path
+
+    if (process.platform == 'win32') {
+      path = ffmpegPath
+    }
+
+    if (process.platform == 'linux') {
+      path = ffmpegPathLinux42
+    }
+
+    if (process.platform == 'darwin') {
+      path = ffmpegPath
+    }
+
+    var ffmpegNVENCBinary = (GlobalSettingsDB.find({}, {}).fetch())[0].ffmpegNVENCBinary
+
+    if (ffmpegNVENCBinary == true) {
+      if (process.platform == 'linux') {
+        path = ffmpegPathLinux345
+      }
+    }
+
+    return path
+  }
+
   Meteor.methods({
 
     'DBHasChanged'() {
-      //console.log('DBHasChanged')
+      //logger.info('DBHasChanged')
       setTimeout(Meteor.bindEnvironment(setHasFilesDBChanged), 1000);
       function setHasFilesDBChanged() {
         hasDBChanged = true
@@ -635,7 +674,7 @@ function main() {
       try {
         doTablesUpdate = false
         string = string.replace(/\\/g, "/");
-        console.log(string)
+        logger.info(string)
         var allFiles = allFilesPulledTable
         string = string.split(',')
         allFiles = allFiles.filter(row => {
@@ -659,7 +698,7 @@ function main() {
 
             return true
           } catch (err) {
-            console.log(err.stack)
+            logger.error(err.stack)
           }
         }
         );
@@ -695,7 +734,7 @@ function main() {
     },
 
     'searchPlugins'(string, pluginType) {
-      //  console.log(string)
+      //  logger.info(string)
       try {
         var plugins = []
         fs.readdirSync(homePath + `/Tdarr/Plugins/${pluginType}`).forEach(file => {
@@ -705,10 +744,10 @@ function main() {
             fsextra.copySync(homePath + `/Tdarr/Plugins/${pluginType}/` + file, pluginLocalPath)
             var plugin = importFresh(pluginLocalPath)
             var obj = plugin.details();
-            obj.source = pluginTyp
+            obj.source = pluginType;
             plugins.push(obj)
           } catch (err) {
-            // console.log(err.stack)
+            // logger.error(err.stack)
             var obj = {
               Name: "Read error",
               Type: "Read error",
@@ -733,11 +772,11 @@ function main() {
             }
 
             return true
-          } catch (err) { console.log(err.stack) }
+          } catch (err) { logger.error(err.stack) }
         }
         );
       } catch (err) {
-        console.log(err.stack)
+        logger.error(err.stack)
       }
       return [plugins, pluginType]
     },
@@ -748,7 +787,7 @@ function main() {
 
         return [true, pluginID]
       } catch (err) {
-        console.log(err)
+        logger.error(err)
         return [false, pluginID]
       }
     },
@@ -764,7 +803,7 @@ function main() {
           fsextra.copySync(comPath, locPath)
           return [true, pluginID]
         } catch (err) {
-          console.log(err)
+          logger.error(err)
           return [false, pluginID]
         }
       }
@@ -777,7 +816,7 @@ function main() {
         var text = fs.readFileSync(locPath, 'utf8')
         return [true, pluginID, text]
       } catch (err) {
-        console.log(err)
+        logger.error(err)
         return [false, pluginID]
       }
     },
@@ -792,7 +831,7 @@ function main() {
         fs.writeFileSync(locPath, text, 'utf8');
         return [true, pluginID, text]
       } catch (err) {
-        console.log(err)
+        logger.error(err)
         return [false, pluginID]
       }
     },
@@ -855,19 +894,19 @@ function main() {
       const progress = require('request-progress');
       try {
         fsextra.removeSync(homePath + '/Tdarr/Plugins/temp.zip')
-      } catch (err) { console.log(err.stack) }
+      } catch (err) { logger.error(err.stack) }
       try {
         fsextra.removeSync(homePath + '/Tdarr/Plugins/temp')
-      } catch (err) { console.log(err.stack) }
+      } catch (err) { logger.error(err.stack) }
       (async function clonePlugins() {
-        console.log('Cloning plugins')
+        logger.info('Cloning plugins')
         var downloadStatus
         await downloadNew()
           .then((res) => {
             downloadStatus = res
           })
           .catch((err) => {
-            console.log(err)
+            logger.error(err)
             downloadStatus = 'Error!'
           })
 
@@ -878,7 +917,7 @@ function main() {
               unzipStatus = res
             })
             .catch((err) => {
-              console.log(err)
+              logger.error(err)
               unzipStatus = 'Error!'
             })
           await waitUnzip()
@@ -887,26 +926,26 @@ function main() {
 
             try {
               fsextra.copySync(homePath + '/Tdarr/Plugins/temp/Tdarr_Plugins-master/Community', homePath + "/Tdarr/Plugins/Community", { overwrite: true })
-            } catch (err) { console.log(err.stack) }
+            } catch (err) { logger.error(err.stack) }
 
             try {
               //COMMENT OUT WHEN WORKING ON LIBRARY FITLERS/ACTIONS
               fsextra.copySync(homePath + '/Tdarr/Plugins/temp/Tdarr_Plugins-master/methods', homePath + '/Tdarr/Plugins/methods', { overwrite: true })
-            } catch (err) { console.log(err.stack) }
+            } catch (err) { logger.error(err.stack) }
 
             try {
               fsextra.copySync(homePath + '/Tdarr/Plugins/methods', path.join(process.cwd(), `/assets/app/plugins/methods`), { overwrite: true })
-            } catch (err) { console.log(err.stack) }
+            } catch (err) { logger.error(err.stack) }
 
             try {
               fsextra.removeSync(homePath + '/Tdarr/Plugins/temp.zip')
-            } catch (err) { console.log(err.stack) }
+            } catch (err) { logger.error(err.stack) }
 
             try {
               fsextra.removeSync(homePath + '/Tdarr/Plugins/temp')
-            } catch (err) { console.log(err.stack) }
+            } catch (err) { logger.error(err.stack) }
 
-            console.log('Plugin update finished')
+            logger.info('Plugin update finished')
             GlobalSettingsDB.upsert('globalsettings',
               {
                 $set: {
@@ -915,10 +954,10 @@ function main() {
               }
             );
           } else {
-            console.log('Plugin unzip failed!')
+            logger.error('Plugin unzip failed!')
           }
         } else {
-          console.log('Plugin download failed!')
+          logger.error('Plugin download failed!')
         }
 
       })();
@@ -945,17 +984,17 @@ function main() {
               })
               .on('error', function (err) {
                 // Do something with err 
-                console.log(err)
+                logger.error(err)
                 resolve('Error!')
               })
               .on('end', function () {
                 // Do something after request finishes 
-                console.log('Finished downloading plugins!')
+                logger.info('Finished downloading plugins!')
                 resolve('Done!')
               })
               .pipe(fs.createWriteStream(filename))
           } catch (err) {
-            console.log(err)
+            logger.error(err)
 
             resolve('Error!')
           }
@@ -968,7 +1007,7 @@ function main() {
             var zipPath = homePath + '/Tdarr/Plugins/temp.zip'
             var unzipPath = homePath + '/Tdarr/Plugins/temp'
             if (!fs.existsSync(zipPath)) {
-              console.log('Zip path does not exist!')
+              logger.error('Zip path does not exist!')
               resolve('Error!')
             } else {
               var stream = fs.createReadStream(zipPath)
@@ -980,7 +1019,7 @@ function main() {
                 })
             }
           } catch (err) {
-            console.log(err)
+            logger.error(err)
             resolve('Error!')
           }
         });
@@ -1022,7 +1061,7 @@ function main() {
             [mode]: processStatus,
           }
           Meteor.call('modifyFileDB', 'update', allFiles[i].file, tempObj, (error, result) => { })
-        } catch (err) { console.log(err.stack) }
+        } catch (err) { logger.error(err.stack) }
       }
     },
 
@@ -1087,7 +1126,7 @@ function main() {
             return fs.statSync(path + '/' + file).isDirectory();
           });
         }
-      } catch (err) { console.log(err.stack) }
+      } catch (err) { logger.error(err.stack) }
 
     },
 
@@ -1153,7 +1192,7 @@ function main() {
 
       try {
         workers[workerID].send(messageOut);
-      } catch (err) { console.log(err.stack) }
+      } catch (err) { logger.error(err.stack) }
     },
 
     'cancelWorkerItem'(workerID) {
@@ -1162,7 +1201,7 @@ function main() {
       ];
       try {
         workers[workerID].send(messageOut);
-      } catch (err) { console.log(err.stack) }
+      } catch (err) { logger.error(err.stack) }
     }, 'scanFiles'(DB_id, arrayOrPath, arrayOrPathSwitch, mode, filePropertiesToAdd) {
 
       //arrayOrPath: array or string
@@ -1171,8 +1210,7 @@ function main() {
       //filePropertiesToAdd: obj of properties to add to newly scanned files
       //prevent multiple scans being done on same library (if not folder watcher files)
       if (runningScans.includes(DB_id) && (mode == 0 || mode == 1)) {
-        console.log('Scan is already running on library')
-        updateConsole("Scan is already running on library", false)
+        logger.warn('Scan is already running on library')
       } else {
         if (mode == 0 || mode == 1) {
           runningScans.push(DB_id)
@@ -1181,8 +1219,7 @@ function main() {
         var scannerID = shortid.generate()
 
         if (mode == 0) {
-          console.log("Commencing file update scan. Deleting non-existent files and adding new files.")
-          updateConsole("Commencing file update scan. Deleting non-existent files and adding new files.", false)
+          logger.info("Commencing file update scan. Deleting non-existent files and adding new files.")
           var filesInDB = allFilesPulledTable
 
           for (var i = 0; i < filesInDB.length; i++) {
@@ -1190,7 +1227,7 @@ function main() {
 
               if ((!filesInDB[i].file || !(fs.existsSync(filesInDB[i].file))) && (filesInDB[i].DB == DB_id || filesInDB[i].DB == undefined)) {
                 //delete files in DBs if not exist anymore (cleanse)
-                console.log("File does not exist anymore, removing:" + filesInDB[i].file)
+                logger.info("File does not exist anymore, removing:" + filesInDB[i].file)
                 Meteor.call('modifyFileDB', 'removeOne', filesInDB[i]._id, (error, result) => { })
                 filesInDB.splice(i, 1)
                 i--
@@ -1216,13 +1253,12 @@ function main() {
               fs.writeFileSync(homePath + "/Tdarr/Data/" + scannerID + ".txt", filesInDB, 'utf8');
             }
           } catch (err) {
-            console.log(err.stack)
-            updateConsole("Error writing to file: " + err.stack, false)
+            logger.error(err.stack)
           }
 
           filesInDB = []
         } else if (mode == 1) {
-          updateConsole("Commencing fresh file scan.", false)
+          logger.info("Commencing fresh file scan.")
           Meteor.call('modifyFileDB', 'removeByDB', DB_id, (error, result) => { })
         } else if (mode == 3) {
           arrayOrPath = arrayOrPath.map(row => row + '\r\n')
@@ -1234,8 +1270,7 @@ function main() {
               fs.writeFileSync(homePath + "/Tdarr/Data/" + scannerID + ".txt", arrayOrPath, 'utf8');
             }
           } catch (err) {
-            console.log(err.stack)
-            updateConsole("Error writing to file: " + err.stack, false)
+            logger.error("Error writing to file: " + err.stack)
           }
           arrayOrPath = []
         }
@@ -1275,9 +1310,9 @@ function main() {
         ]
 
         fileScanners[scannerID] = childProcess.fork(scannerPath, child_argv);
-        updateConsole("" + "Scanner " + scannerID + " launched" + "", false)
+        logger.info("" + "Scanner " + scannerID + " launched" + "")
         fileScanners[scannerID].on("exit", Meteor.bindEnvironment(function (code, signal) {
-          updateConsole("" + "File scanner exited" + "", false)
+          logger.info("" + "File scanner exited" + "")
         }));
 
         fileScanners[scannerID].on("error", console.error.bind(console));
@@ -1302,12 +1337,12 @@ function main() {
             }
 
             if (typeof jsonData === 'object' && jsonData !== null) {
-              //  console.log("jsonData is object")
+              //  logger.info("jsonData is object")
             } else {
-              //   console.log("jsonData isn't object")
+              //   logger.info("jsonData isn't object")
             }
 
-            updateConsole(`Add file to DB request received for: ${jsonData._id}. Queueing`, true)
+            logger.info(`Add file to DB request received for: ${jsonData._id}. Queueing`)
             filesToAddToDB.push(jsonData)
           }
 
@@ -1322,7 +1357,7 @@ function main() {
           }
 
           if (message[1] == "finishScan") {
-            updateConsole("Scanner " + message[0] + ":Finished", false);
+            logger.info("Scanner " + message[0] + ":Finished");
             var indexEle = runningScans.indexOf(message[2])
             runningScans.splice(indexEle, 1)
             SettingsDB.upsert(message[2],
@@ -1369,7 +1404,7 @@ function main() {
     },
 
     'runHelpCommand'(mode, text) {
-      console.log(mode, text)
+      logger.info(mode, text)
 
       if (mode == "handbrake") {
         workerCommand = getHandBrakePath() + " " + text
@@ -1377,10 +1412,11 @@ function main() {
         workerCommand = getFFmpegPath() + " " + text
       }
 
-      console.log(workerCommand)
+      logger.info(workerCommand)
+      
       fs.writeFileSync(homePath + "/Tdarr/Data/" + mode + ".txt", "", 'utf8');
       var shellWorker = shell.exec(workerCommand, function (code, stdout, stderr, stdin) {
-        console.log('Exit code:', code);
+        logger.info('Exit code:', code);
         fs.appendFileSync(homePath + "/Tdarr/Data/" + mode + ".txt", stdout + '\n', 'utf8');
         fs.appendFileSync(homePath + "/Tdarr/Data/" + mode + ".txt", stderr + '\n', 'utf8');
       });
@@ -1391,14 +1427,14 @@ function main() {
       try {
         var ffmpegText = fs.readFileSync(homePath + "/Tdarr/Data/ffmpeg.txt", 'utf8')
       } catch (err) {
-        console.log(err.stack)
+        logger.error(err.stack)
         var ffmpegText = ''
       }
 
       try {
         var handbrakeText = fs.readFileSync(homePath + "/Tdarr/Data/handbrake.txt", 'utf8')
       } catch (err) {
-        console.log(err.stack)
+        logger.error(err.stack)
         var handbrakeText = ''
       }
 
@@ -1406,7 +1442,7 @@ function main() {
     },
 
     'createSample'(filePath) {
-      console.log(filePath)
+      logger.info(filePath)
       var inputFile = filePath
       var outputFile = filePath.split(".")
       outputFile[outputFile.length - 2] = outputFile[outputFile.length - 2] + " - TdarrSample"
@@ -1432,7 +1468,7 @@ function main() {
       }
 
       var shellWorker = shell.exec(workerCommand, function (code, stdout, stderr, stdin) {
-        console.log('Exit code:', code);
+        logger.info('Exit code:', code);
       });
     },
   })
@@ -1483,7 +1519,7 @@ function main() {
   setTimeout(Meteor.bindEnvironment(runScheduledManualScan), 86400000);
 
   function runScheduledManualScan() {
-    console.log("Running hourly scan!")
+    logger.info("Running hourly scan!")
 
     try {
       var settingsInit = SettingsDB.find({}, {}).fetch()
@@ -1503,7 +1539,7 @@ function main() {
         }
       }
     } catch (err) {
-      console.log(err.stack)
+      logger.error(err.stack)
     }
 
     setTimeout(Meteor.bindEnvironment(runScheduledManualScan), 3600000);
@@ -1513,13 +1549,13 @@ function main() {
   scheduledPluginUpdate()
 
   function scheduledPluginUpdate() {
-    console.log('Updating plugins')
+    logger.info('Updating plugins')
 
     try {
       Meteor.call('updatePlugins', function (error, result) {
       });
     } catch (err) {
-      console.log(err.stack)
+      logger.error(err.stack)
     }
 
     setTimeout(Meteor.bindEnvironment(scheduledPluginUpdate), 3600000);
@@ -1535,7 +1571,7 @@ function main() {
         try {
           traverseDir(settings[i].cache)
         } catch (err) {
-          console.log(err.stack)
+          logger.error(err.stack)
         }
       }
 
@@ -1560,31 +1596,31 @@ function main() {
             try {
 
               if (isBeingProcessed(fullPath) == false && fullPath.includes("TdarrCacheFile")) {
-                console.log("Removing:" + fullPath)
+                logger.info("Removing:" + fullPath)
 
                 try {
                   rimraf.sync(fullPath);
                 } catch (err) {
-                  console.error(err.stack);
+                  logger.error(err.stack);
                   try {
                     traverseDir(fullPath);
                   } catch (err) {
-                    console.error(err.stack);
+                    logger.error(err.stack);
 
                   }
                 }
               } else if (!fullPath.includes("TdarrCacheFile")) {
-                console.log("File not Tdarr cache file, won't remove:" + fullPath)
+                logger.info("File not Tdarr cache file, won't remove:" + fullPath)
               } else {
-                console.log("Cache file in use, won't remove:" + fullPath)
+                logger.warn("Cache file in use, won't remove:" + fullPath)
               }
             } catch (err) {
-              console.error(err.stack);
+              logger.error(err.stack);
             }
           });
-        } catch (err) { console.log(err.stack) }
+        } catch (err) { logger.error(err.stack) }
       }
-    } catch (err) { console.log(err.stack) }
+    } catch (err) { logger.error(err.stack) }
     // setTimeout(Meteor.bindEnvironment(scheduledCacheClean), 10000);
   }
 
@@ -1619,7 +1655,7 @@ function main() {
         try {
           workerDB[idx][key] = obj[key]
         } catch (err) {
-          console.log(err.stack)
+          logger.error(err.stack)
         }
       });
     } else {
@@ -1643,22 +1679,22 @@ function main() {
     //use this
     //workers[workerID - 1] = childProcess.fork(path.join(__dirname, workerPath), child_argv);
     workers[workerID] = childProcess.fork(workerPath, child_argv);
-    updateConsole("" + "Worker " + workerID + " launched" + "", true)
+    logger.info("" + "Worker " + workerID + " launched" + "")
 
     // workers[workerID - 1].stdout.on('data', function(data) {
-    // //console.log('stdout: ' + data);
+    // //logger.info('stdout: ' + data);
     // //Here is where the output goes
     // });
 
     workers[workerID].on("exit", Meteor.bindEnvironment(function (code, signal) {
-      updateConsole("" + "Worker exited" + "", true)
+      logger.info("" + "Worker exited" + "")
     }));
 
     workers[workerID].on("error", console.error.bind(console));
     workers[workerID].on('message', Meteor.bindEnvironment(function (message) {
 
-      // updateConsole("Worker "+message[0]+":"+message+"");
-      //  console.log("Message:" + message);
+      // logger.info("Worker "+message[0]+":"+message+"");
+      //  logger.info("Message:" + message);
 
       if (message[1] == "deleteThisFile") {
       }
@@ -1707,7 +1743,7 @@ function main() {
             }
 
             if (!Array.isArray(files) || !files.length) {
-              console.log(`Server: Worker ${message[0]} requesting item. Nothing to process for this worker.`)
+              logger.info(`Server: Worker ${message[0]} requesting item. Nothing to process for this worker.`)
               var messageOut = [
                 "completed",
               ];
@@ -1719,7 +1755,6 @@ function main() {
               if (filesBeingProcessed.includes(firstItem.file + "")) {
                 var messageOut = [
                   "requestNewItem",
-
                 ]
                 workers[message[0]].send(messageOut);
               } else {
@@ -1765,7 +1800,7 @@ function main() {
                 var copyIfConditionsMet = settings[0].copyIfConditionsMet
                 var lastPluginDetails = ''
 
-                //  console.log(util.inspect(firstItem, {showHidden: false, depth: null}))
+                //  logger.info(util.inspect(firstItem, {showHidden: false, depth: null}))
                 if (mode == "healthcheck") {
                   if (handbrakescan == false && ffmpegscan == false) {
                     cliLogAdd += 'Skipping health check! \n'
@@ -1898,7 +1933,7 @@ function main() {
                         }
 
                       } catch (err) {
-                        console.log(err)
+                        logger.error(err)
                         // err = JSON.stringify(err)
                         processFile = false
                         preset = ''
@@ -1926,7 +1961,7 @@ function main() {
                   } else if (settings[0].decisionMaker.videoFilter == true) {
 
                     if (firstItem.fileMedium !== "video") {
-                      console.log("File is not video")
+                      logger.info("File is not video")
                       cliLogAdd += "☒File is not video \n"
                       processFile = false;
                     } else {
@@ -1940,8 +1975,8 @@ function main() {
                       if (settings[0].decisionMaker.videoExcludeSwitch == false) {
 
                         if (video_codec_names_exclude.includes(firstItem.ffProbeData.streams[0]["codec_name"]) && typeof firstItem.ffProbeData.streams[0]["codec_name"] !== 'undefined') {
-                          console.log(video_codec_names_exclude + "   " + firstItem.video_codec_name)
-                          console.log("File codec included in transcode whitelist")
+                          logger.info(video_codec_names_exclude + "   " + firstItem.video_codec_name)
+                          logger.info("File codec included in transcode whitelist")
                           cliLogAdd += "☑File codec included in transcode whitelist  \n"
                         } else {
                           cliLogAdd += "☒File codec not included in transcode whitelist  \n"
@@ -1950,8 +1985,8 @@ function main() {
                       } else {
 
                         if (video_codec_names_exclude.includes(firstItem.ffProbeData.streams[0]["codec_name"]) && typeof firstItem.ffProbeData.streams[0]["codec_name"] !== 'undefined') {
-                          console.log(video_codec_names_exclude + "   " + firstItem.video_codec_name)
-                          console.log("File video already in required codec")
+                          logger.info(video_codec_names_exclude + "   " + firstItem.video_codec_name)
+                          logger.info("File video already in required codec")
                           cliLogAdd += "☑File already in required codec  \n"
                           processFile = false;
                         } else {
@@ -1960,7 +1995,7 @@ function main() {
                       }
 
                       if (firstItem.file_size >= settings[0].decisionMaker.video_size_range_include.max || firstItem.file_size <= settings[0].decisionMaker.video_size_range_include.min) {
-                        console.log("File not in video size range")
+                        logger.info("File not in video size range")
                         cliLogAdd += "☒File not in video size range  \n"
                         processFile = false;
                       } else {
@@ -1968,7 +2003,7 @@ function main() {
                       }
 
                       if (firstItem.ffProbeData.streams[0]["height"] >= settings[0].decisionMaker.video_height_range_include.max || firstItem.ffProbeData.streams[0]["height"] <= settings[0].decisionMaker.video_height_range_include.min) {
-                        console.log("File not in video height range")
+                        logger.info("File not in video height range")
                         cliLogAdd += "☒File not in video height range  \n"
                         processFile = false;
                       } else {
@@ -1976,7 +2011,7 @@ function main() {
                       }
 
                       if (firstItem.ffProbeData.streams[0]["width"] >= settings[0].decisionMaker.video_width_range_include.max || firstItem.ffProbeData.streams[0]["width"] <= settings[0].decisionMaker.video_width_range_include.min) {
-                        console.log("File not in video width range")
+                        logger.info("File not in video width range")
                         cliLogAdd += "☒File not in video width range  \n"
                         processFile = false;
                       } else {
@@ -1986,7 +2021,7 @@ function main() {
                   } else if (settings[0].decisionMaker.audioFilter == true) {
 
                     if (firstItem.fileMedium !== "audio") {
-                      console.log("File is not audio")
+                      logger.info("File is not audio")
                       cliLogAdd += "☒File is not audio  \n"
                       processFile = false;
                     } else {
@@ -2000,7 +2035,7 @@ function main() {
                       if (settings[0].decisionMaker.audioExcludeSwitch == false) {
 
                         if (audio_codec_names_exclude.includes(firstItem.ffProbeData.streams[0]["codec_name"]) && typeof firstItem.ffProbeData.streams[0]["codec_name"] !== 'undefined') {
-                          console.log("File codec included in transcode whitelist")
+                          logger.info("File codec included in transcode whitelist")
                           cliLogAdd += "☑File codec included in transcode whitelist  \n"
                         } else {
                           cliLogAdd += "☒File codec not included in transcode whitelist  \n"
@@ -2009,7 +2044,7 @@ function main() {
                       } else {
 
                         if (audio_codec_names_exclude.includes(firstItem.ffProbeData.streams[0]["codec_name"]) && typeof firstItem.ffProbeData.streams[0]["codec_name"] !== 'undefined') {
-                          console.log("File already in required codec")
+                          logger.info("File already in required codec")
                           cliLogAdd += "☑File already in required codec  \n"
                           processFile = false;
                         } else {
@@ -2018,7 +2053,7 @@ function main() {
                       }
 
                       if (firstItem.file_size >= settings[0].decisionMaker.audio_size_range_include.max || firstItem.file_size <= settings[0].decisionMaker.audio_size_range_include.min) {
-                        console.log("File not in audio size range")
+                        logger.info("File not in audio size range")
                         cliLogAdd += "☒File not in audio size range  \n"
                         processFile = false;
                       } else {
@@ -2130,13 +2165,13 @@ function main() {
                             cliLogAdd += response.infoLog
                           }
                         } catch (err) {
-                          console.log(err)
-                          console.log('final post processing failed' + i)
+                          logger.error(err)
+                          logger.error('final post processing failed' + i)
                         }
                       }
                     } catch (err) {
-                      console.log(err)
-                      console.log('final post processing failed')
+                      logger.error(err)
+                      logger.error('final post processing failed')
                     }
                   }
 
@@ -2169,7 +2204,7 @@ function main() {
                   try {
                     var sourcefileSizeInGbytes = (((fs.statSync(firstItem.file)).size) / 1000000000.0);
                   } catch (err) {
-                    console.log(err.stack)
+                    logger.error(err.stack)
                     var sourcefileSizeInGbytes = "Error"
                   }
 
@@ -2287,7 +2322,7 @@ function main() {
               Meteor.call('modifyFileDB', 'insert', response.file._id, response.file, (error, result) => { })
               message[2] = response.file._id;
             }
-          } catch (err) { console.log('onTranscodeError failed') }
+          } catch (err) { logger.info('onTranscodeError failed') }
           var tempObj = {
             _id: message[2],
             TranscodeDecisionMaker: "Transcode error",
@@ -2339,7 +2374,6 @@ function main() {
                 sizeDiff: message[7]
 
               }
-
             }
           );
           SettingsDB.update(
@@ -2352,13 +2386,13 @@ function main() {
             }
           );
         }
-        console.log(`Server:Worker completed:" ${message[2]}`)
+        logger.info(`Server:Worker completed:" ${message[2]}`)
       }
 
       try {
         if (message[1].includes("Skipped")) {
         }
-      } catch (err) { console.log(err.stack) }
+      } catch (err) { logger.error(err.stack) }
       if (message[1] == "copied") {
       }
 
@@ -2369,30 +2403,30 @@ function main() {
       try {
         if (message[1].includes("Original replaced")) {
         }
-      } catch (err) { console.log(err.stack) }
+      } catch (err) { logger.error(err.stack) }
 
       //if (message[1] == "originalNotReplaced") {
       try {
         if (message[1].includes("Original not replaced")) {
         }
-      } catch (err) { console.log(err.stack) }
+      } catch (err) { logger.error(err.stack) }
 
       try {
         if (message[1].includes("File repaired")) {
         }
-      } catch (err) { console.log(err.stack) }
+      } catch (err) { logger.error(err.stack) }
 
       try {
         if (message[1].includes("Unable to repair file")) {
         }
-      } catch (err) { console.log(err.stack) }
+      } catch (err) { logger.error(err.stack) }
 
       if (message[1] == "FFPROBE") {
       }
 
       if (message[1] == "cancelled") {
-        console.log("Cancelled message received")
-        console.log(message)
+        logger.info("Cancelled message received")
+        logger.info(message)
 
         if (message[5] == "notsuicide") {
           upsertWorker(message[0], {
@@ -2436,21 +2470,6 @@ function main() {
     }));
   }
 
-  function updateConsole(message, skipWrite) {
-
-    if (verboseLogs == true) {
-      skipWrite = false
-    }
-
-    if (skipWrite == false) {
-      try {
-        fs.appendFileSync(homePath + "/Tdarr/Logs/log.txt", dateFuncs.getDateNow() + ":" + message + '\n', 'utf8');
-      } catch (err) {
-        console.log(err.stack)
-      }
-    }
-  }
-
   //File watching
   var settings = SettingsDB.find({}, { sort: { createdAt: 1 } }).fetch()
 
@@ -2458,7 +2477,7 @@ function main() {
 
     if (settings[i].folderWatching == true) {
 
-      console.log("Turning folder watch on for:" + settings[i].folder)
+      logger.info("Turning folder watch on for:" + settings[i].folder)
       createFolderWatch(settings[i].folder, settings[i]._id)
 
     }
@@ -2469,20 +2488,18 @@ function main() {
     'toggleFolderWatch'(Folder, DB_id, status) {
 
       if (status == true) {
-        console.log("Turning folder watch on for:" + Folder)
-        updateConsole("Turning folder watch on for:" + Folder, true)
+        logger.info("Turning folder watch on for:" + Folder)
         createFolderWatch(Folder, DB_id)
 
       } else if (status == false) {
-        console.log("Turning folder watch off for:" + Folder)
-        updateConsole("Turning folder watch off for:" + Folder, true)
+        logger.info("Turning folder watch off for:" + Folder)
         deleteFolderWatch(DB_id)
       }
     }
   });
 
   function deleteFolderWatch(DB_id) {
-    updateConsole("Deleting folder watcher:" + DB_id, true)
+    logger.info("Deleting folder watcher:" + DB_id)
 
     try {
       //try send message
@@ -2492,9 +2509,8 @@ function main() {
       folderWatchers[DB_id].send(messageOut)
       //delete watchers[DB_id]
     } catch (err) {
-      console.log(err.stack)
-      console.log("Deleting folder watcher failed (does not exist)")
-      updateConsole("Deleting folder watcher failed (does not exist):" + DB_id, true)
+      logger.error(err.stack)
+      logger.error("Deleting folder watcher failed (does not exist):" + DB_id)
     }
   }
 
@@ -2503,7 +2519,7 @@ function main() {
     var librarySettings = SettingsDB.find({ _id: DB_id }, { sort: { createdAt: 1 } }).fetch()[0]
     var folderWatchScanInterval = librarySettings.folderWatchScanInterval
     var useFsEvents = librarySettings.useFsEvents
-    console.log(folderWatchScanInterval)
+    logger.info(folderWatchScanInterval)
     var watcherPath = "assets/app/folderWatcher.js"
     var childProcess = require("child_process");
     var child_argv = [
@@ -2516,9 +2532,9 @@ function main() {
     ]
 
     folderWatchers[watcherID] = childProcess.fork(watcherPath, child_argv);
-    updateConsole("" + "Watcher " + watcherID + " launched" + "", false)
+    logger.info("" + "Watcher " + watcherID + " launched" + "")
     folderWatchers[watcherID].on("exit", Meteor.bindEnvironment(function (code, signal) {
-      updateConsole("" + "Folder Watcher exited" + "", false)
+      logger.info("" + "Folder Watcher exited" + "")
     }));
 
     folderWatchers[watcherID].on("error", console.error.bind(console));
@@ -2576,9 +2592,9 @@ function main() {
             var existingFile = FileDB.findOne({ _id: filesToAddToDB[i]._id });
 
             if (existingFile == undefined) {
-              updateConsole("This exact file does not exist in DB. Adding", true)
+              logger.info("This exact file does not exist in DB. Adding")
               Meteor.call('modifyFileDB', 'insert', filesToAddToDB[i]._id, tempObj, (error, result) => { })
-              updateConsole(`Adding file to DB: ${filesToAddToDB[i]._id}`, true)
+              logger.info(`Adding file to DB: ${filesToAddToDB[i]._id}`)
             } else {
 
               //compare modified time and bitrate
@@ -2588,23 +2604,23 @@ function main() {
               var br_old = existingFile.bit_rate
 
               if (mtime_new == mtime_old && br_new == br_old) {
-                console.log("This exact file already exists in DB.")
+                logger.info("This exact file already exists in DB.")
               } else {
-                updateConsole("This exact file does not exist in DB. Removing old, adding new", true)
+                logger.info("This exact file does not exist in DB. Removing old, adding new")
                 Meteor.call('modifyFileDB', 'removeOne', filesToAddToDB[i]._id, (error, result) => { })
                 Meteor.call('modifyFileDB', 'insert', filesToAddToDB[i]._id, tempObj, (error, result) => { })
-                updateConsole(`Adding file to DB: ${filesToAddToDB[i]._id}`, true)
+                logger.info(`Adding file to DB: ${filesToAddToDB[i]._id}`)
               }
             }
           } catch (err) {
-            console.log(err.stack)
+            logger.error(err.stack)
           }
           filesToAddToDB.splice(i, 1)
           i--
         }
       }
     } catch (err) {
-      console.log(err.stack)
+      logger.error(err.stack)
     }
     setTimeout(Meteor.bindEnvironment(dbUpdatePush), 1000);
   }
@@ -2636,7 +2652,7 @@ function main() {
       if (doTablesUpdate == false) {
       } else if (hasDBChanged === true) {
 
-        //console.log('Updating queues')
+        //logger.info('Updating queues')
         hasDBChanged = false
         addFilesToDB = false
         allFilesPulledTable = FileDB.find({}).fetch()
@@ -2804,7 +2820,7 @@ function main() {
         var d = new Date()
         d = d.getDay()
 
-        //console.log(timeIdx)
+        //logger.info(timeIdx)
         timeIdx = parseInt(timeIdx) + (d * 24)
         var libNotice = ' -Libraries OFF:'
 
@@ -2823,7 +2839,7 @@ function main() {
               // table5data = table5data.filter(row => row.DB != settings[i]._id);
               // table6data = table6data.filter(row => row.DB != settings[i]._id);
             }
-          } catch (err) { console.log(err.stack) }
+          } catch (err) { logger.error(err.stack) }
         }
 
         //old
@@ -2850,8 +2866,8 @@ function main() {
         var seconds2 = (endDate.getTime() - startDate.getTime()) / 1000;
         newFetchtime = Math.round(seconds2 * 10) / 10;
 
-        //console.log("Fetch time: " + newFetchtime)
-        //console.log("data done")
+        //logger.info("Fetch time: " + newFetchtime)
+        //logger.info("data done")
         ClientDB.upsert("client",
           {
             $set: {
@@ -2889,7 +2905,7 @@ function main() {
 
         DBPollPeriod = allFilesPulledTable.length + filesToAddToDB.length
 
-        //console.log("DBPollPeriod:" + DBPollPeriod)
+        //logger.info("DBPollPeriod:" + DBPollPeriod)
         oldFetchtime = newFetchtime
         filesToAddToDBLengthOld = filesToAddToDB.length
         StatisticsDB.upsert("statistics",
@@ -2917,7 +2933,7 @@ function main() {
 
       setTimeout(Meteor.bindEnvironment(tablesUpdate), DBPollPeriod > 1000 ? DBPollPeriod : 1000);
     } catch (err) {
-      console.log(err.stack)
+      logger.error(err.stack)
       setTimeout(Meteor.bindEnvironment(tablesUpdate), 10000);
     }
 
@@ -3042,13 +3058,13 @@ function main() {
       var shell = require('shelljs');
       var globalSettings = GlobalSettingsDB.find({}, {}).fetch()
 
-      //console.log(globalSettings)
+      //logger.info(globalSettings)
       if (globalSettings[0].lowCPUPriority == true) {
         shellWorker = shell.exec(workerCommandFFmpeg, function (code, stdout, stderr, stdin) { });
         shellWorker = shell.exec(workerCommandHandBrake, function (code, stdout, stderr, stdin) { });
       }
     } catch (err) {
-      console.log(err.stack)
+      logger.error(err.stack)
     }
     setTimeout(Meteor.bindEnvironment(setProcessPriority), 10000);
   }
@@ -3135,23 +3151,23 @@ function main() {
             if (workerStatus[workerCheck[i]._id][1] == 300) {
 
               if (workerStatus[workerCheck[i]._id][0] == workerCheck[i].file + workerCheck[i].percentage + "") {
-                //console.log("Worker " + workerCheck[i]._id + " stalled. Cancelling item.")
+                //logger.info("Worker " + workerCheck[i]._id + " stalled. Cancelling item.")
                 Meteor.call('cancelWorkerItem', workerCheck[i]._id, function (error, result) { })
                 workerStatus[workerCheck[i]._id][0] = ""
                 workerStatus[workerCheck[i]._id][1] = -1
               } else {
 
-                //console.log("Worker " + workerCheck[i]._id + " has not stalled.")
+                //logger.info("Worker " + workerCheck[i]._id + " has not stalled.")
                 workerStatus[workerCheck[i]._id][0] = workerCheck[i].file + workerCheck[i].percentage + ""
                 workerStatus[workerCheck[i]._id][1] = 0
               }
             } else {
               workerStatus[workerCheck[i]._id][1] = (workerStatus[workerCheck[i]._id][1]) + 1
             }
-          } catch (err) { console.log(err.stack) }
+          } catch (err) { logger.error(err.stack) }
         }
       }
-    } catch (err) { console.log(err.stack) }
+    } catch (err) { logger.error(err.stack) }
     setTimeout(Meteor.bindEnvironment(workerUpdateCheck), 3000);
   }
 
@@ -3167,19 +3183,19 @@ function main() {
   SettingsDB.find().observe({
     added: function (document) {
       if (!initialising) {
-        //console.log('doc added');
+        //logger.info('doc added');
         Meteor.call('DBHasChanged', (error, result) => { })
       }
     },
     changed: function (new_document, old_document) {
       if (!initialising) {
-        //console.log('doc changed');
+        //logger.info('doc changed');
         Meteor.call('DBHasChanged', (error, result) => { })
       }
     },
     removed: function (document) {
       if (!initialising) {
-        //console.log('doc removed');
+        //logger.info('doc removed');
         Meteor.call('DBHasChanged', (error, result) => { })
       }
     }
@@ -3188,13 +3204,13 @@ function main() {
   GlobalSettingsDB.find().observe({
     added: function (document) {
       if (!initialising) {
-        //console.log('doc added');
+        //logger.info('doc added');
         Meteor.call('DBHasChanged', (error, result) => { })
       }
     },
     changed: function (new_document, old_document) {
       if (!initialising) {
-        //console.log('doc changed');
+        //logger.info('doc changed');
         if (new_document.lastQueueUpdateTime == old_document.lastQueueUpdateTime) {
           Meteor.call('DBHasChanged', (error, result) => { })
         }
@@ -3203,7 +3219,7 @@ function main() {
     },
     removed: function (document) {
       if (!initialising) {
-        //console.log('doc removed');
+        //logger.info('doc removed');
         Meteor.call('DBHasChanged', (error, result) => { })
       }
     }

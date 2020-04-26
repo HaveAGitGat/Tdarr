@@ -1,11 +1,16 @@
 
 import { Meteor } from 'meteor/meteor';
 import { GlobalSettingsDB } from '../imports/api/tasks.js';
+import logger from './logger.js';
+
+const fs = require('fs');
 
 Meteor.methods({
 
-    'trimBackups'() {
+    'trimBackups'(homePath) {
+        
         try {
+            logger.info('Trimming backups');
             var backups = []
             fs.readdirSync(homePath + `/Tdarr/Backups/`).forEach(file => {
 
@@ -28,7 +33,7 @@ Meteor.methods({
                 backupLimit = 30
             }
 
-            console.log(`Num backups:${backups.length}, Backup limit:${backupLimit}`)
+            logger.info(`Num backups:${backups.length}, Backup limit:${backupLimit}`)
 
             while (backups.length > backupLimit) {
                 console.log('Deleting backup:' + backups[0].fullPath)
@@ -36,7 +41,7 @@ Meteor.methods({
                 backups.splice(0, 1)
             }
         } catch (err) {
-            console.log(err.stack)
+            logger.error(err.stack)
         }
     },
 });
