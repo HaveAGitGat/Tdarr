@@ -1,8 +1,9 @@
 
-function updateConsole(text) {
+function logger(type, text) {
   var message = [
     watcherID,
     "consoleMessage",
+    type,
     text,
   ];
   process.send(message);
@@ -10,7 +11,7 @@ function updateConsole(text) {
 
 process.on('uncaughtException', function (err) {
   console.error(err.stack);
-  updateConsole(watcherID, ":" + err.stack)
+  logger('fatal', err.stack)
   process.exit();
 });
 
@@ -42,7 +43,7 @@ if (folderWatchScanInterval < 1000) {
 var exitRequestSent = false
 const chokidar = require(rootModules + 'chokidar');
 
-updateConsole("Folder watcher: Creating folder watch for library:" + Folder)
+logger('info', 'Creating folder watch for library:' + Folder)
 
 watcherFilesToScan[DB_id] = {}
 watcherFilesToScan[DB_id].id = DB_id
@@ -71,17 +72,17 @@ const log = console.log.bind(console);
 watchers[DB_id]
   .on('add', newFile => {
     newFile = newFile.replace(/\\/g, "/");
-    updateConsole("Folder watcher: File detected, adding to queue:" + newFile)
+    logger('info', 'File detected, adding to queue:' + newFile)
     watcherFilesToScan[DB_id].filesToScan.push(newFile)
   })
   .on('change', newFile => {
     newFile = newFile.replace(/\\/g, "/");
-    updateConsole("Folder watcher: File detected, adding to queue:" + newFile)
+    logger('info', 'File detected, adding to queue:' + newFile)
     watcherFilesToScan[DB_id].filesToScan.push(newFile)
   })
   .on('unlink', path => {
     path = path.replace(/\\/g, "/");
-    updateConsole("Folder watcher: file removed, removing:" + path)
+    logger('info', 'file removed, removing:' + path)
 
     //  log(`File ${path} has been removed`)
     var message = [
@@ -93,10 +94,10 @@ watchers[DB_id]
     process.send(message);
   })
   .on('error', error => {
-    updateConsole(`Folder Watcher: error: ${error}`)
+    logger('error', `error: ${error}`)
   })
 
-  .on('ready', () => { updateConsole("Folder watcher: Initial scan complete. Ready for changes") })
+  .on('ready', () => { logger('info', 'Initial scan complete. Ready for changes') })
 
 //on close
 
@@ -127,7 +128,7 @@ scanWatcherFiles()
 
 function scanWatcherFiles() {
 
-  //updateConsole("Folder watcher:" + JSON.stringify(watcherFilesToScan))
+  //logger('info','Folder watcher:' + JSON.stringify(watcherFilesToScan))
   Object.keys(watcherFilesToScan).forEach(function (key) {
 
     try {
@@ -136,7 +137,7 @@ function scanWatcherFiles() {
       watcherFilesToScan[key].newLength = watcherFilesToScan[key].filesToScan.length
 
       if (watcherFilesToScan[key].newLength == watcherFilesToScan[key].oldLength && watcherFilesToScan[key].filesToScan.length != 0) {
-        updateConsole("Folder watcher: Sending files for scanning, library :" + watcherFilesToScan[key].id)
+        logger('info', 'Sending files for scanning, library :' + watcherFilesToScan[key].id)
         var message = [
           watcherID,
           "sendFilesForExtract",

@@ -2611,8 +2611,9 @@ function main() {
       }
 
       if (message[1] == "consoleMessage") {
-        console.log("Scanner " + message[0] + ":" + message[2] + "", true)
-        updateConsole("Scanner " + message[0] + ":" + message[2] + "", true);
+        var type = message[2]
+        var string = "Folder watcher " + message[0] + ":" + message[3] + ""
+        loggerFunc(type,string);
       }
     }));
   }
