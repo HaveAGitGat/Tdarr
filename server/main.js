@@ -3,6 +3,7 @@ import "../imports/api/manipulateLib.js";
 import "../imports/api/pluginCreatorMethods.js";
 import "../imports/api/database.js";
 import "../imports/api/transcodeSettings.js";
+import "./api/statusAPI.js";
 import {
   LogDB,
   FileDB,
