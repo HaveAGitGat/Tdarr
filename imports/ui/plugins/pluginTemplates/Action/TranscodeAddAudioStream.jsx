@@ -1,100 +1,87 @@
-import React, { Component } from 'react';
-import { Button } from 'react-bootstrap';
-import ReactDOM from 'react-dom';
-import Checkbox from '@material-ui/core/Checkbox';
-
-
-
-
+import React, { Component } from "react";
+import { Button } from "react-bootstrap";
+import ReactDOM from "react-dom";
+import Checkbox from "@material-ui/core/Checkbox";
 
 var ButtonStyle = {
-  display: 'inline-block',
-}
-
-
+  display: "inline-block",
+};
 
 export default class App extends Component {
-
   constructor(props) {
     super(props);
-
   }
 
-
   addAction = () => {
+    var audioEncoder = ReactDOM.findDOMNode(this.refs.audioEncoder).value;
 
+    var langTag = ReactDOM.findDOMNode(this.refs.langTag).value;
 
-    var audioEncoder = ReactDOM.findDOMNode(this.refs.audioEncoder).value
-
-    var langTag = ReactDOM.findDOMNode(this.refs.langTag).value
-
-    var channelCount = ReactDOM.findDOMNode(this.refs.channels).value
-
-
-
-
+    var channelCount = ReactDOM.findDOMNode(this.refs.channels).value;
 
     var obj = {
-      name: 'Transcode - Add audio stream',
+      name: "Transcode - Add audio stream",
       description: `Transcode - Add audio stream: ${audioEncoder}, ${langTag}, ${channelCount}`,
       preset: `library.actions.transcodeAddAudioStream(file, '${audioEncoder}', '${langTag}', ${channelCount}).preset`,
       container: '"." + file.container',
       handBrakeMode: false,
       FFmpegMode: true,
       processFile: `library.actions.transcodeAddAudioStream(file, '${audioEncoder}', '${langTag}', ${channelCount}).processFile`,
-      infoLog: `library.actions.transcodeAddAudioStream(file, '${audioEncoder}', '${langTag}', ${channelCount}).note`
-
-    }
-    this.props.setAction(obj)
-
-  }
-
-
+      infoLog: `library.actions.transcodeAddAudioStream(file, '${audioEncoder}', '${langTag}', ${channelCount}).note`,
+    };
+    this.props.setAction(obj);
+  };
 
   render() {
-
-
-
     return (
+      <div>
+        <br />
 
-
-
-
-
-      <div >
+        <center>
+          <p>Transcode - Add audio stream</p>{" "}
+        </center>
 
         <br />
 
-        <center><p>Transcode - Add audio stream</p> </center>
-
-
-        <br />
-
-        <p>This action has a built-in filter. Additional filters can be added above.</p>
+        <p>
+          This action has a built-in filter. Additional filters can be added
+          above.
+        </p>
 
         <br />
 
+        <p>
+          If the following audio track does not exist, Tdarr will try to add it
+          using existing audio streams.
+        </p>
+        <p>
+          It may be worth creating several of these plugins for different
+          languages/channels.
+        </p>
 
-        <p>If the following audio track does not exist, Tdarr will try to add it using existing audio streams.</p>
-        <p>It may be worth creating several of these plugins for different languages/channels.</p>
-
-        <p>Tdarr will try to create the specified audio stream from the highest channel count stream available in the specified language.</p>
-        <p>If no specified language track exists, the best untagged/undefined stream will be used.</p>
+        <p>
+          Tdarr will try to create the specified audio stream from the highest
+          channel count stream available in the specified language.
+        </p>
+        <p>
+          If no specified language track exists, the best untagged/undefined
+          stream will be used.
+        </p>
 
         <br />
         <br />
 
         <p>Audio codec</p>
 
-        <select name='audioEncoder' ref='audioEncoder'>
-          <option value='aac'>aac</option>
-          <option value='ac3'>ac3</option>
-          <option value='eac3'>eac3</option>
-          <option value='dca'>dca (DTS)</option>
-          <option value='flac'>flac</option>
-          <option value='mp2'>mp2</option>
-          <option value='libmp3lame'>libmp3lame (mp3)</option>
-          <option value='truehd'>truehd</option>
+        <select name="audioEncoder" ref="audioEncoder">
+          <option value="aac">aac</option>
+          <option value="ac3">ac3</option>
+          <option value="eac3">eac3</option>
+          <option value="dca">dca (DTS)</option>
+          <option value="flac">flac</option>
+          <option value="mp2">mp2</option>
+          <option value="libmp3lame">libmp3lame (mp3)</option>
+          <option value="truehd">truehd</option>
         </select>
 
         <br />
@@ -102,46 +89,45 @@ export default class App extends Component {
 
         <p>Language</p>
 
-        <p>Tdarr will check to see if the stream language tag includes the tag you specify. Case-insensitive. One tag only.</p>
+        <p>
+          Tdarr will check to see if the stream language tag includes the tag
+          you specify. Case-insensitive. One tag only.
+        </p>
 
-        <input type="text" className="pluginCreatorInputs" ref="langTag" defaultValue={"en"}></input>
-
-
+        <input
+          type="text"
+          className="pluginCreatorInputs"
+          ref="langTag"
+          defaultValue={"en"}
+        ></input>
 
         <br />
         <br />
 
         <p>Channels</p>
 
-        <select name='channels' ref='channels'>
-          <option value='1'>1</option>
-          <option value='2'>2</option>
-          <option value='6'>5.1</option>
-          <option value='8'>7.1</option>
+        <select name="channels" ref="channels">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="6">5.1</option>
+          <option value="8">7.1</option>
         </select>
 
-
         <br />
         <br />
         <br />
         <br />
-
 
         <center>
-
-          <Button variant="outline-light" onClick={this.addAction}  >Set action</Button>
-
+          <Button variant="outline-light" onClick={this.addAction}>
+            Set action
+          </Button>
         </center>
 
         <br />
         <br />
         <br />
-
       </div>
-
     );
   }
 }
-
-
-

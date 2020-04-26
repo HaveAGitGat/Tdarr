@@ -1,8 +1,8 @@
-import React from 'react';
+import React from "react";
 
-const ScheduleBlock = ({item, DB_id}) => {
+const ScheduleBlock = ({ item, DB_id }) => {
   const toggleChecked = () => {
-    Meteor.call('updateScheduleBlock', DB_id, item._id, !item.checked);
+    Meteor.call("updateScheduleBlock", DB_id, item._id, !item.checked);
   };
 
   return (

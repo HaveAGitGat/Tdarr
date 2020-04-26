@@ -1,16 +1,13 @@
-
-import { Meteor } from 'meteor/meteor';
+import { Meteor } from "meteor/meteor";
 
 //Globals
-const shortid = require('shortid');
-const fs = require('fs');
-const path = require('path');
+const shortid = require("shortid");
+const fs = require("fs");
+const path = require("path");
 
 Meteor.methods({
-
-  'createPlugin'(details, conditionalsString, conditionalNotes, action) {
-
-    var ID = shortid.generate()
+  createPlugin(details, conditionalsString, conditionalNotes, action) {
+    var ID = shortid.generate();
     var text = `
 
     var fs = require('fs');
@@ -68,15 +65,11 @@ Meteor.methods({
              }
         }
 
-      `
-    fs.writeFileSync(process.env.homePath + `/Tdarr/Plugins/Local/${ID}.js`, text, 'utf8');
-  }
+      `;
+    fs.writeFileSync(
+      process.env.homePath + `/Tdarr/Plugins/Local/${ID}.js`,
+      text,
+      "utf8"
+    );
+  },
 });
-
-
-
-
-
-
-
-
