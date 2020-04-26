@@ -3174,16 +3174,13 @@ function main() {
         transcodeFiles = table1data;
         healthcheckFiles = table4data;
 
-        function getTimeNow() {
+        function getHourOfWeek() {
           var d = new Date(),
-            h = (d.getHours() < 10 ? "" : "") + d.getHours(),
-            m = (d.getMinutes() < 10 ? "0" : "") + d.getMinutes();
-          var s = (d.getSeconds() < 10 ? "0" : "") + d.getSeconds();
-          var timenow = h;
-          return timenow;
+            h = d.getHours()
+          return h;
         }
 
-        var timeIdx = getTimeNow();
+        var timeIdx = getHourOfWeek();
         var d = new Date();
         d = d.getDay();
 
