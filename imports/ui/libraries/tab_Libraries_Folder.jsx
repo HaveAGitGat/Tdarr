@@ -785,6 +785,7 @@ class Folder extends Component {
             type="text"
             className="libraryTitle"
             name="name"
+            autoFocus = {this.props.libraryItem.name == 'Library Name' ? true : false}
             defaultValue={
               this.props.libraryItem.name !== undefined
                 ? this.props.libraryItem.name

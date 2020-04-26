@@ -239,17 +239,15 @@ input[type="text"]
 
     .libraryTitle {
 
-      width: 90%;
-      margin: 0% 5%;
+      border:none;
       display: inline-block;
       background: transparent;
-      border: none;
       font-size: large;
       font-weight: bold;
       text-align: center; 
-      border: 0;
-      outline: 0;
       color: #e1e1e1;
+      width: auto;
+      margin: 0% 5%;
       }
     
 
@@ -1582,7 +1580,3 @@ table.streamsTable tr {
   background-color: #373737;
 
 }
-
-
-
-
