@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { withTracker } from "meteor/react-meteor-data";
-import { FileDB, StatisticsDB, GlobalSettingsDB } from "../api/tasks.js";
+import { FileDB, StatisticsDB, GlobalSettingsDB } from "../api/database.js";
 import ReactDOM from "react-dom";
 import ClipLoader from "react-spinners/ClipLoader";
 import { Button } from "react-bootstrap";

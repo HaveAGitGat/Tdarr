@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { GlobalSettingsDB } from "../api/tasks.js";
+import { GlobalSettingsDB } from "../api/database.js";
 
 export default class LocalImage extends Component {
   constructor(props) {

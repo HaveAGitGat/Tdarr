@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import "../imports/api/manipulateLib.js";
 import "../imports/api/pluginCreatorMethods.js";
-import "../imports/api/tasks.js";
+import "../imports/api/database.js";
 import "../imports/api/transcodeSettings.js";
 import {
   LogDB,
@@ -10,7 +10,7 @@ import {
   GlobalSettingsDB,
   StatisticsDB,
   ClientDB,
-} from "../imports/api/tasks.js";
+} from "../imports/api/database.js";
 import dateFuncs from "./dateFuncs.js";
 import "./backupFuncs.js";
 

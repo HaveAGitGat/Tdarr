@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { withTracker } from "meteor/react-meteor-data";
-import { GlobalSettingsDB } from "../api/tasks.js";
+import { GlobalSettingsDB } from "../api/database.js";
 import ClipLoader from "react-spinners/ClipLoader";
 import ToggleButton from "react-toggle-button";
 import ReactDOM from "react-dom";

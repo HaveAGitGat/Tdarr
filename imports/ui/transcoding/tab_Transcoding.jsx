@@ -11,7 +11,7 @@ import {
   FileDB,
   GlobalSettingsDB,
   ClientDB,
-} from "../../api/tasks.js";
+} from "../../api/database.js";
 import Workers from "./tab_Transcoding_Worker.jsx";
 import ReactTable from "react-table";
 import Slider from "react-input-slider";

@@ -3,7 +3,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import { Button } from "react-bootstrap";
 import Modal from "reactjs-popup";
 
-import { SettingsDB } from "../../api/tasks.js";
+import { SettingsDB } from "../../api/database.js";
 
 export default class Plugin extends Component {
   constructor(props) {

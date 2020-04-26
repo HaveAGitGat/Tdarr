@@ -11,7 +11,7 @@ import Modal from "reactjs-popup";
 
 import ClipLoader from "react-spinners/ClipLoader";
 
-import { GlobalSettingsDB } from "../api/tasks.js";
+import { GlobalSettingsDB } from "../api/database.js";
 
 var ButtonStyle = {
   display: "inline-block",

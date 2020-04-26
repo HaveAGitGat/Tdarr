@@ -9,7 +9,7 @@ import Modal from "reactjs-popup";
 import ReactDOM, { render } from "react-dom";
 import InputRange from "react-input-range";
 import ToggleButton from "react-toggle-button";
-import { GlobalSettingsDB, SettingsDB, StatisticsDB } from "../../api/tasks.js";
+import { GlobalSettingsDB, SettingsDB, StatisticsDB } from "../../api/database.js";
 import AudioCodec from "./AudioCodec.jsx";
 import Plugin from "./Plugin.jsx";
 import ScheduleBlock from "./ScheduleBlock.jsx";

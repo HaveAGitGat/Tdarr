@@ -9,7 +9,7 @@ import {
   Switch,
 } from "react-router-dom";
 
-import { GlobalSettingsDB } from "../api/tasks.js";
+import { GlobalSettingsDB } from "../api/database.js";
 import TabDev from "../ui/tab_Dev.jsx";
 import TabHelp from "../ui/tab_Help.jsx";
 import TabLog from "../ui/tab_Log.jsx";

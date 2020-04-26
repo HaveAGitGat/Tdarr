@@ -1,5 +1,5 @@
 import { Meteor } from "meteor/meteor";
-import { SettingsDB } from "./tasks.js";
+import { SettingsDB } from "./database.js";
 
 Meteor.methods({
   remove() {

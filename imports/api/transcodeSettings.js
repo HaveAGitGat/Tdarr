@@ -1,5 +1,5 @@
 import { Meteor } from "meteor/meteor";
-import { SettingsDB } from "../api/tasks.js";
+import { SettingsDB } from "./database.js";
 
 //Globals
 const shortid = require("shortid");

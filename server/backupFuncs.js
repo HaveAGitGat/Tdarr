@@ -1,5 +1,5 @@
 import { Meteor } from "meteor/meteor";
-import { GlobalSettingsDB } from "../imports/api/tasks.js";
+import { GlobalSettingsDB } from "../imports/api/database.js";
 import logger from "./logger.js";
 
 const fs = require("fs");

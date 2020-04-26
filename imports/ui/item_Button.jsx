@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import { Button } from "react-bootstrap";
 import ClipLoader from "react-spinners/ClipLoader";
-import { FileDB } from "../api/tasks.js";
+import { FileDB } from "../api/database.js";
 
 export default class App extends Component {
   constructor(props) {

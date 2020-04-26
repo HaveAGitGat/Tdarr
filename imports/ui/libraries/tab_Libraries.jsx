@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { withTracker } from "meteor/react-meteor-data";
 import ReactDOM from "react-dom";
 import { render } from "react-dom";
-import { SettingsDB, GlobalSettingsDB } from "../../api/tasks.js";
+import { SettingsDB, GlobalSettingsDB } from "../../api/database.js";
 import Folder from "./tab_Libraries_Folder.jsx";
 import ClipLoader from "react-spinners/ClipLoader";
 import { Button } from "react-bootstrap";

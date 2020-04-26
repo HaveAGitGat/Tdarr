@@ -5,7 +5,7 @@ import { render } from "react-dom";
 import { Button } from "react-bootstrap";
 import Modal from "reactjs-popup";
 import ClipLoader from "react-spinners/ClipLoader";
-import { GlobalSettingsDB } from "../../api/tasks.js";
+import { GlobalSettingsDB } from "../../api/database.js";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import PluginCategory from "./PluginCategory.jsx";
 import General from "./pluginTemplates/General.jsx";

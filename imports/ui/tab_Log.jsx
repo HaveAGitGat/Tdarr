@@ -7,7 +7,7 @@ import "react-table/react-table.css";
 import { render } from "react-dom";
 import ClipLoader from "react-spinners/ClipLoader";
 
-import { GlobalSettingsDB } from "../api/tasks.js";
+import { GlobalSettingsDB } from "../api/database.js";
 
 import {
   LineChart,

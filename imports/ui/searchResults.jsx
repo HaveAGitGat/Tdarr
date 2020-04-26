@@ -6,7 +6,7 @@ import { Button, Dropdown } from "react-bootstrap";
 import Checkbox from "@material-ui/core/Checkbox";
 import { renderToString } from "react-dom/server";
 import { Markup } from "interweave";
-import { GlobalSettingsDB } from "../api/tasks.js";
+import { GlobalSettingsDB } from "../api/database.js";
 import { withTracker } from "meteor/react-meteor-data";
 import JSONPretty from "react-json-pretty";
 import "react-json-pretty/themes/monikai.css";
