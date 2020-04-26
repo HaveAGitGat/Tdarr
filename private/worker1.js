@@ -63,6 +63,9 @@ function logger(type, text) {
   
   var workerNumber = process.argv[2];
   var workerType = process.argv[3];
+
+  var ffmpegErrors = require('./ffmpegErrors.js');
+  var ffmpegErrorsFound = []
   
   checkifQueuePause(true);
   logger("info", "Worker online. Requesting item");
@@ -76,7 +79,7 @@ function logger(type, text) {
       }
       errorLogFull[1] = textLines.join("\r\n");
     } catch (err) {
-      console.log(err);
+      logger("error", err);
     }
   }
   
@@ -164,7 +167,7 @@ function logger(type, text) {
       //Create folder to folder conversion output folders
       if (folderToFolderConversionEnabled == true) {
         if (fileToProcess.includes(folderToFolderConversionFolder)) {
-          console.log("File includes F2F output folder");
+          logger("info", "File includes F2F output folder");
           currentDestinationLine = getOutputPath(
             fileToProcess,
             container,
@@ -172,7 +175,7 @@ function logger(type, text) {
             outputFolder
           );
         } else {
-          console.log("File doesn't include F2F output folder");
+          logger('info',"File doesn't include F2F output folder");
           currentDestinationLine = getOutputPath(
             fileToProcess,
             container,
@@ -361,7 +364,6 @@ function logger(type, text) {
       }
   
       if (ffmpegNVENCBinary == true) {
-        // console.log("Worker in Docker")
         if (process.platform == "linux" && handBrakeMode == true) {
           //  workerCommand = "/usr/local/bin/HandBrakeCLI -i '" + currentSourceLineUnix + "' -o '" + currentDestinationLineUnix + "' " + presetUnix;
         } else if (process.platform == "linux" && FFmpegMode == true) {
@@ -389,6 +391,7 @@ function logger(type, text) {
       errorLogFull[0] += workerCommand + "\r\n";
       errorLogFull[0] += "Last 200 lines of CLI log:\r\n";
       errorLogFull[1] = "";
+      ffmpegErrorsFound = []
   
       //What to do if folder to folder conversion is enabled but file does not need to be transcoded
       if (
@@ -580,6 +583,12 @@ function logger(type, text) {
               process.send(message);
             }
           } else if (FFmpegMode == true) {
+            if (mode == "healthcheck") {
+              console.log(str)
+              if (checkStringForErr(str) == true) {
+                ffmpegErrorsFound.push(str)
+              }
+            }
             if (str.includes("frame=")) {
               if (str.length >= 6) {
                 var n = str.indexOf("fps");
@@ -631,6 +640,12 @@ function logger(type, text) {
               process.send(message);
             }
           } else if (FFmpegMode == true) {
+            if (mode == "healthcheck") {
+              console.log(str)
+              if (checkStringForErr(str) == true) {
+                ffmpegErrorsFound.push(str)
+              }
+            }
             if (str.includes("frame=")) {
               if (str.length >= 6) {
                 var n = str.indexOf("fps");
@@ -671,6 +686,9 @@ function logger(type, text) {
           if (message[0] == "Exit") {
             logger("info", "Sub-worker exit status received");
             shellThreadModule = "";
+
+            console.log('ffmpegErrorsFound:'+ffmpegErrorsFound.length)
+            console.log('ffmpegErrorsFound:'+ffmpegErrorsFound)
   
             if (mode != "healthcheck" && !fs.existsSync(currentDestinationLine)) {
               logger(
@@ -691,7 +709,7 @@ function logger(type, text) {
               ];
               process.send(message);
               checkifQueuePause();
-            } else if (message[1] != 0) {
+            } else if (message[1] != 0 || (mode == 'healthcheck' && ffmpegErrorsFound.length > 0)) {
               workerEncounteredError(message[1]);
             } else {
               //workerEncounteredError(message[1])
@@ -987,7 +1005,7 @@ function logger(type, text) {
         fs.unlinkSync(currentDestinationLine);
       }
     } catch (err) {
-      console.log(err);
+      logger("error", err);
     }
   
     if (messageOne == "Cancelled") {
@@ -1005,13 +1023,15 @@ function logger(type, text) {
     } else {
       if (mode == "healthcheck") {
         // healthcheck process error
+        errorLogFull2 = errorLogFull.join("")
+        errorLogFull2 += 'FFmpeg encountered the following errors with this file:' + ffmpegErrorsFound.join('\r\n')
         var message = [
           workerNumber,
           "error",
           currentSourceLine,
           settingsDBIndex,
           mode,
-          errorLogFull.join(""),
+          errorLogFull2,
         ];
         process.send(message);
         logger("error", "Sub worker error when processing:" + currentSourceLine);
@@ -1130,4 +1150,14 @@ function logger(type, text) {
       return output;
     }
   }
+
+
+function checkStringForErr(str) {
+  for (var i = 0; i < ffmpegErrors.length; i++) {
+    if (str.includes(ffmpegErrors[i])) {
+      return true
+    }
+  }
+  return false
+}
   
