@@ -1,13 +1,9 @@
 import React, { Component } from 'react';
-
 import { Progress } from 'react-sweet-progress';
 import "react-sweet-progress/lib/style.css";
-
 import { Button } from 'react-bootstrap';
 import Modal from "reactjs-popup";
 import { render } from 'react-dom';
-
-
 import ToggleButton from 'react-toggle-button'
 
 const path = require('path')
@@ -18,7 +14,6 @@ var ButtonStyle = {
 
 const borderRadiusStyle = { borderRadius: 2 }
 
-
 export default class Worker extends Component {
 
   constructor(props) {
@@ -27,52 +22,34 @@ export default class Worker extends Component {
   }
 
   componentDidMount() {
-
     // this.interval = setInterval(() => this.ETA(), 5000);
     // render("Calculating...", document.getElementById('ETA'));
-
   }
 
-
-
-
   toTime = (d) => {
-
     var h = (d.getHours() < 10 ? '0' : '') + d.getHours();
     var m = (d.getMinutes() < 10 ? '0' : '') + d.getMinutes();
     var s = (d.getSeconds() < 10 ? '0' : '') + d.getSeconds();
     var timenow = h + ':' + m + ':' + s;
-
     return timenow
-
   }
 
   duration = (start) => {
-
     var timeNow = new Date()
     var secsSinceStart = Math.round((timeNow - start) / 1000)
-
-
-
     return this.fancyTimeFormat(secsSinceStart)
   }
 
   transcodeReason(info) {
-
     info = info.split("\n")
-
     info = info.map(row => <span>{row}<br /></span>)
-
     return info
-
   }
 
   fancyTimeFormat(time) {
-
     var hrs = ~~(time / 3600);
     var mins = ~~((time % 3600) / 60);
     var secs = ~~time % 60;
-
     var ret = "";
     ret += "" + hrs + ":" + (mins < 10 ? "0" : "");
     ret += "" + mins + ":" + (secs < 10 ? "0" : "");
@@ -80,21 +57,13 @@ export default class Worker extends Component {
     return ret;
   }
 
-
-
   render() {
-
-
-
 
     return (
       <div className={this.state.infoHidden ? 'workerContainer' : 'workerContainer'}>
         <div className={this.props.worker.modeType == 'transcode' ? "borderStyleTranscode" : this.props.worker.modeType == 'healthcheck' ? "borderStyleHealthCheck" : "borderStyleGeneral"}>
 
-
-
           <div className="workerContainerItems">
-
 
             <p></p>
 
@@ -140,23 +109,13 @@ export default class Worker extends Component {
 
               </div>
 
-
-
-
-
             </div>
 
-            <p>{path.basename(this.props.worker.file)}</p>
-
-
-
+            <div className="workerBreakLine"><p>{path.basename(this.props.worker.file)}</p></div>
 
             <style type="text/css">
               {``}
             </style>
-
-
-
 
             <div className={this.props.worker.percentage <= 100 ? '' : 'd-none'}>
               <div className="workerPercentage">
@@ -174,7 +133,6 @@ export default class Worker extends Component {
                 />
               </div>
             </div>
-
 
             <div className={this.props.worker.percentage > 100 ? '' : 'd-none'}>
 
@@ -206,11 +164,6 @@ export default class Worker extends Component {
 
             <div className={this.state.infoHidden ? 'd-none' : ''}>
 
-
-
-
-
-
               <table className="workerDetailTable">
                 <tbody>
 
@@ -225,11 +178,7 @@ export default class Worker extends Component {
                 </tbody>
               </table>
 
-
-
               <div className="workerDetailsGrid">
-
-
 
                 <div><p>Start time:</p></div>
                 <div><p>{this.toTime(this.props.worker.startTime)}</p></div>
@@ -267,8 +216,6 @@ export default class Worker extends Component {
                 }} ><span className="buttonTextSize">Shutdown worker</span></Button>
 
               </center>
-
-
 
             </div>
 
