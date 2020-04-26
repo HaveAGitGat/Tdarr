@@ -1,18 +1,19 @@
 
 
 //Change node module paths dev/prod (rootModules)
-function updateConsole(workerNumber, text) {
+function logger(type, text) {
     var message = [
         workerNumber,
         "consoleMessage",
-        text,
+        type,
+        text
     ];
     process.send(message);
 }
 
 process.on('uncaughtException', function (err) {
     console.error(err.stack);
-    updateConsole(workerNumber, ":" + err.stack)
+    logger('fatal', err.stack)
     process.exit();
 });
 
@@ -71,7 +72,7 @@ var workerNumber = process.argv[2]
 var workerType = process.argv[3]
 
 checkifQueuePause(true)
-updateConsole(workerNumber, "Worker online. Requesting item")
+logger('info', "Worker online. Requesting item")
 
 function addToErrorLog(text) {
     try {
@@ -106,7 +107,7 @@ process.on('message', (m) => {
             "suicide"
         ];
         process.send(message);
-        updateConsole(workerNumber, "Stop command received. Closing sub-processes")
+        logger('warn', "Stop command received. Closing sub-processes")
 
         if (process.platform == 'win32') {
             var killCommand = 'taskkill /PID ' + process.pid + ' /T /F'
@@ -122,7 +123,7 @@ process.on('message', (m) => {
     }
 
     if (m[0] == "exitThread") {
-        updateConsole(workerNumber, "Cancelling")
+        logger('warn', "Cancelling")
         var infoArray = [
             "exitThread",
             "itemCancelled",
@@ -167,7 +168,7 @@ process.on('message', (m) => {
             container = '.' + container
         }
 
-        updateConsole(workerNumber, "File received:" + fileToProcess)
+        logger('info', "File received:" + fileToProcess)
         var presetSplit
         presetSplit = preset.split(',')
         var workerCommand = "";
@@ -194,7 +195,7 @@ process.on('message', (m) => {
 
                     }
                 } catch (err) {
-                    updateConsole(workerNumber, "Unable to create folder!")
+                    logger('error', "Unable to create folder!")
                 }
             }
         } else {
@@ -208,8 +209,8 @@ process.on('message', (m) => {
         currentDestinationLine = currentDestinationLine.join(".")
         currentDestinationLine = currentDestinationLine.split("/")
         currentDestinationLine = path.join(outputFolder, currentDestinationLine[currentDestinationLine.length - 1])
-        updateConsole(workerNumber, "currentDestinationLine:" + currentDestinationLine)
-        updateConsole(workerNumber, "finalFilePath:" + finalFilePath)
+        logger('info', "currentDestinationLine:" + currentDestinationLine)
+        logger('info', "finalFilePath:" + finalFilePath)
 
         //Create transcode cache output folders
         var outputFolderPath = currentDestinationLine.substring(0, currentDestinationLine.lastIndexOf('/'))
@@ -220,7 +221,7 @@ process.on('message', (m) => {
                     shell.mkdir('-p', outputFolderPath);
                 }
             } catch (err) {
-                updateConsole(workerNumber, "Unable to create folder!")
+                logger('error', "Unable to create folder!")
             }
         }
 
@@ -277,8 +278,6 @@ process.on('message', (m) => {
             }
         }
 
-        console.log(workerCommand)
-
         if (mode == "transcode") {
 
             if (fs.existsSync(currentDestinationLine)) {
@@ -300,7 +299,7 @@ process.on('message', (m) => {
             try {
 
                 addToErrorLog("Attempting to move new file to output folder")
-                updateConsole(workerNumber, "Attempting to move new file to output folder" + currentSourceLine)
+                logger('info', "Attempting to move new file to output folder" + currentSourceLine)
                 finalFilePath = finalFilePath.split(".")
 
                 //set container to original source file
@@ -317,30 +316,30 @@ process.on('message', (m) => {
                 })
 
                 addToErrorLog("Copying file successful:")
-                updateConsole(workerNumber, "Copying file successful:" + currentSourceLine + " to " + finalFilePathCopy)
+                logger('info', "Copying file successful:" + currentSourceLine + " to " + finalFilePathCopy)
 
                 //Delete source file ONLY after first pass when file is still in original source folder.
 
                 if (librarySettings.folderToFolderConversionDeleteSource === true && !fileToProcess.includes(folderToFolderConversionFolder)) {
                     addToErrorLog("Attempting to delete original file")
-                    updateConsole(workerNumber, "Attempting to delete original file" + currentSourceLine)
+                    logger('info', "Attempting to delete original file" + currentSourceLine)
 
                     fs.unlinkSync(currentSourceLine)
                     addToErrorLog("Original file deleted")
-                    updateConsole(workerNumber, "Original file deleted" + currentSourceLine)
+                    logger('info', "Original file deleted" + currentSourceLine)
                 }
 
 
 
                 addToErrorLog("Renaming new file:")
-                updateConsole(workerNumber, "Renaming new file:" + finalFilePathCopy + " to " + finalFilePath)
+                logger('info', "Renaming new file:" + finalFilePathCopy + " to " + finalFilePath)
 
                 fsextra.moveSync(finalFilePathCopy, finalFilePath, {
                     overwrite: true
                 })
 
                 addToErrorLog("Renaming new file success:")
-                updateConsole(workerNumber, "Renaming new file success:" + finalFilePathCopy + " to " + finalFilePath)
+                logger('info', "Renaming new file success:" + finalFilePathCopy + " to " + finalFilePath)
                 var cliLog = "\n Original size GB:" + sourcefileSizeInGbytes
                 cliLog += "\n New size GB:" + sourcefileSizeInGbytes
                 var filePropertiesToAdd = {
@@ -370,7 +369,7 @@ process.on('message', (m) => {
             } catch (err) {
                 addToErrorLog(err)
                 addToErrorLog("Deleting original/moving new file unsuccessful")
-                updateConsole(workerNumber, "Deleting original/moving new file unsuccessful:" + currentSourceLine + " to " + finalFilePath + " err:" + err)
+                logger('error', "Deleting original/moving new file unsuccessful:" + currentSourceLine + " to " + finalFilePath + " err:" + err)
 
                 // transcode process error moving/renaming file (during folder to folder conversion)
                 var message = [
@@ -396,7 +395,7 @@ process.on('message', (m) => {
             var childProcess = require('child_process');
 
             // var shellThreadPath = "worker2.js"
-            updateConsole(workerNumber, "Launching sub-worker:")
+            logger('info', "Launching sub-worker:")
 
             // var workerPath = path.join(__dirname, "/imports/api/worker2.js")
             var workerPath = "assets/app/worker2.js"
@@ -406,12 +405,12 @@ process.on('message', (m) => {
             });
 
             // var shellThreadModule = childProcess.fork(path.join(__dirname, shellThreadPath ));
-            updateConsole(workerNumber, "Launching sub-worker successful:")
+            logger('info', "Launching sub-worker successful:")
             var infoArray = [
                 "processFile",
                 workerCommand
             ];
-            updateConsole(workerNumber, "Sending command to sub-worker:" + workerCommand)
+            logger('info', "Sending command to sub-worker:" + workerCommand)
             shellThreadModule.send(infoArray);
             shellThreadModule.stdout.on('data', function (data) {
 
@@ -429,7 +428,7 @@ process.on('message', (m) => {
                         output.splice(output.length - 1, 1)
                         output = output.join("")
 
-                        // updateConsole(workerNumber, " : " + output)
+                        // logger('info', " : " + output)
                         updateETA(output)
 
                         var message = [
@@ -448,7 +447,7 @@ process.on('message', (m) => {
                                 var output = str.substring(6, n)
                                 output = getFFmpegPercentage(output, frameCount, currentFileObject.meta.VideoFrameRate, currentFileObject.meta.Duration)
                                 updateETA(output)
-                                //  updateConsole(workerNumber, " : " + output)
+                                //  logger('info', " : " + output)
                                 var message = [
                                     workerNumber,
                                     "percentage",
@@ -483,7 +482,7 @@ process.on('message', (m) => {
                         output = output.split("")
                         output.splice(output.length - 1, 1)
                         output = output.join("")
-                        //  updateConsole(workerNumber, " : " + output)
+                        //  logger('info', " : " + output)
                         updateETA(output)
                         var message = [
                             workerNumber,
@@ -505,7 +504,7 @@ process.on('message', (m) => {
                                 var output = str.substring(6, n)
                                 output = getFFmpegPercentage(output, frameCount, currentFileObject.meta.VideoFrameRate, currentFileObject.meta.Duration)
                                 updateETA(output)
-                                // updateConsole(workerNumber, " : " + output)
+                                // logger('info', " : " + output)
                                 var message = [
                                     workerNumber,
                                     "percentage",
@@ -520,26 +519,26 @@ process.on('message', (m) => {
 
             shellThreadModule.on("exit", function (code, ) {
                 //('shellThreadExited:', code,);
-                updateConsole(workerNumber, "Sub-worker exited")
+                logger('info', "Sub-worker exited")
 
             });
 
             shellThreadModule.on('message', function (message) {
 
                 if (message[0] == "consoleMessage") {
-                    updateConsole("Worker " + workerNumber + ":" + message[1] + "");
+                    logger('info', "Subworker:" + message[1]);
                 }
 
                 if (message.error) {
-                    console.error(message.error);
+                    logger('error', "Subworker:" + message.error);
                 }
 
                 if (message[0] == "Exit") {
-                    updateConsole(workerNumber, "Sub-worker exit status received")
+                    logger('warn', "Sub-worker exit status received")
                     shellThreadModule = "";
 
                     if (mode != "healthcheck" && !fs.existsSync(currentDestinationLine)) {
-                        updateConsole(workerNumber, "Tdarr ALERT: NO OUTPUT FILE PRODUCED" + currentDestinationLine)
+                        logger('warn', "Tdarr ALERT: NO OUTPUT FILE PRODUCED" + currentDestinationLine)
 
                         // transcode process error 
                         var message = [
@@ -576,12 +575,12 @@ process.on('message', (m) => {
         ];
 
         process.send(message);
-        updateConsole(workerNumber, "Exit request")
+        logger('info', "Exit request")
         exitRequestSent = true
     }
 
     if (m[0] == "exitApproved") {
-        updateConsole(workerNumber, "Exiting")
+        logger('info', "Exiting")
         process.exit();
     }
 });
@@ -627,7 +626,7 @@ function workerNotEncounteredError() {
 
         ];
         process.send(message);
-        updateConsole(workerNumber, "No errors found with this file:" + currentSourceLine)
+        logger('info', "No errors found with this file:" + currentSourceLine)
         checkifQueuePause();
     } else {
 
@@ -654,7 +653,7 @@ function workerNotEncounteredError() {
 
             if (folderToFolderConversionEnabled == true) {
                 addToErrorLog("Attempting to move new file to output folder")
-                updateConsole(workerNumber, "Attempting to move new file to output folder" + currentSourceLine)
+                logger('info', "Attempting to move new file to output folder" + currentSourceLine)
                 var finalFilePathCopy = finalFilePath
                 finalFilePathCopy = finalFilePathCopy.split(".")
                 finalFilePathCopy[finalFilePathCopy.length - 2] = finalFilePathCopy[finalFilePathCopy.length - 2] + "-TdarrNew"
@@ -665,34 +664,34 @@ function workerNotEncounteredError() {
                 })
 
                 addToErrorLog("Moving file successful:")
-                updateConsole(workerNumber, "Moving file successful:" + currentDestinationLine + " to " + finalFilePathCopy)
+                logger('info', "Moving file successful:" + currentDestinationLine + " to " + finalFilePathCopy)
                 //Delete source file ONLY after first pass when file is still in original source folder.
 
                 if (librarySettings.folderToFolderConversionDeleteSource === true && !fileToProcess.includes(folderToFolderConversionFolder)) {
                     addToErrorLog("Attempting to delete original file")
-                    updateConsole(workerNumber, "Attempting to delete original file" + currentSourceLine)
+                    logger('info', "Attempting to delete original file" + currentSourceLine)
 
                     fs.unlinkSync(currentSourceLine)
                     addToErrorLog("Original file deleted")
-                    updateConsole(workerNumber, "Original file deleted" + currentSourceLine)
+                    logger('info', "Original file deleted" + currentSourceLine)
                 }
 
                 addToErrorLog("Renaming new file:")
-                updateConsole(workerNumber, "Renaming new file:" + finalFilePathCopy + " to " + finalFilePath)
+                logger('info', "Renaming new file:" + finalFilePathCopy + " to " + finalFilePath)
 
                 fsextra.moveSync(finalFilePathCopy, finalFilePath, {
                     overwrite: true
                 })
 
                 addToErrorLog("Renaming new file success:")
-                updateConsole(workerNumber, "Renaming new file success:" + finalFilePathCopy + " to " + finalFilePath)
+                logger('info', "Renaming new file success:" + finalFilePathCopy + " to " + finalFilePath)
                 var cliLog = "\n Original size GB:" + sourcefileSizeInGbytes
                 cliLog += "\n New size GB:" + destfileSizeInGbytes
             } else {
 
-                updateConsole(workerNumber, "Moving file:" + currentDestinationLine + " to " + finalFilePath)
+                logger('info', "Moving file:" + currentDestinationLine + " to " + finalFilePath)
                 addToErrorLog("Attempting to move new file to original folder")
-                updateConsole(workerNumber, "Attempting to move new file to original folder" + currentSourceLine)
+                logger('info', "Attempting to move new file to original folder" + currentSourceLine)
                 var finalFilePathCopy = finalFilePath
                 finalFilePathCopy = finalFilePathCopy.split(".")
                 finalFilePathCopy[finalFilePathCopy.length - 2] = finalFilePathCopy[finalFilePathCopy.length - 2] + "-TdarrNew"
@@ -704,21 +703,21 @@ function workerNotEncounteredError() {
                 })
 
                 addToErrorLog("Moving file successful:")
-                updateConsole(workerNumber, "Moving file successful:" + currentDestinationLine + " to " + finalFilePathCopy)
+                logger('info', "Moving file successful:" + currentDestinationLine + " to " + finalFilePathCopy)
                 addToErrorLog("Attempting to delete original file")
-                updateConsole(workerNumber, "Attempting to delete original file" + currentSourceLine)
+                logger('info', "Attempting to delete original file" + currentSourceLine)
                 fs.unlinkSync(currentSourceLine)
                 addToErrorLog("Original file deleted")
-                updateConsole(workerNumber, "Original file deleted" + currentSourceLine)
+                logger('info', "Original file deleted" + currentSourceLine)
                 addToErrorLog("Renaming new file:")
-                updateConsole(workerNumber, "Renaming new file:" + finalFilePathCopy + " to " + finalFilePath)
+                logger('info', "Renaming new file:" + finalFilePathCopy + " to " + finalFilePath)
 
                 fsextra.moveSync(finalFilePathCopy, finalFilePath, {
                     overwrite: true
                 })
 
                 addToErrorLog("Renaming new file success:")
-                updateConsole(workerNumber, "Renaming new file success:" + finalFilePathCopy + " to " + finalFilePath)
+                logger('info', "Renaming new file success:" + finalFilePathCopy + " to " + finalFilePath)
                 var cliLog = "\n Original size GB:" + sourcefileSizeInGbytes
                 cliLog += "\n New size GB:" + destfileSizeInGbytes
             }
@@ -764,7 +763,7 @@ function workerNotEncounteredError() {
         } catch (err) {
             addToErrorLog(err)
             addToErrorLog("Deleting original file and moving new file unsuccessful")
-            updateConsole(workerNumber, "Deleting original file and moving new file unsuccessful:" + currentDestinationLine + " to " + finalFilePath + " err:" + err)
+            logger('error', "Deleting original file and moving new file unsuccessful:" + currentDestinationLine + " to " + finalFilePath + " err:" + err)
             // transcode process error moving/renaming file
             var message = [
                 workerNumber,
@@ -801,7 +800,7 @@ function workerEncounteredError(messageOne) {
             "notsuicide"
         ];
         process.send(message);
-        updateConsole(workerNumber, "Item cancelled:" + currentSourceLine)
+        logger('warn', "Item cancelled:" + currentSourceLine)
         checkifQueuePause();
     } else {
 
@@ -818,7 +817,7 @@ function workerEncounteredError(messageOne) {
 
             ];
             process.send(message);
-            updateConsole(workerNumber, "Sub worker error when processing:" + currentSourceLine)
+            logger('error', "Sub worker error when processing:" + currentSourceLine)
             checkifQueuePause();
         } else {
 

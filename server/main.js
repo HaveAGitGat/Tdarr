@@ -1732,12 +1732,9 @@ function main() {
       }
 
       if (message[1] == "consoleMessage") {
-
-        if (message[2].includes('File received')) {
-          updateConsole("Worker " + message[0] + ":" + message[2] + "", false);
-        } else {
-          updateConsole("Worker " + message[0] + ":" + message[2] + "", true);
-        }
+        var type = message[2]
+        var string = "Worker " + message[0] + ":" + message[3] + ""
+        loggerFunc(type,string);
       }
 
       if (message[1] == "queueRequest") {
