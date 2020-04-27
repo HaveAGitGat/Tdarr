@@ -18,6 +18,8 @@ import "./dateFuncs.js";
 import "./pluginFuncs.js";
 
 import procPriority from "./procPriority.js";
+import scheduledSimpleScan from "./scheduledSimpleScan.js";
+
 //Globals
 const shortid = require("shortid");
 const path = require("path");
@@ -808,40 +810,11 @@ function main() {
 
   //runScheduledManualScan()
   //run find-new scan every hour
-  setTimeout(Meteor.bindEnvironment(runScheduledManualScan), 86400000);
+  setTimeout(Meteor.bindEnvironment(scheduledSimpleScan), 3600000);
 
-  function runScheduledManualScan() {
-    logger.info("Running hourly scan!");
+  
 
-    try {
-      var settingsInit = SettingsDB.find({}, {}).fetch();
 
-      for (var i = 0; i < settingsInit.length; i++) {
-        if (settingsInit[i].scanOnStart !== false) {
-          var obj = {
-            HealthCheck: "Queued",
-            TranscodeDecisionMaker: "Queued",
-            cliLog: "",
-            bumped: false,
-            history: "",
-          };
-          Meteor.call(
-            "scanFiles",
-            settingsInit[i]._id,
-            settingsInit[i].folder,
-            1,
-            0,
-            obj,
-            function (error, result) { }
-          );
-        }
-      }
-    } catch (err) {
-      logger.error(err.stack);
-    }
-
-    setTimeout(Meteor.bindEnvironment(runScheduledManualScan), 3600000);
-  }
 
   var shell = require("shelljs");
   scheduledPluginUpdate();
