@@ -51,6 +51,7 @@ var workerLaunched = 0;
 //Create Tdarr documents folder structure if not exist
 import homePath from "./paths.js";
 import initFolders from "./initFolders.js";
+import cliPaths from "./cliPaths.js";
 initFolders(homePath);
 
 GlobalSettingsDB.upsert("globalsettings", {
@@ -337,82 +338,7 @@ function main() {
   });
 
 
-  if (fs.existsSync(path.join(process.cwd(), "/npm"))) {
-    var handBrakeCLIPath = path.join(
-      process.cwd(),
-      "/assets/app/HandBrakeCLI.exe"
-    );
-    var ffmpegPathLinux345 = path.join(
-      process.cwd(),
-      "/assets/app/ffmpeg/ffmpeg345/ffmpeg"
-    );
-    var ffmpegPathLinux42 = path.join(
-      process.cwd(),
-      "/assets/app/ffmpeg/ffmpeg42/ffmpeg"
-    );
-  } else {
-    var handBrakeCLIPath = path.join(
-      process.cwd(),
-      "/private/HandBrakeCLI.exe"
-    );
-    var ffmpegPathLinux345 = path.join(
-      process.cwd(),
-      "/private/ffmpeg/ffmpeg345/ffmpeg"
-    );
-    var ffmpegPathLinux42 = path.join(
-      process.cwd(),
-      "/private/ffmpeg/ffmpeg42/ffmpeg"
-    );
-  }
 
-  var ffmpegPath = require("@ffmpeg-installer/ffmpeg").path;
-  ffmpegPathLinux345 = ffmpegPathLinux345.replace(/'/g, "'\"'\"'");
-  ffmpegPathLinux42 = ffmpegPathLinux42.replace(/'/g, "'\"'\"'");
-
-  function getHandBrakePath() {
-    var path;
-
-    if (process.platform == "win32") {
-      path = handBrakeCLIPath;
-    }
-
-    if (process.platform == "linux") {
-      path = "HandBrakeCLI";
-    }
-
-    if (process.platform == "darwin") {
-      path = "/usr/local/bin/HandBrakeCLI";
-    }
-
-    return path;
-  }
-
-  function getFFmpegPath() {
-    var path;
-
-    if (process.platform == "win32") {
-      path = ffmpegPath;
-    }
-
-    if (process.platform == "linux") {
-      path = ffmpegPathLinux42;
-    }
-
-    if (process.platform == "darwin") {
-      path = ffmpegPath;
-    }
-
-    var ffmpegNVENCBinary = GlobalSettingsDB.find({}, {}).fetch()[0]
-      .ffmpegNVENCBinary;
-
-    if (ffmpegNVENCBinary == true) {
-      if (process.platform == "linux") {
-        path = ffmpegPathLinux345;
-      }
-    }
-
-    return path;
-  }
 
   Meteor.methods({
     DBHasChanged() {
@@ -1248,9 +1174,9 @@ function main() {
       logger.info(mode, text);
 
       if (mode == "handbrake") {
-        workerCommand = getHandBrakePath() + " " + text;
+        workerCommand = cliPaths.getHandBrakePath() + " " + text;
       } else if (mode == "ffmpeg") {
-        workerCommand = getFFmpegPath() + " " + text;
+        workerCommand = cliPaths.getFFmpegPath() + " " + text;
       }
 
       logger.info(workerCommand);
@@ -1312,7 +1238,7 @@ function main() {
         homePath + "/Tdarr/Samples/" + outputFile[outputFile.length - 1];
       var inputFileUnix = inputFile.replace(/'/g, "'\"'\"'");
       var outputFileUnix = outputFile.replace(/'/g, "'\"'\"'");
-      var ffmpegPathUnix = ffmpegPath.replace(/'/g, "'\"'\"'");
+      
       var preset1 = "-ss 00:00:1";
       var preset2 =
         "-t 00:00:30 -map 0:v? -map 0:a? -map 0:s? -map 0:d? -c copy";
@@ -1325,7 +1251,7 @@ function main() {
 
       if (process.platform == "win32") {
         workerCommand =
-          getFFmpegPath() +
+          cliPaths.getFFmpegPath() +
           " " +
           preset1 +
           ' -i "' +
@@ -1337,7 +1263,7 @@ function main() {
           '" ';
       } else {
         workerCommand =
-          getFFmpegPath() +
+          cliPaths.getFFmpegPath() +
           " " +
           preset1 +
           " -i '" +
@@ -1801,8 +1727,8 @@ function main() {
                           };
                           var otherArguments = {
                             homePath: homePath,
-                            handbrakePath: getHandBrakePath(),
-                            ffmpegPath: getFFmpegPath(),
+                            handbrakePath: cliPaths.getHandBrakePath(),
+                            ffmpegPath: cliPaths.getFFmpegPath(),
                           };
                           var librarySettings = settings[0];
                           var plugin = importFresh(pluginLocalPath);
@@ -1925,7 +1851,7 @@ function main() {
                             console.dir(response);
                             processFile = response.processFile;
                             if (processFile === undefined) {
-                              throw "No proceesFile value returned from plugin!";
+                              throw "No processFile value returned from plugin!";
                             }
                             preset = response.preset;
                             container = response.container;
@@ -2262,8 +2188,8 @@ function main() {
                             };
                             var otherArguments = {
                               homePath: homePath,
-                              handbrakePath: getHandBrakePath(),
-                              ffmpegPath: getFFmpegPath(),
+                              handbrakePath: cliPaths.getHandBrakePath(),
+                              ffmpegPath: cliPaths.getFFmpegPath(),
                             };
                             var librarySettings = settings[0];
                             var plugin = importFresh(pluginLocalPath);
@@ -2493,8 +2419,8 @@ function main() {
               ).fetch()[0];
               var otherArguments = {
                 homePath: homePath,
-                handbrakePath: getHandBrakePath(),
-                ffmpegPath: getFFmpegPath(),
+                handbrakePath: cliPaths.getHandBrakePath(),
+                ffmpegPath: cliPaths.getFFmpegPath(),
               };
               var plugin = importFresh(pluginLocalPath);
               var pluginInputs = SettingsDB.find(
