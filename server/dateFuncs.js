@@ -1,3 +1,16 @@
+Meteor.methods({
+  getTimeNow() {
+    var d = new Date(),
+      h = (d.getHours() < 10 ? "0" : "") + d.getHours(),
+      m = (d.getMinutes() < 10 ? "0" : "") + d.getMinutes();
+    var s = (d.getSeconds() < 10 ? "0" : "") + d.getSeconds();
+    var timenow = `${h}:${m}:${s}`;
+    return timenow;
+  },
+});
+
+
+
 module.exports.getDateNow = function getDateNow() {
     var today = new Date();
     var dd = today.getDate();
