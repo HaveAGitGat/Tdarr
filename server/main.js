@@ -373,30 +373,6 @@ function main() {
     },
   });
 
-  function loggerFunc(type, string) {
-    switch (type) {
-      case "trace":
-        logger.trace(string);
-        break;
-      case "debug":
-        logger.debug(string);
-        break;
-      case "info":
-        logger.info(string);
-        break;
-      case "warn":
-        logger.warn(string);
-        break;
-      case "error":
-        logger.error(string);
-        break;
-      case "fatal":
-        logger.fatal(string);
-        break;
-      default:
-        logger.info(string);
-    }
-  }
 
   if (fs.existsSync(path.join(process.cwd(), "/npm"))) {
     var handBrakeCLIPath = path.join(
@@ -1267,7 +1243,7 @@ function main() {
             if (message[1] == "consoleMessage") {
               var type = message[2];
               var string = "Scanner " + message[0] + ":" + message[3] + "";
-              loggerFunc(type, string);
+              logger.loggerFunc(type, string);
             }
           })
         );
@@ -1677,7 +1653,7 @@ function main() {
         if (message[1] == "consoleMessage") {
           var type = message[2];
           var string = "Worker " + message[0] + ":" + message[3] + "";
-          loggerFunc(type, string);
+          logger.loggerFunc(type, string);
         }
 
         if (message[1] == "queueRequest") {
@@ -2884,7 +2860,7 @@ function main() {
         if (message[1] == "consoleMessage") {
           var type = message[2];
           var string = "Folder watcher " + message[0] + ":" + message[3] + "";
-          loggerFunc(type, string);
+          logger.loggerFunc(type, string);
         }
       })
     );
