@@ -264,30 +264,6 @@ function main() {
       return workerDB;
     },
 
-    getLog() {
-      var log = LogDB.find({}).fetch();
-      log = log.sort(function (a, b) {
-        return new Date(b.createdAt) - new Date(a.createdAt);
-      });
-      GlobalSettingsDB.upsert("globalsettings", {
-        $set: {
-          logsLoading: false,
-        },
-      });
-
-      return log;
-    },
-
-    clearLogDB() {
-      LogDB.remove({});
-      GlobalSettingsDB.upsert("globalsettings", {
-        $set: {
-          logsLoading: false,
-          propertySearchLoading: false,
-          pluginSearchLoading: false,
-        },
-      });
-    },
     clearDB() {
       LogDB.remove({});
       Meteor.call("modifyFileDB", "removeAll", (error, result) => { });
