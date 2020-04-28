@@ -11,7 +11,7 @@ module.exports.initGlobalSettingsDB = function initGlobalSettingsDB() {
     //Set globalDB settings on init
     var gSettings = GlobalSettingsDB.find({}, {}).fetch();
 
-    
+
     if (!Array.isArray(gSettings) || !gSettings.length) {
         logger.warn('GlobalSettingsDB is empty. Initialising')
         GlobalSettingsDB.upsert("globalsettings", {
@@ -185,6 +185,46 @@ module.exports.initLibrarySettingsDB = function initLibrarySettingsDB() {
                     },
                 });
             }
+        }
+    }
+
+    //initialise GUI properties
+
+    for (var i = 0; i < libDB.length; i++) {
+        SettingsDB.upsert(libDB[i]._id, {
+            $set: {
+                scanButtons: true,
+                scanFound: "Files found:" + 0,
+            },
+        });
+
+        //Add folder watch scan interval
+        if (libDB[i].folderWatchScanInterval == undefined) {
+            SettingsDB.upsert(libDB[i]._id, {
+                $set: {
+                    folderWatchScanInterval: 30,
+                },
+            });
+        }
+
+        //Run scan on start if needed
+        if (libDB[i].scanOnStart !== false) {
+            var obj = {
+                HealthCheck: "Queued",
+                TranscodeDecisionMaker: "Queued",
+                cliLog: "",
+                bumped: false,
+                history: "",
+            };
+            Meteor.call(
+                "scanFiles",
+                libDB[i]._id,
+                libDB[i].folder,
+                1,
+                0,
+                obj,
+                function (error, result) { }
+            );
         }
     }
 }

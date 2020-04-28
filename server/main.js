@@ -137,12 +137,6 @@ function main() {
     })
   );
 
-  //Init collections
-  initDB.initGlobalSettingsDB()
-  initDB.initLibrarySettingsDB()
-  initDB.initStatisticsDB()
-  initDB.initClientDB()
-
   Meteor.methods({
     DBHasChanged() {
       //logger.info('DBHasChanged')
@@ -709,46 +703,11 @@ function main() {
     result
   ) { });
 
-  //initialise GUI properties
-  var settingsInit = SettingsDB.find({}, {}).fetch();
-
-  for (var i = 0; i < settingsInit.length; i++) {
-    SettingsDB.upsert(settingsInit[i]._id, {
-      $set: {
-        scanButtons: true,
-        scanFound: "Files found:" + 0,
-      },
-    });
-
-    //Add folder watch scan interval
-    if (settingsInit[i].folderWatchScanInterval == undefined) {
-      SettingsDB.upsert(settingsInit[i]._id, {
-        $set: {
-          folderWatchScanInterval: 30,
-        },
-      });
-    }
-
-    //Run scan on start if needed
-    if (settingsInit[i].scanOnStart !== false) {
-      var obj = {
-        HealthCheck: "Queued",
-        TranscodeDecisionMaker: "Queued",
-        cliLog: "",
-        bumped: false,
-        history: "",
-      };
-      Meteor.call(
-        "scanFiles",
-        settingsInit[i]._id,
-        settingsInit[i].folder,
-        1,
-        0,
-        obj,
-        function (error, result) { }
-      );
-    }
-  }
+  //Init collections
+  initDB.initGlobalSettingsDB()
+  initDB.initLibrarySettingsDB()
+  initDB.initStatisticsDB()
+  initDB.initClientDB()
 
   //runScheduledManualScan()
   //run find-new scan every hour
