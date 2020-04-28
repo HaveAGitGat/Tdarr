@@ -16,10 +16,14 @@ import "./backupFuncs.js";
 import "./crudFileDB.js";
 import "./dateFuncs.js";
 import "./pluginFuncs.js";
-import "./libFuncs.js";
 import "./helpTerminal.js";
 import "./createSample.js";
 
+import homePath from "./paths.js";
+import initFolders from "./initFolders.js";
+import cliPaths from "./cliPaths.js";
+import initDB from "./initDB.js";
+import logger from "./logger.js";
 import procPriority from "./procPriority.js";
 import scheduledSimpleScan from "./scheduledSimpleScan.js";
 import cacheClean from "./cacheClean.js";
@@ -31,7 +35,6 @@ const shortid = require("shortid");
 const path = require("path");
 const fs = require("fs");
 const fsextra = require("fs-extra");
-const rimraf = require("rimraf");
 const schedule = require("node-schedule");
 const importFresh = require("import-fresh");
 const isDocker = require("is-docker");
@@ -40,7 +43,6 @@ var workers = {};
 var fileScanners = {};
 //var fileScannersData = {}
 var verboseLogs;
-var folderWatchers = {};
 var runningScans = [];
 
 // var workerDB = [{
@@ -57,12 +59,6 @@ var filesBeingProcessed = [];
 var hasDBChanged = true;
 var workerLaunched = 0;
 
-//Create Tdarr documents folder structure if not exist
-import homePath from "./paths.js";
-import initFolders from "./initFolders.js";
-import cliPaths from "./cliPaths.js";
-import initDB from "./initDB.js";
-
 initFolders(homePath);
 
 GlobalSettingsDB.upsert("globalsettings", {
@@ -71,7 +67,6 @@ GlobalSettingsDB.upsert("globalsettings", {
   },
 });
 
-import logger from "./logger.js";
 logger.info("Tdarr started.");
 logger.info("Tdarr documents folder:" + homePath);
 logger.info("Checking directories");
@@ -105,8 +100,6 @@ var dailyBackup = schedule.scheduleJob(
     });
   })
 );
-
-Meteor.call("trimBackups", (error, result) => { });
 
 setTimeout(Meteor.bindEnvironment(main), 1000);
 
@@ -572,7 +565,7 @@ function main() {
   initDB.initStatisticsDB()
   initDB.initClientDB()
 
-  //runScheduledManualScan()
+  //runScheduledSimpleScan()
   //run find-new scan every hour
   setTimeout(Meteor.bindEnvironment(scheduledSimpleScan), 3600000);
 
@@ -1680,51 +1673,6 @@ function main() {
             });
           }
           logger.info(`Server:Worker completed:" ${message[2]}`);
-        }
-
-        try {
-          if (message[1].includes("Skipped")) {
-          }
-        } catch (err) {
-          logger.error(err.stack);
-        }
-        if (message[1] == "copied") {
-        }
-
-        if (message[1] == "copiedFail") {
-        }
-
-        //if (message[1] == "originalReplaced") {
-        try {
-          if (message[1].includes("Original replaced")) {
-          }
-        } catch (err) {
-          logger.error(err.stack);
-        }
-
-        //if (message[1] == "originalNotReplaced") {
-        try {
-          if (message[1].includes("Original not replaced")) {
-          }
-        } catch (err) {
-          logger.error(err.stack);
-        }
-
-        try {
-          if (message[1].includes("File repaired")) {
-          }
-        } catch (err) {
-          logger.error(err.stack);
-        }
-
-        try {
-          if (message[1].includes("Unable to repair file")) {
-          }
-        } catch (err) {
-          logger.error(err.stack);
-        }
-
-        if (message[1] == "FFPROBE") {
         }
 
         if (message[1] == "cancelled") {

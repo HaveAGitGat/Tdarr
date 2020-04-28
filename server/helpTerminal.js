@@ -5,6 +5,7 @@ import cliPaths from "./cliPaths.js";
 
 const fs = require('fs');
 var shell = require("shelljs");
+
 Meteor.methods({
 
     runHelpCommand(mode, text) {

@@ -117,12 +117,7 @@ process.on("message", (m) => {
         shellThreadModule.send(infoArray);
       }
     } catch (err) { }
-
-    try {
-      if (repair_worker != "") {
-        repair_worker.send(infoArray);
-      }
-    } catch (err) { }
+    
   }
 
   if (m[0] == "queueNumber") {

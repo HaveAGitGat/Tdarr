@@ -1,7 +1,6 @@
 
 import {FileDB} from "../imports/api/database.js";
 
-
 Meteor.methods({
     modifyFileDB(mode, fileID, obj) {
       //mode == add, update, delete

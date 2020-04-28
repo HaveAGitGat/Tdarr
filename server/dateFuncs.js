@@ -9,8 +9,6 @@ Meteor.methods({
   },
 });
 
-
-
 module.exports.getDateNow = function getDateNow() {
     var today = new Date();
     var dd = today.getDate();

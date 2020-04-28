@@ -5,7 +5,6 @@ import {
   SettingsDB,
   GlobalSettingsDB,
   StatisticsDB,
-  ClientDB,
 } from "../imports/api/database.js";
 
 import logger from "./logger.js";
