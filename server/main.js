@@ -17,6 +17,7 @@ import "./crudFileDB.js";
 import "./dateFuncs.js";
 import "./pluginFuncs.js";
 import "./libFuncs.js";
+import "./helpTerminal.js";
 
 import procPriority from "./procPriority.js";
 import scheduledSimpleScan from "./scheduledSimpleScan.js";
@@ -577,62 +578,6 @@ function main() {
       return allFilesWithProp;
     },
 
-    runHelpCommand(mode, text) {
-      logger.info(mode, text);
-
-      if (mode == "handbrake") {
-        workerCommand = cliPaths.getHandBrakePath() + " " + text;
-      } else if (mode == "ffmpeg") {
-        workerCommand = cliPaths.getFFmpegPath() + " " + text;
-      }
-
-      logger.info(workerCommand);
-
-      fs.writeFileSync(homePath + "/Tdarr/Data/" + mode + ".txt", "", "utf8");
-      var shellWorker = shell.exec(workerCommand, function (
-        code,
-        stdout,
-        stderr,
-        stdin
-      ) {
-        logger.info("Exit code:", code);
-        fs.appendFileSync(
-          homePath + "/Tdarr/Data/" + mode + ".txt",
-          stdout + "\n",
-          "utf8"
-        );
-        fs.appendFileSync(
-          homePath + "/Tdarr/Data/" + mode + ".txt",
-          stderr + "\n",
-          "utf8"
-        );
-      });
-    },
-
-    readHelpCommandText() {
-      try {
-        var ffmpegText = fs.readFileSync(
-          homePath + "/Tdarr/Data/ffmpeg.txt",
-          "utf8"
-        );
-      } catch (err) {
-        logger.error(err.stack);
-        var ffmpegText = "";
-      }
-
-      try {
-        var handbrakeText = fs.readFileSync(
-          homePath + "/Tdarr/Data/handbrake.txt",
-          "utf8"
-        );
-      } catch (err) {
-        logger.error(err.stack);
-        var handbrakeText = "";
-      }
-
-      return [ffmpegText, handbrakeText];
-    },
-
     createSample(filePath) {
       logger.info(filePath);
       var inputFile = filePath;
@@ -713,11 +658,6 @@ function main() {
   //run find-new scan every hour
   setTimeout(Meteor.bindEnvironment(scheduledSimpleScan), 3600000);
 
-  
-
-
-
-  var shell = require("shelljs");
   scheduledPluginUpdate();
 
   function scheduledPluginUpdate() {
