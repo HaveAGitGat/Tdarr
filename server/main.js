@@ -990,6 +990,11 @@ function main() {
                             reQueueAfter = response.reQueueAfter;
                             cliLogAdd += response.infoLog;
 
+                            if (response.error == true) {
+                              cliLogAdd += `☒Plugin error! \n`;
+                              TranscodeDecisionMaker = "Transcode error";
+                            }
+
                             if (
                               processFile == true &&
                               plugin.details().Operation == "Filter"
