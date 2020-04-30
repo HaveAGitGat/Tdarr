@@ -2290,14 +2290,15 @@ function main() {
     return data;
   }
 
-  //loop, set cpu priority low
+  //loop, set cpu priority low if enabled in gui
   procPriority.setProcessPriority();
 
   var workerStatus = {};
+
   workerUpdateCheck();
 
   //worker will cancel item if percentage stays the same for 300 secs
-  function workerUpdateCheck() {
+  async function workerUpdateCheck() {
     try {
       var generalWorkers = workerDB.filter((row) => row.mode == "general");
       var transcodeWorkers = workerDB.filter((row) => row.mode == "transcode");
@@ -2318,9 +2319,7 @@ function main() {
             result
           ) { });
         }
-      }
-
-      if (tDiff >= 1 && transcodeFiles.length > 0) {
+      } else if (tDiff >= 1 && transcodeFiles.length > 0) {
         if (workerLaunched === 0) {
           workerLaunched++;
           Meteor.call("launchWorker", "transcode", 1, function (
@@ -2328,9 +2327,7 @@ function main() {
             result
           ) { });
         }
-      }
-
-      if (hDiff >= 1 && healthcheckFiles.length > 0) {
+      } else if (hDiff >= 1 && healthcheckFiles.length > 0) {
         if (workerLaunched === 0) {
           workerLaunched++;
           Meteor.call("launchWorker", "healthcheck", 1, function (
@@ -2411,7 +2408,17 @@ function main() {
     } catch (err) {
       logger.error(err.stack);
     }
-    setTimeout(Meteor.bindEnvironment(workerUpdateCheck), 3000);
+
+    function launchTimeout() {
+      return new Promise((resolve) => {
+        setTimeout(function () {
+          resolve();
+        }, 500);
+      });
+    };
+
+    await launchTimeout();
+    workerUpdateCheck();
   }
 
   function removeFromProcessing(file) {
