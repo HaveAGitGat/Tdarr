@@ -2,6 +2,7 @@ import { SettingsDB } from "../imports/api/database.js";
 import logger from "./logger.js";
 
 const fs = require('fs');
+const path = require("path");
 var folderWatchers = {};
 
 Meteor.methods({
