@@ -72,8 +72,8 @@ function updateConsole(text) {
           var killCommand = "pkill -P " + shellWorker.pid;
         }
         if (process.platform == "darwin") {
-          //var killCommand = 'pgrep -P ' + shellWorker.pid
-          var killCommand = "pkill -P " + shellWorker.pid;
+          var killCommand = 'pgrep -P ' + shellWorker.pid
+          //var killCommand = "rkill " + shellWorker.pid;
         }
         if (shell.exec(killCommand).code !== 0) {
           shell.exit(1);
