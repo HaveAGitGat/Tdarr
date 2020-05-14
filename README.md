@@ -135,8 +135,7 @@ Current actions:
 
 Some actions/plugins have built-in filters (specified in the plugin creator). This means they'll automatically detect if a file needs to be processed or not (such as the remove subtitles community plugin). Additional filters can be added.
 
-
-I'm adding in new filters/actions each week but some of the actions have become quite complicated so take a bit more time. For example, the 'Keep one audio stream' has 16 different outcomes as it tries to determine the best audio stream to keep based on the codec, language and channel count you specify.
+Some of the actions have become quite complicated so take a bit more time. For example, the 'Keep one audio stream' has 16 different outcomes as it tries to determine the best audio stream to keep based on the codec, language and channel count you specify.
 
 
 If you have a request for a new filter/action, then try and think of it generically so I can implement it in way that other people can configure and apply it to their (slightly) different circumstances. Request on GitHub,Reddit or Discord.
