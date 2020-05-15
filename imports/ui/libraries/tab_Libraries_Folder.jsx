@@ -1314,6 +1314,9 @@ class Folder extends Component {
               }
             >
               <p> Transcode cache:</p>
+              <br/>
+              <p>Files will be transcoded into the transcode cache. Completed files will then be moved to library/output folder.</p>
+              <br/>
 
               <input
                 type="text"
