@@ -7,8 +7,8 @@ log4js.configure({
     tdarr: {
       type: "file",
       filename: homePath + "/Tdarr/Logs/log.txt",
-      maxLogSize: 1 * 1024 * 1024, // = 10Mb
-      backups: 5, // keep five backup files
+      maxLogSize: 1 * 1024 * 1024, // = 1MB
+      backups: 2, 
     },
     console: { type: "console" },
   },
