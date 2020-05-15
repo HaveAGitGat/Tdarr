@@ -117,7 +117,7 @@ process.on("message", (m) => {
         shellThreadModule.send(infoArray);
       }
     } catch (err) { }
-    
+
   }
 
   if (m[0] == "queueNumber") {
@@ -147,7 +147,13 @@ process.on("message", (m) => {
 
     logger("info", "File received:" + fileToProcess);
     var presetSplit;
-    presetSplit = preset.split(",");
+
+    if (preset.includes('<io>')) {
+      presetSplit = preset.split("<io>");
+    } else {
+      presetSplit = preset.split(",");
+    }
+
     var workerCommand = "";
 
     //Create folder to folder conversion output folders
