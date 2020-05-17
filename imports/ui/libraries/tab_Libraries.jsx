@@ -994,17 +994,17 @@ class App extends Component {
 
                       <p>
                         When using FFmpeg, you need to separate the input and
-                        output parameters with a comma. FFmpeg Examples:
+                        output parameters with {'<io>'}. FFmpeg Examples:
                       </p>
 
-                      <p>-r 1,-r 24</p>
-                      <p>,-sn -c:v copy -c:a copy</p>
+                      <p>-r 1{'<io>'}-r 24</p>
+                      <p>{'<io>'}-sn -c:v copy -c:a copy</p>
                       <p>
-                        ,-c:v lib265 -crf 23 -ac 6 -c:a aac -preset veryfast
+                        {'<io>'}-c:v lib265 -crf 23 -ac 6 -c:a aac -preset veryfast
                       </p>
-                      <p>,-map 0 -c copy -c:v libx265 -c:a aac</p>
+                      <p>{'<io>'}-map 0 -c copy -c:v libx265 -c:a aac</p>
                       <p>
-                        -c:v h264_cuvid,-c:v hevc_nvenc -preset slow -c:a copy
+                        -c:v h264_cuvid{'<io>'}-c:v hevc_nvenc -preset slow -c:a copy
                       </p>
 
                       <p>

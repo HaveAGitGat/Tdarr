@@ -121,52 +121,68 @@ Meteor.methods({
         .on(
           "finish",
           Meteor.bindEnvironment(function () {
-            backupStatus[0].status = "Complete";
 
-            for (var i = 0; i < collections.length; i++) {
-              var count = 0;
-              backupStatus.push({ name: collections[i][1] });
-              backupStatus[i + 1].status = "Cleaning existing DB";
-              collections[i][0].remove({});
-              backupStatus[i + 1].status = "Existing DB cleaned";
-              try {
-                var dbItems = fs.readFileSync(
-                  homePath +
-                  `/Tdarr/Backups/${file}-unzip/${collections[i][1]}.txt`,
-                  dbItems,
-                  "utf8"
-                );
-                backupStatus[i + 1].status = "Reading backup file";
-                dbItems = JSON.parse(dbItems);
-                if (dbItems.length > 0) {
-                  for (var j = 0; j < dbItems.length; j++) {
-                    count++;
-                    backupStatus[i + 1].status =
-                      "Restoring:" + count + "/" + dbItems.length;
-                    if (dbItems[j]._id) {
-                      var id = dbItems[j]._id;
-                      try {
-                        collections[i][0].upsert(id, {
-                          $set: dbItems[j],
-                        });
-                      } catch (err) {
-                        logger.error("Error restoring item:");
-                        logger.error(j);
-                        logger.error(dbItems[j]._id);
+            function unzipTimeout() {
+              return new Promise((resolve) => {
+                setTimeout(function () {
+                  resolve();
+                }, 1000);
+              });
+            };
+
+            (async function () {
+
+              await unzipTimeout();
+
+              backupStatus[0].status = "Complete";
+
+              for (var i = 0; i < collections.length; i++) {
+                var count = 0;
+                backupStatus.push({ name: collections[i][1] });
+                backupStatus[i + 1].status = "Cleaning existing DB";
+                collections[i][0].remove({});
+                backupStatus[i + 1].status = "Existing DB cleaned";
+                logger.info("Restoring:" + collections[i][1]);
+                try {
+                  var dbItems = fs.readFileSync(
+                    homePath +
+                    `/Tdarr/Backups/${file}-unzip/${collections[i][1]}.txt`,
+                    dbItems,
+                    "utf8"
+                  );
+                  backupStatus[i + 1].status = "Reading backup file";
+                  dbItems = JSON.parse(dbItems);
+                  if (dbItems.length > 0) {
+                    for (var j = 0; j < dbItems.length; j++) {
+                      count++;
+                      backupStatus[i + 1].status =
+                        "Restoring:" + count + "/" + dbItems.length;
+                      if (dbItems[j]._id) {
+                        var id = dbItems[j]._id;
+                        try {
+                          collections[i][0].upsert(id, {
+                            $set: dbItems[j],
+                          });
+                        } catch (err) {
+                          logger.error("Error restoring item:");
+                          logger.error(j);
+                          logger.error(dbItems[j]._id);
+                        }
                       }
                     }
+                  } else {
+                    backupStatus[i + 1].status = "No items to restore!";
                   }
-                } else {
-                  backupStatus[i + 1].status = "No items to restore!";
+                } catch (err) {
+                  logger.error(err);
+                  backupStatus[i + 1].status = "Error:" + JSON.stringify(err);
                 }
-              } catch (err) {
-                logger.error(err);
-                backupStatus[i + 1].status = "Error:" + JSON.stringify(err);
               }
-            }
 
-            fsextra.removeSync(homePath + `/Tdarr/Backups/${file}-unzip`);
-            backupStatus.push({ name: "Status", status: "Finished!" });
+              fsextra.removeSync(homePath + `/Tdarr/Backups/${file}-unzip`);
+              backupStatus.push({ name: "Status", status: "Finished!" });
+
+            })();
           })
         );
     } catch (err) {
