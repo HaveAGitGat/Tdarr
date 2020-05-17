@@ -38,7 +38,7 @@ const tabs = [
 export default AppRouter = () => {
   const [basePath, setBasePath] = React.useState("");
   const [currentVersion, setVersion] = React.useState("");
-  const [newVersion, setNewVersion] = React.useState(1.108);
+  const [newVersion, setNewVersion] = React.useState(1.109);
   const [showUpdateScreen, setShowUpdateScreen] = React.useState(false);
 
   toggleConsole = () => {
