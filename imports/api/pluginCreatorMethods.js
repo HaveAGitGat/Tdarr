@@ -1,4 +1,5 @@
 import { Meteor } from "meteor/meteor";
+import homePath from "../../server//paths.js";
 
 //Globals
 const shortid = require("shortid");
@@ -67,7 +68,7 @@ Meteor.methods({
 
       `;
     fs.writeFileSync(
-      process.env.homePath + `/Tdarr/Plugins/Local/${ID}.js`,
+      homePath + `/Tdarr/Plugins/Local/${ID}.js`,
       text,
       "utf8"
     );
