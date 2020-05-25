@@ -90,6 +90,30 @@ export default class App extends Component {
                 <p>Change log</p>
                 <LatestDevNotes />
                 <p>
+                  <br />
+                  <br />
+                  {" "}
+Beta v1.109 release [17th May 2020]:
+<br />
+Changes:
+<br />
+-[New] Added health check and transcode cache description
+<br />
+-[New] More errors detected during thorough health check
+<br />
+-[New] Health check will be skipped if both options (Quick/Thorough) unchecked
+<br />
+-[New] Queue files for transcode even if they've failed reading with FFprobe
+<br />
+-[New] More comprehensive logging system
+<br />
+-[New] Clearer UI for how to edit library titles
+<br />
+-[New] Split FFmpeg input and output args with {'<io>'} to prevent issues when FFmpeg command contains commas
+<br />
+                  <br />
+                </p>
+                <p>
                   {" "}
           Beta v1.108 release [18th April 2020]:
           <br />
