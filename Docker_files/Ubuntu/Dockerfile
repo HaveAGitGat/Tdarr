@@ -1,4 +1,4 @@
-FROM ubuntu:20.10
+FROM ubuntu:Ubuntu 20.04 LTS
 
 # Replace 1000 with your user / group id
 
