@@ -8,8 +8,8 @@ Tdarr is a self hosted web-app for automating media library transcode/remux mana
 
 - [Downloads](https://github.com/likeadoc/Tdarr/releases) (Linux, MacOS, Windows)
 - [Installation](https://github.com/likeadoc/Tdarr/wiki/Installation)
-- [Docker](https://github.com/likeadoc/Tdarr/wiki/Docker)
-- [Development](https://github.com/likeadoc/Tdarr/wiki/Development)
+- [Docker](https://github.com/likeadoc/Tdarr/wiki/Configuration#Docker)
+- [Development](https://github.com/likeadoc/Tdarr/wiki/Setup)
 - [Wiki](https://github.com/likeadoc/Tdarr/wiki)
 
 # Features
