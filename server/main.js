@@ -37,7 +37,6 @@ const fs = require("fs");
 const fsextra = require("fs-extra");
 const schedule = require("node-schedule");
 const importFresh = require("import-fresh");
-const isDocker = require("is-docker");
 
 var workers = {};
 var fileScanners = {};
@@ -357,19 +356,11 @@ function main() {
           filesInDB = filesInDB.join("");
 
           try {
-            if (isDocker()) {
-              fs.writeFileSync(
-                "/temp/" + scannerID + ".txt",
-                filesInDB,
-                "utf8"
-              );
-            } else {
               fs.writeFileSync(
                 homePath + "/Tdarr/Data/" + scannerID + ".txt",
                 filesInDB,
                 "utf8"
-              );
-            }
+              );              
           } catch (err) {
             logger.error(err.stack);
           }
@@ -387,19 +378,11 @@ function main() {
           arrayOrPath = arrayOrPath.map((row) => row + "\r\n");
           arrayOrPath = arrayOrPath.join("");
           try {
-            if (isDocker()) {
-              fs.writeFileSync(
-                "/temp/" + scannerID + ".txt",
-                arrayOrPath,
-                "utf8"
-              );
-            } else {
               fs.writeFileSync(
                 homePath + "/Tdarr/Data/" + scannerID + ".txt",
                 arrayOrPath,
                 "utf8"
               );
-            }
           } catch (err) {
             logger.error("Error writing to file: " + err.stack);
           }
@@ -425,7 +408,7 @@ function main() {
         var foldersToIgnore = thisItemsLib[0].foldersToIgnore;
         var globSettings = GlobalSettingsDB.find({}, {}).fetch()[0];
         var resBoundaries = globSettings.resBoundaries;
-        var scannerPath = "assets/app/fileScanner/fileScanner.js";
+        var scannerPath = "assets/app/fileScanner.js";
         var childProcess = require("child_process");
         var child_argv = [
           scannerID,
@@ -746,10 +729,6 @@ function main() {
                     { _id: firstItem.DB },
                     { sort: { createdAt: 1 } }
                   ).fetch();
-                  var ffmpegNVENCBinary = GlobalSettingsDB.find(
-                    {},
-                    {}
-                  ).fetch()[0].ffmpegNVENCBinary;
 
                   //Settings from SettingsDB
                   var settingsDBIndex = firstItem.DB;
@@ -815,7 +794,6 @@ function main() {
                         folderToFolderConversionFolder,
                         processFile,
                         settings[0],
-                        ffmpegNVENCBinary,
                         null,
                         null,
                       ];
@@ -1250,7 +1228,6 @@ function main() {
                       folderToFolderConversionFolder,
                       processFile,
                       settings[0],
-                      ffmpegNVENCBinary,
                       TranscodeDecisionMaker,
                       lastPluginDetails,
                     ];

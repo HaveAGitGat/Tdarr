@@ -40,38 +40,25 @@ function logger(type, text) {
     var rootModules = "";
   }
   
-  const isDocker = require(rootModules + "is-docker");
   const importFresh = require(rootModules + "import-fresh");
   const runFFprobe = importFresh("./runFFprobe.js");
   const runExifTool = importFresh("./runExifTool.js");
   const runCCExtractor = importFresh("./runCCExtractor.js");
   
   if (mode == 0) {
-    if (isDocker()) {
-      console.log("Filescanner in Docker");
-      var filesInDB = fs.readFileSync("/temp/" + scannerID + ".txt", "utf8");
-      fs.unlinkSync("/temp/" + scannerID + ".txt");
-    } else {
-      var filesInDB = fs.readFileSync(
-        homePath + "/Tdarr/Data/" + scannerID + ".txt",
-        "utf8"
-      );
-      fs.unlinkSync(homePath + "/Tdarr/Data/" + scannerID + ".txt");
-    }
-  
+
+    var filesInDB = fs.readFileSync(
+      homePath + "/Tdarr/Data/" + scannerID + ".txt",
+      "utf8"
+    );
+    fs.unlinkSync(homePath + "/Tdarr/Data/" + scannerID + ".txt");  
     filesInDB = filesInDB.split("\r\n");
   } else if (mode == 3) {
-    if (isDocker()) {
-      arrayOrPath = fs.readFileSync("/temp/" + scannerID + ".txt", "utf8");
-      fs.unlinkSync("/temp/" + scannerID + ".txt");
-    } else {
-      arrayOrPath = fs.readFileSync(
-        homePath + "/Tdarr/Data/" + scannerID + ".txt",
-        "utf8"
-      );
-      fs.unlinkSync(homePath + "/Tdarr/Data/" + scannerID + ".txt");
-    }
-  
+    arrayOrPath = fs.readFileSync(
+      homePath + "/Tdarr/Data/" + scannerID + ".txt",
+      "utf8"
+    );
+    fs.unlinkSync(homePath + "/Tdarr/Data/" + scannerID + ".txt");  
     arrayOrPath = arrayOrPath.split("\r\n");
     var filesInDB = [];
   } else {

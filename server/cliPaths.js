@@ -1,83 +1,76 @@
-import {
-    GlobalSettingsDB,
-  } from "../imports/api/database.js";
-
 const fs = require('fs');
 const path = require("path");
 
 if (fs.existsSync(path.join(process.cwd(), "/npm"))) {
-    var handBrakeCLIPath = path.join(
+    var handBrakeCLIPathWin32 = path.join(
         process.cwd(),
-        "/assets/app/HandBrakeCLI.exe"
+        "/assets/app/bin/handbrake/win32/HandBrakeCLI.exe"        
     );
-    var ffmpegPathLinux345 = path.join(
+    var handBrakeCLIPathLinux = path.join(
         process.cwd(),
-        "/assets/app/ffmpeg/ffmpeg345/ffmpeg"
+        "/assets/app/bin/handbrake/linux/HandBrakeCLI"        
     );
-    var ffmpegPathLinux42 = path.join(
+    var handBrakeCLIPathDarwin = path.join(
         process.cwd(),
-        "/assets/app/ffmpeg/ffmpeg42/ffmpeg"
+        "/assets/app/bin/handbrake/darwin/HandBrakeCLI"        
     );
 } else {
-    var handBrakeCLIPath = path.join(
+    var handBrakeCLIPathWin32 = path.join(
         process.cwd(),
-        "/private/HandBrakeCLI.exe"
+        "/private/bin/handbrake/win32/HandBrakeCLI.exe"
     );
-    var ffmpegPathLinux345 = path.join(
+    var handBrakeCLIPathLinux = path.join(
         process.cwd(),
-        "/private/ffmpeg/ffmpeg345/ffmpeg"
+        "/private/bin/handbrake/linux/HandBrakeCLI.exe"
     );
-    var ffmpegPathLinux42 = path.join(
+    var handBrakeCLIPathDarwin = path.join(
         process.cwd(),
-        "/private/ffmpeg/ffmpeg42/ffmpeg"
+        "/private/bin/handbrake/darwin/HandBrakeCLI"
     );
 }
 
 var ffmpegPath = require("@ffmpeg-installer/ffmpeg").path;
-ffmpegPathLinux345 = ffmpegPathLinux345.replace(/'/g, "'\"'\"'");
-ffmpegPathLinux42 = ffmpegPathLinux42.replace(/'/g, "'\"'\"'");
 
 module.exports.getHandBrakePath = function getHandBrakePath() {
     var path;
+    if (process.env.TDARR_HANDBRAKE) {
+        path = process.env.TDARR_HANDBRAKE;
+    } else {
 
-    if (process.platform == "win32") {
-        path = handBrakeCLIPath;
-    }
+        if (process.platform == "win32") {
+            path = handBrakeCLIPathWin32;
+        }
 
-    if (process.platform == "linux") {
-        path = "HandBrakeCLI";
-    }
+        if (process.platform == "linux") {
+            path = handBrakeCLIPathLinux;
+        }
 
-    if (process.platform == "darwin") {
-        path = "/usr/local/bin/HandBrakeCLI";
-    }
-
+        if (process.platform == "darwin") {
+            path = handBrakeCLIPathDarwin;
+        }
+    } 
+    
     return path;
 }
 
 module.exports.getFFmpegPath = function getFFmpegPath() {
     var path;
+    if (process.env.TDARR_FFMPEG) {
+        path = process.env.TDARR_FFMPEG;
+    } else {
 
-    if (process.platform == "win32") {
-        path = ffmpegPath;
-    }
+        if (process.platform == "win32") {
+            path = ffmpegPath;
+        }
 
-    if (process.platform == "linux") {
-        path = ffmpegPathLinux42;
-    }
-
-    if (process.platform == "darwin") {
-        path = ffmpegPath;
-    }
-
-    var ffmpegNVENCBinary = GlobalSettingsDB.find({}, {}).fetch()[0]
-        .ffmpegNVENCBinary;
-
-    if (ffmpegNVENCBinary == true) {
         if (process.platform == "linux") {
-            path = ffmpegPathLinux345;
+            path = ffmpegPath;
+        }
+
+        if (process.platform == "darwin") {
+            path = ffmpegPath;
         }
     }
-
+    
     return path;
 }

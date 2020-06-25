@@ -13,36 +13,43 @@ module.exports = function runCCExtractor(filepath) {
       var workerCommand;
 
       if (process.platform == "win32") {
-        if (fs.existsSync(path.join(process.cwd(), "/npm"))) {
-          CCExtractorPath = path.join(
-            process.cwd(),
-            "/assets/app/fileScanner/ccextractor/ccextractorwin.exe"
-          );
+        if (process.env.TDARR_CCEXTRACTOR) {
+          CCExtractorPath = process.env.TDARR_CCEXTRACTOR;
         } else {
-          CCExtractorPath = path.join(
-            process.cwd(),
-            "/private/fileScanner/ccextractor/ccextractorwin.exe"
-          );
+          if (fs.existsSync(path.join(process.cwd(), "/npm"))) {
+            CCExtractorPath = path.join(
+              process.cwd(),
+              "/assets/app/bin/ccextractor/win32/ccextractorwinfull.exe"
+            );
+          } else {
+            CCExtractorPath = path.join(
+              process.cwd(),
+              "/private/bin/ccextractor/win32/ccextractorwinfull.exe"
+            );
+          }
         }
-
         workerCommand =
           CCExtractorPath +
           ' -debug  -stdout -endat 01:00 --screenfuls 1 -out=null "' +
           filepath +
           '"';
-      }
+        }
 
       if (process.platform == "linux") {
-        if (fs.existsSync(path.join(process.cwd(), "/npm"))) {
-          CCExtractorPath = path.join(
-            process.cwd(),
-            "/assets/app/fileScanner/ccextractor/ccextractor"
-          );
+        if (process.env.TDARR_CCEXTRACTOR) {
+          CCExtractorPath = process.env.TDARR_CCEXTRACTOR;
         } else {
-          CCExtractorPath = path.join(
-            process.cwd(),
-            "/private/fileScanner/ccextractor/ccextractor"
-          );
+          if (fs.existsSync(path.join(process.cwd(), "/npm"))) {
+            CCExtractorPath = path.join(
+              process.cwd(),
+              "/assets/app/bin/ccextractor/linux/ccextractor"
+            );
+          } else {
+            CCExtractorPath = path.join(
+              process.cwd(),
+              "/private/bin/ccextractor/linux/ccextractor"
+            );
+          }
         }
 
         var filepathUnix = filepath.replace(/'/g, "'\"'\"'");
@@ -54,11 +61,32 @@ module.exports = function runCCExtractor(filepath) {
       }
 
       if (process.platform == "darwin") {
-        workerCommand = "";
+        if (process.env.TDARR_CCEXTRACTOR) {
+          CCExtractorPath = process.env.TDARR_CCEXTRACTOR;
+        } else {
+          if (fs.existsSync(path.join(process.cwd(), "/npm"))) {
+            CCExtractorPath = path.join(
+              process.cwd(),
+              "/assets/app/bin/ccextractor/darwin/ccextractor"
+            );
+          } else {
+            CCExtractorPath = path.join(
+              process.cwd(),
+              "/private/bin/ccextractor/darwin/ccextractor"
+            );
+          }
+        }
+
+        var filepathUnix = filepath.replace(/'/g, "'\"'\"'");
+        workerCommand =
+          CCExtractorPath +
+          " -debug  -stdout -endat 01:00 --screenfuls 1 -out=null '" +
+          filepathUnix +
+          "'";
       }
 
       const childProcess = require("child_process");
-      const workerPath = "assets/app/fileScanner/ccextractor.js";
+      const workerPath = "assets/app/ccextractor.js";
       var hasClosedCaptions = false;
 
       shellThreadModule = childProcess.fork(workerPath, [], {

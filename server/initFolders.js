@@ -3,7 +3,6 @@
 
 module.exports = function initFolders(homePath) {
     const fs = require('fs');
-    const isDocker = require('is-docker');
 
     if (!fs.existsSync(homePath + "")) {
         fs.mkdirSync(homePath + "");
@@ -39,14 +38,5 @@ module.exports = function initFolders(homePath) {
 
     if (!fs.existsSync(homePath + "/Tdarr/Logs")) {
         fs.mkdirSync(homePath + "/Tdarr/Logs");
-    }
-
-    if (isDocker()) {
-        console.log('Running inside a Docker container');
-        if (!fs.existsSync("/temp")) {
-            fs.mkdirSync("/temp");
-        }
-    } else {
-        console.log('Not running inside a Docker container');
     }
 }
