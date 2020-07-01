@@ -8,6 +8,7 @@ export function ChangelogPopup(props) {
       size="lg"
       show={props.shouldShow}
       onHide={props.onHideHandler}
+      dialogClassName="changelogModal"
     >
       <Modal.Header closeButton>
         <Modal.Title>

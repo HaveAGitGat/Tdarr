@@ -1513,51 +1513,19 @@ table.streamsTable tr {
   margin:0 2em;
 }
 
+.changelogModal {
+  .close, .modal-header {
+    color: #e1e1e1;
+  }
 
+  .modal-header {
+    background-color: #343a40;
+    border-bottom: 1px solid #444;
+  }
 
-
-.consoleBarClass {
-  height: 90%;
-  width: 100%;
-  position: fixed;
-  z-index: 1;
-  bottom: 0;
-  left: 0;
-  background:#373737;
-  overflow-x: hidden;
-  transition: 0.2s;
-
-}
-
-.consoleBarClass a {
-  padding: 8px 8px 8px 8px;
-  text-decoration: none;
-  font-size: 1em;
-  color: #818181;
-  display: block;
-  transition: 0.3s;
-}
-
-.consoleBarClass a:hover {
-  color: #f1f1f1;
-}
-
-.consoleBarClass .closebtn {
-  position: fixed;
-  bottom: top;
-  right: 75px;
-  font-size: 1em;
-  /* margin-left: 50px; */
-  color: #ffffff;
-}
-
-.consoleBarClass .openbtn {
-  position: fixed;
-  bottom: 0;
-  right: 25px;
-  font-size: 1em;
-  /* margin-left: 50px; */
-  color: #66ccff;
+  .modal-body {
+    background-color: #373737;
+  }
 }
 
 .consoleDivClass {}
