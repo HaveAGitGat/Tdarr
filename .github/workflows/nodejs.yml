@@ -7,7 +7,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [8.x]
+        node-version: [12.x]
     
     name: Use Node.js ${{ matrix.node-version }}
     steps:
