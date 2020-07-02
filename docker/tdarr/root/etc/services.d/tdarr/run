@@ -1,0 +1,4 @@
+#!/usr/bin/with-contenv bash
+
+exec \
+      s6-setuidgid abc node --max-old-space-size=16384 /app/bundle/main.js 
