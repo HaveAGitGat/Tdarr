@@ -45,6 +45,22 @@ jobs:
         run: |
           meteor update
 
+      - name: Updating Meteor 4 [Windows FIX]
+        timeout-minutes: 5
+        continue-on-error: true
+        env:
+          TOOL_NODE_FLAGS: --max-old-space-size=4096
+        run: |
+          meteor update
+
+      - name: Updating Meteor 5 [Windows FIX]
+        timeout-minutes: 5
+        continue-on-error: true
+        env:
+          TOOL_NODE_FLAGS: --max-old-space-size=4096
+        run: |
+          meteor update
+
       - name: Installing npm dependencies
         run: |
           meteor npm install --production
