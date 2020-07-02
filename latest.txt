@@ -1,0 +1,5 @@
+Beta v1.1092 release [25th May 2020]
+
+Changes:
+Small fix for local plugin creator (plugins not saving)
+
