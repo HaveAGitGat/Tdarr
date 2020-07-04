@@ -21,6 +21,7 @@ import TabPlugins from "./plugins/tab_Plugins.jsx";
 import TabSearch from "./tab_Search.jsx";
 import TabTranscoding from "./transcoding/tab_Transcoding.jsx";
 import TabBackups from "./tab_Backups.jsx";
+import { ChangelogPopup } from "./ChangelogPopup.jsx";
 
 const tabs = [
   { path: "/tdarr/", text: "Tdarr", component: TabTranscoding },
@@ -64,25 +65,7 @@ export default AppRouter = () => {
 
   return (
     <Router>
-      <div className={showUpdateScreen ? "" : "d-none"}>
-        <div id="consoleBar" className="consoleBarClass">
-          <a
-            href="javascript:void(0)"
-            className="closebtn"
-            onClick={this.toggleConsole}
-          >
-            X
-          </a>
-          <p> </p>
-          <div id="consoleDiv" className="consoleDivClass">
-            <div className="updateScreen">
-              <h1>Change log</h1>
-              <LatestDevNotes />
-            </div>
-          </div>
-        </div>
-      </div>
-
+      <ChangelogPopup shouldShow={showUpdateScreen} onHideHandler={toggleConsole}></ChangelogPopup>
       <Navbar
         className="mb-0 rounded-0 d-flex justify-content-between"
         collapseOnSelect
