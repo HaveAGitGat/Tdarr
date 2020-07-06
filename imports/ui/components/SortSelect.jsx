@@ -8,14 +8,14 @@ export class SortSelect extends React.Component {
     
     this.state = {
       sortOptions: {
-        sortDateOldest: "Oldest (Scanned):",
-        sortDateNewest: "Newest (Scanned):",
-        sortDateFileCreatedOldest: "Oldest (Created):",
-        sortDateFileCreatedNewest: "Newest (Created):",
-        sortDateFileModifiedOldest: "Oldest (Modified):",
-        sortDateFileModifiedNewest: "Newest (Modified):",
-        sortSizeSmallest: "Smallest:",
-        sortSizeLargest: "Largest:"
+        sortDateOldest: "Oldest (Scanned)",
+        sortDateNewest: "Newest (Scanned)",
+        sortDateFileCreatedOldest: "Oldest (Created)",
+        sortDateFileCreatedNewest: "Newest (Created)",
+        sortDateFileModifiedOldest: "Oldest (Modified)",
+        sortDateFileModifiedNewest: "Newest (Modified)",
+        sortSizeSmallest: "Smallest",
+        sortSizeLargest: "Largest"
       }
     }
   }
