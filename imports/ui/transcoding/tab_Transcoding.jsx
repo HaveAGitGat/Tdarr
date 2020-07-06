@@ -15,6 +15,7 @@ import {
 import Workers from "./tab_Transcoding_Worker.jsx";
 import ReactTable from "react-table";
 import Slider from "react-input-slider";
+import { SortSelect } from "../components/SortSelect.jsx";
 import ItemButton from "../item_Button.jsx";
 import ClipLoader from "react-spinners/ClipLoader";
 import Checkbox from "@material-ui/core/Checkbox";
@@ -155,25 +156,6 @@ class App extends Component {
     ));
   }
 
-  renderSortBox(type) {
-    return this.props.globalSettings.map((item, i) => (
-      <Checkbox
-        name={type}
-        checked={item.queueSortType == type ? true : false}
-        onChange={this.setSort}
-      />
-    ));
-  }
-
-  setSort(event) {
-    if (event.target.checked == true) {
-      GlobalSettingsDB.upsert("globalsettings", {
-        $set: {
-          queueSortType: event.target.name,
-        },
-      });
-    }
-  }
 
   renderCheckBox = (type) => {
     return this.props.globalSettings.map((item, i) => (
@@ -1081,25 +1063,7 @@ class App extends Component {
           </Modal>
 
           <p>Sort queue by: </p>
-          <p>
-            Oldest (Scanned):
-            {this.renderSortBox("sortDateOldest")}
-            Newest (Scanned):
-            {this.renderSortBox("sortDateNewest")}
-            Oldest (Created):
-            {this.renderSortBox("sortDateFileCreatedOldest")}
-            Newest (Created):
-            {this.renderSortBox("sortDateFileCreatedNewest")}
-            Oldest (Modified):
-            {this.renderSortBox("sortDateFileModifiedOldest")}
-            Newest (Modified):
-            {this.renderSortBox("sortDateFileModifiedNewest")}
-            Smallest:
-            {this.renderSortBox("sortSizeSmallest")}
-            Largest:
-            {this.renderSortBox("sortSizeLargest")}
-          </p>
-
+          <SortSelect></SortSelect>
           <p>
             Library alternation: {this.renderCheckBox("alternateLibraries")}
           </p>
