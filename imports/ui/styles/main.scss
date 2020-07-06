@@ -1420,6 +1420,14 @@ table.streamsTable tr {
 
 .queueSortSelect {
   max-width: 300px;
+  color:white;
+  background-color: #222222;
+  border: solid 1px white;
+}
+
+.queueSortSelect:focus {
+  color:white;
+  background-color: #222222;
 }
 
 /* Tabs */
