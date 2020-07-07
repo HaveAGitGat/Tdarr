@@ -4,8 +4,8 @@ var homePath;
 
 //Check if different documents path has been set as env var
 if (process.env.NODE_ENV == "production") {
-  if (process.env.DATA) {
-    homePath = process.env.DATA;
+  if (process.env.TDARR_DATA) {
+    homePath = process.env.TDARR_DATA;
   } else {
     homePath = home + "/Documents";
   }
@@ -14,7 +14,7 @@ if (process.env.NODE_ENV == "production") {
   if (process.env.BASE) {
     GlobalSettingsDB.upsert("globalsettings", {
       $set: {
-        basePath: process.env.BASE,
+        basePath: process.env.TDARR_BASEPATH,
       },
     });
   } else {
@@ -25,7 +25,7 @@ if (process.env.NODE_ENV == "production") {
     });
   }
 } else {
-  //set dev env
+  //Development Environment
   homePath = home + "/Documents";
   GlobalSettingsDB.upsert("globalsettings", {
     $set: {

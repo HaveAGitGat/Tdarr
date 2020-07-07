@@ -88,30 +88,6 @@ class App extends Component {
           <br />
 
           <span className="buttonTextSize mr-2" style={ButtonStyle}>
-            Linux FFmpeg NVENC binary (3.4.5 for unRAID compatibility):
-          </span>
-
-          <div style={ButtonStyle}>
-            <ToggleButton
-              style={ButtonStyle}
-              thumbStyle={borderRadiusStyle}
-              trackStyle={borderRadiusStyle}
-              value={settings.ffmpegNVENCBinary}
-              onToggle={() => {
-                GlobalSettingsDB.upsert("globalsettings", {
-                  $set: {
-                    ffmpegNVENCBinary: !settings.ffmpegNVENCBinary,
-                  },
-                });
-              }}
-            />
-          </div>
-
-          <br />
-          <br />
-          <br />
-
-          <span className="buttonTextSize mr-2" style={ButtonStyle}>
             Auto-cancel stalled workers:
           </span>
 

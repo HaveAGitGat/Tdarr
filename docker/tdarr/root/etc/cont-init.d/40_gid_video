@@ -1,0 +1,17 @@
+#!/usr/bin/with-contenv bash
+
+FILES=$(find /dev/dri /dev/dvb /dev/vchiq /dev/vc-mem /dev/video1? -type c -print 2>/dev/null)
+
+for i in $FILES
+do
+	VIDEO_GID=$(stat -c '%g' "$i")
+	if ! id -G abc | grep -qw "$VIDEO_GID"; then
+		VIDEO_NAME=$(getent group "${VIDEO_GID}" | awk -F: '{print $1}')
+		if [ -z "${VIDEO_NAME}" ]; then
+			VIDEO_NAME="video$(head /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c8)"
+			groupadd "$VIDEO_NAME"
+			groupmod -g "$VIDEO_GID" "$VIDEO_NAME"
+		fi
+		usermod -a -G "$VIDEO_NAME" abc
+	fi
+done

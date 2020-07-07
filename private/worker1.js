@@ -25,7 +25,6 @@ if (fs.existsSync(path.join(process.cwd(), "/npm"))) {
 
 var shell = require(rootModules + "shelljs");
 var fsextra = require(rootModules + "fs-extra");
-const isDocker = require(rootModules + "is-docker");
 const shortid = require(rootModules + "shortid");
 var fileToProcess;
 var inputFolderStem;
@@ -48,7 +47,6 @@ var folderToFolderConversionEnabled;
 var folderToFolderConversionFolder;
 var processFile;
 var librarySettings;
-var ffmpegNVENCBinary;
 var TranscodeDecisionMaker;
 var lastPluginDetails;
 
@@ -137,7 +135,6 @@ process.on("message", (m) => {
     folderToFolderConversionFolder = m[14];
     processFile = m[15];
     librarySettings = m[16];
-    ffmpegNVENCBinary = m[17];
     TranscodeDecisionMaker = m[18];
     lastPluginDetails = m[19];
 
@@ -353,24 +350,6 @@ process.on("message", (m) => {
         " '" +
         currentDestinationLineUnix +
         "' ";
-    }
-
-    if (ffmpegNVENCBinary == true) {
-      if (process.platform == "linux" && handBrakeMode == true) {
-        //  workerCommand = "/usr/local/bin/HandBrakeCLI -i '" + currentSourceLineUnix + "' -o '" + currentDestinationLineUnix + "' " + presetUnix;
-      } else if (process.platform == "linux" && FFmpegMode == true) {
-        workerCommand =
-          ffmpegPathLinux345 +
-          " " +
-          preset0Unix +
-          " -i '" +
-          currentSourceLineUnix +
-          "' " +
-          preset1Unix +
-          " '" +
-          currentDestinationLineUnix +
-          "' ";
-      }
     }
 
     if (mode == "transcode") {

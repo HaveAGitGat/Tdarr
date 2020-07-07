@@ -1,0 +1,9 @@
+#!/usr/bin/with-contenv bash
+chown -R abc:abc \
+        /app
+chown -R abc:abc \
+	/config
+chown -R abc:abc \
+        /data/db
+chown -R abc:abc \
+        /media
