@@ -107,7 +107,7 @@ export default class Worker extends Component {
                     {this.props.worker.mode == "transcode"
                       ? "Transcode"
                       : this.props.worker.mode == "healthcheck"
-                      ? "Heath check"
+                      ? "Health check"
                       : "General(" +
                         workerModes[this.props.worker.modeType] +
                         ")"}
