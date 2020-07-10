@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://i.imgur.com/M0ikBYL.png"/>
+  <img src="https://s7.gifyu.com/images/TdarrDiscordGifCropped.gif"/>
 </p>
 
 
