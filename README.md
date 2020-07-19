@@ -11,8 +11,12 @@
 
 New!:  [![patreon](https://img.shields.io/badge/patreon-support-brightgreen.svg)](https://www.patreon.com/Tdarr)
 
-<a class="gumroad-button" href="https://gum.co/AlLIep" target="_blank">Setup/Installation</a>
+<h2>
+<a href="https://gum.co/AlLIep" target="_blank">Setup/Installation</a>
+</h2>  
 
+
+<h2>About:</h2>  
 
 Tdarr is a self hosted web-app for automating media library transcode/remux management and making sure your files are exactly how you need them to be in terms of codecs/streams/containers etc. Designed to work alongside Sonarr/Radarr and built with the aim of modularisation, parallelisation and scalability, each library you add has its own transcode settings, filters and schedule. Workers can be fired up and closed down as necessary, and are split into 3 types - 'general', 'transcode' and 'health check'. Worker limits can be managed by the scheduler as well as manually. For a desktop application with similar functionality please see [HBBatchBeast](https://github.com/HaveAGitGat/HBBatchBeast).
 
