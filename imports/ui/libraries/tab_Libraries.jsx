@@ -89,6 +89,7 @@ class App extends Component {
       ffmpeg: false,
       handbrakescan: true,
       ffmpegscan: false,
+      ffmpegscannvdec: false,
       preset: '-Z "Very Fast 1080p30"',
       decisionMaker: {
         pluginFilter: true,
