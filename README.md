@@ -12,7 +12,7 @@
 [![patreon](https://img.shields.io/badge/patreon-support-brightgreen.svg)](https://www.patreon.com/Tdarr)
 
 <h2>
-<a href="https://gum.co/AlLIep" target="_blank">Setup/Installation</a>
+<a href="https://github.com/HaveAGitGat/Tdarr/wiki/2---Installation" target="_blank">Setup/Installation (Wiki)</a>
 </h2>  
 
 
