@@ -799,7 +799,7 @@ function main() {
 	                 handBrakeMode = false;
 	                 FFmpegMode = true;
 	                 preset =
-	                   "-v error, -hwaccel nvdec -f null -max_muxing_queue_size 9999";
+	                   "-v error -hwaccel nvdec , -f null -max_muxing_queue_size 9999";
 	              }
 
                       var frameCount = 1;
