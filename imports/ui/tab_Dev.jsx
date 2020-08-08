@@ -89,6 +89,16 @@ export default class App extends Component {
                 <p></p>
                 <p>Change log</p>
                 <LatestDevNotes />
+
+                <p>
+                  <br />
+                  <br />
+          Beta v1.1092 release [25th May 2020]:
+          <br />
+                  <br />
+          Small fix for local plugin creator (plugins not saving)
+        </p>
+
                 <p>
                   Beta v1.1091 release [24th May 2020]:
           <br />
