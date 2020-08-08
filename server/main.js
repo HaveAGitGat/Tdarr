@@ -771,6 +771,7 @@ function main() {
                   var FFmpegMode = settings[0].ffmpeg;
                   var handbrakescan = settings[0].handbrakescan;
                   var ffmpegscan = settings[0].ffmpegscan;
+                  var ffmpegscannvdec = settings[0].ffmpegscannvdec;
                   var processFile = true;
                   var cliLogAdd = "";
                   var reQueueAfter = false;
@@ -780,7 +781,7 @@ function main() {
 
                   //  logger.info(util.inspect(firstItem, {showHidden: false, depth: null}))
                   if (mode == "healthcheck") {
-                    if (handbrakescan == false && ffmpegscan == false) {
+                    if (handbrakescan == false && ffmpegscan == false && ffmpegscannvdec == false) {
                       cliLogAdd += "Skipping health check! \n";
                     } else {
                       cliLogAdd += "Health check! \n";
@@ -794,7 +795,12 @@ function main() {
                         FFmpegMode = true;
                         preset =
                           "-v error, -f null -max_muxing_queue_size 9999";
-                      }
+		      } else if (ffmpegscannvdec == true) {
+	                 handBrakeMode = false;
+	                 FFmpegMode = true;
+	                 preset =
+	                   "-v error, -hwaccel nvdec -f null -max_muxing_queue_size 9999";
+	              }
 
                       var frameCount = 1;
                       var messageOut = [
@@ -1259,7 +1265,8 @@ function main() {
                   if (
                     mode == "healthcheck" &&
                     handbrakescan == false &&
-                    ffmpegscan == false
+                    ffmpegscan == false &&
+                    ffmpegscannvdec == false
                   ) {
                     var tempObj = {
                       _id: firstItem.file,

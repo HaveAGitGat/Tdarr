@@ -279,6 +279,7 @@ class Folder extends Component {
       SettingsDB.upsert(_id, {
         $set: {
           ffmpegscan: false,
+          ffmpegscannvdec: false,
         },
       });
     }
@@ -287,6 +288,16 @@ class Folder extends Component {
       SettingsDB.upsert(_id, {
         $set: {
           handbrakescan: false,
+          ffmpegscannvdec: false,
+        },
+      });
+    }
+
+    if (name == "ffmpegscannvdec" && checked == true) {
+      SettingsDB.upsert(_id, {
+        $set: {
+          handbrakescan: false,
+          ffmpegscan: false,
         },
       });
     }
@@ -2055,6 +2066,14 @@ class Folder extends Component {
                 <Checkbox
                   name="ffmpegscan"
                   checked={!!this.props.libraryItem.ffmpegscan}
+                  onChange={this.handleChangeChkBx}
+                />
+              </p>
+              <p>
+                Thorough - (Goes through each frame of the file with FFmpeg using Nvidia GPU):
+                <Checkbox
+                  name="ffmpegscannvdec"
+                  checked={!!this.props.libraryItem.ffmpegscannvdec}
                   onChange={this.handleChangeChkBx}
                 />
               </p>
