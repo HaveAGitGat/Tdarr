@@ -41,26 +41,18 @@ Currently in Beta but looking for feedback/suggestions.
 <img src="https://i.imgur.com/wRV6tBJ.png" height="300" />
 </p>
 
-
----------------------------------------------------------------------------------------
-## Search
-
-![Screenshot](https://i.imgur.com/m5aQ9cJ.png)
 ---------------------------------------------------------------------------------------
 ## Stats
-
-![Screenshot](https://i.imgur.com/zofsBP5.png)
-
+![Screenshot](https://i.imgur.com/it8xatg.png)
 ---------------------------------------------------------------------------------------
 ## Transcode management
-
-![Screenshot](https://i.imgur.com/8vEmI7d.png)
-
+![Screenshot](https://i.imgur.com/kP6VyUm.png)
+---------------------------------------------------------------------------------------
+## Search
+![Screenshot](https://i.imgur.com/XOO4uFA.png)
 ---------------------------------------------------------------------------------------
 ## Plugins
-
-![Screenshot](https://i.imgur.com/MTiHGrc.png)
-
+![Screenshot](https://i.imgur.com/GkMzCdJ.png)
 -------------------------------------------------------------------------------------------------------------
 
 Requirements (MongoDB + NodeJS 8.x)
