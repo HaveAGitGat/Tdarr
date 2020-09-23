@@ -12,7 +12,7 @@
 [![patreon](https://img.shields.io/badge/patreon-support-brightgreen.svg)](https://www.patreon.com/Tdarr)
 
 <h2>
-<a href="https://github.com/HaveAGitGat/Tdarr/wiki/2---Installation" target="_blank">Setup/Installation (Wiki)</a>
+<a href="https://tdarr.io/docs/installation" target="_blank">Setup/Installation (Wiki)</a>
 </h2>  
 
 
@@ -162,48 +162,6 @@ I like to maximise the chance of direct play, so my plugin stack looks like this
     (6) Remove meta-data if title meta detected [Stops annoying titles appearing in Plex]
 
 
-h264 takes up more space than hevc/h265 but I don't mind that as my 1080p videos are only around 2GB.
-
-
-I know some of you here hate re-encoding video as it reduces quality depending on your settings, but you can still make use of Tdarr to do a lot of other things which don't affect the video stream.
-
-
-If you give it a try then make sure to set up a test folder and play around with various settings to see how Tdarr operates. For example, you may see the same file appear in the transcode/remux queue multiple times. This is because each plugin pass is done separately. Also, all newly scanned files appear in the transcode queue. It is only when a worker picks the file up that it decides if anything should be done to it or not.
-
-
-When using Tdarr it's important that you implement conditions/filters to prevent your files from going through an infinite transcode/remux cycle. Most community plugins already have built-in filters and the plugin creator specifies when you need to add a filter around the action.
-
-Additional points:
-
-- Tdarr can handle both audio and video libraries. I can add the option for image libraries if need be.
-
-- Use it for transcoding, remuxing, health checking or just to see library codec data. Different types of workers mean if you don't want to do transcoding or health checking then just set Tdarr up to not use any of those workers.
-
-- Files are sent through a transcode decision-maker based on file property data. Currently, you can filter by codec, size and resolution (height and width). Many more options are in the pipeline to match HBBatchBeast while providing a better UI.
-
-- As file property data is used instead of say, a list of files which have been processed, this means that at any time you can delete your Tdarr installation and data completely then reinstall and all files already in the correct codec etc will be marked as 'Transcode:Not required' by the transcode decision-maker.
-
-- Transcoding and health checking won't occur on the same file at the same time to prevent errors. All newly transcoded files will automatically be put into the health check queue to make sure they are valid.
-
-- I've put a lot of work into making the program as asynchronous as possible. This means you can scan multiple libraries at the same as running multiple transcode + health check workers. This is crucial for 100TB+ libraries due to the amount of time it can take to process them.
-
-- There is no single transcode/health check queue generated and then processed. Items are pulled from the database in real-time. This prevents queue errors when for example you move files in/out/around your libraries.
-
-- Only videos are health checked.
-
-- If you toggle a worker to 'Off', it will finish its current item before exiting.
-
-- There is a worker status watcher which automatically cancels items after 5 minutes of no transcode progression.
-
-- Lots of graphs and stats additions are in the pipeline.
-
-- There will be integration with Sonarr/Radarr to automatically replace corrupt video files.
-
-- General workers prioritise health check items before transcode items.
-
-- All newly scanned items are moved to the top of the queue as people generally want to prioritise their new media. You can use the search bar to move any item to the top of the queue or re-queue it for a transcode/health check.
-
-- Default port is 8265 (say it enough and it may start to sound like h265).
 
 
 
