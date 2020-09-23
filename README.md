@@ -12,7 +12,7 @@
 [![patreon](https://img.shields.io/badge/patreon-support-brightgreen.svg)](https://www.patreon.com/Tdarr)
 
 <h2>
-<a href="https://tdarr.io/docs/installation" target="_blank">Setup/Installation (Wiki)</a>
+<a href="https://tdarr.io/docs/installation" target="_blank">Setup/Installation</a>
 </h2>  
 
 
