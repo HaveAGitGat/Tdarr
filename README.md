@@ -1,3 +1,5 @@
+Note: Tdarr is currently undergoing a rewrite.
+
 <p align="center">
   <img src="https://s7.gifyu.com/images/GifCroppedTran.gif"/>
 </p>
