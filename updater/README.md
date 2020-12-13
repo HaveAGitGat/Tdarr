@@ -25,21 +25,23 @@ Leave port as 8266 (will be configurable in future),
 Add handbrakePath and ffmpegPath
 
 Open /Tdarr_Node_Config.json:
-    {
-      "nodeID": "QUkJYfSSD",
-      "nodeIP": "127.0.0.1",
-      "nodePort": "8267",
-      "serverIP": "127.0.0.1",
-      "serverPort": "8266",
-      "handbrakePath": "",
-      "ffmpegPath": "",
-      "pathTranslators": [
+
         {
-          "server": "",
-          "node": ""
+        "nodeID": "QUkJYfSSD",
+        "nodeIP": "127.0.0.1",
+        "nodePort": "8267",
+        "serverIP": "127.0.0.1",
+        "serverPort": "8266",
+        "handbrakePath": "",
+        "ffmpegPath": "",
+        "pathTranslators": [
+            {
+            "server": "",
+            "node": ""
+            }
+        ]
         }
-      ]
-    }
+
 
 Add handbrakePath and ffmpegPath. Set whichever nodePort you like. If running a node on a different machine to the server,
 make sure to specify the serverIP address. Also make sure the node and server machines have the same library and cache paths. For example,
