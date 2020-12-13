@@ -55,8 +55,8 @@ y:\Movies on the server should point to the same location as y:\Movies on the no
 in the config above, similar to Docker. e.g.:
 
     {
-      "server": "y:\Movies",
-      "node": "z:\Stuff\Movies"
+      "server": "y:/Movies",
+      "node": "z:/Stuff/Movies"
     }
 
 In the above config, when the server sends a file path to the node, the base path will be translated and vice versa.
