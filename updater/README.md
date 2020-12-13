@@ -9,6 +9,7 @@ Run /Tdarr_Updater.exe
 4 Modules will be downloaded.
 
 Run /Tdarr_Server/Tdarr_Server.exe
+
 Run /Tdarr_Node/Tdarr_Node.exe
 
 Close both down once init has finished.
@@ -31,21 +32,22 @@ Add handbrakePath and ffmpegPath, make sure to use double back slash or a single
 
 Open /Tdarr_Node_Config.json:
 
-    {
-      "nodeID": "QUkJYfSSD",
-      "nodeIP": "127.0.0.1",
-      "nodePort": "8267",
-      "serverIP": "127.0.0.1",
-      "serverPort": "8266",
-      "handbrakePath": "",
-      "ffmpegPath": "",
-      "pathTranslators": [
         {
-          "server": "",
-          "node": ""
+        "nodeID": "QUkJYfSSD",
+        "nodeIP": "127.0.0.1",
+        "nodePort": "8267",
+        "serverIP": "127.0.0.1",
+        "serverPort": "8266",
+        "handbrakePath": "",
+        "ffmpegPath": "",
+        "pathTranslators": [
+            {
+            "server": "",
+            "node": ""
+            }
+        ]
         }
-      ]
-    }
+
 
 Add handbrakePath and ffmpegPath. Set whichever nodePort you like. If running a node on a different machine to the server,
 make sure to specify the serverIP address. Also make sure the node and server machines have the same library and cache paths. For example,
