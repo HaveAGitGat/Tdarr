@@ -2,6 +2,8 @@
 
 <a href="https://storage.googleapis.com/tdarr/versions/1.9900/win32_x64/Tdarr_Updater.zip" target="_blank">Download Tdarr_Updater</a>
 
+Unzip it.
+
 Run /Tdarr_Updater.exe
 
 4 Modules will be downloaded.
@@ -21,9 +23,14 @@ Open /Tdarr_Server_Config.json:
 
 
 Leave port as 8266 (will be configurable in future),
-Add handbrakePath and ffmpegPath
+Add handbrakePath and ffmpegPath, make sure to use double back slash or a single forward slash in the paths e.g.:
+
+    C:\\ffmpeg\\ffmpeg.exe
+
+    C:/ffmpeg/ffmpeg.exe
 
 Open /Tdarr_Node_Config.json:
+
     {
       "nodeID": "QUkJYfSSD",
       "nodeIP": "127.0.0.1",
