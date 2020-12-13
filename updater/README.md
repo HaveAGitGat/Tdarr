@@ -7,6 +7,7 @@ Run /Tdarr_Updater.exe
 4 Modules will be downloaded.
 
 Run /Tdarr_Server/Tdarr_Server.exe
+
 Run /Tdarr_Node/Tdarr_Node.exe
 
 Close both down once init has finished.
