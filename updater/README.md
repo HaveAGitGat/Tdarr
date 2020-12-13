@@ -1,4 +1,4 @@
-Windows v2 Preview: Module test
+# Windows v2 Preview: Module test
 
 <a href="https://storage.googleapis.com/tdarr/versions/1.9900/win32_x64/Tdarr_Updater.zip" target="_blank">Download Tdarr_Updater</a>
 
@@ -13,32 +13,32 @@ Close both down once init has finished.
 
 Open /Tdarr_Server_Config.json:
 
-{
-  "serverPort": "8266",
-  "handbrakePath": "",
-  "ffmpegPath": ""
-}
+    {
+      "serverPort": "8266",
+      "handbrakePath": "",
+      "ffmpegPath": ""
+    }
 
 
 Leave port as 8266 (will be configurable in future),
 Add handbrakePath and ffmpegPath
 
 Open /Tdarr_Node_Config.json:
-{
-  "nodeID": "QUkJYfSSD",
-  "nodeIP": "127.0.0.1",
-  "nodePort": "8267",
-  "serverIP": "127.0.0.1",
-  "serverPort": "8266",
-  "handbrakePath": "",
-  "ffmpegPath": "",
-  "pathTranslators": [
     {
-      "server": "",
-      "node": ""
+      "nodeID": "QUkJYfSSD",
+      "nodeIP": "127.0.0.1",
+      "nodePort": "8267",
+      "serverIP": "127.0.0.1",
+      "serverPort": "8266",
+      "handbrakePath": "",
+      "ffmpegPath": "",
+      "pathTranslators": [
+        {
+          "server": "",
+          "node": ""
+        }
+      ]
     }
-  ]
-}
 
 Add handbrakePath and ffmpegPath. Set whichever nodePort you like. If running a node on a different machine to the server,
 make sure to specify the serverIP address. Also make sure the node and server machines have the same library and cache paths. For example,
@@ -63,11 +63,11 @@ and run /Tdarr_Desktop/Tdarr_Desktop.exe which will by default start a server an
 
 A new config /Tdarr_Desktop_Config.json will be created:
 
-{
-  "Tdarr_Node": true,
-  "Tdarr_Server": true,
-  "Tdarr_WebUI": false
-}
+    {
+      "Tdarr_Node": true,
+      "Tdarr_Server": true,
+      "Tdarr_WebUI": false
+    }
 
 Above you can specify which modules will run when you start Tdarr_Desktop.exe
 
