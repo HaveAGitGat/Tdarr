@@ -71,7 +71,8 @@ A new config /Tdarr_Desktop_Config.json will be created:
 
 Above you can specify which modules will run when you start Tdarr_Desktop.exe
 
-If all is working, you should be able to start up workers on different nodes on the 'Tdarr' tab if you have a library set up and some files scanned. 
+If all is working, you should be able to start up workers on different nodes on the 'Tdarr' tab if you have a library set up and some files scanned.
+![Screenshot](https://i.imgur.com/6ONVOre.png)
 
 Work in progress. Feedback welcome!
 
