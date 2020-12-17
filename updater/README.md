@@ -10,6 +10,8 @@
 | linux_arm (Armv7 64) | ✔       |        | ✔    |       |         |
 | Docker               |         |        |      |       |         |
 
+Download the relevant Tdarr_Updater:
+
 <a href="https://storage.googleapis.com/tdarr/versions/1.99.04/linux_x64/Tdarr_Updater.zip" target="_blank">Tdarr_Updater linux_x64 </a>
 
 <a href="https://storage.googleapis.com/tdarr/versions/1.99.04/win32_x64/Tdarr_Updater.zip" target="_blank">Tdarr_Updater win32_x64</a>
