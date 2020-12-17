@@ -11,8 +11,11 @@
 | Docker               |         |        |      |       |         |
 
 <a href="https://storage.googleapis.com/tdarr/versions/1.99.04/linux_x64/Tdarr_Updater.zip" target="_blank">Tdarr_Updater linux_x64 </a>
+
 <a href="https://storage.googleapis.com/tdarr/versions/1.99.04/win32_x64/Tdarr_Updater.zip" target="_blank">Tdarr_Updater win32_x64</a>
+
 <a href="https://storage.googleapis.com/tdarr/versions/1.99.04/macos_x64/Tdarr_Updater.zip" target="_blank">Tdarr_Updater macos_x64</a>
+
 <a href="https://storage.googleapis.com/tdarr/versions/1.99.04/linux_arm/Tdarr_Updater.zip" target="_blank">Tdarr_Updater linux_arm</a>
 
 
