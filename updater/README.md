@@ -85,7 +85,9 @@ In the above config, when the server sends a file path to the node, the base pat
 Make sure ports are open (8266 for server and 8267 for a default node).
 
 Run /Tdarr_Server/Tdarr_Server
+
 Run /Tdarr_Node/Tdarr_Node
+
 Run /Tdarr_WebUI/Tdarr_WebUI
 
 Visit http://localhost:8265/ and the Tdarr UI should be visible. The connected node should appear on the 'Tdarr' tab. Else close everything down
