@@ -1,24 +1,24 @@
 # Tdarr v2 Preview
 
-1.99.04 Module Matrix
+1.99.05 Module Matrix
 
 | Platform/Module      | Updater | Server | Node | WebUI | Desktop |
 |----------------------|---------|--------|------|-------|---------|
 | linux_x64            | ✔       | ✔      | ✔    | ✔     | ✔       |
 | win32_x64            | ✔       | ✔      | ✔    | ✔     | ✔       |
-| darwin_x64            | ✔       |        | ✔    |       |         |
+| darwin_x64           | ✔       |        | ✔    |       |         |
 | linux_arm (Armv7 64) | ✔       |        | ✔    |       |         |
-| Docker               |         |        |      |       |         |
+| Docker               | -       | ✔      | ✔    | ✔     | -       |
 
 Download the relevant Tdarr_Updater:
 
-<a href="https://storage.googleapis.com/tdarr/versions/1.99.04/linux_x64/Tdarr_Updater.zip" target="_blank">Tdarr_Updater linux_x64 </a>
+<a href="https://storage.googleapis.com/tdarr/versions/1.99.05/linux_x64/Tdarr_Updater.zip" target="_blank">Tdarr_Updater linux_x64 </a>
 
-<a href="https://storage.googleapis.com/tdarr/versions/1.99.04/win32_x64/Tdarr_Updater.zip" target="_blank">Tdarr_Updater win32_x64</a>
+<a href="https://storage.googleapis.com/tdarr/versions/1.99.05/win32_x64/Tdarr_Updater.zip" target="_blank">Tdarr_Updater win32_x64</a>
 
-<a href="https://storage.googleapis.com/tdarr/versions/1.99.04/darwin_x64/Tdarr_Updater.zip" target="_blank">Tdarr_Updater darwin_x64</a>
+<a href="https://storage.googleapis.com/tdarr/versions/1.99.05/darwin_x64/Tdarr_Updater.zip" target="_blank">Tdarr_Updater darwin_x64</a>
 
-<a href="https://storage.googleapis.com/tdarr/versions/1.99.04/linux_arm/Tdarr_Updater.zip" target="_blank">Tdarr_Updater linux_arm</a>
+<a href="https://storage.googleapis.com/tdarr/versions/1.99.05/linux_arm/Tdarr_Updater.zip" target="_blank">Tdarr_Updater linux_arm</a>
 
 
 Unzip it.
@@ -35,7 +35,7 @@ Run /Tdarr_Node/Tdarr_Node
 
 Close both down once init has finished.
 
-Open /Tdarr_Server_Config.json:
+Open /configs//Tdarr_Server_Config.json:
 
     {
       "serverPort": "8266",
@@ -51,7 +51,7 @@ Add handbrakePath and ffmpegPath, make sure to use double back slash or a single
 
     C:/ffmpeg/ffmpeg
 
-Open /Tdarr_Node_Config.json:
+Open /configs//Tdarr_Node_Config.json:
 
         {
         "nodeID": "QUkJYfSSD",
@@ -90,10 +90,14 @@ Run /Tdarr_Node/Tdarr_Node
 
 Run /Tdarr_WebUI/Tdarr_WebUI
 
-Visit http://localhost:8265/ and the Tdarr UI should be visible. The connected node should appear on the 'Tdarr' tab. Else close everything down
-and run /Tdarr_Desktop/Tdarr_Desktop which will by default start a server and a local node.
+Visit http://localhost:8265/ and the Tdarr UI should be visible. The connected node should appear on the 'Tdarr' tab. 
 
-A new config /Tdarr_Desktop_Config.json will be created:
+
+
+
+For Tdarr Desktop, run /Tdarr_Desktop/Tdarr_Desktop which will by default start a server and a local node.
+
+A new config /configs/Tdarr_Desktop_Config.json will be created:
 
     {
       "Tdarr_Node": true,
@@ -105,6 +109,10 @@ Above you can specify which modules will run when you start Tdarr_Desktop
 
 If all is working, you should be able to start up workers on different nodes on the 'Tdarr' tab if you have a library set up and some files scanned.
 ![Screenshot](https://i.imgur.com/6ONVOre.png)
+
+Logs for all modules stored in:
+
+    /logs/
 
 Work in progress. Feedback welcome!
 
