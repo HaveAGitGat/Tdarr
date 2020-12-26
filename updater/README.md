@@ -50,14 +50,22 @@ Add handbrakePath and ffmpegPath, make sure to use double back slash or a single
     C:\\ffmpeg\\ffmpeg
 
     C:/ffmpeg/ffmpeg
-
+    
+Open /configs//Tdarr_WebUI_Config.json:    
+    
+    {
+       "webUIPort": 8265,
+       "serverIP": "0.0.0.0",
+       "serverPort": 8266
+    }
+    
 Open /configs//Tdarr_Node_Config.json:
 
         {
         "nodeID": "QUkJYfSSD",
-        "nodeIP": "127.0.0.1",
+        "nodeIP": "0.0.0.0",
         "nodePort": "8267",
-        "serverIP": "127.0.0.1",
+        "serverIP": "0.0.0.0",
         "serverPort": "8266",
         "handbrakePath": "",
         "ffmpegPath": "",
@@ -102,7 +110,9 @@ A new config /configs/Tdarr_Desktop_Config.json will be created:
     {
       "Tdarr_Node": true,
       "Tdarr_Server": true,
-      "Tdarr_WebUI": false
+      "Tdarr_WebUI": false,
+      "serverIP": "0.0.0.0",
+      "serverPort": 8266
     }
 
 Above you can specify which modules will run when you start Tdarr_Desktop
