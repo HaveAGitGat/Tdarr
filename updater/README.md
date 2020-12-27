@@ -8,7 +8,7 @@
 | win32_x64            | ✔       | ✔      | ✔    | ✔     | ✔       |
 | darwin_x64           | ✔       |        | ✔    |       |         |
 | linux_arm (Armv7 64) | ✔       |        | ✔    |       |         |
-| Docker               | -       | ✔      | ✔    | ✔     | -       |
+| Docker               | -       | ✔ tdarr:1.99.07| ✔  tdarr_node:1.99.07    | ✔     | -       |
 
 Download the relevant Tdarr_Updater:
 
