@@ -147,6 +147,8 @@ Docker run examples:
         -e PUID=1000 \
         -e PGID=1000 \
         haveagitgat/tdarr_node:1.99.07
+        
+Note: All the variables in the config files can be set through environment variables
 
 Work in progress. Feedback welcome!
 
