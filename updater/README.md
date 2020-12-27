@@ -1,6 +1,6 @@
 # Tdarr v2 Preview
 
-1.99.05 Module Matrix
+1.99.07 Module Matrix
 
 | Platform/Module      | Updater | Server | Node | WebUI | Desktop |
 |----------------------|---------|--------|------|-------|---------|
@@ -123,6 +123,30 @@ If all is working, you should be able to start up workers on different nodes on 
 Logs for all modules stored in:
 
     /logs/
+    
+Docker run examples:
+
+        docker run -ti \
+        -v /home/h/Desktop/server:/app/server \
+        -v /home/h/Desktop/Transcode:/mount \
+        --network host \
+        -e "serverIP=0.0.0.0" \
+        -e "serverPort=8266" \
+        -e "webUIPort=8265" \
+        -e "TZ=Europe/London" \
+        -e PUID=1000 \
+        -e PGID=1000 \
+        haveagitgat/tdarr:1.99.07
+        
+        docker run -ti \
+        -v /home/h/Desktop/Transcode:/mount \
+        -e "serverIP=0.0.0.0" \
+        -e "serverPort=8266" \
+        --network host \
+        -e "TZ=Europe/London" \
+        -e PUID=1000 \
+        -e PGID=1000 \
+        haveagitgat/tdarr_node:1.99.07
 
 Work in progress. Feedback welcome!
 
