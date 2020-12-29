@@ -1,14 +1,14 @@
 # Tdarr v2 Preview
 
-1.99.07 Module Matrix
+1.99.08 Module Matrix
 
 | Platform/Module      | Updater | Server | Node | WebUI | Desktop |
 |----------------------|---------|--------|------|-------|---------|
 | linux_x64            | ✔       | ✔      | ✔    | ✔     | ✔       |
 | win32_x64            | ✔       | ✔      | ✔    | ✔     | ✔       |
-| darwin_x64           | ✔       |        | ✔    |       |         |
-| linux_arm (Armv7 64) | ✔       |        | ✔    |       |         |
-| Docker               | -       | ✔ tdarr:1.99.07| ✔  tdarr_node:1.99.07    | ✔     | -       |
+| darwin_x64           | ✔       |        | ✔    |        |         |
+| linux_arm (Armv7 64) | ✔       | ✔      | ✔    |✔      |         |
+| Docker               | -       | ✔ tdarr:1.99.08| ✔  tdarr_node:1.99.08    | ✔     | -       |
 
 Download the relevant Tdarr_Updater:
 
