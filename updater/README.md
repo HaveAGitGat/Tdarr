@@ -18,7 +18,7 @@ Download the relevant Tdarr_Updater:
 
 <a href="https://storage.googleapis.com/tdarr/versions/1.99.05/darwin_x64/Tdarr_Updater.zip" target="_blank">Tdarr_Updater darwin_x64</a>
 
-<a href="https://storage.googleapis.com/tdarr/versions/1.99.05/linux_arm/Tdarr_Updater.zip" target="_blank">Tdarr_Updater linux_arm</a>
+<a href="https://storage.googleapis.com/tdarr/versions/1.99.08/linux_arm/Tdarr_Updater.zip" target="_blank">Tdarr_Updater linux_arm</a>
 
 
 Unzip it.
