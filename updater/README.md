@@ -35,7 +35,7 @@ Run /Tdarr_Node/Tdarr_Node
 
 Close both down once init has finished.
 
-Open /configs//Tdarr_Server_Config.json:
+Open /configs/Tdarr_Server_Config.json:
 
     {
       "serverPort": "8266",
@@ -51,7 +51,7 @@ Add handbrakePath and ffmpegPath, make sure to use double back slash or a single
 
     C:/ffmpeg/ffmpeg
     
-Open /configs//Tdarr_WebUI_Config.json:    
+Open /configs/Tdarr_WebUI_Config.json:    
     
     {
        "webUIPort": 8265,
@@ -59,7 +59,7 @@ Open /configs//Tdarr_WebUI_Config.json:
        "serverPort": 8266
     }
     
-Open /configs//Tdarr_Node_Config.json:
+Open /configs/Tdarr_Node_Config.json:
 
         {
         "nodeID": "QUkJYfSSD",
