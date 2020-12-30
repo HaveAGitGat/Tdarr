@@ -43,8 +43,7 @@ Open /configs/Tdarr_Server_Config.json:
       "ffmpegPath": ""
     }
 
-
-Leave port as 8266 (will be configurable in future),
+Set the server port as desired.
 Add handbrakePath and ffmpegPath, make sure to use double back slash or a single forward slash in the paths e.g.:
 
     C:\\ffmpeg\\ffmpeg
@@ -58,6 +57,9 @@ Open /configs/Tdarr_WebUI_Config.json:
        "serverIP": "0.0.0.0",
        "serverPort": 8266
     }
+    
+Set the webUIPort as desired. If running the webUI on the same machine as the server, leave serverIP as is else change it to the server machine IP. Set the serverPort
+to the same as in the previous config.
     
 Open /configs/Tdarr_Node_Config.json:
 
@@ -76,6 +78,8 @@ Open /configs/Tdarr_Node_Config.json:
             }
         ]
         }
+        
+If runnig the node and server on the same machine leave the IPs as-is else set the machine IPs.
 
 
 Add handbrakePath and ffmpegPath. Set whichever nodePort you like. If running a node on a different machine to the server,
