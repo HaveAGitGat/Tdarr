@@ -12,15 +12,13 @@
 
 Descriptions:
 
-Updater - Module used to update the other modules 
-
-Server  - The core of Tdarr. All modules connect with it. Does not to any encoding.
-
-Node - Module used for transcoding. Can be run on same machine as server or remotely.
-
-WebUI - Module used for web user interface. Can be run on same machine as server or remotely.
-
-Desktop - Module used for desktop user interface. Can be run on same machine as server or remotely. Has options to start up server/node.
+| Module\Desc. |                                                                                                                                |
+|--------------|--------------------------------------------------------------------------------------------------------------------------------|
+| Updater      | Module used to update the other modules                                                                                        |
+| Server       | The core of Tdarr. All modules connect with it. Does not to any encoding.                                                      |
+| Node         | Module used for encoding. Can be run on same machine as server or remotely.                                                    |
+| WebUI        | Module used for web user interface. Can be run on same machine as server or remotely.                                          |
+| Desktop      | Module used for desktop user interface. Can be run on same machine as server or remotely. Has options to start up server/node. |
 
 
 Download the relevant Tdarr_Updater:
