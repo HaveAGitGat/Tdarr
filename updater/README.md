@@ -10,6 +10,14 @@
 | linux_arm (Armv7 64) | ✔       | ✔      | ✔    |✔      | -       |
 | Docker               | -       | ✔ tdarr:1.99.08| ✔  tdarr_node:1.99.08    | ✔     | -       |
 
+Descriptions:
+Updater - Module used to update the other modules 
+Server  - The core of Tdarr. All modules connect with it. Does not to any encoding.
+Node - Module used for transcoding. Can be run on same machine as server or remotely.
+WebUI - Module used for web user interface. Can be run on same machine as server or remotely.
+Desktop - Module used for desktop user interface. Can be run on same machine as server or remotely. Has options to start up server/node.
+
+
 Download the relevant Tdarr_Updater:
 
 <a href="https://storage.googleapis.com/tdarr/versions/1.99.05/linux_x64/Tdarr_Updater.zip" target="_blank">Tdarr_Updater linux_x64 </a>
@@ -29,9 +37,34 @@ Run /Tdarr_Updater
 
 4 Modules will be downloaded.
 
-Run /Tdarr_Server/Tdarr_Server
+Run: 
 
-Run /Tdarr_Node/Tdarr_Node
+    /Tdarr_Server/Tdarr_Server
+    
+You should be able to see 7 tests run in the logs:
+
+        [Info] Tdarr_Server - Binary test 1: handbrakePath working
+        [INFO] Tdarr_Server - Binary test 2: ffmpegPath working
+        [INFO] Tdarr_Server - Binary test 3: mkvpropeditPath working
+
+        [INFO] Tdarr_Server - Scanner test 1: FFprobe working
+        [INFO] Tdarr_Server - Scanner test 2: Exiftool working
+        [INFO] Tdarr_Server - Scanner test 3: Mediainfo working
+        [INFO] Tdarr_Server - Scanner test 4: CCExtractor working
+
+If the handbrakePath or ffmpegPath aren't working, you need to set the paths in the config below. mkvpropeditPath is currently not use for anything.
+
+Run:
+
+    /Tdarr_Node/Tdarr_Node
+    
+You should be able to see 3 tests run in the logs:
+
+        [Info] Tdarr_Node - Binary test 1: handbrakePath working
+        [INFO] Tdarr_Node - Binary test 2: ffmpegPath working
+        [INFO] Tdarr_Node - Binary test 3: mkvpropeditPath working
+        
+If the handbrakePath or ffmpegPath aren't working, you need to set the paths in the config below. mkvpropeditPath is currently not use for anything.
 
 Close both down once init has finished.
 
