@@ -1,6 +1,6 @@
 # Tdarr v2 Preview
 
-1.99.09 Module Matrix
+1.99.11 Module Matrix
 
 | Platform/Module      | Updater | Server | Node | WebUI | Desktop |
 |----------------------|---------|--------|------|-------|---------|
@@ -8,7 +8,7 @@
 | win32_x64            | ✔       | ✔      | ✔    | ✔     | ✔       |
 | darwin_x64           | ✔       | ✔      | ✔    | ✔     | ✔       |
 | linux_arm (Armv7 64) | ✔       | ✔      | ✔    |✔      | -       |
-| Docker               | -       | ✔ tdarr:1.99.09| ✔  tdarr_node:1.99.09   | ✔     | -       |
+| Docker               | -       | ✔ tdarr:1.99.11| ✔ tdarr_node:1.99.11| ✔ tdarr:1.99.11| -       |
 
 Descriptions:
 
@@ -163,7 +163,9 @@ If all is working, you should be able to start up workers on different nodes on 
 Logs for all modules stored in:
 
     /logs/
-    
+
+Using docker, all server plugins, samples, database files etc are stored in '/app/server' so make sure to map that folder to your host.
+
 Docker run examples:
 
         docker run -ti \
@@ -176,7 +178,7 @@ Docker run examples:
         -e "TZ=Europe/London" \
         -e PUID=1000 \
         -e PGID=1000 \
-        haveagitgat/tdarr:1.99.07
+        haveagitgat/tdarr:1.99.11
         
         docker run -ti \
         -v /home/h/Desktop/Transcode:/mount \
@@ -186,7 +188,7 @@ Docker run examples:
         -e "TZ=Europe/London" \
         -e PUID=1000 \
         -e PGID=1000 \
-        haveagitgat/tdarr_node:1.99.07
+        haveagitgat/tdarr_node:1.99.11
         
 Note: All the variables in the config files can be set through environment variables
 
