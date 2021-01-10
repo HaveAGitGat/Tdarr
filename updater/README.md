@@ -165,6 +165,7 @@ Logs for all modules stored in:
     /logs/
 
 Using docker, all server plugins, samples, database files etc are stored in '/app/server' so make sure to map that folder to your host.
+The 'tdarr' container contains both Tdarr_Server and Tdarr_WebUI.
 
 Docker run examples:
 
