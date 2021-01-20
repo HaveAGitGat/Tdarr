@@ -1,4 +1,4 @@
-Note: Tdarr is currently undergoing a rewrite.
+Note: Tdarr is currently undergoing a rewrite. ETA 24th Jan
 
 <p align="center">
   <img src="https://s7.gifyu.com/images/GifCroppedTran.gif"/>
