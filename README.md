@@ -1,6 +1,3 @@
-Note: Tdarr is currently undergoing a rewrite. ETA 24th Jan
-
-
 # Tdarr V2: Distributed Transcoding System
 Audio/Video Library Analytics & Transcode/Remux Automation
 
