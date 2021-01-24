@@ -1,11 +1,13 @@
 Note: Tdarr is currently undergoing a rewrite. ETA 24th Jan
 
+
+# Tdarr V2: Distributed Transcoding System
+Audio/Video Library Analytics & Transcode/Remux Automation
+
 <p align="center">
-  <img src="https://s7.gifyu.com/images/GifCroppedTran.gif"/>
+  <img src="https://storage.googleapis.com/tdarr/media/images/banner-systems.png"/>
 </p>
 
-
-# Tdarr Beta - Audio/Video Library Analytics & Transcode/Remux Automation
 
 - FFmpeg/HandBrake + video health checking (Windows, macOS, Linux & Docker)
 
@@ -20,9 +22,11 @@ Note: Tdarr is currently undergoing a rewrite. ETA 24th Jan
 
 <h2>About:</h2>  
 
-Tdarr is a self hosted web-app for automating media library transcode/remux management and making sure your files are exactly how you need them to be in terms of codecs/streams/containers etc. Designed to work alongside Sonarr/Radarr and built with the aim of modularisation, parallelisation and scalability, each library you add has its own transcode settings, filters and schedule. Workers can be fired up and closed down as necessary, and are split into 3 types - 'general', 'transcode' and 'health check'. Worker limits can be managed by the scheduler as well as manually. For a desktop application with similar functionality please see [HBBatchBeast](https://github.com/HaveAGitGat/HBBatchBeast).
+Tdarr is a self hosted web-app for automating media library transcode/remux management and making sure your files are exactly how you need them to be in terms of codecs/streams/containers etc. Designed to work alongside Sonarr/Radarr and built with the aim of modularisation, parallelisation and scalability, each library you add has its own transcode settings, filters and schedule. Workers can be fired up and closed down as necessary, and are split into 4 types - Transcode CPU/GPU and Health Check CPU/GPU. Worker limits can be managed by the scheduler as well as manually. For a desktop application with similar functionality please see [HBBatchBeast](https://github.com/HaveAGitGat/HBBatchBeast).
 
 
+- Cross-platform Tdarr Nodes which work together with Tdarr Server to process your files
+- GPU and CPU workers
 - Use/create Tdarr Plugins for infinite control on how your files are processed:
 https://github.com/HaveAGitGat/Tdarr_Plugins
 - Audio and video library management
@@ -31,30 +35,29 @@ https://github.com/HaveAGitGat/Tdarr_Plugins
 - Worker stall detector
 - Load balancing between libraries/drives
 - Use HandBrake or FFmpeg
-- Tested on a 180,000 file dummy library with 60 workers
+- Tested on a 1,000,000 file dummy library
 - Search for files based on hundreds of properties
-- Expanding stats page
+- Library stats
 - Hardware transcoding container (install Nvidia plugin on unRAID/Nvidia runtime container on Ubuntu)
 
 
-Currently in Beta but looking for feedback/suggestions. 
 
 <p align="center">
 <img src="https://i.imgur.com/wRV6tBJ.png" height="300" />
 </p>
 
 ---------------------------------------------------------------------------------------
-## Stats
-![Screenshot](https://i.imgur.com/it8xatg.png)
----------------------------------------------------------------------------------------
 ## Transcode management
-![Screenshot](https://i.imgur.com/kP6VyUm.png)
+![Screenshot](https://storage.googleapis.com/tdarr/media/images/Nodes.PNG)
+---------------------------------------------------------------------------------------
+## Stats
+![Screenshot](https://storage.googleapis.com/tdarr/media/images/Stats2.PNG)
 ---------------------------------------------------------------------------------------
 ## Search
-![Screenshot](https://i.imgur.com/XOO4uFA.png)
+![Screenshot](https://storage.googleapis.com/tdarr/media/images/Search2.PNG)
 ---------------------------------------------------------------------------------------
 ## Plugins
-![Screenshot](https://i.imgur.com/GkMzCdJ.png)
+![Screenshot](https://storage.googleapis.com/tdarr/media/images/Plugins2.PNG)
 -------------------------------------------------------------------------------------------------------------
 
 Requirements (MongoDB + NodeJS 8.x)
