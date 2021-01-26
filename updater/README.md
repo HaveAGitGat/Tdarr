@@ -7,7 +7,7 @@
 | linux_x64            | ✔       | ✔      | ✔    | ✔     | ✔       |
 | win32_x64            | ✔       | ✔      | ✔    | ✔     | ✔       |
 | darwin_x64           | ✔       | ✔      | ✔    | ✔     | ✔       |
-| linux_arm (Armv7 64) | ✔       | ✔      | ✔    |✔      | -       |
+| linux_arm (Armv7) | ✔       | ✔      | ✔    |✔      | -       |
 | Docker               | -       | ✔ tdarr:1.99.11| ✔ tdarr_node:1.99.11| ✔ tdarr:1.99.11| -       |
 
 Descriptions:
