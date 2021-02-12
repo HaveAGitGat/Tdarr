@@ -58,10 +58,6 @@ https://github.com/HaveAGitGat/Tdarr_Plugins
 ![Screenshot](https://storage.googleapis.com/tdarr/media/images/Plugins2.PNG)
 -------------------------------------------------------------------------------------------------------------
 
-Requirements (MongoDB + NodeJS 8.x)
-
--------------------------------------------------------------------------------------------------------------
-
 Tdarr is extremely modular/configurable and the main idea behind it is creating a plugin stack to clean up/standardise your files. For example, a typical plugin stack might look like this:
 
 
