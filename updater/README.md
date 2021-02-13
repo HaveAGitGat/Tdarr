@@ -1,5 +1,7 @@
 # Tdarr v2 Preview
 
+Updated instructions: https://tdarr.io/
+
 1.99.11 Module Matrix
 
 | Platform/Module      | Updater | Server | Node | WebUI | Desktop |
