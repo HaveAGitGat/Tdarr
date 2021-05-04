@@ -29,7 +29,7 @@
     "eslint-plugin-react": "^7.20.0",
     "eslint-plugin-react-hooks": "^2.5.1",
     "eslint-plugin-simple-import-sort": "^4.0.0",
-    "exiftool-vendored": "^8.22.0",
+    "exiftool-vendored": "^14.3.0",
     "ffprobe": "^1.1.0",
     "ffprobe-static": "^3.0.0",
     "fs-extra": "^8.1.0",
