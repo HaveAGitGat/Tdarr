@@ -14,6 +14,22 @@ jobs:
     name: build_multi
     steps:
       - uses: actions/checkout@v2.1.0
+      - name: Create Variables
+        id: vars
+        env:
+          _repo: ${{github.repository}}
+          _ref: ${{github.ref}}
+        run: |
+          echo "::set-output name=branch::$(echo ${_ref} | cut -d/ -f3)"
+          echo "::set-output name=username::$(echo ${_repo} | cut -d/ -f1 | tr '[:upper:]' '[:lower:]')"
+          echo "::set-output name=repo::$(echo ${_repo} | tr '[:upper:]' '[:lower:]')"
+
+      - name: Printing Variables
+        run: |
+          echo "${{ steps.vars.outputs.branch }} && ${{github.ref}}"
+          echo "${{ steps.vars.outputs.username }} && ${{github.repository}}"
+          echo ${{ steps.vars.outputs.repo }}
+
       - name: get-npm-version
         id: package-version
         uses: martinbeentjes/npm-get-version-action@master
@@ -38,5 +54,5 @@ jobs:
       - name: Buildx
         # 
         run: |
-          make build-server
-          make build-node
+          make build-server username=${{ steps.vars.outputs.username }}
+          make build-node username=${{ steps.vars.outputs.username }}
