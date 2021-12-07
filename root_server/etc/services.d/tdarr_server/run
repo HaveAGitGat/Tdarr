@@ -1,0 +1,7 @@
+#!/usr/bin/with-contenv bash
+
+echo "Starting Tdarr_Server"
+
+cd /app/Tdarr_Server || exit 1
+
+exec s6-setuidgid Tdarr ./Tdarr_Server
