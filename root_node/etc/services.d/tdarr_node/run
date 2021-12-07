@@ -1,0 +1,7 @@
+#!/usr/bin/with-contenv bash
+
+echo "Starting Tdarr_Node"
+
+cd /app/Tdarr_Node || exit 1
+
+exec s6-setuidgid Tdarr ./Tdarr_Node

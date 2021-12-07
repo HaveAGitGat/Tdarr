@@ -1,0 +1,24 @@
+#!/usr/bin/with-contenv bash
+
+groupmod -o -g "${PGID}" Tdarr
+usermod -o -u "${PUID}" Tdarr
+
+echo "
+User uid:    $(id -u Tdarr)
+User gid:    $(id -g Tdarr)
+-------------------------------------
+"
+
+chown -R ${PUID}:${PGID} \
+    "${HOME}" \
+    /temp \
+    /logs
+
+
+if [ ! -f /firstRun ]; then
+    echo "Chowning the appassets, this make take some time"
+    chown -R ${PUID}:${PGID} /app
+    chmod a+rwx -R /app/Tdarr_Node/assets/{app/fileScanner/,app/ffmpeg/}
+    chmod a+rwx -R /app/Tdarr_Server/node_modules/@ffprobe-installer/linux-x64/ffprobe
+    touch /firstRun
+fi
