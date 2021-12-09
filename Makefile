@@ -1,4 +1,4 @@
-LATFORM=linux/amd64,linux/arm64,linux/arm/v7
+PLATFORM=linux/amd64,linux/arm64,linux/arm/v7
 VERSION=2.00.12
 USERNAME=haveagitgat
 BRANCH=dev
