@@ -1,0 +1,239 @@
+[07:00:47] Compile-time hardening features are enabled
+Cannot load libnvidia-encode.so.1
+Cannot load libnvidia-encode.so.1
+Cannot load libnvidia-encode.so.1
+Cannot load libnvidia-encode.so.1
+[07:00:47] hb_init: starting libhb thread
+[07:00:47] thread 7feb53ad6700 started ("libhb")
+HandBrake 1.4.2 (2021120900) - Linux x86_64 - https://handbrake.fr
+16 CPUs detected
+Opening /temp/sample.mkv...
+[07:00:47] CPU: AMD Ryzen 7 4800H with Radeon Graphics         
+[07:00:47]  - logical processor count: 16
+[07:00:47] Intel Quick Sync Video support: no
+[07:00:47] hb_scan: path=/temp/sample.mkv, title_index=1
+udfread ERROR: ECMA 167 Volume Recognition failed
+disc.c:333: failed opening UDF image /temp/sample.mkv
+disc.c:437: error opening file BDMV/index.bdmv
+disc.c:437: error opening file BDMV/BACKUP/index.bdmv
+bluray.c:2646: nav_get_title_list(/temp/sample.mkv/) failed
+[07:00:47] bd: not a bd - trying as a stream/file instead
+libdvdread: DVDOpenFileUDF:UDFFindFile /VIDEO_TS/VIDEO_TS.IFO failed
+libdvdnav: vm: vm: failed to read VIDEO_TS.IFO
+[07:00:47] dvd: not a dvd - trying as a stream/file instead
+Input #0, matroska,webm, from '/temp/sample.mkv':
+  Metadata:
+    title           : Big Buck Bunny, Sunflower version
+    GENRE           : Animation
+    MAJOR_BRAND     : isom
+    MINOR_VERSION   : 1
+    COMPATIBLE_BRANDS: isomavc1
+    COMPOSER        : Sacha Goedegebure
+    ARTIST          : Blender Foundation 2008, Janus Bager Kristensen 2013
+    COMMENT         : Creative Commons Attribution 3.0 - http://bbb3d.renderfarming.net
+    ENCODER         : Lavf57.83.100
+  Duration: 00:00:30.02, start: 0.000000, bitrate: 693 kb/s
+  Stream #0:0: Video: h264 (High), yuv420p(progressive), 320x240 [SAR 4:3 DAR 16:9], 60 fps, 60 tbr, 1k tbn, 120 tbc (default)
+    Metadata:
+      HANDLER_NAME    : GPAC ISO Video Handler
+      ENCODER         : Lavc57.107.100 libx264
+      DURATION        : 00:00:30.021000000
+  Stream #0:1: Audio: aac (LC), 48000 Hz, stereo, fltp (default)
+    Metadata:
+      HANDLER_NAME    : GPAC ISO Audio Handler
+      ENCODER         : Lavc57.107.100 aac
+      DURATION        : 00:00:30.021000000
+  Stream #0:2: Audio: aac (LC), 48000 Hz, 5.1, fltp (default)
+    Metadata:
+      HANDLER_NAME    : GPAC ISO Audio Handler
+      ENCODER         : Lavc57.107.100 aac
+      DURATION        : 00:00:30.021000000
+[07:00:47] scan: decoding previews for title 1
+[07:00:47] scan: audio 0x1: aac, rate=48000Hz, bitrate=1 Unknown (AAC LC) (2.0 ch)
+[07:00:47] scan: audio 0x2: aac, rate=48000Hz, bitrate=1 Unknown (AAC LC) (5.1 ch)
+[07:00:47] scan: 10 previews, 320x240, 60.000 fps, autocrop = 0/0/0/0, aspect 16:9, PAR 4:3, color profile: 6-1-6
+[07:00:47] libhb: scan thread found 1 valid title(s)
++ Using preset: H.265 MKV 2160p60
++ title 1:
+  + stream: /temp/sample.mkv
+  + duration: 00:00:30
+  + size: 320x240, pixel aspect: 4/3, display aspect: 1.78, 60.000 fps
+  + autocrop: 0/0/0/0
+  + chapters:
+    + 1: duration 00:00:30
+  + audio tracks:
+    + 1, Unknown (AAC LC) (2.0 ch) (iso639-2: und)
+    + 2, Unknown (AAC LC) (5.1 ch) (iso639-2: und)
+  + subtitle tracks:
+[07:00:47] Starting work at: Thu Dec  9 07:00:47 2021
+
+[07:00:47] 1 job(s) to process
+[07:00:47] json job:
+{
+    "Audio": {
+        "AudioList": [
+            {
+                "Bitrate": 160,
+                "CompressionLevel": -1.0,
+                "DRC": 0.0,
+                "DitherMethod": "auto",
+                "Encoder": "av_aac",
+                "Gain": 0.0,
+                "Mixdown": "stereo",
+                "NormalizeMixLevel": false,
+                "PresetEncoder": "av_aac",
+                "Quality": -3.0,
+                "Samplerate": 0,
+                "Track": 0
+            }
+        ],
+        "CopyMask": [
+            "copy:aac"
+        ],
+        "FallbackEncoder": "av_aac"
+    },
+    "Destination": {
+        "AlignAVStart": false,
+        "ChapterList": [
+            {
+                "Duration": {
+                    "Hours": 0,
+                    "Minutes": 0,
+                    "Seconds": 30,
+                    "Ticks": 2701890
+                },
+                "Name": ""
+            }
+        ],
+        "ChapterMarkers": false,
+        "File": "/temp/sample-out.mkv",
+        "InlineParameterSets": false,
+        "Mp4Options": {
+            "IpodAtom": false,
+            "Mp4Optimize": false
+        },
+        "Mux": "mkv"
+    },
+    "Filters": {
+        "FilterList": [
+            {
+                "ID": 3,
+                "Settings": {
+                    "block-height": "16",
+                    "block-thresh": "40",
+                    "block-width": "16",
+                    "filter-mode": "2",
+                    "mode": "3",
+                    "motion-thresh": "1",
+                    "spatial-metric": "2",
+                    "spatial-thresh": "1"
+                }
+            },
+            {
+                "ID": 4,
+                "Settings": {
+                    "mode": "7"
+                }
+            },
+            {
+                "ID": 6,
+                "Settings": {
+                    "mode": 2,
+                    "rate": "27000000/450000"
+                }
+            },
+            {
+                "ID": 13,
+                "Settings": {
+                    "crop-bottom": 0,
+                    "crop-left": 0,
+                    "crop-right": 0,
+                    "crop-top": 0,
+                    "height": 240,
+                    "width": 320
+                }
+            }
+        ]
+    },
+    "Metadata": {
+        "Artist": "Blender Foundation 2008, Janus Bager Kristensen 2013",
+        "Composer": "Sacha Goedegebure",
+        "Genre": "Animation",
+        "Name": "Big Buck Bunny, Sunflower version"
+    },
+    "PAR": {
+        "Den": 3,
+        "Num": 4
+    },
+    "SequenceID": 0,
+    "Source": {
+        "Angle": 0,
+        "Path": "/temp/sample.mkv",
+        "Range": {
+            "End": 1,
+            "Start": 1,
+            "Type": "chapter"
+        },
+        "Title": 1
+    },
+    "Subtitle": {
+        "Search": {
+            "Burn": true,
+            "Default": false,
+            "Enable": false,
+            "Forced": false
+        },
+        "SubtitleList": []
+    },
+    "Video": {
+        "ColorInputFormat": 0,
+        "ColorMatrix": 6,
+        "ColorOutputFormat": 0,
+        "ColorPrimaries": 6,
+        "ColorRange": 0,
+        "ColorTransfer": 1,
+        "Encoder": "nvenc_h265",
+        "QSV": {
+            "AdapterIndex": 1,
+            "AsyncDepth": 0,
+            "Decode": false
+        },
+        "Quality": 24.0,
+        "Turbo": false,
+        "TwoPass": false
+    }
+}
+[07:00:47] Starting Task: Encoding Pass
+[07:00:47] Skipping crop/scale filter
+[07:00:47] job configuration:
+[07:00:47]  * source
+[07:00:47]    + /temp/sample.mkv
+[07:00:47]    + title 1, chapter(s) 1 to 1
+[07:00:47]    + container: matroska,webm
+[07:00:47]    + data rate: 693 kbps
+[07:00:47]  * destination
+[07:00:47]    + /temp/sample-out.mkv
+[07:00:47]    + container: Matroska (libavformat)
+[07:00:47]  * video track
+[07:00:47]    + decoder: h264 8-bit (yuv420p)
+[07:00:47]    + filters
+[07:00:47]      + Comb Detect (mode=3:spatial-metric=2:motion-thresh=1:spatial-thresh=1:filter-mode=2:block-thresh=40:block-width=16:block-height=16)
+[07:00:47]      + Decomb (mode=39)
+[07:00:47]      + Framerate Shaper (mode=2:rate=27000000/450000)
+[07:00:47]        + frame rate: 60.000 fps -> peak rate limited to 60.000 fps
+[07:00:47]    + Output geometry
+[07:00:47]      + storage dimensions: 320 x 240
+[07:00:47]      + pixel aspect ratio: 4 : 3
+[07:00:47]      + display dimensions: 426 x 240
+[07:00:47]    + encoder: H.265 (NVEnc)
+[07:00:47]      + quality: 24.00 (CQ)
+[07:00:47]      + color profile: 6-1-6
+[07:00:47]  * audio track 1
+[07:00:47]    + decoder: Unknown (AAC LC) (2.0 ch) (track 1, id 0x1)
+[07:00:47]      + samplerate: 48000 Hz
+[07:00:47]    + mixdown: Stereo
+[07:00:47]    + encoder: AAC (libavcodec)
+[07:00:47]      + bitrate: 160 kbps, samplerate: 48000 Hz
+[07:00:47] sync: expecting 1801 video frames
+[07:00:47] encavcodecInit: H.265 (Nvidia NVENC)
+/bin/bash: line 7:   379 Segmentation fault      (core dumped) HandBrakeCLI -i "/temp/sample.mkv" -o "/temp/sample-out.mkv" -Z "H.265 MKV 2160p60" -e nvenc_h265
