@@ -10,7 +10,7 @@ on:
 
 jobs:
   build_multi:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     name: build_multi
     steps:
       - uses: actions/checkout@v2.1.0
@@ -52,7 +52,7 @@ jobs:
           password: ${{ secrets.GH_TOKEN }}
 
       - name: Buildx
-        # 
         run: |
-          make build-server username=${{ steps.vars.outputs.username }}
-          make build-node username=${{ steps.vars.outputs.username }}
+          make build-server USERNAME=${{ steps.vars.outputs.username }}
+          make build-node USERNAME=${{ steps.vars.outputs.username }}
+         
