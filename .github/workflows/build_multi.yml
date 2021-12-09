@@ -53,6 +53,6 @@ jobs:
 
       - name: Buildx
         run: |
-          make build-server USERNAME=${{ steps.vars.outputs.username }} BRANCH=${{ steps.vars.outputs.branch }}
-          make build-node USERNAME=${{ steps.vars.outputs.username }} BRANCH=${{ steps.vars.outputs.branch }}
+          make build-server USERNAME=${{ steps.vars.outputs.username }}
+          make build-node USERNAME=${{ steps.vars.outputs.username }}
          
