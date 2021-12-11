@@ -9,7 +9,7 @@ ENV \
  LIBVA_DRIVERS_PATH="/usr/lib/x86_64-linux-gnu/dri" \
  NVIDIA_DRIVER_CAPABILITIES="compute,video,utility" \
  NVIDIA_VISIBLE_DEVICES="all" \
- HANDBRAKE=1.4.1
+ HANDBRAKE=1.3.3
 
 ENV WEB_UI_PORT="8265" SERVER_PORT="8266" NODE_PORT="8267" PUID="1000" PGID="1000" UMASK="002" TZ="Etc/UTC" HOME="/home/Tdarr"
 
@@ -31,7 +31,16 @@ RUN apt-get update &&  \
         curl -o /tmp/$MODULE.zip -L \
         "https://tdarrs.s3.us-west-000.backblazeb2.com/versions/$VERSION/linux_x64/$MODULE.zip" && \
         apt-get install -y ffmpeg && \
-                    # HandBrake dependencies
+        # Intel deps
+        curl -s https://repositories.intel.com/graphics/intel-graphics.key | apt-key add - && \
+        echo 'deb [arch=amd64] https://repositories.intel.com/graphics/ubuntu focal main' > /etc/apt/sources.list.d/intel-graphics.list && \
+        apt-get update && \
+        apt-get install -y --no-install-recommends \
+            intel-media-va-driver-non-free \
+            vainfo \
+            mesa-va-drivers && \
+
+        # HandBrake deps
         apt-get install -y \
             autoconf \
             automake \
