@@ -55,7 +55,6 @@ jobs:
         run: |
           make build-node USERNAME=${{ steps.vars.outputs.username }}
 
-jobs:
   build_multi_server:
     runs-on: ubuntu-20.04
     name: build_multi_server
