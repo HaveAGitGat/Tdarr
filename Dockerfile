@@ -31,6 +31,15 @@ RUN apt-get update &&  \
         curl -o /tmp/$MODULE.zip -L \
         "https://tdarrs.s3.us-west-000.backblazeb2.com/versions/$VERSION/linux_x64/$MODULE.zip" && \
         apt-get install -y ffmpeg && \
+        # Intel deps
+        curl -s https://repositories.intel.com/graphics/intel-graphics.key | apt-key add - &&
+        echo 'deb [arch=amd64] https://repositories.intel.com/graphics/ubuntu focal main' > /etc/apt/sources.list.d/intel-graphics.list &&
+        apt-get update &&
+        apt-get install -y --no-install-recommends \
+            intel-media-va-driver-non-free \
+            vainfo \
+            mesa-va-drivers && \
+
                     # HandBrake dependencies
         apt-get install -y \
             autoconf \
