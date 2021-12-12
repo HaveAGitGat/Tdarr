@@ -54,8 +54,6 @@ jobs:
       - name: Buildx
         run: |
           make build-node USERNAME=${{ steps.vars.outputs.username }} REPO=_acc TAG=dev VERSION=${{ steps.package-version.outputs.current-version }}
-          make build-node USERNAME=${{ steps.vars.outputs.username }} REPO=_acc TAG=${{ steps.package-version.outputs.current-version }} VERSION=${{ steps.package-version.outputs.current-version }}
-          make build-node USERNAME=${{ steps.vars.outputs.username }} REPO=_acc TAG=latest VERSION=${{ steps.package-version.outputs.current-version }}
 
   build_multi_server:
     runs-on: ubuntu-20.04
@@ -102,6 +100,4 @@ jobs:
       - name: Buildx
         run: |
           make build-server USERNAME=${{ steps.vars.outputs.username }} REPO=_acc TAG=dev VERSION=${{ steps.package-version.outputs.current-version }}
-          make build-server USERNAME=${{ steps.vars.outputs.username }} REPO=_acc TAG=${{ steps.package-version.outputs.current-version }} VERSION=${{ steps.package-version.outputs.current-version }}
-          make build-server USERNAME=${{ steps.vars.outputs.username }} REPO=_acc TAG=latest VERSION=${{ steps.package-version.outputs.current-version }}
          
