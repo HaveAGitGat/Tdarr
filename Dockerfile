@@ -16,7 +16,7 @@ ENV WEB_UI_PORT="8265" SERVER_PORT="8266" NODE_PORT="8267" PUID="1000" PGID="100
 RUN apt-get update &&  \
         apt-get install -y \
             software-properties-common \
-            git-all \
+            git \
             trash-cli && \
     mkdir -p \
     /app \
@@ -30,6 +30,7 @@ RUN apt-get update &&  \
     if uname -m | grep -q x86; then \    
         curl -o /tmp/$MODULE.zip -L \
         "https://tdarrs.s3.us-west-000.backblazeb2.com/versions/$VERSION/linux_x64/$MODULE.zip" && \
+        unzip -q /tmp/$MODULE.zip -d /app/$MODULE -x *.exe && \
         apt-get install -y ffmpeg && \
         # Intel deps
         curl -s https://repositories.intel.com/graphics/intel-graphics.key | apt-key add - && \
@@ -107,15 +108,16 @@ RUN apt-get update &&  \
     if uname -m | grep -q aarch64; then \
         curl -o /tmp/$MODULE.zip -L \
         "https://tdarrs.s3.us-west-000.backblazeb2.com/versions/$VERSION/linux_arm64/$MODULE.zip" && \
+        unzip -q /tmp/$MODULE.zip -d /app/$MODULE -x *.exe && \
         apt-get install -y handbrake-cli ffmpeg ; \
     fi \
     && \
     if uname -m | grep -q armv7l; then \
         curl -o /tmp/$MODULE.zip -L \
         "https://tdarrs.s3.us-west-000.backblazeb2.com/versions/$VERSION/linux_arm/$MODULE.zip"  && \
+        unzip -q /tmp/$MODULE.zip -d /app/$MODULE -x *.exe && \
         apt-get install -y handbrake-cli ffmpeg ; \
     fi && \
-    unzip -q /tmp/$MODULE.zip -d /app/$MODULE -x *.exe && \
     rm -rdf /tmp/$MODULE.zip && \
     trash-empty
 
