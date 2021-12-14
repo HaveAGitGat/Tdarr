@@ -16,7 +16,7 @@ ENV WEB_UI_PORT="8265" SERVER_PORT="8266" NODE_PORT="8267" PUID="1000" PGID="100
 RUN apt-get update &&  \
         apt-get install -y \
             software-properties-common \
-            git-all \
+            git \
             trash-cli && \
     mkdir -p \
     /app \
@@ -30,7 +30,15 @@ RUN apt-get update &&  \
     if uname -m | grep -q x86; then \    
         curl -o /tmp/$MODULE.zip -L \
         "https://tdarrs.s3.us-west-000.backblazeb2.com/versions/$VERSION/linux_x64/$MODULE.zip" && \
-        apt-get install -y ffmpeg && \
+        unzip -q /tmp/$MODULE.zip -d /app/$MODULE -x *.exe && \
+        # FFmpeg
+        apt install -y wget && \
+        wget https://repo.jellyfin.org/releases/server/ubuntu/versions/jellyfin-ffmpeg/4.3.2-1/jellyfin-ffmpeg_4.3.2-1-focal_amd64.deb && \
+        apt install -y \
+        ./jellyfin-ffmpeg_4.3.2-1-focal_amd64.deb && \
+        ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/ffmpeg && \
+        # apt-get install -y ffmpeg && \
+     
         # Intel deps
         curl -s https://repositories.intel.com/graphics/intel-graphics.key | apt-key add - && \
         echo 'deb [arch=amd64] https://repositories.intel.com/graphics/ubuntu focal main' > /etc/apt/sources.list.d/intel-graphics.list && \
@@ -107,15 +115,16 @@ RUN apt-get update &&  \
     if uname -m | grep -q aarch64; then \
         curl -o /tmp/$MODULE.zip -L \
         "https://tdarrs.s3.us-west-000.backblazeb2.com/versions/$VERSION/linux_arm64/$MODULE.zip" && \
+        unzip -q /tmp/$MODULE.zip -d /app/$MODULE -x *.exe && \
         apt-get install -y handbrake-cli ffmpeg ; \
     fi \
     && \
     if uname -m | grep -q armv7l; then \
         curl -o /tmp/$MODULE.zip -L \
         "https://tdarrs.s3.us-west-000.backblazeb2.com/versions/$VERSION/linux_arm/$MODULE.zip"  && \
+        unzip -q /tmp/$MODULE.zip -d /app/$MODULE -x *.exe && \
         apt-get install -y handbrake-cli ffmpeg ; \
     fi && \
-    unzip -q /tmp/$MODULE.zip -d /app/$MODULE -x *.exe && \
     rm -rdf /tmp/$MODULE.zip && \
     trash-empty
 
