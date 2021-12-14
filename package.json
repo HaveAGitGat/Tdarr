@@ -1,0 +1,21 @@
+{
+  "name": "tdarr",
+  "version": "2.00.12",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HaveAGitGat/tdarr.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/HaveAGitGat/tdarr/issues"
+  },
+  "homepage": "https://github.com/HaveAGitGat/tdarr#readme",
+  "dependencies": {
+    "babel-eslint": "^10.1.0"
+  },
+  "devDependencies": {}
+}
