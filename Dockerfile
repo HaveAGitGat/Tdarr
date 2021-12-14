@@ -31,7 +31,14 @@ RUN apt-get update &&  \
         curl -o /tmp/$MODULE.zip -L \
         "https://tdarrs.s3.us-west-000.backblazeb2.com/versions/$VERSION/linux_x64/$MODULE.zip" && \
         unzip -q /tmp/$MODULE.zip -d /app/$MODULE -x *.exe && \
-        apt-get install -y ffmpeg && \
+        # FFmpeg
+        apt install -y wget && \
+        wget https://repo.jellyfin.org/releases/server/ubuntu/versions/jellyfin-ffmpeg/4.3.2-1/jellyfin-ffmpeg_4.3.2-1-focal_amd64.deb && \
+        apt install -y \
+        ./jellyfin-ffmpeg_4.3.2-1-focal_amd64.deb && \
+        ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/ffmpeg && \
+        # apt-get install -y ffmpeg && \
+     
         # Intel deps
         curl -s https://repositories.intel.com/graphics/intel-graphics.key | apt-key add - && \
         echo 'deb [arch=amd64] https://repositories.intel.com/graphics/ubuntu focal main' > /etc/apt/sources.list.d/intel-graphics.list && \
