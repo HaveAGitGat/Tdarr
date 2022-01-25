@@ -72,6 +72,7 @@ RUN apt-get update &&  \
             libopus-dev \
             libsamplerate-dev \
             libspeex-dev \
+            libtesseract4 \
             libtheora-dev \
             libtool \
             libtool-bin \
