@@ -27,7 +27,7 @@ RUN apt-get update &&  \
     useradd -u ${PUID} -U -d ${HOME} -s /bin/false Tdarr && \
     usermod -G users Tdarr && \
     mkdir -p /app/$MODULE  && \
-    apt-get update && apt-get install -y curl unzip && \
+    apt-get update && apt-get install -y curl unzip mkvtoolnix libtesseract-dev && \
     if uname -m | grep -q x86; then \    
         curl -o /tmp/$MODULE.zip -L \
         "https://tdarrs.s3.us-west-000.backblazeb2.com/versions/$VERSION/linux_x64/$MODULE.zip" && \
@@ -72,7 +72,6 @@ RUN apt-get update &&  \
             libopus-dev \
             libsamplerate-dev \
             libspeex-dev \
-            libtesseract4 \
             libtheora-dev \
             libtool \
             libtool-bin \
