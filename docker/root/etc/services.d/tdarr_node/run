@@ -1,7 +1,13 @@
 #!/usr/bin/with-contenv bash
 
-echo "Starting Tdarr_Node"
-
 cd /app/Tdarr_Node || exit 1
 
-exec s6-setuidgid Tdarr ./Tdarr_Node
+if [ -d "/etc/services.d/tdarr_server" ] && [ "$internalNode" = true ]; then \
+    echo "Starting Tdarr_Node"
+    exec s6-setuidgid Tdarr ./Tdarr_Node
+fi
+
+if [ ! -d "/etc/services.d/tdarr_server" ]; then \
+    echo "Starting Tdarr_Node"
+    exec s6-setuidgid Tdarr ./Tdarr_Node
+fi
