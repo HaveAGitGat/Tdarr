@@ -32,9 +32,9 @@ RUN apt-get update &&  \
     if uname -m | grep -q x86; then \    
         # FFmpeg
         apt install -y wget && \
-        wget https://repo.jellyfin.org/releases/server/ubuntu/versions/jellyfin-ffmpeg/4.3.2-1/jellyfin-ffmpeg_4.3.2-1-focal_amd64.deb && \
+        wget https://repo.jellyfin.org/releases/server/ubuntu/versions/jellyfin-ffmpeg/4.4.1-2/jellyfin-ffmpeg_4.4.1-2-focal_amd64.deb && \
         apt install -y \
-        ./jellyfin-ffmpeg_4.3.2-1-focal_amd64.deb && \
+        ./jellyfin-ffmpeg_4.4.1-2-focal_amd64.deb && \
         ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/ffmpeg && \
         # apt-get install -y ffmpeg && \
      
