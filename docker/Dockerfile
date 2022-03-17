@@ -160,7 +160,8 @@ RUN if [ "$MODULE" = "Tdarr_Node" ]; then \
 
     rm -rdf /tmp/$MODULE.zip && \
     rm -rdf /tmp/Tdarr_Node.zip && \
-    trash-empty
+    trash-empty && \
+    apt-get autoremove -y
 
 EXPOSE ${NODE_PORT}
 EXPOSE ${WEB_UI_PORT}
