@@ -17,8 +17,19 @@ Audio/Video Library Analytics & Transcode/Remux Automation
 
 
 <h2>About:</h2>  
+More information can be found on the following websites: 
 
-Tdarr V2 is a closed-source distributed transcoding system for automating media library transcode/remux management and making sure your files are exactly how you need them to be in terms of codecs/streams/containers and so on. Put your spare hardware to use with Tdarr Nodes for Windows, Linux (including Linux arm) and macOS.
+[https://tdarr.io/](https://tdarr.io/)
+[https://docs.tdarr.io/](https://docs.tdarr.io/)
+
+Tdarr V2 is a cross-platform conditional based transcoding application for automating media library transcode/remux management in order to process your media files as required. For example, you can set rules for the required codecs, containers, languages etc that your media should have which helps keeps things organized and can increase compatability with your devices. A common use for Tdarr is to simply convert video files from h264 to h265 (hevc), saving 40%-50% in size.
+
+The application is in the form of a click-to-run web-app, comprised of the following 2 components:
+
+Tdarr_Server -  Central process which all Nodes connect with
+Tdarr_Node - Processes running on same/other devices which collect tasks from the Server
+
+Put your spare hardware to use with Tdarr Nodes for Windows, Linux (including Linux arm/arm64) and macOS.
 
 Designed to work alongside applications like Sonarr/Radarr and built with the aim of modularisation, parallelisation and scalability, each library you add has its own transcode settings, filters and schedule. Workers can be fired up and closed down as necessary, and are split into 4 types - Transcode CPU/GPU and Health Check CPU/GPU. Worker limits can be managed by the scheduler as well as manually. For a desktop application with similar functionality please see [HBBatchBeast](https://github.com/HaveAGitGat/HBBatchBeast).
 
@@ -44,18 +55,31 @@ https://github.com/HaveAGitGat/Tdarr_Plugins
 </p>
 
 ---------------------------------------------------------------------------------------
-## Transcode management
-![Screenshot](https://storage.googleapis.com/tdarr/media/images/Nodes.PNG)
----------------------------------------------------------------------------------------
 ## Stats
-![Screenshot](https://storage.googleapis.com/tdarr/media/images/Stats2.PNG)
+![Screenshot](https://tdarrs.s3.us-west-000.backblazeb2.com/data/images2/home_pics/Stats2.png)
 ---------------------------------------------------------------------------------------
-## Search
-![Screenshot](https://storage.googleapis.com/tdarr/media/images/Search2.PNG)
+## Nodes
+![Screenshot](https://tdarrs.s3.us-west-000.backblazeb2.com/data/images2/home_pics/Nodes.png)
 ---------------------------------------------------------------------------------------
-## Plugins
-![Screenshot](https://storage.googleapis.com/tdarr/media/images/Plugins2.PNG)
--------------------------------------------------------------------------------------------------------------
+## Job reports
+![Screenshot](https://tdarrs.s3.us-west-000.backblazeb2.com/data/images2/home_pics/JobReportViewer.png)
+---------------------------------------------------------------------------------------
+## Property explorer
+![Screenshot](https://tdarrs.s3.us-west-000.backblazeb2.com/data/images2/home_pics/SizeExplorer.png)
+---------------------------------------------------------------------------------------
+## Worker verdict history
+![Screenshot](https://tdarrs.s3.us-west-000.backblazeb2.com/data/images2/home_pics/VerdictHistory.png)
+---------------------------------------------------------------------------------------
+## Plugin stack system
+![Screenshot](https://tdarrs.s3.us-west-000.backblazeb2.com/data/images2/home_pics/Plugins2.png)
+---------------------------------------------------------------------------------------
+## Property search
+![Screenshot](https://tdarrs.s3.us-west-000.backblazeb2.com/data/images2/home_pics/Search2.png)
+---------------------------------------------------------------------------------------
+## Library schedule
+![Screenshot](https://tdarrs.s3.us-west-000.backblazeb2.com/data/images2/home_pics/Schedule.png)
+---------------------------------------------------------------------------------------
+
 
 Tdarr is extremely modular/configurable and the main idea behind it is creating a plugin stack to clean up/standardise your files. For example, a typical plugin stack might look like this:
 
@@ -90,10 +114,10 @@ https://i.imgur.com/RaKnq2c.png
 That file has 3 streams - a video, audio and subtitle stream. Subtitles and closed captions are very different. Where is the closed caption data in this example? It's embedded inside the h264 video stream.
 
 
-Extra streams and closed captions which you don't need can cause problems with direct playing and syncing files, so you might as well remove them (I recommend using Bazarr for subtitles). Even when playing files in programs such as VLC or Kodi, subtitles/closed captions can cause playback delays and make things stuttery for a few seconds when jumping around the video.
+Extra streams and closed captions which you don't need can cause problems with direct playing and syncing files, so you might as well remove them (it's recommended to use something like Bazarr for subtitles). Even when playing files in programs such as VLC or Kodi, subtitles/closed captions can cause playback delays and make things stuttery for a few seconds when jumping around the video.
 
 
-Extra streams can also take up a lot of space. Don't be surprised to see some files in your library with 15+ audio/commentary/subtitle tracks in a bunch of different languages . These can take up an extra GB+ per file.
+Extra streams can also take up a lot of space. Don't be surprised to see some files in your library with 15+ audio/commentary/subtitle tracks in a bunch of different languages. These can take up an extra GB+ per file.
 
 
 The plugin creator is split into 'Filters' and 'Actions'. Filters encapsulate the actions, so the actions will only be carried out if the filter conditions are met.
@@ -136,7 +160,7 @@ Some of the actions have become quite complicated so take a bit more time. For e
 If you have a request for a new filter/action, then try and think of it generically so I can implement it in way that other people can configure and apply it to their (slightly) different circumstances. Request on GitHub,Reddit or Discord.
 
 
-I like to maximise the chance of direct play, so my plugin stack looks like this:
+For example, to maximize direct play, a plugin stack like this can be used:
 
 
     (1) If not in h264, transcode into h264 [h264 is a more universal video codec than others]
@@ -150,12 +174,3 @@ I like to maximise the chance of direct play, so my plugin stack looks like this
     (5) Add aac stereo audio if none (eng preferred) [very universal audio codec/channel count]
 
     (6) Remove meta-data if title meta detected [Stops annoying titles appearing in Plex]
-
-
-
-
-
-
-
-
-
