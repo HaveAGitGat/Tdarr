@@ -56,28 +56,28 @@ https://github.com/HaveAGitGat/Tdarr_Plugins
 
 ---------------------------------------------------------------------------------------
 ## Stats
-![Screenshot](https://tdarrs.s3.us-west-000.backblazeb2.com/data/images2/home_pics/Stats2.png)
+![image](https://user-images.githubusercontent.com/43864057/163762996-65381fc8-0a57-4651-ba20-b5cba28e39d3.png)
 ---------------------------------------------------------------------------------------
 ## Nodes
-![Screenshot](https://tdarrs.s3.us-west-000.backblazeb2.com/data/images2/home_pics/Nodes.png)
+![image](https://user-images.githubusercontent.com/43864057/163763000-35742f0e-ae67-40b4-a44c-eee60eae61cf.png)
 ---------------------------------------------------------------------------------------
 ## Job reports
-![Screenshot](https://tdarrs.s3.us-west-000.backblazeb2.com/data/images2/home_pics/JobReportViewer.png)
+![image](https://user-images.githubusercontent.com/43864057/163763006-a73a06cb-9fec-4960-bc72-46fb9744f9a9.png)
 ---------------------------------------------------------------------------------------
 ## Property explorer
-![Screenshot](https://tdarrs.s3.us-west-000.backblazeb2.com/data/images2/home_pics/SizeExplorer.png)
+![image](https://user-images.githubusercontent.com/43864057/163763020-2231d5d1-d016-4c5c-84bf-662a6069ed01.png)
 ---------------------------------------------------------------------------------------
 ## Worker verdict history
-![Screenshot](https://tdarrs.s3.us-west-000.backblazeb2.com/data/images2/home_pics/VerdictHistory.png)
+![image](https://user-images.githubusercontent.com/43864057/163763035-5a90e2a3-9516-44c4-994e-77d844123527.png)
 ---------------------------------------------------------------------------------------
 ## Plugin stack system
-![Screenshot](https://tdarrs.s3.us-west-000.backblazeb2.com/data/images2/home_pics/Plugins2.png)
+![image](https://user-images.githubusercontent.com/43864057/163763049-fea46078-3749-4fb9-997c-3ced5b19049f.png)
 ---------------------------------------------------------------------------------------
 ## Property search
-![Screenshot](https://tdarrs.s3.us-west-000.backblazeb2.com/data/images2/home_pics/Search2.png)
+![image](https://user-images.githubusercontent.com/43864057/163763064-24193295-1494-4c08-aa2e-76892a771b7b.png)
 ---------------------------------------------------------------------------------------
 ## Library schedule
-![Screenshot](https://tdarrs.s3.us-west-000.backblazeb2.com/data/images2/home_pics/Schedule.png)
+![image](https://user-images.githubusercontent.com/43864057/163763073-c00a3e8d-486a-4d12-b99d-7e4120961248.png)
 ---------------------------------------------------------------------------------------
 
 
