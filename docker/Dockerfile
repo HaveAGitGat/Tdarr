@@ -36,6 +36,7 @@ RUN apt-get update &&  \
         apt install -y \
         ./jellyfin-ffmpeg_4.3.2-1-focal_amd64.deb && \
         ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/ffmpeg && \
+        ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/tdarr-ffmpeg && \
         # apt-get install -y ffmpeg && \
      
         # Intel deps
@@ -111,10 +112,12 @@ RUN apt-get update &&  \
         rm -rdf /tmp/handbrake/ ; \
     fi && \
     if uname -m | grep -q aarch64; then \
-        apt-get install -y handbrake-cli ffmpeg ; \
+        apt-get install -y handbrake-cli ffmpeg && \
+        ln -s /usr/bin/ffmpeg /usr/local/bin/tdarr-ffmpeg ; \
     fi && \
     if uname -m | grep -q armv7l; then \
-        apt-get install -y handbrake-cli ffmpeg ; \
+        apt-get install -y handbrake-cli ffmpeg && \
+        ln -s /usr/bin/ffmpeg /usr/local/bin/tdarr-ffmpeg ; \
     fi
 
 # handle tdarr binaries
@@ -125,34 +128,34 @@ RUN if [ "$MODULE" = "Tdarr_Node" ]; then \
     
     apt-get update && apt-get install -y curl unzip mkvtoolnix libtesseract-dev && \
     if uname -m | grep -q x86; then \    
-        curl -o /tmp/$MODULE.zip -L \
+        curl --connect-timeout 120 --retry 5 -o /tmp/$MODULE.zip -L \
         "https://tdarrs.s3.us-west-000.backblazeb2.com/versions/$VERSION/linux_x64/$MODULE.zip" && \
         unzip -q /tmp/$MODULE.zip -d /app/$MODULE -x *.exe && \
 
         if [ "$MODULE" = "Tdarr_Server" ]; then \
-            curl -o /tmp/Tdarr_Node.zip -L \
+            curl --connect-timeout 120 --retry 5 -o /tmp/Tdarr_Node.zip -L \
             "https://tdarrs.s3.us-west-000.backblazeb2.com/versions/$VERSION/linux_x64/Tdarr_Node.zip" && \
             unzip -q /tmp/Tdarr_Node.zip -d /app/Tdarr_Node -x *.exe ; \
         fi ; \
     fi && \
     if uname -m | grep -q aarch64; then \
-        curl -o /tmp/$MODULE.zip -L \
+        curl --connect-timeout 120 --retry 5 -o /tmp/$MODULE.zip -L \
         "https://tdarrs.s3.us-west-000.backblazeb2.com/versions/$VERSION/linux_arm64/$MODULE.zip" && \
         unzip -q /tmp/$MODULE.zip -d /app/$MODULE -x *.exe && \
 
         if [ "$MODULE" = "Tdarr_Server" ]; then \
-            curl -o /tmp/Tdarr_Node.zip -L \
+            curl --connect-timeout 120 --retry 5 -o /tmp/Tdarr_Node.zip -L \
             "https://tdarrs.s3.us-west-000.backblazeb2.com/versions/$VERSION/linux_arm64/Tdarr_Node.zip" && \
             unzip -q /tmp/Tdarr_Node.zip -d /app/Tdarr_Node -x *.exe ; \
         fi ; \
     fi && \
     if uname -m | grep -q armv7l; then \
-        curl -o /tmp/$MODULE.zip -L \
+        curl --connect-timeout 120 --retry 5 -o /tmp/$MODULE.zip -L \
         "https://tdarrs.s3.us-west-000.backblazeb2.com/versions/$VERSION/linux_arm/$MODULE.zip"  && \
         unzip -q /tmp/$MODULE.zip -d /app/$MODULE -x *.exe && \
 
         if [ "$MODULE" = "Tdarr_Server" ]; then \
-             curl -o /tmp/Tdarr_Node.zip -L \
+             curl --connect-timeout 120 --retry 5 -o /tmp/Tdarr_Node.zip -L \
             "https://tdarrs.s3.us-west-000.backblazeb2.com/versions/$VERSION/linux_arm/Tdarr_Node.zip" && \
             unzip -q /tmp/Tdarr_Node.zip -d /app/Tdarr_Node -x *.exe ; \
         fi ; \
