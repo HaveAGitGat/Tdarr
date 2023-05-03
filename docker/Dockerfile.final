@@ -1,0 +1,65 @@
+ARG VERSION
+ARG DATE
+
+FROM docker.io/haveagitgat/tdarr_acc:base_${VERSION}_${DATE}
+
+ARG VERSION
+ARG MODULE
+ARG DATE
+
+ENV WEB_UI_PORT="8265" SERVER_PORT="8266" NODE_PORT="8267" PUID="1000" PGID="1000" UMASK="002" TZ="Etc/UTC" HOME="/home/Tdarr"
+
+
+ENV MODULE_LINK=""
+ENV NODE_LINK=""
+ENV BASE_LINK="https://tdarrs.s3.us-west-000.backblazeb2.com/dev/versions/$VERSION"
+ENV inContainer="true"
+
+# handle tdarr binaries
+RUN echo $MODULE && echo $VERSION && echo $DATE && \
+    if [ "$MODULE" = "Tdarr_Node" ]; then \
+        echo removing /tdarr_server && \
+        rm -rdf /etc/services.d/tdarr_server ; \
+    fi && \
+    
+    apt-get update && apt-get install -y curl unzip mkvtoolnix libtesseract-dev && \
+    if uname -m | grep -q x86; then \    
+        MODULE_LINK="${BASE_LINK}/linux_x64/${MODULE}_$DATE.zip" && \
+        NODE_LINK="${BASE_LINK}/linux_x64/Tdarr_Node_$DATE.zip" ; \
+    fi && \
+    if uname -m | grep -q aarch64; then \
+        MODULE_LINK="${BASE_LINK}/linux_arm64/${MODULE}_$DATE.zip" && \
+        NODE_LINK="${BASE_LINK}/linux_arm64/Tdarr_Node_$DATE.zip" ; \
+    fi && \
+    if uname -m | grep -q armv7l; then \
+        MODULE_LINK="${BASE_LINK}/linux_arm/${MODULE}_$DATE.zip" && \
+        NODE_LINK="${BASE_LINK}/linux_arm/Tdarr_Node_$DATE.zip" ; \
+    fi && \
+
+    echo MODULE_LINK=$MODULE_LINK && \
+    echo NODE_Link=$NODE_LINK && \
+    curl --connect-timeout 120 --retry 5 -o /tmp/$MODULE.zip -L \
+    "$MODULE_LINK"  && \
+    unzip -q /tmp/$MODULE.zip -d /app/$MODULE -x *.exe && \
+    if [ "$MODULE" = "Tdarr_Server" ]; then \
+        curl --connect-timeout 120 --retry 5 -o /tmp/Tdarr_Node.zip -L \
+        "$NODE_LINK" && \
+        unzip -q /tmp/Tdarr_Node.zip -d /app/Tdarr_Node -x *.exe ; \
+    fi && \
+    rm -rdf /tmp/$MODULE.zip && \
+    rm -rdf /tmp/Tdarr_Node.zip && \
+
+    cp -r /app /app_test && \
+    runTests=true runDockerTests=true /app_test/$MODULE/$MODULE && \
+    if [ "$MODULE" = "Tdarr_Server" ]; then \
+           runTests=true runDockerTests=true /app_test/Tdarr_Node/Tdarr_Node ; \
+    fi && \
+    rm -rdf /app_test && \
+
+    trash-empty && \
+    apt-get autoremove -y
+
+EXPOSE ${NODE_PORT}
+EXPOSE ${WEB_UI_PORT}
+EXPOSE ${SERVER_PORT}
+ENTRYPOINT ["/init"]
