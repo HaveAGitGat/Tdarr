@@ -22,6 +22,8 @@ If applicable, add screenshots to help explain your problem.
 **Please provide the following information:**
 - Config files  [can be found in /app/configs/ when using Docker or in the /configs folder next to Tdarr_Updater if not using Docker]
 
+- Job reports: https://docs.tdarr.io/docs/other/job-reports
+
 - Log files  [can be found in /app/logs/ when using Docker or in the /logs folder next to Tdarr_Updater if not using Docker]
 
 -Worker error [can be found on the 'Tdarr' tab by pressing the 'i' button on a failed item in the staged file section or in the transcode error section at the bottom]
