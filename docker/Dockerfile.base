@@ -5,11 +5,9 @@ ENV \
  LD_LIBRARY_PATH="/usr/lib/x86_64-linux-gnu" \
  NVIDIA_DRIVER_CAPABILITIES="compute,video,utility" \
  NVIDIA_VISIBLE_DEVICES="all" \
- HANDBRAKE=1.6.1
+ HANDBRAKE=1.7.1
 
 ENV WEB_UI_PORT="8265" SERVER_PORT="8266" NODE_PORT="8267" PUID="1000" PGID="1000" UMASK="002" TZ="Etc/UTC" HOME="/home/Tdarr"
-
-COPY docker/root/ /
 
 # handle deps
 RUN apt-get update &&  \
@@ -40,8 +38,10 @@ RUN apt-get update &&  \
         libleptonica-dev \
         clang \
         libclang-dev && \
+        # libgpac-dev && \
         git clone https://github.com/CCExtractor/ccextractor.git && \
         cd ccextractor/linux && \ 
+        git checkout 35e73c1c90ce3ca69394d3523836bb1cdec28f11 && \
         ./build -without-rust && \
         mv ./ccextractor /usr/bin/ccextractor && \
         
@@ -55,12 +55,12 @@ RUN apt-get update &&  \
         echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/intel-graphics.gpg] https://repositories.intel.com/graphics/ubuntu focal-legacy main' | \
         tee  /etc/apt/sources.list.d/intel.gpu.focal.list && \
 
-        # FFmpeg
+        # FFmpeg 6
         apt install -y wget && \
-        wget https://repo.jellyfin.org/releases/server/ubuntu/versions/jellyfin-ffmpeg/6.0-1/jellyfin-ffmpeg6_6.0-1-focal_amd64.deb && \
-        apt install -y \
-        ./jellyfin-ffmpeg6_6.0-1-focal_amd64.deb && \
-        rm -rf ./jellyfin-ffmpeg6_6.0-1-focal_amd64.deb && \
+        wget https://repo.jellyfin.org/releases/server/ubuntu/versions/jellyfin-ffmpeg/6.0.1-1/jellyfin-ffmpeg6_6.0.1-1-focal_amd64.deb && \
+        sudo apt install -y \
+        ./jellyfin-ffmpeg6_6.0.1-1-focal_amd64.deb && \
+        rm -rf ./jellyfin-ffmpeg6_6.0.1-1-focal_amd64.deb && \
         ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/ffmpeg && \
         ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/tdarr-ffmpeg && \
         # apt-get install -y ffmpeg && \
@@ -150,4 +150,30 @@ RUN apt-get update &&  \
     if uname -m | grep -q armv7l; then \
         apt-get install -y handbrake-cli ffmpeg && \
         ln -s /usr/bin/ffmpeg /usr/local/bin/tdarr-ffmpeg ; \
-    fi
+    fi && \
+
+    trash-empty && \
+        if uname -m | grep -q x86; then \
+            apt purge -y \
+                g++-9 \
+                gcc-9 \
+                llvm-10-dev \
+                # libc6-dev \
+                libstdc++-9-dev \
+                cpp-9 \
+                libgcc-9-dev \
+                libclang-10-dev \
+                libstd-rust-dev \
+                libclang-common-10-dev \
+                libllvm10 \
+                # libllvm12 \
+                libclang-cpp10 \
+                libicu-dev \
+                cargo \
+                libstd-rust-1.65 \
+                libstd-rust-dev \
+                git \
+                cmake \
+                perl-modules-5.30 ; \
+        fi && \
+    apt autoremove -y
