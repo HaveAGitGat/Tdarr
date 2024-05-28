@@ -123,8 +123,10 @@ RUN apt-get update &&  \
             libdrm-dev \
             libmfx-dev \
             libmfx1 && \
+
         # Clear cached apt files
         apt-get clean && \
+
         rm -rdf /tmp/handbrake && \
         mkdir -p /tmp/handbrake && \
         git clone \
