@@ -57,10 +57,10 @@ RUN apt-get update &&  \
 
         # FFmpeg
         apt install -y wget && \
-        wget https://repo.jellyfin.org/releases/server/ubuntu/versions/jellyfin-ffmpeg/6.0-1/jellyfin-ffmpeg6_6.0-1-focal_amd64.deb && \
+        wget https://repo.jellyfin.org/releases/server/ubuntu/versions/jellyfin-ffmpeg/6.0.1-3/jellyfin-ffmpeg6_6.0.1-3-focal_amd64.deb && \
         apt install -y \
-        ./jellyfin-ffmpeg6_6.0-1-focal_amd64.deb && \
-        rm -rf ./jellyfin-ffmpeg6_6.0-1-focal_amd64.deb && \
+        ./jellyfin-ffmpeg6_6.0.1-3-focal_amd64.deb && \
+        rm -rf ./jellyfin-ffmpeg6_6.0.1-3-focal_amd64.deb && \
         ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/ffmpeg && \
         ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/tdarr-ffmpeg && \
         # apt-get install -y ffmpeg && \
@@ -123,7 +123,8 @@ RUN apt-get update &&  \
             libdrm-dev \
             libmfx-dev \
             libmfx1 && \
-
+        # Clear cached apt files
+        apt-get clean && \
         rm -rdf /tmp/handbrake && \
         mkdir -p /tmp/handbrake && \
         git clone \
