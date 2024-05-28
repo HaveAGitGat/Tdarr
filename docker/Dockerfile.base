@@ -124,9 +124,6 @@ RUN apt-get update &&  \
             libmfx-dev \
             libmfx1 && \
 
-        # Clear cached apt files
-        apt-get clean && \
-
         rm -rdf /tmp/handbrake && \
         mkdir -p /tmp/handbrake && \
         git clone \
@@ -153,4 +150,7 @@ RUN apt-get update &&  \
     if uname -m | grep -q armv7l; then \
         apt-get install -y handbrake-cli ffmpeg && \
         ln -s /usr/bin/ffmpeg /usr/local/bin/tdarr-ffmpeg ; \
-    fi
+    fi && \
+
+    # Clear cached apt files
+    apt-get clean
