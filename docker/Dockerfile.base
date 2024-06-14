@@ -57,10 +57,11 @@ RUN apt-get update &&  \
 
         # FFmpeg
         apt install -y wget && \
-        wget https://repo.jellyfin.org/releases/server/ubuntu/versions/jellyfin-ffmpeg/6.0-1/jellyfin-ffmpeg6_6.0-1-focal_amd64.deb && \
+        ffmpegversion=$(curl --silent https://api.github.com/repos/jellyfin/jellyfin-ffmpeg/releases/latest | grep -oP '"tag_name":\s*"v\K[^"]+' | sort -h | tail -n1) && \
+        wget https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v$ffmpegversion/jellyfin-ffmpeg6_$ffmpegversion-focal_amd64.deb && \
         apt install -y \
-        ./jellyfin-ffmpeg6_6.0-1-focal_amd64.deb && \
-        rm -rf ./jellyfin-ffmpeg6_6.0-1-focal_amd64.deb && \
+        ./jellyfin-ffmpeg6_$ffmpegversion-focal_amd64.deb && \
+        rm -rf ./jellyfin-ffmpeg6_$ffmpegversion-focal_amd64.deb && \
         ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/ffmpeg && \
         ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/tdarr-ffmpeg && \
         # apt-get install -y ffmpeg && \
@@ -150,4 +151,7 @@ RUN apt-get update &&  \
     if uname -m | grep -q armv7l; then \
         apt-get install -y handbrake-cli ffmpeg && \
         ln -s /usr/bin/ffmpeg /usr/local/bin/tdarr-ffmpeg ; \
-    fi
+    fi && \
+
+    # Clear cached apt files
+    apt-get clean
