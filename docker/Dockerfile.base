@@ -9,31 +9,27 @@ ENV \
 
 ENV WEB_UI_PORT="8265" SERVER_PORT="8266" NODE_PORT="8267" PUID="1000" PGID="1000" UMASK="002" TZ="Etc/UTC" HOME="/home/Tdarr"
 
-COPY docker/root/ /
-
 # handle deps
 RUN apt-get update &&  \
-    apt-get install -y \
-        software-properties-common \
-        git \
-        trash-cli
-
-RUN mkdir -p \
-        /app \
-        /logs \
-        /temp \
-        "${HOME}"
+        apt-get install -y \
+            software-properties-common \
+            git \
+            trash-cli && \
+    mkdir -p \
+    /app \
+    /logs \
+    /temp \
+    "${HOME}" && \
+    # useradd -u ${PUID} -U -d ${HOME} -s /bin/false Tdarr && \
+    # usermod -G users Tdarr && \
     
-RUN apt-get update && \
+    apt-get update && \
+    apt-get install -y curl unzip mkvtoolnix comskip \
+        # for apprise
+        python3-pip && \
+        pip3 install apprise && \
+    #cc-extractor
     apt-get install -y \
-        curl \
-        unzip \
-        mkvtoolnix
-
-# CCExtractor dependencies
-RUN apt-get update && \
-    apt-get install -y \
-        libgpac-dev \
         libglew-dev \
         libglfw3-dev \
         cmake \
@@ -43,26 +39,24 @@ RUN apt-get update && \
         libtesseract-dev \
         libleptonica-dev \
         clang \
-        libclang-dev
-
-# CCExtractor
-RUN git clone --branch v0.94 https://github.com/CCExtractor/ccextractor.git && \
-    cd ccextractor/linux && \ 
-    ./build -without-rust && \
-    mv ./ccextractor /usr/bin/ccextractor && \
-    cd / && rm -rf /ccextractor
+        libclang-dev && \
+        # libgpac-dev && \
+        git clone https://github.com/CCExtractor/ccextractor.git && \
+        cd ccextractor/linux && \ 
+        git checkout 35e73c1c90ce3ca69394d3523836bb1cdec28f11 && \
+        ./build -without-rust && \
+        mv ./ccextractor /usr/bin/ccextractor && \
+        
+        cd / && rm -rf /ccextractor && \
+    if uname -m | grep -q x86; then \
 
 # Setup Intel Package Repository
-RUN if uname -m | grep -q x86; then \
         curl -sSL https://repositories.intel.com/gpu/intel-graphics.key | \
             gpg --dearmor --output /usr/share/keyrings/intel-graphics.gpg && \
         echo "deb [arch=amd64,i386 signed-by=/usr/share/keyrings/intel-graphics.gpg] https://repositories.intel.com/gpu/ubuntu jammy client" | \
             tee /etc/apt/sources.list.d/intel-gpu-jammy.list && \
-        apt-get update ; \
-    fi
+        apt-get update && \
 
-# Install Intel Compute, Media and Display runtimes
-RUN if uname -m | grep -q x86; then \
         apt install -y \
             intel-opencl-icd \
             intel-level-zero-gpu \
@@ -88,25 +82,20 @@ RUN if uname -m | grep -q x86; then \
             va-driver-all \
             vainfo \
             hwinfo \
-            clinfo ; \
-    fi
+            clinfo && \
 
-# FFmpeg
-RUN if uname -m | grep -q x86; then \
-        # curl -LO https://repo.jellyfin.org/releases/server/ubuntu/versions/jellyfin-ffmpeg/6.0.1-3/jellyfin-ffmpeg6_6.0.1-3-focal_amd64.deb && \
-        # apt-get install -y \
-        # ./jellyfin-ffmpeg6_6.0.1-3-focal_amd64.deb && \
-        # rm -rf ./jellyfin-ffmpeg6_6.0.1-3-focal_amd64.deb && \
-        # ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/ffmpeg && \
-        # ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/tdarr-ffmpeg ; \
-        apt update && \
+        # FFmpeg 6
         apt install -y \
-            ffmpeg ; \
-    fi
-
-# HandBrake dependencies
-RUN if uname -m | grep -q x86; then \
-        apt-get update && \
+        wget && \
+        ffmpegversion=$(curl --silent https://api.github.com/repos/jellyfin/jellyfin-ffmpeg/releases/latest | grep -oP '"tag_name":\s*"v\K[^"]+' | sort -h | tail -n1) && \
+        wget https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v$ffmpegversion/jellyfin-ffmpeg6_$ffmpegversion-jammy_amd64.deb && \
+        apt install -y \
+        ./jellyfin-ffmpeg6_$ffmpegversion-jammy_amd64.deb && \
+        rm -rf ./jellyfin-ffmpeg6_$ffmpegversion-jammy_amd64.deb && \
+        ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/ffmpeg && \
+        ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/tdarr-ffmpeg && \
+        # apt-get install -y ffmpeg && \
+        # HandBrake dependencies
         apt-get install -y \
             autoconf \
             automake \
@@ -114,6 +103,7 @@ RUN if uname -m | grep -q x86; then \
             cmake \
             git \
             libass-dev \
+            libass9 \
             libbz2-dev \
             libfontconfig-dev \
             libfreetype-dev \
@@ -142,15 +132,13 @@ RUN if uname -m | grep -q x86; then \
             ninja-build \
             patch \
             pkg-config \
+            # python \
             tar \
             zlib1g-dev \
             # QSV dependencies
             libva-dev \
-            libdrm-dev ; \
-    fi
+            libdrm-dev && \
 
-# HandBrake install
-RUN if uname -m | grep -q x86; then \
         rm -rdf /tmp/handbrake && \
         mkdir -p /tmp/handbrake && \
         git clone \
@@ -169,14 +157,34 @@ RUN if uname -m | grep -q x86; then \
         make --directory=build install && \
         cp /tmp/handbrake/build/HandBrakeCLI /usr/local/bin/HandBrakeCLI && \
         rm -rdf /tmp/handbrake/ ; \
-    fi
-
-RUN if uname -m | grep -q aarch64; then \
+    fi && \
+    if uname -m | grep -q aarch64; then \
         apt-get install -y handbrake-cli ffmpeg && \
         ln -s /usr/bin/ffmpeg /usr/local/bin/tdarr-ffmpeg ; \
-    fi
-
-RUN if uname -m | grep -q armv7l; then \
+    fi && \
+    if uname -m | grep -q armv7l; then \
         apt-get install -y handbrake-cli ffmpeg && \
         ln -s /usr/bin/ffmpeg /usr/local/bin/tdarr-ffmpeg ; \
-    fi
+    fi && \
+
+    trash-empty && \
+        if uname -m | grep -q x86; then \
+            apt-get clean && \
+            apt purge -y \
+                g++-9 \
+                gcc-9 \
+                # libc6-dev \
+                libstdc++-9-dev \
+                cpp-9 \
+                libgcc-9-dev \
+                libstd-rust-dev \
+                # libllvm12 \
+                libicu-dev \
+                cargo \
+                libstd-rust-1.65 \
+                libstd-rust-dev \
+                git \
+                cmake \
+                python3-pip ; \
+        fi && \
+    apt autoremove -y
