@@ -8,7 +8,7 @@ Audio/Video Library Analytics & Transcode/Remux Automation
 
 - FFmpeg/HandBrake + video health checking (Windows, macOS, Linux & Docker)
 
-[![Reddit](https://img.shields.io/badge/Reddit-Tdarr-orange)](https://www.reddit.com/r/Tdarr/)[![Discord](https://img.shields.io/badge/Discord-Chat-green.svg)](https://discord.gg/GF8X8cq)
+[![ImageVersion](https://ghcr-badge.egpl.dev/haveagitgat/tdarr/latest_tag?color=%2344cc11&ignore=latest&label=latest&trim=)](https://home.tdarr.io/download) [![Reddit](https://img.shields.io/badge/Reddit-Tdarr-orange)](https://www.reddit.com/r/Tdarr/) [![Discord](https://img.shields.io/badge/Discord-Chat-green.svg)](https://discord.gg/GF8X8cq)
 
 
 <h2>
@@ -108,13 +108,11 @@ Each of the plugins are conditional, so are only used if needed. They are locate
 
 Here is an illustration of how the plugin stack works:
 
-https://i.imgur.com/483AakN.png
-
+![image](https://i.imgur.com/483AakN.png)
 
 For the term 'streams', here is an example of how a file appears in Tdarr search results:
 
-https://i.imgur.com/RaKnq2c.png
-
+![image](https://i.imgur.com/RaKnq2c.png)
 
 That file has 3 streams - a video, audio and subtitle stream. Subtitles and closed captions are very different. Where is the closed caption data in this example? It's embedded inside the h264 video stream.
 
