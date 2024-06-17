@@ -7,6 +7,8 @@ assignees: ''
 
 ---
 
+Please put plugin requests/bugs at: https://github.com/HaveAGitGat/Tdarr_Plugins
+
 **Describe the bug**
 A clear and concise description of what the bug is.
 

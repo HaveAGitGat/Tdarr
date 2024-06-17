@@ -7,6 +7,8 @@ assignees: ''
 
 ---
 
+Please put plugin requests/bugs at: https://github.com/HaveAGitGat/Tdarr_Plugins
+
 **Is your feature request related to a problem? Please describe.**
 A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
 
