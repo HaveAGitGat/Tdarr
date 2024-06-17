@@ -23,16 +23,18 @@ RUN apt-get update &&  \
     # useradd -u ${PUID} -U -d ${HOME} -s /bin/false Tdarr && \
     # usermod -G users Tdarr && \
 
-    # MkvToolNIX
-    wget -O /usr/share/keyrings/gpg-pub-moritzbunkus.gpg https://mkvtoolnix.download/gpg-pub-moritzbunkus.gpg && \
-     echo "deb [arch=amd64 signed-by=/usr/share/keyrings/gpg-pub-moritzbunkus.gpg] https://mkvtoolnix.download/ubuntu/ focal main
-        deb-src [arch=amd64 signed-by=/usr/share/keyrings/gpg-pub-moritzbunkus.gpg] https://mkvtoolnix.download/ubuntu/ focal main" > "/etc/apt/sources.list.d/mkvtoolnix.download.list" && \
-
     apt-get update && \
-    apt-get install -y curl unzip mkvtoolnix comskip \
+    apt-get install -y curl unzip wget comskip \
         # for apprise
         python3-pip && \
         pip3 install apprise && \
+
+    # MkvToolNIX
+    wget -O /usr/share/keyrings/gpg-pub-moritzbunkus.gpg https://mkvtoolnix.download/gpg-pub-moritzbunkus.gpg && \
+    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/gpg-pub-moritzbunkus.gpg] https://mkvtoolnix.download/ubuntu/ jammy main" | tee /etc/apt/sources.list.d/mkvtoolnix.download.list && \
+    echo "deb-src [arch=amd64 signed-by=/usr/share/keyrings/gpg-pub-moritzbunkus.gpg] https://mkvtoolnix.download/ubuntu/ jammy main" | tee -a /etc/apt/sources.list.d/mkvtoolnix.download.list && \
+    apt-get update && apt-get install -y mkvtoolnix && \
+
     #cc-extractor
     apt-get install -y \
         libglew-dev \
@@ -90,8 +92,6 @@ RUN apt-get update &&  \
             clinfo && \
 
         # FFmpeg 6
-        apt install -y \
-        wget && \
         ffmpegversion=$(curl --silent https://api.github.com/repos/jellyfin/jellyfin-ffmpeg/releases/latest | grep -oP '"tag_name":\s*"v\K[^"]+' | sort -h | tail -n1) && \
         wget https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v$ffmpegversion/jellyfin-ffmpeg6_$ffmpegversion-jammy_amd64.deb && \
         apt install -y \
