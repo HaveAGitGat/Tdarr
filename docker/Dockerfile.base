@@ -1,15 +1,13 @@
-FROM lsiobase/ubuntu:focal
+FROM lsiobase/ubuntu:jammy
 
 ENV \
  LIBVA_DRIVERS_PATH="/usr/lib/x86_64-linux-gnu/dri" \
  LD_LIBRARY_PATH="/usr/lib/x86_64-linux-gnu" \
  NVIDIA_DRIVER_CAPABILITIES="compute,video,utility" \
  NVIDIA_VISIBLE_DEVICES="all" \
- HANDBRAKE=1.6.1
+ HANDBRAKE=1.7.3
 
 ENV WEB_UI_PORT="8265" SERVER_PORT="8266" NODE_PORT="8267" PUID="1000" PGID="1000" UMASK="002" TZ="Etc/UTC" HOME="/home/Tdarr"
-
-COPY docker/root/ /
 
 # handle deps
 RUN apt-get update &&  \
@@ -26,10 +24,12 @@ RUN apt-get update &&  \
     # usermod -G users Tdarr && \
     
     apt-get update && \
-    apt-get install -y curl unzip mkvtoolnix && \
+    apt-get install -y curl unzip mkvtoolnix comskip \
+        # for apprise
+        python3-pip && \
+        pip3 install apprise && \
     #cc-extractor
     apt-get install -y \
-        cargo \
         libglew-dev \
         libglfw3-dev \
         cmake \
@@ -40,58 +40,73 @@ RUN apt-get update &&  \
         libleptonica-dev \
         clang \
         libclang-dev && \
+        # libgpac-dev && \
         git clone https://github.com/CCExtractor/ccextractor.git && \
         cd ccextractor/linux && \ 
+        git checkout 35e73c1c90ce3ca69394d3523836bb1cdec28f11 && \
         ./build -without-rust && \
         mv ./ccextractor /usr/bin/ccextractor && \
         
         cd / && rm -rf /ccextractor && \
     if uname -m | grep -q x86; then \
 
-        # b
-        apt-get install -y gpg-agent wget && \
-        wget -qO - https://repositories.intel.com/graphics/intel-graphics.key | \
-        gpg --dearmor --output /usr/share/keyrings/intel-graphics.gpg && \
-        echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/intel-graphics.gpg] https://repositories.intel.com/graphics/ubuntu focal-legacy main' | \
-        tee  /etc/apt/sources.list.d/intel.gpu.focal.list && \
+# Setup Intel Package Repository
+        curl -sSL https://repositories.intel.com/gpu/intel-graphics.key | \
+            gpg --dearmor --output /usr/share/keyrings/intel-graphics.gpg && \
+        echo "deb [arch=amd64,i386 signed-by=/usr/share/keyrings/intel-graphics.gpg] https://repositories.intel.com/gpu/ubuntu jammy client" | \
+            tee /etc/apt/sources.list.d/intel-gpu-jammy.list && \
+        apt-get update && \
 
-        # FFmpeg
-        apt install -y wget && \
-        ffmpegversion=$(curl --silent https://api.github.com/repos/jellyfin/jellyfin-ffmpeg/releases/latest | grep -oP '"tag_name":\s*"v\K[^"]+' | sort -h | tail -n1) && \
-        wget https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v$ffmpegversion/jellyfin-ffmpeg6_$ffmpegversion-focal_amd64.deb && \
         apt install -y \
-        ./jellyfin-ffmpeg6_$ffmpegversion-focal_amd64.deb && \
-        rm -rf ./jellyfin-ffmpeg6_$ffmpegversion-focal_amd64.deb && \
+            intel-opencl-icd \
+            intel-level-zero-gpu \
+            level-zero \
+            intel-media-va-driver-non-free \
+            libmfx1 \
+            libmfxgen1 \
+            libvpl2 \
+            libegl-mesa0 \
+            libegl1-mesa \
+            libegl1-mesa-dev \
+            libgbm1 \
+            libgl1-mesa-dev \
+            libgl1-mesa-dri \
+            libglapi-mesa \
+            libgles2-mesa-dev \
+            libglx-mesa0 \
+            libigdgmm12 \
+            libxatracker2 \
+            mesa-va-drivers \
+            mesa-vdpau-drivers \
+            mesa-vulkan-drivers \
+            va-driver-all \
+            vainfo \
+            hwinfo \
+            clinfo && \
+
+        # FFmpeg 6
+        apt install -y \
+        wget && \
+        ffmpegversion=$(curl --silent https://api.github.com/repos/jellyfin/jellyfin-ffmpeg/releases/latest | grep -oP '"tag_name":\s*"v\K[^"]+' | sort -h | tail -n1) && \
+        wget https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v$ffmpegversion/jellyfin-ffmpeg6_$ffmpegversion-jammy_amd64.deb && \
+        apt install -y \
+        ./jellyfin-ffmpeg6_$ffmpegversion-jammy_amd64.deb && \
+        rm -rf ./jellyfin-ffmpeg6_$ffmpegversion-jammy_amd64.deb && \
         ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/ffmpeg && \
         ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/tdarr-ffmpeg && \
         # apt-get install -y ffmpeg && \
-     
-        apt-get update && \
-
-        # b
-        apt-get install -y \
-            intel-opencl-icd \
-            intel-level-zero-gpu level-zero \
-            intel-media-va-driver-non-free libmfx1 libmfxgen1 libvpl2 && \
-
-        apt-get install -y --no-install-recommends \
-            intel-media-va-driver-non-free \
-            vainfo \
-            mesa-va-drivers && \
-
-        # HandBrake deps
+        # HandBrake dependencies
         apt-get install -y \
             autoconf \
             automake \
-            autopoint \
-            appstream \
             build-essential \
             cmake \
             git \
             libass-dev \
+            libass9 \
             libbz2-dev \
-            libfontconfig1-dev \
-            libfreetype6-dev \
+            libfontconfig-dev \
+            libfreetype-dev \
             libfribidi-dev \
             libharfbuzz-dev \
             libjansson-dev \
@@ -100,7 +115,7 @@ RUN apt-get update &&  \
             libnuma-dev \
             libogg-dev \
             libopus-dev \
-            libsamplerate-dev \
+            libsamplerate0-dev \
             libspeex-dev \
             libtheora-dev \
             libtool \
@@ -117,13 +132,12 @@ RUN apt-get update &&  \
             ninja-build \
             patch \
             pkg-config \
-            python \
+            # python \
             tar \
             zlib1g-dev \
+            # QSV dependencies
             libva-dev \
-            libdrm-dev \
-            libmfx-dev \
-            libmfx1 && \
+            libdrm-dev && \
 
         rm -rdf /tmp/handbrake && \
         mkdir -p /tmp/handbrake && \
@@ -153,5 +167,24 @@ RUN apt-get update &&  \
         ln -s /usr/bin/ffmpeg /usr/local/bin/tdarr-ffmpeg ; \
     fi && \
 
-    # Clear cached apt files
-    apt-get clean
+    trash-empty && \
+        if uname -m | grep -q x86; then \
+            apt-get clean && \
+            apt purge -y \
+                g++-9 \
+                gcc-9 \
+                # libc6-dev \
+                libstdc++-9-dev \
+                cpp-9 \
+                libgcc-9-dev \
+                libstd-rust-dev \
+                # libllvm12 \
+                libicu-dev \
+                cargo \
+                libstd-rust-1.65 \
+                libstd-rust-dev \
+                git \
+                cmake \
+                python3-pip ; \
+        fi && \
+    apt autoremove -y
