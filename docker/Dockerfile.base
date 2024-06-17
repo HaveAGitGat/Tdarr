@@ -24,7 +24,12 @@ RUN apt-get update &&  \
     "${HOME}" && \
     # useradd -u ${PUID} -U -d ${HOME} -s /bin/false Tdarr && \
     # usermod -G users Tdarr && \
-    
+
+    # MkvToolNIX
+    wget -O /usr/share/keyrings/gpg-pub-moritzbunkus.gpg https://mkvtoolnix.download/gpg-pub-moritzbunkus.gpg && \
+     echo "deb [arch=amd64 signed-by=/usr/share/keyrings/gpg-pub-moritzbunkus.gpg] https://mkvtoolnix.download/ubuntu/ focal main
+        deb-src [arch=amd64 signed-by=/usr/share/keyrings/gpg-pub-moritzbunkus.gpg] https://mkvtoolnix.download/ubuntu/ focal main" > "/etc/apt/sources.list.d/mkvtoolnix.download.list" && \
+
     apt-get update && \
     apt-get install -y curl unzip mkvtoolnix && \
     #cc-extractor
