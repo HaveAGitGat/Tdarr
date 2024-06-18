@@ -1,6 +1,6 @@
 {
   "name": "tdarr",
-  "version": "2.19.01",
+  "version": "2.20.01",
   "description": "",
   "main": "index.js",
   "scripts": {},
@@ -9,7 +9,7 @@
     "url": "git+https://github.com/HaveAGitGat/tdarr.git"
   },
   "author": "",
-  "license": "ISC",
+  "license": "See LICENSE.md",
   "bugs": {
     "url": "https://github.com/HaveAGitGat/tdarr/issues"
   },
