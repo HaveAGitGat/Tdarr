@@ -95,8 +95,8 @@ RUN apt-get update &&  \
     mesa-vulkan-drivers \
     hwinfo && \
 
-    # Jellyfin FFmpeg
-    ffmpegversion=$(curl --silent https://api.github.com/repos/jellyfin/jellyfin-ffmpeg/releases/latest | grep -oP '"tag_name":\s*"v\K[^"]+' | sort -h | tail -n1) && \
+    # Jellyfin FFmpeg - Fix this to this version, the latest version is mid build
+    ffmpegversion="7.1.1-7" && \
     wget https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v$ffmpegversion/jellyfin-ffmpeg7_$ffmpegversion-noble_amd64.deb && \
     apt install -y \
     ./jellyfin-ffmpeg7_$ffmpegversion-noble_amd64.deb && \
