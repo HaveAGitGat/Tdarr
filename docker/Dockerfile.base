@@ -23,7 +23,7 @@ RUN apt-get update &&  \
     # useradd -u ${PUID} -U -d ${HOME} -s /bin/false Tdarr && \
     # usermod -G users Tdarr && \
 
-    curl -s https://deb.nodesource.com/setup_18.x | bash && apt install nodejs -y && node -v && \
+    curl -s https://deb.nodesource.com/setup_22.x | bash && apt install nodejs -y && node -v && \
     apt-get update && \
     apt-get install -y curl unzip wget comskip \
     # for apprise
