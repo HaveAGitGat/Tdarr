@@ -52,10 +52,9 @@ RUN apt-get install -y \
     libclang-dev && \
     git clone https://github.com/CCExtractor/ccextractor.git && \
     cd ccextractor/linux && \
-    #git checkout 35e73c1c90ce3ca69394d3523836bb1cdec28f11 && \
+    git checkout c55072677875ee766c6cf388da70eff0a686ca62 && \
     ./build -without-rust && \
     mv ./ccextractor /usr/bin/ccextractor && \
-
     cd / && rm -rf /ccextractor
 
 RUN if uname -m | grep -q x86; then \
