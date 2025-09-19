@@ -38,6 +38,7 @@ RUN apt-get update &&  \
 
     #cc-extractor
     apt-get install -y \
+    libgpac-dev \
     libglew-dev \
     libglfw3-dev \
     cmake \
@@ -48,10 +49,9 @@ RUN apt-get update &&  \
     libleptonica-dev \
     clang \
     libclang-dev && \
-    # libgpac-dev && \
     git clone https://github.com/CCExtractor/ccextractor.git && \
     cd ccextractor/linux && \
-    git checkout 35e73c1c90ce3ca69394d3523836bb1cdec28f11 && \
+    #git checkout 35e73c1c90ce3ca69394d3523836bb1cdec28f11 && \
     ./build -without-rust && \
     mv ./ccextractor /usr/bin/ccextractor && \
 
