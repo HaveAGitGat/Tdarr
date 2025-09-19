@@ -8,8 +8,9 @@ ENV \
     HANDBRAKE=1.8.2
 
 ENV WEB_UI_PORT="8265" SERVER_PORT="8266" NODE_PORT="8267" PUID="1000" PGID="1000" UMASK="002" TZ="Etc/UTC" HOME="/home/Tdarr"
-
-# handle deps
+# ========================================================================================
+#                                   Install dependencies
+# ========================================================================================
 RUN apt-get update &&  \
     apt-get install -y \
     software-properties-common \
@@ -21,8 +22,9 @@ RUN apt-get update &&  \
     /logs \
     /temp \
     "${HOME}"
-
-# Install Nodejs 22.x
+# ========================================================================================
+#                                   Install Nodejs 22.x
+# ========================================================================================
 RUN curl -s https://deb.nodesource.com/setup_22.x | bash && apt install nodejs -y && node -v && \
     apt-get update && \
     apt-get install -y unzip wget comskip \
@@ -30,14 +32,16 @@ RUN curl -s https://deb.nodesource.com/setup_22.x | bash && apt install nodejs -
     pipx && \
     pipx install apprise && \
     ln -s /root/.local/bin/apprise /usr/local/bin/apprise
-
-# MkvToolNIX
+# ========================================================================================
+#                                   Install MkvToolNIX
+# ========================================================================================
 RUN wget -O /usr/share/keyrings/gpg-pub-moritzbunkus.gpg https://mkvtoolnix.download/gpg-pub-moritzbunkus.gpg && \
     echo "deb [arch=amd64 signed-by=/usr/share/keyrings/gpg-pub-moritzbunkus.gpg] https://mkvtoolnix.download/ubuntu/ noble main" | tee /etc/apt/sources.list.d/mkvtoolnix.download.list && \
     echo "deb-src [arch=amd64 signed-by=/usr/share/keyrings/gpg-pub-moritzbunkus.gpg] https://mkvtoolnix.download/ubuntu/ noble main" | tee -a /etc/apt/sources.list.d/mkvtoolnix.download.list && \
     apt-get update && apt-get install -y mkvtoolnix
-
-#cc-extractor
+# ========================================================================================
+#                                   Install CCExtractor
+# ========================================================================================
 RUN apt-get install -y \
     libgpac-dev \
     libglew-dev \
@@ -56,7 +60,9 @@ RUN apt-get install -y \
     ./build -without-rust && \
     mv ./ccextractor /usr/bin/ccextractor && \
     cd / && rm -rf /ccextractor
-
+# ========================================================================================
+#                   Install ffmpeg, handbrake and intel media packages
+# ========================================================================================
 RUN if uname -m | grep -q x86; then \
     # Setup Intel Package Repository for noble
     add-apt-repository -y ppa:kobuk-team/intel-graphics && \
@@ -80,7 +86,7 @@ RUN if uname -m | grep -q x86; then \
     vainfo \
     # Install Mesa packages
     libegl-mesa0 \
-    libegl1-mesa \
+    libegl1 \
     libegl1-mesa-dev \
     libgbm1 \
     libgl1-mesa-dev \
@@ -94,8 +100,9 @@ RUN if uname -m | grep -q x86; then \
     mesa-vdpau-drivers \
     mesa-vulkan-drivers \
     hwinfo && \
-
-    # Jellyfin FFmpeg - Fix this to this version, the latest version is mid build
+    # ========================================================================================
+    #                                   Install Jellyfin FFmpeg
+    # ========================================================================================
     ffmpegversion="7.1.1-7" && \
     wget https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v$ffmpegversion/jellyfin-ffmpeg7_$ffmpegversion-noble_amd64.deb && \
     apt install -y \
@@ -103,7 +110,9 @@ RUN if uname -m | grep -q x86; then \
     rm -rf ./jellyfin-ffmpeg7_$ffmpegversion-noble_amd64.deb && \
     ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/ffmpeg && \
     ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/tdarr-ffmpeg && \
-    # HandBrake dependencies
+    # =========================================================================================
+    #                               Install HandBrake dependencies
+    # =========================================================================================
     apt-get install -y \
     autoconf \
     automake \
@@ -146,7 +155,9 @@ RUN if uname -m | grep -q x86; then \
     # QSV dependencies
     libva-dev \
     libdrm-dev && \
-
+    # =========================================================================================
+    #                                   Install HandBrake
+    # =========================================================================================
     rm -rdf /tmp/handbrake && \
     mkdir -p /tmp/handbrake && \
     git clone \
@@ -166,16 +177,20 @@ RUN if uname -m | grep -q x86; then \
     cp /tmp/handbrake/build/HandBrakeCLI /usr/local/bin/HandBrakeCLI && \
     rm -rdf /tmp/handbrake/ ; \
     fi && \
+    # If ARM architecture, install ffmpeg and handbrake from apt
     if uname -m | grep -q aarch64; then \
     apt-get install -y handbrake-cli ffmpeg && \
     ln -s /usr/bin/ffmpeg /usr/local/bin/tdarr-ffmpeg ; \
     fi && \
+    # If ARMv7l architecture, install ffmpeg and handbrake from apt
     if uname -m | grep -q armv7l; then \
     apt-get install -y handbrake-cli ffmpeg && \
     ln -s /usr/bin/ffmpeg /usr/local/bin/tdarr-ffmpeg ; \
-    fi && \
-
-    trash-empty && \
+    fi
+# ========================================================================================
+#                             Cleanup Unused Packages
+# ========================================================================================
+RUN trash-empty && \
     if uname -m | grep -q x86; then \
     apt-get clean && \
     apt purge -y \
