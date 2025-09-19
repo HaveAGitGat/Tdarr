@@ -27,8 +27,9 @@ RUN curl -s https://deb.nodesource.com/setup_22.x | bash && apt install nodejs -
     apt-get update && \
     apt-get install -y unzip wget comskip \
     # for apprise
-    python3-pip && \
-    pip3 install apprise
+    pipx && \
+    pipx install apprise && \
+    ln -s /root/.local/bin/apprise /usr/local/bin/apprise
 
 # MkvToolNIX
 RUN wget -O /usr/share/keyrings/gpg-pub-moritzbunkus.gpg https://mkvtoolnix.download/gpg-pub-moritzbunkus.gpg && \
@@ -193,6 +194,6 @@ RUN if uname -m | grep -q x86; then \
     libstd-rust-dev \
     git \
     cmake \
-    python3-pip ; \
+    pipx ; \
     fi && \
     apt autoremove -y
