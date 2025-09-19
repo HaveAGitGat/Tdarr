@@ -13,31 +13,31 @@ ENV WEB_UI_PORT="8265" SERVER_PORT="8266" NODE_PORT="8267" PUID="1000" PGID="100
 RUN apt-get update &&  \
     apt-get install -y \
     software-properties-common \
+    curl \
     git \
     trash-cli && \
     mkdir -p \
     /app \
     /logs \
     /temp \
-    "${HOME}" && \
-    # useradd -u ${PUID} -U -d ${HOME} -s /bin/false Tdarr && \
-    # usermod -G users Tdarr && \
+    "${HOME}"
 
-    curl -s https://deb.nodesource.com/setup_22.x | bash && apt install nodejs -y && node -v && \
+# Install Nodejs 22.x
+RUN curl -s https://deb.nodesource.com/setup_22.x | bash && apt install nodejs -y && node -v && \
     apt-get update && \
-    apt-get install -y curl unzip wget comskip \
+    apt-get install -y unzip wget comskip \
     # for apprise
     python3-pip && \
-    pip3 install apprise && \
+    pip3 install apprise
 
-    # MkvToolNIX
-    wget -O /usr/share/keyrings/gpg-pub-moritzbunkus.gpg https://mkvtoolnix.download/gpg-pub-moritzbunkus.gpg && \
+# MkvToolNIX
+RUN wget -O /usr/share/keyrings/gpg-pub-moritzbunkus.gpg https://mkvtoolnix.download/gpg-pub-moritzbunkus.gpg && \
     echo "deb [arch=amd64 signed-by=/usr/share/keyrings/gpg-pub-moritzbunkus.gpg] https://mkvtoolnix.download/ubuntu/ noble main" | tee /etc/apt/sources.list.d/mkvtoolnix.download.list && \
     echo "deb-src [arch=amd64 signed-by=/usr/share/keyrings/gpg-pub-moritzbunkus.gpg] https://mkvtoolnix.download/ubuntu/ noble main" | tee -a /etc/apt/sources.list.d/mkvtoolnix.download.list && \
-    apt-get update && apt-get install -y mkvtoolnix && \
+    apt-get update && apt-get install -y mkvtoolnix
 
-    #cc-extractor
-    apt-get install -y \
+#cc-extractor
+RUN apt-get install -y \
     libgpac-dev \
     libglew-dev \
     libglfw3-dev \
@@ -55,9 +55,9 @@ RUN apt-get update &&  \
     ./build -without-rust && \
     mv ./ccextractor /usr/bin/ccextractor && \
 
-    cd / && rm -rf /ccextractor && \
-    if uname -m | grep -q x86; then \
+    cd / && rm -rf /ccextractor
 
+RUN if uname -m | grep -q x86; then \
     # Setup Intel Package Repository for noble
     add-apt-repository -y ppa:kobuk-team/intel-graphics && \
     apt-get update && \
