@@ -58,21 +58,27 @@ RUN apt-get update &&  \
     cd / && rm -rf /ccextractor && \
     if uname -m | grep -q x86; then \
 
-    # Setup Intel Package Repository
-    curl -sSL https://repositories.intel.com/gpu/intel-graphics.key | \
-    gpg --dearmor --output /usr/share/keyrings/intel-graphics.gpg && \
-    echo "deb [arch=amd64,i386 signed-by=/usr/share/keyrings/intel-graphics.gpg] https://repositories.intel.com/gpu/ubuntu jammy client" | \
-    tee /etc/apt/sources.list.d/intel-gpu-jammy.list && \
+    # Setup Intel Package Repository for noble
+    add-apt-repository -y ppa:kobuk-team/intel-graphics && \
     apt-get update && \
-
+    # Install Intel compute related packages
     apt install -y \
+    libze-intel-gpu1 \
+    libze1 \
+    intel-metrics-discovery \
     intel-opencl-icd \
-    intel-level-zero-gpu \
-    level-zero \
+    clinfo \
+    intel-gsc \
+    # Install Intel media related packages
     intel-media-va-driver-non-free \
-    libmfx1 \
-    libmfxgen1 \
+    libmfx-gen1 \
     libvpl2 \
+    libvpl-tools \
+    libva2 \
+    libva-glx2 \
+    va-driver-all \
+    vainfo \
+    # Install Mesa packages
     libegl-mesa0 \
     libegl1-mesa \
     libegl1-mesa-dev \
@@ -87,10 +93,7 @@ RUN apt-get update &&  \
     mesa-va-drivers \
     mesa-vdpau-drivers \
     mesa-vulkan-drivers \
-    va-driver-all \
-    vainfo \
-    hwinfo \
-    clinfo && \
+    hwinfo && \
 
     # FFmpeg 6
     ffmpegversion=$(curl --silent https://api.github.com/repos/jellyfin/jellyfin-ffmpeg/releases/latest | grep -oP '"tag_name":\s*"v\K[^"]+' | sort -h | tail -n1) && \
