@@ -5,7 +5,7 @@ ENV \
     LD_LIBRARY_PATH="/usr/lib/x86_64-linux-gnu" \
     NVIDIA_DRIVER_CAPABILITIES="compute,video,utility" \
     NVIDIA_VISIBLE_DEVICES="all" \
-    HANDBRAKE=1.8.2
+    HANDBRAKE="1.10.2"
 
 ENV WEB_UI_PORT="8265" SERVER_PORT="8266" NODE_PORT="8267" PUID="1000" PGID="1000" UMASK="002" TZ="Etc/UTC" HOME="/home/Tdarr"
 # ========================================================================================
@@ -121,7 +121,6 @@ RUN if uname -m | grep -q x86; then \
     cmake \
     git \
     libass-dev \
-    libass9 \
     libbz2-dev \
     libfontconfig-dev \
     libfreetype-dev \
@@ -150,12 +149,18 @@ RUN if uname -m | grep -q x86; then \
     ninja-build \
     patch \
     pkg-config \
-    # python \
     tar \
     zlib1g-dev \
+    curl \
+    libssl-dev \
+    clang \
     # QSV dependencies
     libva-dev \
     libdrm-dev && \
+    # Install Rust (required for libdovi)
+    curl https://sh.rustup.rs -sSf | sh && \
+    /root/.cargo/bin/cargo install cargo-c && \
+    /root/.cargo/bin/rustup target add x86_64-pc-windows-gnu && \
     # =========================================================================================
     #                                   Install HandBrake
     # =========================================================================================
@@ -167,8 +172,9 @@ RUN if uname -m | grep -q x86; then \
     /tmp/handbrake && \
     cd /tmp/handbrake && \
     ./configure \
-    --enable-nvenc \
     --enable-qsv \
+    --enable-nvdec \
+    --enable-libdovi \
     --enable-x265 \
     --disable-gtk \
     --launch-jobs=14 \
@@ -176,7 +182,7 @@ RUN if uname -m | grep -q x86; then \
     --force && \
     make --directory=build install && \
     cp /tmp/handbrake/build/HandBrakeCLI /usr/local/bin/HandBrakeCLI && \
-    rm -rdf /tmp/handbrake/ ; \
+    cd / && rm -rdf /tmp/handbrake/ ; \
     fi && \
     # If ARM architecture, install handbrake from apt
     if uname -m | grep -q aarch64; then \
@@ -191,24 +197,18 @@ RUN if uname -m | grep -q x86; then \
 # ========================================================================================
 #                             Cleanup Unused Packages
 # ========================================================================================
-RUN trash-empty && \
-    if uname -m | grep -q x86; then \
-    apt-get clean && \
-    apt purge -y \
-    g++-9 \
-    gcc-9 \
-    # libc6-dev \
-    libstdc++-9-dev \
-    cpp-9 \
-    libgcc-9-dev \
-    libstd-rust-dev \
-    # libllvm12 \
-    libicu-dev \
-    cargo \
-    libstd-rust-1.65 \
-    libstd-rust-dev \
-    git \
-    cmake \
-    pipx ; \
-    fi && \
-    apt autoremove -y
+# RUN trash-empty && \
+#     if uname -m | grep -q x86; then \
+#     apt-get clean && \
+#     apt purge -y \
+#     libstdc++-9-dev \
+#     libgcc-9-dev \
+#     libstd-rust-dev \
+#     libicu-dev \
+#     cargo \
+#     git \
+#     cmake \
+#     pipx ; \
+#     fi && \
+#     apt autoremove -y && \
+#     && rm -rf /var/lib/apt/lists/*
