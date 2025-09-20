@@ -5,8 +5,6 @@ ENV \
     LD_LIBRARY_PATH="/usr/lib/x86_64-linux-gnu" \
     NVIDIA_DRIVER_CAPABILITIES="compute,video,utility" \
     NVIDIA_VISIBLE_DEVICES="all" \
-    RUSTUP_HOME="/usr/local/.rustup" \
-    CARGO_HOME="/usr/local/.cargo" \
     HANDBRAKE="1.10.2" \
     FFMPEGVERSION="7.1.2-1"
 
@@ -24,28 +22,28 @@ RUN apt-get update &&  \
     /app \
     /logs \
     /temp \
-    "${HOME}"
-# ========================================================================================
-#                                   Install Nodejs 22.x
-# ========================================================================================
-RUN curl -s https://deb.nodesource.com/setup_22.x | bash && apt install nodejs -y && node -v && \
+    "${HOME}" && \
+    # ========================================================================================
+    #                                   Install Nodejs 22.x
+    # ========================================================================================
+    curl -s https://deb.nodesource.com/setup_22.x | bash && apt install nodejs -y && node -v && \
     apt-get update && \
     apt-get install -y unzip wget comskip \
     # for apprise
     pipx && \
     pipx install apprise && \
-    ln -s /root/.local/bin/apprise /usr/local/bin/apprise
-# ========================================================================================
-#                                   Install MkvToolNIX
-# ========================================================================================
-RUN wget -O /usr/share/keyrings/gpg-pub-moritzbunkus.gpg https://mkvtoolnix.download/gpg-pub-moritzbunkus.gpg && \
+    ln -s /root/.local/bin/apprise /usr/local/bin/apprise && \
+    # ========================================================================================
+    #                                   Install MkvToolNIX
+    # ========================================================================================
+    wget -O /usr/share/keyrings/gpg-pub-moritzbunkus.gpg https://mkvtoolnix.download/gpg-pub-moritzbunkus.gpg && \
     echo "deb [arch=amd64 signed-by=/usr/share/keyrings/gpg-pub-moritzbunkus.gpg] https://mkvtoolnix.download/ubuntu/ noble main" | tee /etc/apt/sources.list.d/mkvtoolnix.download.list && \
     echo "deb-src [arch=amd64 signed-by=/usr/share/keyrings/gpg-pub-moritzbunkus.gpg] https://mkvtoolnix.download/ubuntu/ noble main" | tee -a /etc/apt/sources.list.d/mkvtoolnix.download.list && \
-    apt-get update && apt-get install -y mkvtoolnix
-# ========================================================================================
-#                                   Install CCExtractor
-# ========================================================================================
-RUN apt-get install -y \
+    apt-get update && apt-get install -y mkvtoolnix && \
+    # ========================================================================================
+    #                                   Install CCExtractor
+    # ========================================================================================
+    apt-get install -y \
     libgpac-dev \
     libglew-dev \
     libglfw3-dev \
@@ -62,21 +60,21 @@ RUN apt-get install -y \
     git checkout c55072677875ee766c6cf388da70eff0a686ca62 && \
     ./build -without-rust && \
     mv ./ccextractor /usr/bin/ccextractor && \
-    cd / && rm -rf /ccextractor
-# ========================================================================================
-#                                   Install Jellyfin FFmpeg
-# ========================================================================================
-RUN ARCH="$(dpkg --print-architecture)"; \
+    cd / && rm -rf /ccextractor && \
+    # ========================================================================================
+    #                                   Install Jellyfin FFmpeg
+    # ========================================================================================
+    ARCH="$(dpkg --print-architecture)"; \
     wget https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v${FFMPEGVERSION}/jellyfin-ffmpeg7_${FFMPEGVERSION}-noble_${ARCH}.deb && \
     apt install -y \
     ./jellyfin-ffmpeg7_${FFMPEGVERSION}-noble_${ARCH}.deb && \
     rm -rf ./jellyfin-ffmpeg7_${FFMPEGVERSION}-noble_${ARCH}.deb && \
     ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/ffmpeg && \
-    ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/tdarr-ffmpeg
-# ========================================================================================
-#                   Install handbrake and intel media packages
-# ========================================================================================
-RUN if uname -m | grep -q x86; then \
+    ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/tdarr-ffmpeg && \
+    # ========================================================================================
+    #                   Install handbrake and intel media packages
+    # ========================================================================================
+    if uname -m | grep -q x86; then \
     # Setup Intel Package Repository for noble
     add-apt-repository -y ppa:kobuk-team/intel-graphics && \
     apt-get update && \
@@ -161,7 +159,7 @@ RUN if uname -m | grep -q x86; then \
     libdrm-dev && \
     # Install Rust (required for libdovi)
     curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal --default-toolchain stable && \
-    . "${CARGO_HOME}/env" && \
+    . "${HOME}/.cargo/env" && \
     cargo install cargo-c && \
     rustup target add x86_64-pc-windows-gnu && \
     # =========================================================================================
@@ -196,22 +194,56 @@ RUN if uname -m | grep -q x86; then \
     if uname -m | grep -q armv7l; then \
     apt-get install -y handbrake-cli && \
     echo "ffmpeg installed above" ; \
-    fi
-# ========================================================================================
-#                             Cleanup Unused Packages
-# ========================================================================================
-# RUN trash-empty && \
-#     if uname -m | grep -q x86; then \
-#     apt-get clean && \
-#     apt purge -y \
-#     libstdc++-9-dev \
-#     libgcc-9-dev \
-#     libstd-rust-dev \
-#     libicu-dev \
-#     cargo \
-#     git \
-#     cmake \
-#     pipx ; \
-#     fi && \
-#     apt autoremove -y && \
-#     && rm -rf /var/lib/apt/lists/*
+    fi && \
+    # ========================================================================================
+    #                             Cleanup Unused Packages
+    # ========================================================================================
+    trash-empty && \
+    apt-get purge -y \
+    git \
+    pipx \
+    libgpac-dev \
+    libglew-dev \
+    libglfw3-dev \
+    cmake \
+    gcc \
+    libcurl4-gnutls-dev \
+    libtesseract-dev \
+    libleptonica-dev \
+    libclang-dev && \
+    # If we built HandBrake from source on x86, drop those extra build deps too
+    if uname -m | grep -q x86; then \
+    apt-get purge -y \
+    libegl1-mesa-dev \
+    libgl1-mesa-dev \
+    libgles2-mesa-dev \
+    libass-dev \
+    libbz2-dev \
+    libfontconfig-dev \
+    libfreetype-dev \
+    libfribidi-dev \
+    libharfbuzz-dev \
+    libjansson-dev \
+    liblzma-dev \
+    libmp3lame-dev \
+    libnuma-dev \
+    libogg-dev \
+    libopus-dev \
+    libsamplerate0-dev \
+    libspeex-dev \
+    libtheora-dev \
+    libturbojpeg0-dev \
+    libvorbis-dev \
+    libx264-dev \
+    libxml2-dev \
+    libvpx-dev \
+    zlib1g-dev \
+    libssl-dev \
+    libva-dev \
+    libdrm-dev && \
+    # remove rust toolchain installed via rustup (cargo, rustup)
+    rm -rdf "$HOME/.cargo" "$HOME/.rustup" ; \
+    fi && \
+    # Final apt cache & index cleanup
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*.deb /root/.cache/*
