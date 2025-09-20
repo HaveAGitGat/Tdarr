@@ -1,4 +1,1 @@
-node_modules
-.idea
-version.desktop
-.devcontainer/*
+.devcontainer/
