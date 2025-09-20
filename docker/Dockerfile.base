@@ -11,8 +11,7 @@ ENV WEB_UI_PORT="8265" SERVER_PORT="8266" NODE_PORT="8267" PUID="1000" PGID="100
 # ========================================================================================
 #                                   Install dependencies
 # ========================================================================================
-RUN /bin/sh -c ARCH=$(uname -m | sed 's/x86_64/amd64/' | sed 's/aarch64/arm64/' | sed 's/armv7l/armhf/') && \
-    apt-get update &&  \
+RUN apt-get update &&  \
     apt-get install -y \
     software-properties-common \
     curl \
@@ -64,7 +63,8 @@ RUN apt-get install -y \
 # ========================================================================================
 #                                   Install Jellyfin FFmpeg
 # ========================================================================================
-RUN ffmpegversion="7.1.1-7" && \
+RUN /bin/sh -c ARCH=$(uname -m | sed 's/x86_64/amd64/' | sed 's/aarch64/arm64/' | sed 's/armv7l/armhf/') && \
+    ffmpegversion="7.1.2-1" && \
     wget https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v$ffmpegversion/jellyfin-ffmpeg7_$ffmpegversion-noble_${ARCH}.deb && \
     apt install -y \
     ./jellyfin-ffmpeg7_$ffmpegversion-noble_${ARCH}.deb && \
