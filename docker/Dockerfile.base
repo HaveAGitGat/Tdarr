@@ -5,6 +5,8 @@ ENV \
     LD_LIBRARY_PATH="/usr/lib/x86_64-linux-gnu" \
     NVIDIA_DRIVER_CAPABILITIES="compute,video,utility" \
     NVIDIA_VISIBLE_DEVICES="all" \
+    RUSTUP_HOME="/usr/local/.rustup" \
+    CARGO_HOME="/usr/local/.cargo" \
     HANDBRAKE="1.10.2" \
     FFMPEGVERSION="7.1.2-1"
 
@@ -158,9 +160,9 @@ RUN if uname -m | grep -q x86; then \
     libva-dev \
     libdrm-dev && \
     # Install Rust (required for libdovi)
-    curl https://sh.rustup.rs -sSf | sh && \
-    /root/.cargo/bin/cargo install cargo-c && \
-    /root/.cargo/bin/rustup target add x86_64-pc-windows-gnu && \
+    curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal --default-toolchain stable && \
+    "${CARGO_HOME}/bin/cargo" install cargo-c && \
+    "${CARGO_HOME}/bin/rustup" target add x86_64-pc-windows-gnu && \
     # =========================================================================================
     #                                   Install HandBrake
     # =========================================================================================
