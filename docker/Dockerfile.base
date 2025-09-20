@@ -198,6 +198,7 @@ RUN apt-get update &&  \
     # ========================================================================================
     #                             Cleanup Unused Packages
     # ========================================================================================
+    # Important: Don't add auto-remove, as it will remove some dependencies
     trash-empty && \
     apt-get purge -y \
     git \
