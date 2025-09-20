@@ -70,11 +70,11 @@ RUN ffmpegversion="7.1.1-7" && \
     ./jellyfin-ffmpeg7_$ffmpegversion-noble_${ARCH}.deb && \
     rm -rf ./jellyfin-ffmpeg7_$ffmpegversion-noble_${ARCH}.deb && \
     ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/ffmpeg && \
-    ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/tdarr-ffmpeg && \
-    # ========================================================================================
-    #                   Install handbrake and intel media packages
-    # ========================================================================================
-    RUN if uname -m | grep -q x86; then \
+    ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/tdarr-ffmpeg
+# ========================================================================================
+#                   Install handbrake and intel media packages
+# ========================================================================================
+RUN if uname -m | grep -q x86; then \
     # Setup Intel Package Repository for noble
     add-apt-repository -y ppa:kobuk-team/intel-graphics && \
     apt-get update && \
