@@ -11,7 +11,8 @@ ENV WEB_UI_PORT="8265" SERVER_PORT="8266" NODE_PORT="8267" PUID="1000" PGID="100
 # ========================================================================================
 #                                   Install dependencies
 # ========================================================================================
-RUN apt-get update &&  \
+RUN /bin/sh -c ARCH=$(uname -m | sed 's/x86_64/amd64/' | sed 's/aarch64/arm64/' | sed 's/armv7l/armhf/') && \
+    apt-get update &&  \
     apt-get install -y \
     software-properties-common \
     curl \
@@ -61,9 +62,19 @@ RUN apt-get install -y \
     mv ./ccextractor /usr/bin/ccextractor && \
     cd / && rm -rf /ccextractor
 # ========================================================================================
-#                   Install ffmpeg, handbrake and intel media packages
+#                                   Install Jellyfin FFmpeg
 # ========================================================================================
-RUN if uname -m | grep -q x86; then \
+RUN ffmpegversion="7.1.1-7" && \
+    wget https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v$ffmpegversion/jellyfin-ffmpeg7_$ffmpegversion-noble_${ARCH}.deb && \
+    apt install -y \
+    ./jellyfin-ffmpeg7_$ffmpegversion-noble_${ARCH}.deb && \
+    rm -rf ./jellyfin-ffmpeg7_$ffmpegversion-noble_${ARCH}.deb && \
+    ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/ffmpeg && \
+    ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/tdarr-ffmpeg && \
+    # ========================================================================================
+    #                   Install handbrake and intel media packages
+    # ========================================================================================
+    RUN if uname -m | grep -q x86; then \
     # Setup Intel Package Repository for noble
     add-apt-repository -y ppa:kobuk-team/intel-graphics && \
     apt-get update && \
@@ -100,16 +111,6 @@ RUN if uname -m | grep -q x86; then \
     mesa-vdpau-drivers \
     mesa-vulkan-drivers \
     hwinfo && \
-    # ========================================================================================
-    #                                   Install Jellyfin FFmpeg
-    # ========================================================================================
-    ffmpegversion="7.1.1-7" && \
-    wget https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v$ffmpegversion/jellyfin-ffmpeg7_$ffmpegversion-noble_amd64.deb && \
-    apt install -y \
-    ./jellyfin-ffmpeg7_$ffmpegversion-noble_amd64.deb && \
-    rm -rf ./jellyfin-ffmpeg7_$ffmpegversion-noble_amd64.deb && \
-    ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/ffmpeg && \
-    ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/tdarr-ffmpeg && \
     # =========================================================================================
     #                               Install HandBrake dependencies
     # =========================================================================================
@@ -177,15 +178,15 @@ RUN if uname -m | grep -q x86; then \
     cp /tmp/handbrake/build/HandBrakeCLI /usr/local/bin/HandBrakeCLI && \
     rm -rdf /tmp/handbrake/ ; \
     fi && \
-    # If ARM architecture, install ffmpeg and handbrake from apt
+    # If ARM architecture, install handbrake from apt
     if uname -m | grep -q aarch64; then \
-    apt-get install -y handbrake-cli ffmpeg && \
-    ln -s /usr/bin/ffmpeg /usr/local/bin/tdarr-ffmpeg ; \
+    apt-get install -y handbrake-cli && \
+    echo "ffmpeg installed above" ; \
     fi && \
-    # If ARMv7l architecture, install ffmpeg and handbrake from apt
+    # If ARMv7l architecture, install handbrake from apt
     if uname -m | grep -q armv7l; then \
-    apt-get install -y handbrake-cli ffmpeg && \
-    ln -s /usr/bin/ffmpeg /usr/local/bin/tdarr-ffmpeg ; \
+    apt-get install -y handbrake-cli && \
+    echo "ffmpeg installed above" ; \
     fi
 # ========================================================================================
 #                             Cleanup Unused Packages
