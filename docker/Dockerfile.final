@@ -1,10 +1,14 @@
-FROM krissmilne/tdarr_base:latest
+ARG VERSION
+ARG DATE
 
-ARG VERSION="2.46.01"
-ARG MODULE="Tdarr_Server"
-ARG DATE="2025_08_31T23_25_35z"
+FROM docker.io/haveagitgat/tdarr_acc:base_${VERSION}_${DATE}
+
+ARG VERSION
+ARG MODULE
+ARG DATE
 
 ENV WEB_UI_PORT="8265" SERVER_PORT="8266" NODE_PORT="8267" PUID="1000" PGID="1000" UMASK="002" TZ="Etc/UTC" HOME="/home/Tdarr"
+
 
 ENV MODULE_LINK=""
 ENV NODE_LINK=""
@@ -15,10 +19,11 @@ COPY docker/root/ /
 RUN chmod +x /etc/services.d/tdarr_server/run && \
     chmod +x /etc/services.d/tdarr_node/run && \
     chmod +x /etc/cont-init.d/01-setup-perms && \
-    chmod +x /etc/cont-init.d/02-hw-transcoding
+    chmod +x /etc/cont-init.d/02-hw-transcoding && \
+    chmod +x /etc/cont-init.d/03-setup-ffmpeg
 
 # handle tdarr binaries
-RUN echo $MODULE && echo $VERSION echo $DATE && \
+RUN echo $MODULE && echo $VERSION && echo $DATE && \
     if [ "$MODULE" = "Tdarr_Node" ]; then \
     echo removing /tdarr_server && \
     rm -rdf /etc/services.d/tdarr_server ; \
@@ -45,8 +50,6 @@ RUN echo $MODULE && echo $VERSION echo $DATE && \
     rm -rdf /app/${MODULE}/${MODULE} && \
     rm -rdf /app/${MODULE}/${MODULE}_Tray && \
     rm -rdf /app/${MODULE}/runtime && \
-    #Replace ccextractor embedded in Tdarr with our custom build
-    cp /usr/bin/ccextractor /app/${MODULE}/assets/app/ccextractor/linux_x64/ccextractor && \
     # Node
     if [ "$MODULE" = "Tdarr_Server" ]; then \
     curl --connect-timeout 120 --retry 5 -o /tmp/Tdarr_Node.zip -L \
@@ -54,9 +57,7 @@ RUN echo $MODULE && echo $VERSION echo $DATE && \
     unzip -q /tmp/Tdarr_Node.zip -d /app/Tdarr_Node -x *.exe && \
     rm -rdf /app/Tdarr_Node/Tdarr_Node && \
     rm -rdf /app/Tdarr_Node/Tdarr_Node_Tray && \
-    rm -rdf /app/Tdarr_Node/runtime && \
-    #Replace ccextractor embedded in Tdarr with our custom build
-    cp /usr/bin/ccextractor /app/Tdarr_Node/assets/app/ccextractor/linux_x64/ccextractor ; \
+    rm -rdf /app/Tdarr_Node/runtime ; \
     fi && \
     rm -rdf /tmp/${MODULE}.zip && \
     rm -rdf /tmp/Tdarr_Node.zip && \
@@ -67,9 +68,9 @@ RUN echo $MODULE && echo $VERSION echo $DATE && \
     chown -R abc:abc /app && \
     cp -r /app /app_test && \
     # test
-    runTests=true runDockerTests=false node /app_test/$MODULE/srcug/main.js && \
+    runTests=true runDockerTests=true node /app_test/$MODULE/srcug/main.js && \
     if [ "$MODULE" = "Tdarr_Server" ]; then \
-    runTests=true runDockerTests=false node /app_test/Tdarr_Node/srcug/main.js ; \
+    runTests=true runDockerTests=true node /app_test/Tdarr_Node/srcug/main.js ; \
     fi && \
     rm -rdf /app_test
 
