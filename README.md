@@ -2,7 +2,7 @@
 Audio/Video Library Analytics & Transcode/Remux Automation
 
 <p align="center">
-  <img src="https://storage.googleapis.com/tdarr/media/images/banner-systems.png"/>
+  <img src="https://storage.tdarr.io/data/tdarr-io/home/banner-min.jpg"/>
 </p>
 
 

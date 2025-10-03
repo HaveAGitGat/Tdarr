@@ -25,14 +25,7 @@ Descriptions:
 
 Download the relevant Tdarr_Updater:
 
-<a href="https://storage.googleapis.com/tdarr/versions/1.99.05/linux_x64/Tdarr_Updater.zip" target="_blank">Tdarr_Updater linux_x64 </a>
-
-<a href="https://storage.googleapis.com/tdarr/versions/1.99.05/win32_x64/Tdarr_Updater.zip" target="_blank">Tdarr_Updater win32_x64</a>
-
-<a href="https://storage.googleapis.com/tdarr/versions/1.99.05/darwin_x64/Tdarr_Updater.zip" target="_blank">Tdarr_Updater darwin_x64</a>
-
-<a href="https://storage.googleapis.com/tdarr/versions/1.99.08/linux_arm/Tdarr_Updater.zip" target="_blank">Tdarr_Updater linux_arm</a>
-
+https://docs.tdarr.io/docs/installation/windows-linux-macos
 
 Unzip it.
 
