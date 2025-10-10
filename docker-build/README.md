@@ -43,3 +43,17 @@ make push-base DATE=$DATE PDIR=../ USE_PROD_PACKAGES=true
 - `TAG` - Docker image tag (default: `dev`)
 - `PLATFORMS` - Target platforms (default: `linux/amd64,linux/arm64`)
 
+## BUILD_BASE Configuration
+
+To build a new base image or use an existing one, set `BUILD_BASE` in the appropriate file:
+
+**Workflow builds:**
+- `.github/workflows/build.yml` line 26: Set `BUILD_BASE=true` (build new) or `BUILD_BASE=false` (use existing)
+- `docker-build/Makefile` line 21: Set `FIXED_BASE_TAG` to the version to use when `BUILD_BASE=false`
+
+**Local builds:**
+- `docker-build/Makefile` line 20: Set `BUILD_BASE=true` (build new) or `BUILD_BASE=false` (use existing)
+- `docker-build/Makefile` line 21: Set `FIXED_BASE_TAG` to the version to use when `BUILD_BASE=false`
+
+The base image tag is automatically computed based on `BUILD_BASE` and passed to the Dockerfile.
+
