@@ -17,7 +17,8 @@ RUN apt-get update &&  \
     software-properties-common \
     curl \
     git \
-    trash-cli && \
+    wget \
+    unzip && \
     mkdir -p \
     /app \
     /logs \
@@ -28,9 +29,10 @@ RUN apt-get update &&  \
     # ========================================================================================
     curl -s https://deb.nodesource.com/setup_22.x | bash && apt install nodejs -y && node -v && \
     apt-get update && \
-    apt-get install -y unzip wget comskip \
+    apt-get install -y comskip \
     # for apprise
-    pipx && \
+    pipx \
+    trash-cli && \
     pipx install apprise && \
     ln -s /root/.local/bin/apprise /usr/local/bin/apprise && \
     # ========================================================================================
@@ -200,7 +202,7 @@ RUN apt-get update &&  \
     #                             Cleanup Unused Packages
     # ========================================================================================
     # Important: Don't add auto-remove, as it will remove some dependencies
-    trash-empty && \
+    (trash-empty || true) && \
     apt-get purge -y \
     git \
     pipx \
