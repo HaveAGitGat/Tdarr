@@ -16,7 +16,18 @@ PLATFORMS=linux/amd64,linux/arm64
 # Default to false (use dev packages), can be overridden with make build-be-all-arch USE_PROD_PACKAGES=true
 USE_PROD_PACKAGES=false
 
-V_D=--build-arg VERSION=$(VERSION) --build-arg DATE=$(DATE) --build-arg USE_PROD_PACKAGES=$(USE_PROD_PACKAGES)
+# BUILD_BASE configuration
+BUILD_BASE=true
+FIXED_BASE_TAG=2.32.01_2025_02_15T18_54_45z
+
+# Conditionally set BASE_IMAGE_TAG based on BUILD_BASE
+ifeq ($(BUILD_BASE),true)
+	BASE_IMAGE_TAG=$(VERSION)_$(DATE)
+else
+	BASE_IMAGE_TAG=$(FIXED_BASE_TAG)
+endif
+
+V_D=--build-arg VERSION=$(VERSION) --build-arg DATE=$(DATE) --build-arg USE_PROD_PACKAGES=$(USE_PROD_PACKAGES) --build-arg BASE_IMAGE_TAG=$(BASE_IMAGE_TAG)
 
 SERVER_TAGS=-t ${SERVER_TAG} -t ${SERVER_TAG}_${VD}
 

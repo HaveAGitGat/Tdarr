@@ -1,9 +1,6 @@
-ARG VERSION
-ARG DATE
+ARG BASE_IMAGE_TAG
 
-# BUILD_BASE
-FROM docker.io/haveagitgat/tdarr_acc:base_${VERSION}_${DATE}
-# FROM docker.io/haveagitgat/tdarr_acc:base_2.32.01_2025_02_15T18_54_45z
+FROM docker.io/haveagitgat/tdarr_acc:base_${BASE_IMAGE_TAG}
 
 ARG VERSION
 ARG MODULE

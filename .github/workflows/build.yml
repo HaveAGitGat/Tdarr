@@ -65,15 +65,17 @@ jobs:
       - name: Build base image
         working-directory: ./docker-build
         run: |
-          make build-base-${{needs.setup-env-vars.outputs.ARCHS}} DATE=${{needs.setup-env-vars.outputs.DATE}} PDIR=../ USE_PROD_PACKAGES=true
+          make build-base-${{needs.setup-env-vars.outputs.ARCHS}} DATE=${{needs.setup-env-vars.outputs.DATE}} BUILD_BASE=${{needs.setup-env-vars.outputs.BUILD_BASE}} PDIR=../ USE_PROD_PACKAGES=true
 
       - name: Push base image
         if: ${{ needs.setup-env-vars.outputs.ARCHS == 'x64' }}
         working-directory: ./docker-build
         run: |
-          make push-base DATE=${{needs.setup-env-vars.outputs.DATE}} PDIR=../ USE_PROD_PACKAGES=true
+          make push-base DATE=${{needs.setup-env-vars.outputs.DATE}} BUILD_BASE=${{needs.setup-env-vars.outputs.BUILD_BASE}} PDIR=../ USE_PROD_PACKAGES=true
 
   docker_linux_image_final:
+   # if BUILD_BASE is false, workflow will still run without building the base image
+    if: ${{ !cancelled() }}
     needs: [
       setup-env-vars,
       # BUILD_BASE
@@ -107,4 +109,4 @@ jobs:
       - name: Build ${{ matrix.component }} image
         working-directory: ./docker-build
         run: |
-          make build-${{ matrix.component }}-${{needs.setup-env-vars.outputs.ARCHS}} TAG=dev DATE=${{needs.setup-env-vars.outputs.DATE}} PDIR=../ USE_PROD_PACKAGES=true
+          make build-${{ matrix.component }}-${{needs.setup-env-vars.outputs.ARCHS}} TAG=dev DATE=${{needs.setup-env-vars.outputs.DATE}} BUILD_BASE=${{needs.setup-env-vars.outputs.BUILD_BASE}} PDIR=../ USE_PROD_PACKAGES=true
