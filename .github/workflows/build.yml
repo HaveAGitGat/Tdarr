@@ -107,4 +107,4 @@ jobs:
       - name: Build ${{ matrix.component }} image
         working-directory: ./docker-build
         run: |
-          make build-${{ matrix.component }}-${{needs.setup-env-vars.outputs.ARCHS}} REPO=_acc TAG=dev DATE=${{needs.setup-env-vars.outputs.DATE}} PDIR=../ USE_PROD_PACKAGES=true
+          make build-${{ matrix.component }}-${{needs.setup-env-vars.outputs.ARCHS}} TAG=dev DATE=${{needs.setup-env-vars.outputs.DATE}} PDIR=../ USE_PROD_PACKAGES=true
