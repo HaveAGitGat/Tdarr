@@ -22,8 +22,7 @@ COPY docker/root/ /
 RUN chmod +x /etc/services.d/tdarr_server/run && \
     chmod +x /etc/services.d/tdarr_node/run && \
     chmod +x /etc/cont-init.d/01-setup-perms && \
-    chmod +x /etc/cont-init.d/02-hw-transcoding && \
-    chmod +x /etc/cont-init.d/03-setup-ffmpeg
+    chmod +x /etc/cont-init.d/02-hw-transcoding
 
 # handle tdarr binaries
 RUN echo $MODULE && echo $VERSION && echo $DATE && echo $USE_PROD_PACKAGES && \
