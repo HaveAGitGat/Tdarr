@@ -1,18 +1,21 @@
 ARG VERSION
 ARG DATE
 
+# BUILD_BASE
 FROM docker.io/haveagitgat/tdarr_acc:base_${VERSION}_${DATE}
+# FROM docker.io/haveagitgat/tdarr_acc:base_2.32.01_2025_02_15T18_54_45z
 
 ARG VERSION
 ARG MODULE
 ARG DATE
+ARG USE_PROD_PACKAGES=false
 
 ENV WEB_UI_PORT="8265" SERVER_PORT="8266" NODE_PORT="8267" PUID="1000" PGID="1000" UMASK="002" TZ="Etc/UTC" HOME="/home/Tdarr"
 
 
 ENV MODULE_LINK=""
 ENV NODE_LINK=""
-ENV BASE_LINK="https://storage.tdarr.io/dev/versions/$VERSION"
+ENV BASE_LINK=""
 ENV inContainer="true"
 
 COPY docker/root/ /
@@ -23,23 +26,32 @@ RUN chmod +x /etc/services.d/tdarr_server/run && \
     chmod +x /etc/cont-init.d/03-setup-ffmpeg
 
 # handle tdarr binaries
-RUN echo $MODULE && echo $VERSION && echo $DATE && \
+RUN echo $MODULE && echo $VERSION && echo $DATE && echo $USE_PROD_PACKAGES && \
     if [ "$MODULE" = "Tdarr_Node" ]; then \
-    echo removing /tdarr_server && \
-    rm -rdf /etc/services.d/tdarr_server ; \
+        echo removing /tdarr_server && \
+        rm -rdf /etc/services.d/tdarr_server ; \
+    fi && \
+
+    # Set BASE_LINK based on USE_PROD_PACKAGES
+    if [ "$USE_PROD_PACKAGES" = "true" ]; then \
+        BASE_LINK="https://storage.tdarr.io/versions/$VERSION" && \
+        FILE_SUFFIX="" ; \
+    else \
+        BASE_LINK="https://storage.tdarr.io/dev/versions/$VERSION" && \
+        FILE_SUFFIX="_${DATE}" ; \
     fi && \
 
     if uname -m | grep -q x86; then \
-    MODULE_LINK="${BASE_LINK}/linux_x64/${MODULE}_${DATE}.zip" && \
-    NODE_LINK="${BASE_LINK}/linux_x64/Tdarr_Node_${DATE}.zip" ; \
+        MODULE_LINK="${BASE_LINK}/linux_x64/${MODULE}${FILE_SUFFIX}.zip" && \
+        NODE_LINK="${BASE_LINK}/linux_x64/Tdarr_Node${FILE_SUFFIX}.zip" ; \
     fi && \
     if uname -m | grep -q aarch64; then \
-    MODULE_LINK="${BASE_LINK}/linux_arm64/${MODULE}_${DATE}.zip" && \
-    NODE_LINK="${BASE_LINK}/linux_arm64/Tdarr_Node_${DATE}.zip" ; \
+        MODULE_LINK="${BASE_LINK}/linux_arm64/${MODULE}${FILE_SUFFIX}.zip" && \
+        NODE_LINK="${BASE_LINK}/linux_arm64/Tdarr_Node${FILE_SUFFIX}.zip" ; \
     fi && \
     if uname -m | grep -q armv7l; then \
-    MODULE_LINK="${BASE_LINK}/linux_arm/${MODULE}_${DATE}.zip" && \
-    NODE_LINK="${BASE_LINK}/linux_arm/Tdarr_Node_${DATE}.zip" ; \
+        MODULE_LINK="${BASE_LINK}/linux_arm/${MODULE}${FILE_SUFFIX}.zip" && \
+        NODE_LINK="${BASE_LINK}/linux_arm/Tdarr_Node${FILE_SUFFIX}.zip" ; \
     fi && \
 
     echo MODULE_LINK=$MODULE_LINK && \
@@ -49,19 +61,19 @@ RUN echo $MODULE && echo $VERSION && echo $DATE && \
     unzip -q /tmp/${MODULE}.zip -d /app/${MODULE} -x *.exe && \
     rm -rdf /app/${MODULE}/${MODULE} && \
     rm -rdf /app/${MODULE}/${MODULE}_Tray && \
-    rm -rdf /app/${MODULE}/runtime && \
+    rm -rdf /app/${MODULE}/runtime/${MODULE}_Runtime && \
     # Node
     if [ "$MODULE" = "Tdarr_Server" ]; then \
-    curl --connect-timeout 120 --retry 5 -o /tmp/Tdarr_Node.zip -L \
-    "$NODE_LINK" && \
-    unzip -q /tmp/Tdarr_Node.zip -d /app/Tdarr_Node -x *.exe && \
-    rm -rdf /app/Tdarr_Node/Tdarr_Node && \
-    rm -rdf /app/Tdarr_Node/Tdarr_Node_Tray && \
-    rm -rdf /app/Tdarr_Node/runtime ; \
+        curl --connect-timeout 120 --retry 5 -o /tmp/Tdarr_Node.zip -L \
+        "$NODE_LINK" && \
+        unzip -q /tmp/Tdarr_Node.zip -d /app/Tdarr_Node -x *.exe && \
+        rm -rdf /app/Tdarr_Node/Tdarr_Node && \
+        rm -rdf /app/Tdarr_Node/Tdarr_Node_Tray && \
+        rm -rdf /app/Tdarr_Node/runtime/Tdarr_Node_Runtime ; \
     fi && \
     rm -rdf /tmp/${MODULE}.zip && \
     rm -rdf /tmp/Tdarr_Node.zip && \
-    # setup permissions
+    # setup permissions 
     chmod -R 755 /app && \
     groupmod -o -g ${PGID} abc && \
     usermod -o -u ${PUID} abc && \
@@ -70,7 +82,7 @@ RUN echo $MODULE && echo $VERSION && echo $DATE && \
     # test
     runTests=true runDockerTests=true node /app_test/$MODULE/srcug/main.js && \
     if [ "$MODULE" = "Tdarr_Server" ]; then \
-    runTests=true runDockerTests=true node /app_test/Tdarr_Node/srcug/main.js ; \
+           runTests=true runDockerTests=true node /app_test/Tdarr_Node/srcug/main.js ; \
     fi && \
     rm -rdf /app_test
 
