@@ -75,7 +75,7 @@ jobs:
 
   docker_linux_image_final:
     needs: [
-      setup-env-vars
+      setup-env-vars,
       # BUILD_BASE
       docker_linux_image_base,
       ]
