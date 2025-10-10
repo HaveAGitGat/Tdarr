@@ -74,7 +74,11 @@ jobs:
           make push-base DATE=${{needs.setup-env-vars.outputs.DATE}} PDIR=../ USE_PROD_PACKAGES=true
 
   docker_linux_image_final:
-    needs: [setup-env-vars]
+    needs: [
+      setup-env-vars
+      # BUILD_BASE
+      docker_linux_image_base,
+      ]
     runs-on: ubuntu-latest
     strategy:
       matrix:
