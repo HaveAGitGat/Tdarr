@@ -20,6 +20,9 @@ USE_PROD_PACKAGES=false
 BUILD_BASE=true
 FIXED_BASE_TAG=2.32.01_2025_02_15T18_54_45z
 
+# PUSH_IMAGES configuration
+PUSH_IMAGES=false
+
 # Conditionally set BASE_IMAGE_TAG based on BUILD_BASE
 ifeq ($(BUILD_BASE),true)
 	BASE_IMAGE_TAG=$(VERSION)_$(DATE)
@@ -29,21 +32,28 @@ endif
 
 V_D=--build-arg VERSION=$(VERSION) --build-arg DATE=$(DATE) --build-arg USE_PROD_PACKAGES=$(USE_PROD_PACKAGES) --build-arg BASE_IMAGE_TAG=$(BASE_IMAGE_TAG)
 
+# Conditionally set push flag based on PUSH_IMAGES
+ifeq ($(PUSH_IMAGES),true)
+	PUSH_FLAG=--push
+else
+	PUSH_FLAG=
+endif
+
 SERVER_TAGS=-t ${SERVER_TAG} -t ${SERVER_TAG}_${VD}
 
 NODE_TAGS=-t ${NODE_TAG} -t ${NODE_TAG}_${VD}
 
 BASE_TAGS=-t ${BASE_TAG} -t ${BASE_TAG}_${VD}
 
-# Multi-architecture builds (pushes to registry)
+# Multi-architecture builds (conditionally pushes to registry based on PUSH_IMAGES)
 build-base-all-arch:
-	docker buildx build -f ./docker/Dockerfile.base ${BASE_TAGS} --platform ${PLATFORMS} --push .
+	docker buildx build -f ./docker/Dockerfile.base ${BASE_TAGS} --platform ${PLATFORMS} ${PUSH_FLAG} .
 
 build-be-all-arch:
-	docker buildx build -f ./docker/Dockerfile.final ${SERVER_TAGS} --platform ${PLATFORMS} --build-arg MODULE=Tdarr_Server ${V_D} --push .
+	docker buildx build -f ./docker/Dockerfile.final ${SERVER_TAGS} --platform ${PLATFORMS} --build-arg MODULE=Tdarr_Server ${V_D} ${PUSH_FLAG} .
 
 build-node-all-arch:
-	docker buildx build -f ./docker/Dockerfile.final ${NODE_TAGS} --platform ${PLATFORMS} --build-arg MODULE=Tdarr_Node ${V_D} --push .
+	docker buildx build -f ./docker/Dockerfile.final ${NODE_TAGS} --platform ${PLATFORMS} --build-arg MODULE=Tdarr_Node ${V_D} ${PUSH_FLAG} .
 
 # for much faster x64 builds:
 build-base-x64:

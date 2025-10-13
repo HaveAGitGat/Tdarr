@@ -24,13 +24,13 @@ cd docker-build
 export DATE=$(date +"%Y_%m_%dT%H_%M_%Sz")
 
 # Build base image (multi-arch)
-make build-base-all-arch DATE=$DATE PDIR=../ USE_PROD_PACKAGES=true
+make build-base-all-arch DATE=$DATE PDIR=../ USE_PROD_PACKAGES=true PUSH_IMAGES=false
 
 # Build server image (multi-arch)
-make build-be-all-arch TAG=dev DATE=$DATE PDIR=../ USE_PROD_PACKAGES=true
+make build-be-all-arch TAG=dev DATE=$DATE PDIR=../ USE_PROD_PACKAGES=true PUSH_IMAGES=false
 
 # Build node image (multi-arch)
-make build-node-all-arch TAG=dev DATE=$DATE PDIR=../ USE_PROD_PACKAGES=true
+make build-node-all-arch TAG=dev DATE=$DATE PDIR=../ USE_PROD_PACKAGES=true PUSH_IMAGES=false
 
 # Push base image (only for x64 builds)
 make push-base DATE=$DATE PDIR=../ USE_PROD_PACKAGES=true
