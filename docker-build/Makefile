@@ -21,7 +21,7 @@ BUILD_BASE=true
 FIXED_BASE_TAG=2.32.01_2025_02_15T18_54_45z
 
 # PUSH_IMAGES configuration
-PUSH_IMAGES=false
+PUSH_IMAGES=true
 
 # Conditionally set BASE_IMAGE_TAG based on BUILD_BASE
 ifeq ($(BUILD_BASE),true)
