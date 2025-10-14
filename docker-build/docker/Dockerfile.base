@@ -12,8 +12,7 @@ ENV WEB_UI_PORT="8265" SERVER_PORT="8266" NODE_PORT="8267" PUID="1000" PGID="100
 # ========================================================================================
 #                                   Install dependencies
 # ========================================================================================
-RUN export HOME=/root && \
-    apt-get update &&  \
+RUN apt-get update &&  \
     apt-get install -y \
     software-properties-common \
     curl \
@@ -24,7 +23,7 @@ RUN export HOME=/root && \
     /app \
     /logs \
     /temp \
-    /home/Tdarr && \
+    "${HOME}" && \
     # ========================================================================================
     #                                   Install Nodejs 22.x
     # ========================================================================================
@@ -163,7 +162,7 @@ RUN export HOME=/root && \
     libdrm-dev && \
     # Install Rust (required for libdovi)
     curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal --default-toolchain stable && \
-    . /root/.cargo/env && \
+    . "${HOME}/.cargo/env" && \
     cargo install cargo-c && \
     rustup target add x86_64-pc-windows-gnu && \
     # =========================================================================================
@@ -247,7 +246,7 @@ RUN export HOME=/root && \
     libva-dev \
     libdrm-dev && \
     # remove rust toolchain installed via rustup (cargo, rustup)
-    rm -rdf /root/.cargo /root/.rustup ; \
+    rm -rdf "$HOME/.cargo" "$HOME/.rustup" ; \
     fi && \
     # Final apt cache & index cleanup
     apt-get clean && \
