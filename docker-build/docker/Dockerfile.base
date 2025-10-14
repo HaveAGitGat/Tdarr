@@ -34,7 +34,7 @@ RUN apt-get update &&  \
     pipx \
     trash-cli && \
     pipx install apprise && \
-    ln -s /root/.local/bin/apprise /usr/local/bin/apprise && \
+    ln -s ${HOME}/.local/bin/apprise /usr/local/bin/apprise && \
     # ========================================================================================
     #                                   Install MkvToolNIX
     # ========================================================================================
