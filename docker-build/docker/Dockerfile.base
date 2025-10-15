@@ -181,7 +181,7 @@ RUN apt-get update &&  \
         --enable-libdovi \
         --enable-x265 \
         --disable-gtk \
-        --launch-jobs=14 \
+        --launch-jobs=$(nproc) \
         --launch \
         --force && \
         make --directory=build install && \
