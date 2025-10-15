@@ -51,6 +51,12 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
+      - name: Display runner resources
+        run: |
+          echo "CPU Cores: $(nproc)"
+          echo "RAM:"
+          free -h
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         with:
