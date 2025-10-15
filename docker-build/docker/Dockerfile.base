@@ -78,125 +78,125 @@ RUN apt-get update &&  \
     #                               Install intel media packages
     # ========================================================================================
     if uname -m | grep -q x86; then \
-    # Setup Intel Package Repository for noble
-    add-apt-repository -y ppa:kobuk-team/intel-graphics && \
-    apt-get update && \
-    # Install Intel compute related packages
-    apt install -y \
-    libze-intel-gpu1 \
-    libze1 \
-    intel-metrics-discovery \
-    intel-opencl-icd \
-    clinfo \
-    intel-gsc \
-    # Install Intel media related packages
-    intel-media-va-driver-non-free \
-    libmfx-gen1 \
-    libvpl2 \
-    libvpl-tools \
-    libva2 \
-    libva-glx2 \
-    va-driver-all \
-    vainfo \
-    # Install Mesa packages
-    libegl-mesa0 \
-    libegl1 \
-    libegl1-mesa-dev \
-    libgbm1 \
-    libgl1-mesa-dev \
-    libgl1-mesa-dri \
-    libglapi-mesa \
-    libgles2-mesa-dev \
-    libglx-mesa0 \
-    libigdgmm12 \
-    libxatracker2 \
-    mesa-va-drivers \
-    mesa-vdpau-drivers \
-    mesa-vulkan-drivers \
-    hwinfo && \
-    # =========================================================================================
-    #                               Install HandBrake dependencies
-    # =========================================================================================
-    apt-get install -y \
-    autoconf \
-    automake \
-    build-essential \
-    cmake \
-    git \
-    libass-dev \
-    libbz2-dev \
-    libfontconfig-dev \
-    libfreetype-dev \
-    libfribidi-dev \
-    libharfbuzz-dev \
-    libjansson-dev \
-    liblzma-dev \
-    libmp3lame-dev \
-    libnuma-dev \
-    libogg-dev \
-    libopus-dev \
-    libsamplerate0-dev \
-    libspeex-dev \
-    libtheora-dev \
-    libtool \
-    libtool-bin \
-    libturbojpeg0-dev \
-    libvorbis-dev \
-    libx264-dev \
-    libxml2-dev \
-    libvpx-dev \
-    m4 \
-    make \
-    meson \
-    nasm \
-    ninja-build \
-    patch \
-    pkg-config \
-    tar \
-    zlib1g-dev \
-    curl \
-    libssl-dev \
-    clang \
-    # QSV dependencies
-    libva-dev \
-    libdrm-dev && \
-    # Install Rust (required for libdovi)
-    curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal --default-toolchain stable && \
-    . "${HOME}/.cargo/env" && \
-    cargo install cargo-c && \
-    rustup target add x86_64-pc-windows-gnu && \
-    # =========================================================================================
-    #                                   Install HandBrake
-    # =========================================================================================
-    rm -rdf /tmp/handbrake && \
-    mkdir -p /tmp/handbrake && \
-    git clone \
-    --branch ${HANDBRAKE} \
-    --depth 1 https://github.com/HandBrake/HandBrake.git \
-    /tmp/handbrake && \
-    cd /tmp/handbrake && \
-    ./configure \
-    --enable-qsv \
-    --enable-nvdec \
-    --enable-libdovi \
-    --enable-x265 \
-    --disable-gtk \
-    --launch-jobs=14 \
-    --launch \
-    --force && \
-    make --directory=build install && \
-    cp /tmp/handbrake/build/HandBrakeCLI /usr/local/bin/HandBrakeCLI && \
-    cd / && rm -rdf /tmp/handbrake/ ; \
+        # Setup Intel Package Repository for noble
+        add-apt-repository -y ppa:kobuk-team/intel-graphics && \
+        apt-get update && \
+        # Install Intel compute related packages
+        apt install -y \
+        libze-intel-gpu1 \
+        libze1 \
+        intel-metrics-discovery \
+        intel-opencl-icd \
+        clinfo \
+        intel-gsc \
+        # Install Intel media related packages
+        intel-media-va-driver-non-free \
+        libmfx-gen1 \
+        libvpl2 \
+        libvpl-tools \
+        libva2 \
+        libva-glx2 \
+        va-driver-all \
+        vainfo \
+        # Install Mesa packages
+        libegl-mesa0 \
+        libegl1 \
+        libegl1-mesa-dev \
+        libgbm1 \
+        libgl1-mesa-dev \
+        libgl1-mesa-dri \
+        libglapi-mesa \
+        libgles2-mesa-dev \
+        libglx-mesa0 \
+        libigdgmm12 \
+        libxatracker2 \
+        mesa-va-drivers \
+        mesa-vdpau-drivers \
+        mesa-vulkan-drivers \
+        hwinfo && \
+        # =========================================================================================
+        #                               Install HandBrake dependencies
+        # =========================================================================================
+        apt-get install -y \
+        autoconf \
+        automake \
+        build-essential \
+        cmake \
+        git \
+        libass-dev \
+        libbz2-dev \
+        libfontconfig-dev \
+        libfreetype-dev \
+        libfribidi-dev \
+        libharfbuzz-dev \
+        libjansson-dev \
+        liblzma-dev \
+        libmp3lame-dev \
+        libnuma-dev \
+        libogg-dev \
+        libopus-dev \
+        libsamplerate0-dev \
+        libspeex-dev \
+        libtheora-dev \
+        libtool \
+        libtool-bin \
+        libturbojpeg0-dev \
+        libvorbis-dev \
+        libx264-dev \
+        libxml2-dev \
+        libvpx-dev \
+        m4 \
+        make \
+        meson \
+        nasm \
+        ninja-build \
+        patch \
+        pkg-config \
+        tar \
+        zlib1g-dev \
+        curl \
+        libssl-dev \
+        clang \
+        # QSV dependencies
+        libva-dev \
+        libdrm-dev && \
+        # Install Rust (required for libdovi)
+        curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal --default-toolchain stable && \
+        . "${HOME}/.cargo/env" && \
+        cargo install cargo-c && \
+        rustup target add x86_64-pc-windows-gnu && \
+        # =========================================================================================
+        #                                   Install HandBrake
+        # =========================================================================================
+        rm -rdf /tmp/handbrake && \
+        mkdir -p /tmp/handbrake && \
+        git clone \
+        --branch ${HANDBRAKE} \
+        --depth 1 https://github.com/HandBrake/HandBrake.git \
+        /tmp/handbrake && \
+        cd /tmp/handbrake && \
+        ./configure \
+        --enable-qsv \
+        --enable-nvdec \
+        --enable-libdovi \
+        --enable-x265 \
+        --disable-gtk \
+        --launch-jobs=14 \
+        --launch \
+        --force && \
+        make --directory=build install && \
+        cp /tmp/handbrake/build/HandBrakeCLI /usr/local/bin/HandBrakeCLI && \
+        cd / && rm -rdf /tmp/handbrake/ ; \
     fi && \
     # If ARM architecture, install handbrake from apt
     if uname -m | grep -q aarch64; then \
-    apt-get install -y handbrake-cli && \
-    echo "ffmpeg installed above" ; \
+        apt-get install -y handbrake-cli && \
+        echo "ffmpeg installed above" ; \
     fi && \
     # If ARMv7l architecture, install handbrake from apt
     if uname -m | grep -q armv7l; then \
-    apt-get install -y handbrake-cli && \
-    echo "ffmpeg installed above" ; \
+        apt-get install -y handbrake-cli && \
+        echo "ffmpeg installed above" ; \
     fi && \
     # ========================================================================================
     #                             Cleanup Unused Packages
@@ -217,36 +217,36 @@ RUN apt-get update &&  \
     libclang-dev && \
     # If we built HandBrake from source on x86, drop those extra build deps too
     if uname -m | grep -q x86; then \
-    apt-get purge -y \
-    libegl1-mesa-dev \
-    libgl1-mesa-dev \
-    libgles2-mesa-dev \
-    libass-dev \
-    libbz2-dev \
-    libfontconfig-dev \
-    libfreetype-dev \
-    libfribidi-dev \
-    libharfbuzz-dev \
-    libjansson-dev \
-    liblzma-dev \
-    libmp3lame-dev \
-    libnuma-dev \
-    libogg-dev \
-    libopus-dev \
-    libsamplerate0-dev \
-    libspeex-dev \
-    libtheora-dev \
-    libturbojpeg0-dev \
-    libvorbis-dev \
-    libx264-dev \
-    libxml2-dev \
-    libvpx-dev \
-    zlib1g-dev \
-    libssl-dev \
-    libva-dev \
-    libdrm-dev && \
-    # remove rust toolchain installed via rustup (cargo, rustup)
-    rm -rdf "$HOME/.cargo" "$HOME/.rustup" ; \
+        apt-get purge -y \
+        libegl1-mesa-dev \
+        libgl1-mesa-dev \
+        libgles2-mesa-dev \
+        libass-dev \
+        libbz2-dev \
+        libfontconfig-dev \
+        libfreetype-dev \
+        libfribidi-dev \
+        libharfbuzz-dev \
+        libjansson-dev \
+        liblzma-dev \
+        libmp3lame-dev \
+        libnuma-dev \
+        libogg-dev \
+        libopus-dev \
+        libsamplerate0-dev \
+        libspeex-dev \
+        libtheora-dev \
+        libturbojpeg0-dev \
+        libvorbis-dev \
+        libx264-dev \
+        libxml2-dev \
+        libvpx-dev \
+        zlib1g-dev \
+        libssl-dev \
+        libva-dev \
+        libdrm-dev && \
+        # remove rust toolchain installed via rustup (cargo, rustup)
+        rm -rdf "$HOME/.cargo" "$HOME/.rustup" ; \
     fi && \
     # Final apt cache & index cleanup
     apt-get clean && \
