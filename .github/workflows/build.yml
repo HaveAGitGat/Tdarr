@@ -83,9 +83,9 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ secrets.DOCKER_HUB_USERNAME }}/tdarr_base
+          images: ${{ secrets.DOCKER_HUB_USERNAME }}/tdarr_acc
           tags: |
-            type=raw,value=${{ needs.setup-env-vars.outputs.VERSION }}_${{ needs.setup-env-vars.outputs.DATE }}
+            type=raw,value=base_${{ needs.setup-env-vars.outputs.VERSION }}_${{ needs.setup-env-vars.outputs.DATE }}
 
       - name: Build and push by digest
         id: build
@@ -95,7 +95,7 @@ jobs:
           file: ./docker-build/docker/Dockerfile.base
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
-          outputs: type=image,name=${{ secrets.DOCKER_HUB_USERNAME }}/tdarr_base,push-by-digest=${{ needs.setup-env-vars.outputs.PUSH_IMAGES == 'true' }},name-canonical=true,push=${{ needs.setup-env-vars.outputs.PUSH_IMAGES == 'true' }}
+          outputs: type=image,name=${{ secrets.DOCKER_HUB_USERNAME }}/tdarr_acc,push-by-digest=${{ needs.setup-env-vars.outputs.PUSH_IMAGES == 'true' }},name-canonical=true,push=${{ needs.setup-env-vars.outputs.PUSH_IMAGES == 'true' }}
 
       - name: Export digest
         if: ${{ needs.setup-env-vars.outputs.PUSH_IMAGES == 'true' }}
@@ -140,13 +140,13 @@ jobs:
         working-directory: /tmp/digests
         run: |
           docker buildx imagetools create \
-            -t ${{ secrets.DOCKER_HUB_USERNAME }}/tdarr_base:${{ needs.setup-env-vars.outputs.VERSION }}_${{ needs.setup-env-vars.outputs.DATE }} \
-            -t ${{ secrets.DOCKER_HUB_USERNAME }}/tdarr_base:latest \
-            $(printf '${{ secrets.DOCKER_HUB_USERNAME }}/tdarr_base@sha256:%s ' *)
+            -t ${{ secrets.DOCKER_HUB_USERNAME }}/tdarr_acc:base_${{ needs.setup-env-vars.outputs.VERSION }}_${{ needs.setup-env-vars.outputs.DATE }} \
+            -t ${{ secrets.DOCKER_HUB_USERNAME }}/tdarr_acc:base_latest \
+            $(printf '${{ secrets.DOCKER_HUB_USERNAME }}/tdarr_acc@sha256:%s ' *)
 
       - name: Inspect image
         run: |
-          docker buildx imagetools inspect ${{ secrets.DOCKER_HUB_USERNAME }}/tdarr_base:${{ needs.setup-env-vars.outputs.VERSION }}_${{ needs.setup-env-vars.outputs.DATE }}
+          docker buildx imagetools inspect ${{ secrets.DOCKER_HUB_USERNAME }}/tdarr_acc:base_${{ needs.setup-env-vars.outputs.VERSION }}_${{ needs.setup-env-vars.outputs.DATE }}
 
   docker_linux_image_final:
    # if BUILD_BASE is false, workflow will still run without building the base image
