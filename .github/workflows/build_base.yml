@@ -29,7 +29,7 @@ jobs:
           DATE=$(date +"%Y_%m_%dT%H_%M_%Sz")
           ARCHS=all-arch
           BUILD_BASE=true
-          PUSH_IMAGES=true
+          PUSH_IMAGES=false
           RUNNER_X64='["ubuntu-latest"]'
           RUNNER_ARM64='["ubuntu-24.04-arm"]'
 
