@@ -6,7 +6,7 @@ on:
 
 jobs:
   setup-env-vars:
-    if: false
+    if: true
     runs-on: ubuntu-latest
     outputs:
       VERSION: ${{ steps.set-variable.outputs.VERSION }}
