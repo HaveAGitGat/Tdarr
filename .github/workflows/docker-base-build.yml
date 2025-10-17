@@ -1,0 +1,150 @@
+name: Docker Base Build (Reusable)
+
+on:
+  workflow_call:
+    inputs:
+      VERSION:
+        required: true
+        type: string
+      DATE:
+        required: true
+        type: string
+      PUSH_IMAGES:
+        required: true
+        type: string
+      RUNNER_X64:
+        required: false
+        type: string
+        default: '["ubuntu-latest"]'
+      RUNNER_ARM64:
+        required: false
+        type: string
+        default: '["ubuntu-24.04-arm"]'
+    secrets:
+      DOCKER_HUB_USERNAME:
+        required: true
+      DOCKER_HUB_ACCESS_TOKEN:
+        required: true
+
+jobs:
+  docker_linux_image_base:
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner: ${{ fromJSON(inputs.RUNNER_X64) }}
+            platform: linux/amd64
+          - arch: arm64
+            runner: ${{ fromJSON(inputs.RUNNER_ARM64) }}
+            platform: linux/arm64
+    name: Build Docker base image (${{ matrix.arch }})
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Display runner resources
+        run: |
+          echo "CPU Cores: $(nproc)"
+          echo "RAM:"
+          free -h
+          echo "Architecture: $(uname -m)"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        if: ${{ inputs.PUSH_IMAGES == 'true' }}
+        uses: docker/login-action@v3
+        with:
+          registry: docker.io
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ secrets.DOCKER_HUB_USERNAME }}/tdarr_acc
+          tags: |
+            type=raw,value=base_${{ inputs.VERSION }}_${{ inputs.DATE }}
+
+      - name: Build and push by digest
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          context: ./docker-build
+          file: ./docker-build/docker/Dockerfile.base
+          platforms: ${{ matrix.platform }}
+          labels: ${{ steps.meta.outputs.labels }}
+          outputs: type=image,name=${{ secrets.DOCKER_HUB_USERNAME }}/tdarr_acc,push-by-digest=${{ inputs.PUSH_IMAGES == 'true' }},name-canonical=true,push=${{ inputs.PUSH_IMAGES == 'true' }}
+
+      - name: Verify image push to registry
+        if: ${{ inputs.PUSH_IMAGES == 'true' }}
+        run: |
+          digest="${{ steps.build.outputs.digest }}"
+          echo "Verifying base image was pushed: ${{ secrets.DOCKER_HUB_USERNAME }}/tdarr_acc@${digest}"
+          docker buildx imagetools inspect ${{ secrets.DOCKER_HUB_USERNAME }}/tdarr_acc@${digest}
+
+      - name: Export digest
+        if: ${{ inputs.PUSH_IMAGES == 'true' }}
+        run: |
+          rm -rf /tmp/digests-${{ github.run_id }}
+          mkdir -p /tmp/digests-${{ github.run_id }}
+          digest="${{ steps.build.outputs.digest }}"
+          touch "/tmp/digests-${{ github.run_id }}/${digest#sha256:}"
+
+      - name: Upload digest
+        if: ${{ inputs.PUSH_IMAGES == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: digests-base-${{ matrix.arch }}
+          path: /tmp/digests-${{ github.run_id }}/*
+          if-no-files-found: error
+          retention-days: 1
+
+  docker_linux_image_base_merge:
+    if: ${{ inputs.PUSH_IMAGES == 'true' }}
+    needs: [docker_linux_image_base]
+    runs-on: ubuntu-latest
+    name: Merge Docker base image manifests
+    steps:
+      - name: Download digests
+        uses: actions/download-artifact@v4
+        with:
+          path: /tmp/digests-${{ github.run_id }}
+          pattern: digests-base-*
+          merge-multiple: true
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          registry: docker.io
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: List downloaded digests
+        working-directory: /tmp/digests-${{ github.run_id }}
+        run: |
+          echo "Downloaded digest files:"
+          ls -la
+          echo ""
+          echo "Digest values:"
+          for digest in *; do
+            echo "  sha256:$digest"
+          done
+
+      - name: Create manifest list and push
+        working-directory: /tmp/digests-${{ github.run_id }}
+        run: |
+          docker buildx imagetools create \
+            -t ${{ secrets.DOCKER_HUB_USERNAME }}/tdarr_acc:base_${{ inputs.VERSION }}_${{ inputs.DATE }} \
+            -t ${{ secrets.DOCKER_HUB_USERNAME }}/tdarr_acc:base_latest \
+            $(printf '${{ secrets.DOCKER_HUB_USERNAME }}/tdarr_acc@sha256:%s ' *)
+
+      - name: Inspect image
+        run: |
+          docker buildx imagetools inspect ${{ secrets.DOCKER_HUB_USERNAME }}/tdarr_acc:base_${{ inputs.VERSION }}_${{ inputs.DATE }}

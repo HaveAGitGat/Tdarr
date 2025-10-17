@@ -15,8 +15,6 @@ Build configuration is defined in:
 
 ## Example Make Commands
 
-When running from the `docker-build` directory, set `PDIR=../` to reference the parent directory:
-
 ```bash
 cd docker-build
 
@@ -24,17 +22,19 @@ cd docker-build
 export DATE=$(date +"%Y_%m_%dT%H_%M_%Sz")
 
 # Build base image (multi-arch)
-make build-base-all-arch DATE=$DATE PDIR=../ USE_PROD_PACKAGES=true PUSH_IMAGES=false
+make build-base-all-arch DATE=$DATE USE_PROD_PACKAGES=true PUSH_IMAGES=false
 
 # Build server image (multi-arch)
-make build-be-all-arch TAG=dev DATE=$DATE PDIR=../ USE_PROD_PACKAGES=true PUSH_IMAGES=false
+make build-be-all-arch TAG=dev DATE=$DATE USE_PROD_PACKAGES=true PUSH_IMAGES=false
 
 # Build node image (multi-arch)
-make build-node-all-arch TAG=dev DATE=$DATE PDIR=../ USE_PROD_PACKAGES=true PUSH_IMAGES=false
+make build-node-all-arch TAG=dev DATE=$DATE USE_PROD_PACKAGES=true PUSH_IMAGES=false
 
 # Push base image (only for x64 builds)
-make push-base DATE=$DATE PDIR=../ USE_PROD_PACKAGES=true
+make push-base DATE=$DATE USE_PROD_PACKAGES=true
 ```
+
+> Set `PUSH_IMAGES=true` when you want the multi-arch targets to push directly to the registry.
 
 ## Important Variables
 
@@ -48,12 +48,11 @@ make push-base DATE=$DATE PDIR=../ USE_PROD_PACKAGES=true
 To build a new base image or use an existing one, set `BUILD_BASE` in the appropriate file:
 
 **Workflow builds:**
-- `.github/workflows/build.yml` line 26: Set `BUILD_BASE=true` (build new) or `BUILD_BASE=false` (use existing)
-- `docker-build/Makefile` line 21: Set `FIXED_BASE_TAG` to the version to use when `BUILD_BASE=false`
+- `.github/workflows/build.yml` (`setup-env-vars` job): Set `BUILD_BASE=true` (build new) or `BUILD_BASE=false` (use existing)
+- `docker-build/Makefile`: Update `FIXED_BASE_TAG` to the version to use when `BUILD_BASE=false`
 
 **Local builds:**
-- `docker-build/Makefile` line 20: Set `BUILD_BASE=true` (build new) or `BUILD_BASE=false` (use existing)
-- `docker-build/Makefile` line 21: Set `FIXED_BASE_TAG` to the version to use when `BUILD_BASE=false`
+- `docker-build/Makefile`: Toggle `BUILD_BASE` between `true` (build new) or `false` (use existing)
+- `docker-build/Makefile`: Set `FIXED_BASE_TAG` to the version to use when `BUILD_BASE=false`
 
 The base image tag is automatically computed based on `BUILD_BASE` and passed to the Dockerfile.
-

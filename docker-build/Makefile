@@ -4,8 +4,7 @@
 
 include Makefile.vars
 
-PDIR=
-VERSION=$(shell sed 's/.*"version": "\(.*\)".*/\1/;t;d' ./${PDIR}package.json)
+VERSION=$(shell sed 's/.*"version": "\(.*\)".*/\1/;t;d' ../package.json)
 VD=${VERSION}_${DATE}
 
 # PLATFORMS=linux/amd64
