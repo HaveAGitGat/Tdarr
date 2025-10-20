@@ -81,6 +81,7 @@ jobs:
       RUNNER_X64: ${{ needs.setup-env-vars.outputs.RUNNER_X64 }}
       RUNNER_ARM64: ${{ needs.setup-env-vars.outputs.RUNNER_ARM64 }}
       USE_PROD_PACKAGES: true
+      component_matrix: '["be", "node"]'
     secrets:
       DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
       DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}

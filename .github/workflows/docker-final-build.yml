@@ -27,6 +27,11 @@ on:
         required: false
         type: boolean
         default: true
+      component_matrix:
+        required: false
+        type: string
+        default: '["be", "node"]'
+        description: 'JSON array of components to build (e.g., ["be"] or ["node"] or ["be", "node"])'
     secrets:
       DOCKER_HUB_USERNAME:
         required: true
@@ -34,34 +39,92 @@ on:
         required: true
 
 jobs:
+  generate_matrix:
+    runs-on: ${{ fromJSON(inputs.RUNNER_X64) }}
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      merge_matrix: ${{ steps.set-matrix.outputs.merge_matrix }}
+    steps:
+      - name: Generate build matrix
+        id: set-matrix
+        run: |
+          # Parse component matrix input
+          components='${{ inputs.component_matrix }}'
+
+          # Build matrix based on components
+          matrix='{"include":[]}'
+          merge_matrix='{"include":[]}'
+
+          # Add be builds if requested
+          if echo "$components" | jq -e '.[] | select(. == "be")' > /dev/null; then
+            matrix=$(echo "$matrix" | jq '.include += [
+              {
+                "component": "be",
+                "arch": "amd64",
+                "runner": ${{ inputs.RUNNER_X64 }},
+                "platform": "linux/amd64",
+                "module": "Tdarr_Server"
+              },
+              {
+                "component": "be",
+                "arch": "arm64",
+                "runner": ${{ inputs.RUNNER_ARM64 }},
+                "platform": "linux/arm64",
+                "module": "Tdarr_Server"
+              }
+            ]')
+            merge_matrix=$(echo "$merge_matrix" | jq '.include += [
+              {
+                "component": "be",
+                "image_name": "tdarr_acc"
+              }
+            ]')
+          fi
+
+          # Add node builds if requested
+          if echo "$components" | jq -e '.[] | select(. == "node")' > /dev/null; then
+            matrix=$(echo "$matrix" | jq '.include += [
+              {
+                "component": "node",
+                "arch": "amd64",
+                "runner": ${{ inputs.RUNNER_X64 }},
+                "platform": "linux/amd64",
+                "module": "Tdarr_Node"
+              },
+              {
+                "component": "node",
+                "arch": "arm64",
+                "runner": ${{ inputs.RUNNER_ARM64 }},
+                "platform": "linux/arm64",
+                "module": "Tdarr_Node"
+              }
+            ]')
+            merge_matrix=$(echo "$merge_matrix" | jq '.include += [
+              {
+                "component": "node",
+                "image_name": "tdarr_node_acc"
+              }
+            ]')
+          fi
+
+          # Compact JSON for GitHub Actions output (no newlines)
+          matrix_compact=$(echo "$matrix" | jq -c '.')
+          merge_matrix_compact=$(echo "$merge_matrix" | jq -c '.')
+
+          echo "matrix=$matrix_compact" >> $GITHUB_OUTPUT
+          echo "merge_matrix=$merge_matrix_compact" >> $GITHUB_OUTPUT
+
+          echo "Generated build matrix:"
+          echo "$matrix" | jq '.'
+          echo "Generated merge matrix:"
+          echo "$merge_matrix" | jq '.'
+
   docker_linux_image_final:
+    needs: [generate_matrix]
     runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
-      matrix:
-        include:
-          # Backend (be) builds
-          - component: be
-            arch: amd64
-            runner: ${{ fromJSON(inputs.RUNNER_X64) }}
-            platform: linux/amd64
-            module: Tdarr_Server
-          - component: be
-            arch: arm64
-            runner: ${{ fromJSON(inputs.RUNNER_ARM64) }}
-            platform: linux/arm64
-            module: Tdarr_Server
-          # Node builds
-          - component: node
-            arch: amd64
-            runner: ${{ fromJSON(inputs.RUNNER_X64) }}
-            platform: linux/amd64
-            module: Tdarr_Node
-          - component: node
-            arch: arm64
-            runner: ${{ fromJSON(inputs.RUNNER_ARM64) }}
-            platform: linux/arm64
-            module: Tdarr_Node
+      matrix: ${{ fromJson(needs.generate_matrix.outputs.matrix) }}
     name: Build Docker ${{ matrix.component }} image (${{ matrix.arch }})
     steps:
       - uses: actions/checkout@v3
@@ -155,24 +218,26 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-  docker_linux_image_be_merge:
+  docker_linux_image_merge:
     if: ${{ inputs.PUSH_IMAGES == 'true' }}
-    needs: [docker_linux_image_final]
-    runs-on: ubuntu-latest
-    name: Merge Docker be image manifests
+    needs: [generate_matrix, docker_linux_image_final]
+    runs-on: ${{ fromJSON(inputs.RUNNER_X64) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.generate_matrix.outputs.merge_matrix) }}
+    name: Merge Docker ${{ matrix.component }} image manifests
     steps:
       - name: Download digests
         uses: actions/download-artifact@v4
         with:
           path: /tmp/digests-${{ github.run_id }}
-          pattern: digests-be-*
+          pattern: digests-${{ matrix.component }}-*
           merge-multiple: true
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
       - name: Login to Docker Hub
-        if: ${{ inputs.PUSH_IMAGES == 'true' }}
         uses: docker/login-action@v3
         with:
           registry: docker.io
@@ -194,57 +259,10 @@ jobs:
         working-directory: /tmp/digests-${{ github.run_id }}
         run: |
           docker buildx imagetools create \
-            -t ${{ secrets.DOCKER_HUB_USERNAME }}/tdarr_acc:dev_${{ inputs.VERSION }}_${{ inputs.DATE }} \
-            -t ${{ secrets.DOCKER_HUB_USERNAME }}/tdarr_acc:dev \
-            $(printf '${{ secrets.DOCKER_HUB_USERNAME }}/tdarr_acc@sha256:%s ' *)
+            -t ${{ secrets.DOCKER_HUB_USERNAME }}/${{ matrix.image_name }}:dev_${{ inputs.VERSION }}_${{ inputs.DATE }} \
+            -t ${{ secrets.DOCKER_HUB_USERNAME }}/${{ matrix.image_name }}:dev \
+            $(printf '${{ secrets.DOCKER_HUB_USERNAME }}/${{ matrix.image_name }}@sha256:%s ' *)
 
       - name: Inspect image
         run: |
-          docker buildx imagetools inspect ${{ secrets.DOCKER_HUB_USERNAME }}/tdarr_acc:dev_${{ inputs.VERSION }}_${{ inputs.DATE }}
-
-  docker_linux_image_node_merge:
-    if: ${{ inputs.PUSH_IMAGES == 'true' }}
-    needs: [docker_linux_image_final]
-    runs-on: ubuntu-latest
-    name: Merge Docker node image manifests
-    steps:
-      - name: Download digests
-        uses: actions/download-artifact@v4
-        with:
-          path: /tmp/digests-${{ github.run_id }}
-          pattern: digests-node-*
-          merge-multiple: true
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to Docker Hub
-        if: ${{ inputs.PUSH_IMAGES == 'true' }}
-        uses: docker/login-action@v3
-        with:
-          registry: docker.io
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-
-      - name: List downloaded digests
-        working-directory: /tmp/digests-${{ github.run_id }}
-        run: |
-          echo "Downloaded digest files:"
-          ls -la
-          echo ""
-          echo "Digest values:"
-          for digest in *; do
-            echo "  sha256:$digest"
-          done
-
-      - name: Create manifest list and push
-        working-directory: /tmp/digests-${{ github.run_id }}
-        run: |
-          docker buildx imagetools create \
-            -t ${{ secrets.DOCKER_HUB_USERNAME }}/tdarr_node_acc:dev_${{ inputs.VERSION }}_${{ inputs.DATE }} \
-            -t ${{ secrets.DOCKER_HUB_USERNAME }}/tdarr_node_acc:dev \
-            $(printf '${{ secrets.DOCKER_HUB_USERNAME }}/tdarr_node_acc@sha256:%s ' *)
-
-      - name: Inspect image
-        run: |
-          docker buildx imagetools inspect ${{ secrets.DOCKER_HUB_USERNAME }}/tdarr_node_acc:dev_${{ inputs.VERSION }}_${{ inputs.DATE }}
+          docker buildx imagetools inspect ${{ secrets.DOCKER_HUB_USERNAME }}/${{ matrix.image_name }}:dev_${{ inputs.VERSION }}_${{ inputs.DATE }}
