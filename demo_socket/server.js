@@ -65,7 +65,7 @@ io.engine.on('connection_error', (err) => {
 });
 
 // Start the server
-const PORT = 8266;
+const PORT = 5266;
 const HOST = 'localhost';  // Bind to all interfaces instead of just localhost
 
 fastify.listen({ port: PORT, host: HOST }, (err, address) => {
