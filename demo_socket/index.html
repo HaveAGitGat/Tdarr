@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tdarr Socket.io Debug Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .status-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 5px solid #ddd;
+            transition: all 0.3s ease;
+        }
+
+        .status-card.connected {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+
+        .status-card.disconnected {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        .status-card.connecting {
+            border-left-color: #ffc107;
+            background: #fff3cd;
+        }
+
+        .status-label {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .status-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.connected {
+            background: #28a745;
+        }
+
+        .status-indicator.disconnected {
+            background: #dc3545;
+        }
+
+        .status-indicator.connecting {
+            background: #ffc107;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .info-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .info-item label {
+            font-size: 12px;
+            color: #666;
+            display: block;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-item value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            font-family: 'Courier New', monospace;
+        }
+
+        .log-container {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .log-entry {
+            margin-bottom: 8px;
+            padding: 5px;
+            border-radius: 3px;
+        }
+
+        .log-entry.info {
+            color: #4fc3f7;
+        }
+
+        .log-entry.success {
+            color: #66bb6a;
+        }
+
+        .log-entry.error {
+            color: #ef5350;
+        }
+
+        .log-entry.warning {
+            color: #ffca28;
+        }
+
+        .log-time {
+            color: #888;
+            margin-right: 10px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        button.primary {
+            background: #667eea;
+            color: white;
+        }
+
+        button.primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        button.danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        button.danger:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+        }
+
+        button.secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        button.secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        button:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔌 Tdarr Socket.io Debug Demo</h1>
+        <div class="subtitle">Mimicking Tdarr's frontend to backend socket connection</div>
+
+        <div id="statusCard" class="status-card connecting">
+            <div class="status-label">Connection Status</div>
+            <div class="status-value">
+                <span class="status-indicator connecting" id="statusIndicator"></span>
+                <span id="statusText">Connecting...</span>
+            </div>
+        </div>
+
+        <div class="info-grid">
+            <div class="info-item">
+                <label>Socket ID</label>
+                <value id="socketId">-</value>
+            </div>
+            <div class="info-item">
+                <label>Transport</label>
+                <value id="transport">-</value>
+            </div>
+            <div class="info-item">
+                <label>Namespace</label>
+                <value id="namespace">/webui</value>
+            </div>
+            <div class="info-item">
+                <label>Path</label>
+                <value id="path">/socket.io</value>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="primary" onclick="reconnect()">Reconnect</button>
+            <button class="danger" onclick="disconnect()">Disconnect</button>
+            <button class="secondary" onclick="sendPing()">Send Ping</button>
+            <button class="secondary" onclick="clearLogs()">Clear Logs</button>
+        </div>
+
+        <h3 style="margin-top: 30px; margin-bottom: 15px; color: #333;">Event Log</h3>
+        <div class="log-container" id="logContainer"></div>
+    </div>
+
+    <!-- Load socket.io client from CDN (same version as Tdarr: 4.7.5) -->
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
+    <script>
+        let socket;
+        const logs = [];
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            logs.push({ timestamp, message, type });
+
+            const logContainer = document.getElementById('logContainer');
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.innerHTML = `<span class="log-time">[${timestamp}]</span>${message}`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        function updateStatus(status, text) {
+            const statusCard = document.getElementById('statusCard');
+            const statusIndicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+
+            statusCard.className = `status-card ${status}`;
+            statusIndicator.className = `status-indicator ${status}`;
+            statusText.textContent = text;
+        }
+
+        function initSocket() {
+            log('Initializing socket connection...', 'info');
+
+            // Mimic Tdarr's connection setup
+            socket = io('/webui', {
+                path: '/socket.io',
+                // Uncomment to test with auth header like Tdarr does
+                // extraHeaders: {
+                //     authorization: 'Bearer test-token'
+                // }
+            });
+
+            // Connection events
+            socket.on('connect', () => {
+                log(`✅ Connected! Socket ID: ${socket.id}`, 'success');
+                updateStatus('connected', 'Connected');
+                document.getElementById('socketId').textContent = socket.id;
+                document.getElementById('transport').textContent = socket.io.engine.transport.name;
+            });
+
+            socket.on('disconnect', (reason) => {
+                log(`❌ Disconnected. Reason: ${reason}`, 'error');
+                updateStatus('disconnected', 'Disconnected');
+                document.getElementById('socketId').textContent = '-';
+                document.getElementById('transport').textContent = '-';
+            });
+
+            socket.on('connect_error', (err) => {
+                log(`🔥 Connection Error: ${err.message}`, 'error');
+                updateStatus('disconnected', 'Connection Error');
+            });
+
+            // Transport upgrade monitoring (websocket upgrade)
+            socket.io.engine.on('upgrade', (transport) => {
+                log(`🔄 Transport upgraded to: ${transport.name}`, 'success');
+                document.getElementById('transport').textContent = transport.name;
+            });
+
+            socket.io.engine.on('upgradeError', (err) => {
+                log(`⚠️ Upgrade Error: ${err.message}`, 'warning');
+            });
+
+            // Custom events (mimicking Tdarr's sync events)
+            socket.on('syncMessage', (data) => {
+                log(`📨 Sync Message: ${data.message}`, 'info');
+            });
+
+            socket.on('syncServerTime', (timestamp) => {
+                log(`🕐 Server Time: ${new Date(timestamp).toLocaleString()}`, 'info');
+            });
+
+            socket.on('pong', (data) => {
+                log(`🏓 Pong received from server`, 'success');
+            });
+
+            // Error handling
+            socket.on('error', (err) => {
+                log(`🔥 Socket Error: ${err}`, 'error');
+            });
+        }
+
+        function reconnect() {
+            log('🔄 Reconnecting...', 'info');
+            if (socket) {
+                socket.connect();
+            } else {
+                initSocket();
+            }
+        }
+
+        function disconnect() {
+            log('🛑 Disconnecting...', 'warning');
+            if (socket) {
+                socket.disconnect();
+            }
+        }
+
+        function sendPing() {
+            if (socket && socket.connected) {
+                log('🏓 Sending ping to server...', 'info');
+                socket.emit('ping');
+            } else {
+                log('❌ Cannot send ping: Not connected', 'error');
+            }
+        }
+
+        function clearLogs() {
+            logs.length = 0;
+            document.getElementById('logContainer').innerHTML = '';
+            log('Logs cleared', 'info');
+        }
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            log('Demo page loaded', 'info');
+            log('Configuration: namespace=/webui, path=/socket.io', 'info');
+            initSocket();
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (socket) {
+                socket.disconnect();
+            }
+        });
+    </script>
+</body>
+</html>

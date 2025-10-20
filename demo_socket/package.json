@@ -1,0 +1,14 @@
+{
+  "name": "tdarr-socket-debug-demo",
+  "version": "1.0.0",
+  "description": "Simple demo to debug Tdarr socket.io connection issues",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "fastify": "^4.28.1",
+    "@fastify/static": "^7.0.4",
+    "socket.io": "^4.7.5"
+  }
+}
