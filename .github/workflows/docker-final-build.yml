@@ -40,7 +40,7 @@ on:
 
 jobs:
   generate_matrix:
-    runs-on: ${{ fromJSON(inputs.RUNNER_X64) }}
+    runs-on: ${{ fromJSON(inputs.RUNNER_ARM64) }}
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
       merge_matrix: ${{ steps.set-matrix.outputs.merge_matrix }}
