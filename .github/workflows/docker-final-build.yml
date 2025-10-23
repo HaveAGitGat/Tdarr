@@ -1,0 +1,268 @@
+name: Docker Final Build (Reusable)
+
+on:
+  workflow_call:
+    inputs:
+      VERSION:
+        required: true
+        type: string
+      DATE:
+        required: true
+        type: string
+      BUILD_BASE:
+        required: true
+        type: string
+      PUSH_IMAGES:
+        required: true
+        type: string
+      RUNNER_X64:
+        required: false
+        type: string
+        default: '["ubuntu-latest"]'
+      RUNNER_ARM64:
+        required: false
+        type: string
+        default: '["ubuntu-24.04-arm"]'
+      USE_PROD_PACKAGES:
+        required: false
+        type: boolean
+        default: true
+      component_matrix:
+        required: false
+        type: string
+        default: '["be", "node"]'
+        description: 'JSON array of components to build (e.g., ["be"] or ["node"] or ["be", "node"])'
+    secrets:
+      DOCKER_HUB_USERNAME:
+        required: true
+      DOCKER_HUB_ACCESS_TOKEN:
+        required: true
+
+jobs:
+  generate_matrix:
+    runs-on: ${{ fromJSON(inputs.RUNNER_ARM64) }}
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      merge_matrix: ${{ steps.set-matrix.outputs.merge_matrix }}
+    steps:
+      - name: Generate build matrix
+        id: set-matrix
+        run: |
+          # Parse component matrix input
+          components='${{ inputs.component_matrix }}'
+
+          # Build matrix based on components
+          matrix='{"include":[]}'
+          merge_matrix='{"include":[]}'
+
+          # Add be builds if requested
+          if echo "$components" | jq -e '.[] | select(. == "be")' > /dev/null; then
+            matrix=$(echo "$matrix" | jq '.include += [
+              {
+                "component": "be",
+                "arch": "amd64",
+                "runner": ${{ inputs.RUNNER_X64 }},
+                "platform": "linux/amd64",
+                "module": "Tdarr_Server"
+              },
+              {
+                "component": "be",
+                "arch": "arm64",
+                "runner": ${{ inputs.RUNNER_ARM64 }},
+                "platform": "linux/arm64",
+                "module": "Tdarr_Server"
+              }
+            ]')
+            merge_matrix=$(echo "$merge_matrix" | jq '.include += [
+              {
+                "component": "be",
+                "image_name": "tdarr_acc"
+              }
+            ]')
+          fi
+
+          # Add node builds if requested
+          if echo "$components" | jq -e '.[] | select(. == "node")' > /dev/null; then
+            matrix=$(echo "$matrix" | jq '.include += [
+              {
+                "component": "node",
+                "arch": "amd64",
+                "runner": ${{ inputs.RUNNER_X64 }},
+                "platform": "linux/amd64",
+                "module": "Tdarr_Node"
+              },
+              {
+                "component": "node",
+                "arch": "arm64",
+                "runner": ${{ inputs.RUNNER_ARM64 }},
+                "platform": "linux/arm64",
+                "module": "Tdarr_Node"
+              }
+            ]')
+            merge_matrix=$(echo "$merge_matrix" | jq '.include += [
+              {
+                "component": "node",
+                "image_name": "tdarr_node_acc"
+              }
+            ]')
+          fi
+
+          # Compact JSON for GitHub Actions output (no newlines)
+          matrix_compact=$(echo "$matrix" | jq -c '.')
+          merge_matrix_compact=$(echo "$merge_matrix" | jq -c '.')
+
+          echo "matrix=$matrix_compact" >> $GITHUB_OUTPUT
+          echo "merge_matrix=$merge_matrix_compact" >> $GITHUB_OUTPUT
+
+          echo "Generated build matrix:"
+          echo "$matrix" | jq '.'
+          echo "Generated merge matrix:"
+          echo "$merge_matrix" | jq '.'
+
+  docker_linux_image_final:
+    needs: [generate_matrix]
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.generate_matrix.outputs.matrix) }}
+    name: Build Docker ${{ matrix.component }} image (${{ matrix.arch }})
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Display runner resources
+        run: |
+          echo "CPU Cores: $(nproc)"
+          echo "RAM:"
+          free -h
+          echo "Architecture: $(uname -m)"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        if: ${{ inputs.PUSH_IMAGES == 'true' }}
+        uses: docker/login-action@v3
+        with:
+          registry: docker.io
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Set image tag
+        id: image-tag
+        run: |
+          if [ "${{ matrix.component }}" = "be" ]; then
+            IMAGE_NAME="${{ secrets.DOCKER_HUB_USERNAME }}/tdarr_acc"
+          else
+            IMAGE_NAME="${{ secrets.DOCKER_HUB_USERNAME }}/tdarr_node_acc"
+          fi
+          echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_OUTPUT
+          echo "Using image name: $IMAGE_NAME"
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ steps.image-tag.outputs.IMAGE_NAME }}
+          tags: |
+            type=raw,value=dev_${{ inputs.VERSION }}_${{ inputs.DATE }}
+
+      - name: Determine BASE_IMAGE_TAG
+        id: base-image-tag
+        run: |
+          if [ "${{ inputs.BUILD_BASE }}" = "true" ]; then
+            BASE_IMAGE_TAG="${{ inputs.VERSION }}_${{ inputs.DATE }}"
+          else
+            # Extract FIXED_BASE_TAG from Makefile
+            BASE_IMAGE_TAG=$(grep '^FIXED_BASE_TAG=' ./docker-build/Makefile | sed 's/FIXED_BASE_TAG=//')
+          fi
+          echo "BASE_IMAGE_TAG=$BASE_IMAGE_TAG" >> $GITHUB_OUTPUT
+          echo "Using base image tag: $BASE_IMAGE_TAG"
+
+      - name: Build and push by digest
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          context: ./docker-build
+          file: ./docker-build/docker/Dockerfile.final
+          platforms: ${{ matrix.platform }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            VERSION=${{ inputs.VERSION }}
+            DATE=${{ inputs.DATE }}
+            USE_PROD_PACKAGES=${{ inputs.USE_PROD_PACKAGES }}
+            BASE_IMAGE_TAG=${{ steps.base-image-tag.outputs.BASE_IMAGE_TAG }}
+            MODULE=${{ matrix.module }}
+          outputs: type=image,name=${{ steps.image-tag.outputs.IMAGE_NAME }},push-by-digest=${{ inputs.PUSH_IMAGES == 'true' }},name-canonical=true,push=${{ inputs.PUSH_IMAGES == 'true' }}
+
+      - name: Verify image push to registry
+        if: ${{ inputs.PUSH_IMAGES == 'true' }}
+        run: |
+          digest="${{ steps.build.outputs.digest }}"
+          echo "Verifying ${{ matrix.component }} image was pushed: ${{ steps.image-tag.outputs.IMAGE_NAME }}@${digest}"
+          docker buildx imagetools inspect ${{ steps.image-tag.outputs.IMAGE_NAME }}@${digest}
+
+      - name: Export digest
+        if: ${{ inputs.PUSH_IMAGES == 'true' }}
+        run: |
+          rm -rf /tmp/digests-${{ github.run_id }}
+          mkdir -p /tmp/digests-${{ github.run_id }}
+          digest="${{ steps.build.outputs.digest }}"
+          touch "/tmp/digests-${{ github.run_id }}/${digest#sha256:}"
+
+      - name: Upload digest
+        if: ${{ inputs.PUSH_IMAGES == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: digests-${{ matrix.component }}-${{ matrix.arch }}
+          path: /tmp/digests-${{ github.run_id }}/*
+          if-no-files-found: error
+          retention-days: 1
+
+  docker_linux_image_merge:
+    if: ${{ inputs.PUSH_IMAGES == 'true' }}
+    needs: [generate_matrix, docker_linux_image_final]
+    runs-on: ${{ fromJSON(inputs.RUNNER_X64) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.generate_matrix.outputs.merge_matrix) }}
+    name: Merge Docker ${{ matrix.component }} image manifests
+    steps:
+      - name: Download digests
+        uses: actions/download-artifact@v4
+        with:
+          path: /tmp/digests-${{ github.run_id }}
+          pattern: digests-${{ matrix.component }}-*
+          merge-multiple: true
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          registry: docker.io
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: List downloaded digests
+        working-directory: /tmp/digests-${{ github.run_id }}
+        run: |
+          echo "Downloaded digest files:"
+          ls -la
+          echo ""
+          echo "Digest values:"
+          for digest in *; do
+            echo "  sha256:$digest"
+          done
+
+      - name: Create manifest list and push
+        working-directory: /tmp/digests-${{ github.run_id }}
+        run: |
+          docker buildx imagetools create \
+            -t ${{ secrets.DOCKER_HUB_USERNAME }}/${{ matrix.image_name }}:dev_${{ inputs.VERSION }}_${{ inputs.DATE }} \
+            -t ${{ secrets.DOCKER_HUB_USERNAME }}/${{ matrix.image_name }}:dev \
+            $(printf '${{ secrets.DOCKER_HUB_USERNAME }}/${{ matrix.image_name }}@sha256:%s ' *)
+
+      - name: Inspect image
+        run: |
+          docker buildx imagetools inspect ${{ secrets.DOCKER_HUB_USERNAME }}/${{ matrix.image_name }}:dev_${{ inputs.VERSION }}_${{ inputs.DATE }}

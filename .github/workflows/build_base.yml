@@ -1,0 +1,87 @@
+name: Build Docker Images
+
+on:
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  setup-env-vars:
+    if: true
+    runs-on: ubuntu-latest
+    outputs:
+      VERSION: ${{ steps.set-variable.outputs.VERSION }}
+      DATE: ${{ steps.set-variable.outputs.DATE }}
+      ARCHS: ${{ steps.set-variable.outputs.ARCHS }}
+      BUILD_BASE: ${{ steps.set-variable.outputs.BUILD_BASE }}
+      PUSH_IMAGES: ${{ steps.set-variable.outputs.PUSH_IMAGES }}
+      RUNNER_X64: ${{ steps.set-variable.outputs.RUNNER_X64 }}
+      RUNNER_ARM64: ${{ steps.set-variable.outputs.RUNNER_ARM64 }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Set test variable
+        id: set-variable
+        # using this method allows vars to be used in both subsquent steps and jobs
+        # archs all-arch or x64
+        run: |
+          VERSION=$(sed 's/.*"version": "\(.*\)".*/\1/;t;d' ./package.json)
+          DATE=$(date +"%Y_%m_%dT%H_%M_%Sz")
+          ARCHS=all-arch
+          BUILD_BASE=true
+          PUSH_IMAGES=false
+          RUNNER_X64='["ubuntu-latest"]'
+          RUNNER_ARM64='["ubuntu-24.04-arm"]'
+
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "DATE=$DATE" >> $GITHUB_OUTPUT
+          echo "ARCHS=$ARCHS" >> $GITHUB_OUTPUT
+          echo "BUILD_BASE=$BUILD_BASE" >> $GITHUB_OUTPUT
+          echo "PUSH_IMAGES=$PUSH_IMAGES" >> $GITHUB_OUTPUT
+          echo "RUNNER_X64=$RUNNER_X64" >> $GITHUB_OUTPUT
+          echo "RUNNER_ARM64=$RUNNER_ARM64" >> $GITHUB_OUTPUT
+
+          echo VERSION=$VERSION
+          echo DATE=$DATE
+          echo ARCHS=$ARCHS
+          echo BUILD_BASE=$BUILD_BASE
+          echo PUSH_IMAGES=$PUSH_IMAGES
+          echo RUNNER_X64=$RUNNER_X64
+          echo RUNNER_ARM64=$RUNNER_ARM64
+
+          git log -5
+        shell: bash
+
+  docker_linux_image_base:
+    if: needs.setup-env-vars.outputs.BUILD_BASE == 'true'
+    needs: [setup-env-vars]
+    uses: ./.github/workflows/docker-base-build.yml
+    with:
+      VERSION: ${{ needs.setup-env-vars.outputs.VERSION }}
+      DATE: ${{ needs.setup-env-vars.outputs.DATE }}
+      PUSH_IMAGES: ${{ needs.setup-env-vars.outputs.PUSH_IMAGES }}
+      RUNNER_X64: ${{ needs.setup-env-vars.outputs.RUNNER_X64 }}
+      RUNNER_ARM64: ${{ needs.setup-env-vars.outputs.RUNNER_ARM64 }}
+    secrets:
+      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+      DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+  docker_linux_image_final:
+    needs: [
+      setup-env-vars,
+      # BUILD_BASE
+      docker_linux_image_base,
+      ]
+    uses: ./.github/workflows/docker-final-build.yml
+    with:
+      VERSION: ${{ needs.setup-env-vars.outputs.VERSION }}
+      DATE: ${{ needs.setup-env-vars.outputs.DATE }}
+      BUILD_BASE: ${{ needs.setup-env-vars.outputs.BUILD_BASE }}
+      PUSH_IMAGES: ${{ needs.setup-env-vars.outputs.PUSH_IMAGES }}
+      RUNNER_X64: ${{ needs.setup-env-vars.outputs.RUNNER_X64 }}
+      RUNNER_ARM64: ${{ needs.setup-env-vars.outputs.RUNNER_ARM64 }}
+      USE_PROD_PACKAGES: true
+      component_matrix: '["be", "node"]'
+    secrets:
+      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+      DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}

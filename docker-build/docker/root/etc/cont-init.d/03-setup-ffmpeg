@@ -1,0 +1,66 @@
+#!/usr/bin/with-contenv bash
+
+# Get ffmpeg version 
+installedVersion=$(ffmpeg -version 2>&1 | head -n 1 | cut -d ' ' -f 3)
+
+echo "Installed FFmpeg version is: $installedVersion"
+echo "ffmpegVersion to use is $ffmpegVersion"
+
+# if uname x86, set variable to amd64, if aarch64, set to arm64, if armv7l, set to armhf
+ARCH=$(uname -m | sed 's/x86_64/amd64/' | sed 's/aarch64/arm64/' | sed 's/armv7l/armhf/')
+
+if [ "$ffmpegVersion" = "5" ]; then
+    echo "ERROR: FFmpeg 5 is not supported on Ubuntu Noble (24.04)"
+    echo "Please use ffmpegVersion=6 or ffmpegVersion=7 instead"
+    echo "Container will now exit..."
+    sleep 2
+    kill 1
+    exit 1
+elif [ "$ffmpegVersion" = "6" ]; then
+    echo "Using FFmpeg 6"
+    expectedVersion="6.0.1-Jellyfin"
+    downloadVersion="6.0.1-8"
+
+    if  uname -m | grep -q x86  && [[ "$installedVersion" != "$expectedVersion" ]]; then \
+        echo "Installing ffmpeg6"
+        apt remove -y jellyfin-ffmpeg5
+        apt remove -y jellyfin-ffmpeg7
+        rm /usr/local/bin/ffmpeg
+        rm /usr/local/bin/tdarr-ffmpeg
+
+        apt install -y wget
+        wget https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v$downloadVersion/jellyfin-ffmpeg6_$downloadVersion-noble_${ARCH}.deb
+        apt-get update
+        apt install -y \
+        ./jellyfin-ffmpeg6_$downloadVersion-noble_${ARCH}.deb
+        rm -rf ./jellyfin-ffmpeg6_$downloadVersion-noble_${ARCH}.deb
+        ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/ffmpeg
+        ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/tdarr-ffmpeg
+        echo Finished
+    fi
+else
+    echo "Using FFmpeg 7"
+    # Use FFMPEGVERSION from Dockerfile.base ENV
+    downloadVersion="${FFMPEGVERSION}"
+    # Extract major.minor.patch and append -Jellyfin
+    expectedVersion="$(echo "$downloadVersion" | cut -d'-' -f1)-Jellyfin"
+
+    if  uname -m | grep -q x86  && [[ "$installedVersion" != "$expectedVersion" ]]; then \
+        echo "Installing ffmpeg7"
+        apt remove -y jellyfin-ffmpeg5
+        apt remove -y jellyfin-ffmpeg6
+        rm /usr/local/bin/ffmpeg
+        rm /usr/local/bin/tdarr-ffmpeg
+
+        apt install -y wget
+        # downloadVersion=$(curl --silent https://api.github.com/repos/jellyfin/jellyfin-ffmpeg/releases/latest | grep -oP '"tag_name":\s*"v\K[^"]+' | sort -h | tail -n1)
+        wget https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v$downloadVersion/jellyfin-ffmpeg7_$downloadVersion-noble_${ARCH}.deb
+        apt-get update
+        apt install -y \
+        ./jellyfin-ffmpeg7_$downloadVersion-noble_${ARCH}.deb
+        rm -rf ./jellyfin-ffmpeg7_$downloadVersion-noble_${ARCH}.deb
+        ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/ffmpeg
+        ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/tdarr-ffmpeg
+        echo Finished
+    fi
+fi
