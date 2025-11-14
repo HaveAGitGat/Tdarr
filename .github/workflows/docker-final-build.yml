@@ -172,8 +172,8 @@ jobs:
           if [ "${{ inputs.BUILD_BASE }}" = "true" ]; then
             BASE_IMAGE_TAG="${{ inputs.VERSION }}_${{ inputs.DATE }}"
           else
-            # Extract FIXED_BASE_TAG from Makefile
-            BASE_IMAGE_TAG=$(grep '^FIXED_BASE_TAG=' ./docker-build/Makefile | sed 's/FIXED_BASE_TAG=//')
+            # Extract FIXED_BASE_TAG from Makefile.vars
+            BASE_IMAGE_TAG=$(grep '^FIXED_BASE_TAG=' ./docker-build/Makefile.vars | sed 's/FIXED_BASE_TAG=//')
           fi
           echo "BASE_IMAGE_TAG=$BASE_IMAGE_TAG" >> $GITHUB_OUTPUT
           echo "Using base image tag: $BASE_IMAGE_TAG"

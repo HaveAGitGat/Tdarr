@@ -1,0 +1,142 @@
+#!/usr/bin/with-contenv bash
+
+# s6 update monitor service
+# Runs as root to handle s6-svc commands for unprivileged update processes
+# Monitors signal files created by update scripts and executes s6 service control commands
+
+# Function to find s6 service path (checks multiple locations for compatibility)
+find_s6_service_path() {
+    local service_name=$1
+    local paths=(
+        "/run/service/${service_name}"
+        "/var/run/s6/services/${service_name}"
+        "/var/run/s6/legacy-services/${service_name}"
+    )
+
+    for path in "${paths[@]}"; do
+        if [[ -d "$path" ]]; then
+            echo "$path"
+            return 0
+        fi
+    done
+
+    return 1
+}
+
+MAX_RETRIES=${MAX_RETRIES:-10}
+FAILED_DIR=${FAILED_DIR:-/tmp/tdarr_s6_failed}
+
+schedule_retry() {
+    local signal_file=$1
+    local service_name=$2
+    local attempt_count=$3
+    local reason=$4
+
+    local new_attempt=$((attempt_count + 1))
+
+    if (( new_attempt >= MAX_RETRIES )); then
+        mkdir -p "$FAILED_DIR"
+        local dest="$FAILED_DIR/$(basename "$signal_file")"
+        if mv "$signal_file" "$dest"; then
+            if ! printf '%s\nattempt=%d\nreason=%s\n' "$service_name" "$new_attempt" "$reason" >"$dest"; then
+                echo "[update_monitor] Error: Unable to record failure details in $dest"
+            fi
+            echo "[update_monitor] Error: ${reason}. Moved signal to $dest after $new_attempt attempts."
+        else
+            echo "[update_monitor] Error: Unable to move $signal_file to $dest after $new_attempt attempts."
+        fi
+    else
+        local tmp_file="${signal_file}.tmp"
+        if printf '%s\nattempt=%d\n' "$service_name" "$new_attempt" >"$tmp_file"; then
+            if mv "$tmp_file" "$signal_file"; then
+                echo "[update_monitor] Info: ${reason}. Will retry (attempt ${new_attempt}/${MAX_RETRIES})."
+            else
+                rm -f "$tmp_file"
+                echo "[update_monitor] Error: Unable to move temp file to $signal_file"
+            fi
+        else
+            rm -f "$tmp_file"
+            echo "[update_monitor] Error: Unable to update retry counter for $signal_file"
+        fi
+    fi
+
+    return 1
+}
+
+handle_signal() {
+    local signal_file=$1
+    local action_flag=$2
+    local success_msg=$3
+    local error_verb=$4
+
+    local lines
+    if ! mapfile -t lines <"$signal_file"; then
+        echo "[update_monitor] Warning: Unable to read signal file: $signal_file"
+        rm -f "$signal_file"
+        return 1
+    fi
+
+    local service_name=${lines[0]%$'\r'}
+    if [[ -z "$service_name" ]]; then
+        echo "[update_monitor] Warning: Empty service name in signal file: $signal_file"
+        rm -f "$signal_file"
+        return 1
+    fi
+
+    local attempt_count=0
+    if (( ${#lines[@]} > 1 )); then
+        local attempt_line=${lines[1]%$'\r'}
+        if [[ $attempt_line =~ ^attempt=([0-9]+)$ ]]; then
+            attempt_count=${BASH_REMATCH[1]}
+        fi
+    fi
+
+    local service_path
+    service_path=$(find_s6_service_path "$service_name")
+    if [[ -z "$service_path" ]]; then
+        schedule_retry "$signal_file" "$service_name" "$attempt_count" "Service path not found for ${service_name}"
+        return 1
+    fi
+
+    local svc_output
+    if svc_output=$(s6-svc "$action_flag" "$service_path" 2>&1); then
+        [[ -n "$svc_output" ]] && echo "$svc_output"
+        echo "[update_monitor] $success_msg service: $service_name at $service_path (attempt $((attempt_count + 1)))"
+        rm -f "$signal_file"
+        return 0
+    else
+        [[ -n "$svc_output" ]] && echo "$svc_output"
+        schedule_retry "$signal_file" "$service_name" "$attempt_count" "Failed to $error_verb service ${service_name}"
+        return 1
+    fi
+}
+
+# Check if Docker auto-updater is enabled
+if [[ "${enableDockerAutoUpdater}" != "true" ]]; then
+    echo "[update_monitor] Docker auto-updater is disabled (enableDockerAutoUpdater != 'true'). Service will not start."
+    echo "[update_monitor] To enable, set environment variable: enableDockerAutoUpdater=true"
+    # Sleep forever to prevent s6 from restarting the service
+    exec sleep infinity
+fi
+
+echo "Starting Tdarr update monitor service..."
+mkdir -p "$FAILED_DIR"
+
+# Monitor loop
+while true; do
+    # Process one signal file at a time to avoid race conditions
+    # Check for down signals (service-specific filenames)
+    down_signal=$(find /tmp -maxdepth 1 -name 'tdarr_s6_down_*' -type f 2>/dev/null | head -n 1)
+    if [[ -n "$down_signal" ]]; then
+        handle_signal "$down_signal" "-d" "Successfully brought down" "bring down"
+    # Only check for up signals if no down signal was processed (prevents race conditions)
+    else
+        up_signal=$(find /tmp -maxdepth 1 -name 'tdarr_s6_up_*' -type f 2>/dev/null | head -n 1)
+        if [[ -n "$up_signal" ]]; then
+            handle_signal "$up_signal" "-u" "Successfully brought up" "bring up"
+        fi
+    fi
+
+    # Sleep for 500ms to avoid excessive CPU usage while still being responsive
+    sleep 2
+done

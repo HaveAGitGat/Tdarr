@@ -18,9 +18,12 @@ ENV inContainer="true"
 COPY docker/root/ /
 RUN chmod +x /etc/services.d/tdarr_server/run && \
     chmod +x /etc/services.d/tdarr_node/run && \
+    chmod +x /etc/services.d/update_monitor/run && \
     chmod +x /etc/cont-init.d/01-setup-perms && \
     chmod +x /etc/cont-init.d/02-hw-transcoding && \
     chmod +x /etc/cont-init.d/03-setup-ffmpeg
+
+RUN apt-get update && apt-get install -y psmisc
 
 # handle tdarr binaries
 RUN echo $MODULE && echo $VERSION && echo $DATE && echo $USE_PROD_PACKAGES && \
@@ -56,17 +59,11 @@ RUN echo $MODULE && echo $VERSION && echo $DATE && echo $USE_PROD_PACKAGES && \
     curl --connect-timeout 120 --retry 5 -o /tmp/${MODULE}.zip -L \
     "$MODULE_LINK"  && \
     unzip -q /tmp/${MODULE}.zip -d /app/${MODULE} -x *.exe && \
-    rm -rdf /app/${MODULE}/${MODULE} && \
-    rm -rdf /app/${MODULE}/${MODULE}_Tray && \
-    rm -rdf /app/${MODULE}/runtime/${MODULE}_Runtime && \
     # Node
     if [ "$MODULE" = "Tdarr_Server" ]; then \
         curl --connect-timeout 120 --retry 5 -o /tmp/Tdarr_Node.zip -L \
         "$NODE_LINK" && \
-        unzip -q /tmp/Tdarr_Node.zip -d /app/Tdarr_Node -x *.exe && \
-        rm -rdf /app/Tdarr_Node/Tdarr_Node && \
-        rm -rdf /app/Tdarr_Node/Tdarr_Node_Tray && \
-        rm -rdf /app/Tdarr_Node/runtime/Tdarr_Node_Runtime ; \
+        unzip -q /tmp/Tdarr_Node.zip -d /app/Tdarr_Node -x *.exe ; \
     fi && \
     rm -rdf /tmp/${MODULE}.zip && \
     rm -rdf /tmp/Tdarr_Node.zip && \
@@ -77,9 +74,9 @@ RUN echo $MODULE && echo $VERSION && echo $DATE && echo $USE_PROD_PACKAGES && \
     chown -R abc:abc /app && \
     cp -r /app /app_test && \
     # test
-    runTests=true runDockerTests=true node /app_test/$MODULE/srcug/main.js && \
+    runTests=true runDockerTests=true BUILD_DATE=$DATE node /app_test/$MODULE/srcug/main.js && \
     if [ "$MODULE" = "Tdarr_Server" ]; then \
-           runTests=true runDockerTests=true node /app_test/Tdarr_Node/srcug/main.js ; \
+           runTests=true runDockerTests=true BUILD_DATE=$DATE node /app_test/Tdarr_Node/srcug/main.js ; \
     fi && \
     rm -rdf /app_test
 

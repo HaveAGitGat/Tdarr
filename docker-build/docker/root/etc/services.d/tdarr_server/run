@@ -9,4 +9,4 @@ if [ "$ARCHITECTURE" != "armv7l" ]; then
     MAX_OLD_SPACE="--max-old-space-size=16384"
 fi
 
-exec s6-setuidgid abc node $MAX_OLD_SPACE /app/Tdarr_Server/srcug/main.js
+exec s6-setuidgid abc /app/Tdarr_Server/Tdarr_Server

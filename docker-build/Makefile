@@ -17,7 +17,6 @@ USE_PROD_PACKAGES=false
 
 # BUILD_BASE configuration
 BUILD_BASE=true
-FIXED_BASE_TAG=2.50.02_2025_10_24T22_50_46z
 
 # PUSH_IMAGES configuration
 PUSH_IMAGES=true

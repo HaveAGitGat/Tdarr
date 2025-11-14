@@ -11,10 +11,10 @@ if [ -d "/etc/services.d/tdarr_server" ] && [ "$internalNode" = true ]; then \
     echo "Sleeping for 10 seconds to allow Tdarr_Server to start..."
     sleep 10
     echo "Starting Tdarr_Node"
-    exec s6-setuidgid abc node $MAX_OLD_SPACE /app/Tdarr_Node/srcug/main.js
+    exec s6-setuidgid abc /app/Tdarr_Node/Tdarr_Node
 fi
 
 if [ ! -d "/etc/services.d/tdarr_server" ]; then \
     echo "Starting Tdarr_Node"
-    exec s6-setuidgid abc node $MAX_OLD_SPACE /app/Tdarr_Node/srcug/main.js
+    exec s6-setuidgid abc /app/Tdarr_Node/Tdarr_Node
 fi

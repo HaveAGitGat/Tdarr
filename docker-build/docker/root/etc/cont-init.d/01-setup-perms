@@ -11,15 +11,39 @@ User gid:    $(id -g abc)
 -------------------------------------
 "
 
-# Change the ownership of the specified directories to the user "abc"
-chown -R ${PUID}:${PGID} \
-    "${HOME}" \
-    /temp \
-    /logs
+# Track whether we've already run the core chown work in this session
+core_chown_performed="false"
+
+chown_core_assets() {
+  if [ "$core_chown_performed" = "true" ]; then
+    echo "Core assets already chowned. Skipping."
+    return 0
+  fi
+
+  echo "Chowning core assets..."
+  core_chown_start=$(date +%s)
+  chown -R ${PUID}:${PGID} \
+      "${HOME}" \
+      /logs
+  core_chown_end=$(date +%s)
+  core_chown_elapsed=$((core_chown_end - core_chown_start))
+  echo "Finished chowning core assets. (took ${core_chown_elapsed}s)"
+  core_chown_performed="true"
+}
+
+echo "Chowning /temp..."
+chown -R ${PUID}:${PGID} /temp
+
+if [ "$SKIP_CHOWN" != "true" ]; then
+  chown_core_assets
+else
+  echo "Skipping core asset chown (SKIP_CHOWN=true)."
+fi
+
 
 # Path to the files storing PUID and PGID
-PUID_PATH="/app/server/puid"
-PGID_PATH="/app/server/pgid"
+PUID_PATH="/app/server/perm/puid"
+PGID_PATH="/app/server/perm/pgid"
 
 SERVER_DATA="/app/server"
 
@@ -29,25 +53,37 @@ SERVER_DATA="/app/server"
 #     exit 0
 # fi
 
-# Add recursive directory creation 
+# Add recursive directory creation
 if [ ! -d "${SERVER_DATA}" ]; then
   echo "Creating ${SERVER_DATA} directory"
   mkdir -p "${SERVER_DATA}"
 fi
 
+# Create id directory for PUID/PGID marker files
+ID_DIR="$(dirname "${PUID_PATH}")"
+if [ ! -d "${ID_DIR}" ]; then
+  echo "Creating ${ID_DIR} directory"
+  mkdir -p "${ID_DIR}"
+fi
+
 # Check if files exist and match current PUID and PGID
 if [[ ! -f $PUID_PATH || $(cat $PUID_PATH) != $PUID ]] || \
    [[ ! -f $PGID_PATH || $(cat $PGID_PATH) != $PGID ]]; then
+    chown_core_assets
+
     echo "Adjusting permissions for ${SERVER_DATA}..."
     echo "This first-time chown operation may take a long time depending on the number of files."
     echo "You won't need to run this operation again unless PUID or PGID is changed."
+    server_chown_start=$(date +%s)
     chown -R ${PUID}:${PGID} ${SERVER_DATA}
+    server_chown_end=$(date +%s)
+    server_chown_elapsed=$((server_chown_end - server_chown_start))
 
     # Write the current PUID and PGID to respective files
     echo $PUID > $PUID_PATH
     echo $PGID > $PGID_PATH
 
-    echo "Finished chowning ${SERVER_DATA}."
+    echo "Finished chowning ${SERVER_DATA}. (took ${server_chown_elapsed}s)"
 else
     echo "Permissions for ${SERVER_DATA} are already set correctly."
 fi
@@ -55,10 +91,12 @@ fi
 # Ownership of unmapped folders will reset on container restart
 # Large folders such as SERVER_DATA and modules are excluded from this operation
 echo "Chowning other assets..."
+chown_other_start=$(date +%s)
 find /app \
     -path ${SERVER_DATA} -prune -o \
     -path /app/Tdarr_Server/node_modules -prune -o \
     -path /app/Tdarr_Node/node_modules -prune -o \
     -exec chown ${PUID}:${PGID} {} +
-
-echo "Finished all chowning.."
+chown_other_end=$(date +%s)
+chown_other_elapsed=$((chown_other_end - chown_other_start))
+echo "Finished all chowning.. (took ${chown_other_elapsed}s)"
