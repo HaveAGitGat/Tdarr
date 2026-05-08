@@ -21,11 +21,11 @@
   <screenshots>
     <screenshot type="default">
       <caption>Tdarr Server web UI showing a connected Tdarr Node</caption>
-      <image type="source" width="1600" height="900">https://raw.githubusercontent.com/HaveAGitGat/Tdarr/master/flatpak/screenshots/tdarr-server-webui-home-node.png</image>
+      <image type="source" width="1600" height="900">https://raw.githubusercontent.com/HaveAGitGat/Tdarr/5e24a65238e1cbf117bdf812249abd976985a19e/flatpak/screenshots/tdarr-server-webui-home-node.png</image>
     </screenshot>
     <screenshot>
       <caption>Tdarr Server Flatpak configuration window</caption>
-      <image type="source" width="1847" height="1049">https://raw.githubusercontent.com/HaveAGitGat/Tdarr/master/flatpak/screenshots/tdarr-server-flatpak-window.png</image>
+      <image type="source" width="1847" height="1049">https://raw.githubusercontent.com/HaveAGitGat/Tdarr/5e24a65238e1cbf117bdf812249abd976985a19e/flatpak/screenshots/tdarr-server-flatpak-window.png</image>
     </screenshot>
   </screenshots>
   <content_rating type="oars-1.1" />
