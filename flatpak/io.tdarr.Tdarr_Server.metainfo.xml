@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.tdarr.Tdarr_Server</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>LicenseRef-proprietary=https://github.com/HaveAGitGat/Tdarr/blob/8cf7b5204faa98c268d11d3f75ba8b1a5501ee5f/LICENSE.md</project_license>
+  <name>Tdarr Server</name>
+  <summary>Server and web UI for Tdarr media automation</summary>
+  <description>
+    <p>
+      Tdarr Server runs the Tdarr web UI and coordinates connected Tdarr Nodes for media library automation, including library scanning, health checks, and transcode task management.
+    </p>
+  </description>
+  <developer id="io.tdarr">
+    <name>Tdarr</name>
+  </developer>
+  <launchable type="desktop-id">io.tdarr.Tdarr_Server.desktop</launchable>
+  <url type="homepage">https://home.tdarr.io/</url>
+  <url type="help">https://docs.tdarr.io/</url>
+  <url type="bugtracker">https://github.com/HaveAGitGat/Tdarr/issues</url>
+  <url type="vcs-browser">https://github.com/HaveAGitGat/Tdarr</url>
+  <content_rating type="oars-1.1" />
+  <releases>
+    <release version="2.71.01" date="2026-05-05" />
+  </releases>
+</component>

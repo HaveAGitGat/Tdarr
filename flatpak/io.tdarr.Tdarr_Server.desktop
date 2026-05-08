@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Tdarr Server
+Comment=Run the Tdarr server and web UI
+Exec=tdarr-server-flatpak
+Icon=io.tdarr.Tdarr_Server
+Terminal=false
+Categories=AudioVideo;Video;
+StartupNotify=true
