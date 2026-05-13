@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.tdarr.Tdarr_Node</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>LicenseRef-proprietary=https://github.com/HaveAGitGat/Tdarr/blob/8cf7b5204faa98c268d11d3f75ba8b1a5501ee5f/LICENSE.md</project_license>
+  <name>Tdarr Node</name>
+  <summary>Processing node for Tdarr media automation</summary>
+  <description>
+    <p>
+      Tdarr Node connects to a Tdarr Server and performs media processing work assigned by the server, including health checks and transcode tasks.
+    </p>
+  </description>
+  <developer id="io.tdarr">
+    <name>Tdarr</name>
+  </developer>
+  <launchable type="desktop-id">io.tdarr.Tdarr_Node.desktop</launchable>
+  <url type="homepage">https://home.tdarr.io/</url>
+  <url type="help">https://docs.tdarr.io/</url>
+  <url type="bugtracker">https://github.com/HaveAGitGat/Tdarr/issues</url>
+  <url type="vcs-browser">https://github.com/HaveAGitGat/Tdarr</url>
+  <screenshots>
+    <screenshot type="default">
+      <caption>Tdarr Node Flatpak configuration window</caption>
+      <image type="source" width="1850" height="1053">https://raw.githubusercontent.com/HaveAGitGat/Tdarr/ed5eeacfc6917b6049ee6d67a24fae4c0b765021/flatpak/screenshots/tdarr-node-flatpak-window.png</image>
+    </screenshot>
+  </screenshots>
+  <content_rating type="oars-1.1" />
+  <releases>
+    <release version="2.73.01" date="2026-05-11" />
+  </releases>
+</component>

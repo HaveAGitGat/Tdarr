@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Tdarr Node
+Comment=Run a Tdarr processing node
+Exec=tdarr-node-flatpak
+Icon=io.tdarr.Tdarr_Node
+Terminal=false
+Categories=AudioVideo;Video;
+StartupNotify=true
