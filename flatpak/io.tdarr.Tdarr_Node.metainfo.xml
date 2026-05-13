@@ -21,7 +21,7 @@
   <screenshots>
     <screenshot type="default">
       <caption>Tdarr Node Flatpak configuration window</caption>
-      <image type="source" width="1850" height="1053">https://raw.githubusercontent.com/HaveAGitGat/Tdarr/ed5eeacfc6917b6049ee6d67a24fae4c0b765021/flatpak/screenshots/tdarr-node-flatpak-window.png</image>
+      <image type="source" width="1850" height="1053">https://raw.githubusercontent.com/HaveAGitGat/Tdarr/684f3f72f3321d0379ad0ff35534bf195f154f32/flatpak/screenshots/tdarr-node-flatpak-window.png</image>
     </screenshot>
   </screenshots>
   <content_rating type="oars-1.1" />
