@@ -2,7 +2,6 @@ name: Feature Request
 description: Request a feature for this project.
 title: "[Feature Request - "
 labels: ["enhancement"]
-type: feature
 body:
   - type: markdown
     attributes:
