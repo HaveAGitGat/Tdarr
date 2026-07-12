@@ -54,7 +54,7 @@ body:
   - type: upload
     id: config-files
     attributes:
-      label: Config files
+      label: Config files)
       description: "Tdarr config files. Can be found in `/app/configs/` when using Docker or in the `/configs` folder next to "Tdarr_Updater" if not using Docker."
     validations:
       required: true
