@@ -2,12 +2,12 @@ name: Feature Request
 description: Request a feature for this project.
 title: "[Feature Request - "
 labels: ["enhancement"]
-type: feature request
+type: feature-request
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to fill out this feature request!
+        "Please put plugin requests/bugs at: https://github.com/HaveAGitGat/Tdarr_Plugins"
   - type: textarea
     id: problem
     attributes:
@@ -50,8 +50,10 @@ body:
   - type: checkboxes
     id: agreements
     attributes:
-      label: Agreements
-      description: I have verified that this feature request is not related to any other feature request or has not been requested before.
+      label: "I have verified the following:"
+      description: I have verified that this feature request is not related to any other feature request or has not been requested before, and this feature request is not a plugin feature request.
       options:
-        - label: I agree to the following
+        - label: This feature request is not related nor has been requested before
+          required: true
+        - label: This feature request is not a plugin feature request
           required: true
