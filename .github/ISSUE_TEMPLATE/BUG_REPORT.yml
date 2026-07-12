@@ -54,21 +54,21 @@ body:
   - type: upload
     id: config-files
     attributes:
-      label: Config file(s)
+      label: "Config file(s)"
       description: "Tdarr config files. Can be found in `/app/configs/` when using Docker or in the `/configs` folder next to "Tdarr_Updater" if not using Docker."
     validations:
       required: true
   - type: upload
     id: job-reports
     attributes:
-      label: Job report(s)
+      label: "Job report(s)"
       description: "Tdarr job report(s). https://docs.tdarr.io/docs/other/job-reports"
     validations:
       required: true
   - type: upload
     id: log-files
     attributes:
-      label: Log file(s)
+      label: "Log file(s)"
       description: "Tdarr log file(s). Can be found in `/app/logs/` when using Docker or in the `/logs` folder next to "Tdarr_Updater" if not using Docker."
     validations:
       required: true
