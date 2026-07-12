@@ -62,14 +62,14 @@ body:
     id: job-reports
     attributes:
       label: Job reports
-      description: "Tdarr job report(s). https://docs.tdarr.io/docs/other/job-reports"
+      description: "Tdarr job reports. https://docs.tdarr.io/docs/other/job-reports"
     validations:
       required: true
   - type: upload
     id: log-files
     attributes:
       label: Log files
-      description: "Tdarr log file(s). Can be found in `/app/logs/` when using Docker or in the `/logs` folder next to "Tdarr_Updater" if not using Docker."
+      description: "Tdarr log files. Can be found in `/app/logs/` when using Docker or in the `/logs` folder next to "Tdarr_Updater" if not using Docker."
     validations:
       required: true
   - type: upload
