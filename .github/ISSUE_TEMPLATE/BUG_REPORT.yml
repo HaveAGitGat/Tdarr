@@ -23,10 +23,6 @@ body:
         1. Go to...
         2. Click on...
         3. Observe error...
-      value: |
-        1.
-        2.
-        3.
     validations:
       required: true
   - type: input
@@ -45,10 +41,6 @@ body:
         1. OS: Linux (64-bit), Ubuntu Server v24.0.03 LTS, Docker v29.6.1
         2. Browser: Firefox v152.0.4 (64-bit)
         3. Tdarr: v2.82.02
-      value: |
-        1. OS: 
-        2. Browser: 
-        3. Tdarr: v
     validations:
       required: true
   - type: upload
