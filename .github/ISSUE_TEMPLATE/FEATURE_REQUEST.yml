@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        "Please put plugin requests/bugs at: https://github.com/HaveAGitGat/Tdarr_Plugins"
+        Please put plugin requests/bugs at: https://github.com/HaveAGitGat/Tdarr_Plugins
   - type: textarea
     id: problem
     attributes:
