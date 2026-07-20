@@ -64,13 +64,6 @@ body:
       description: "Tdarr log files. Can be found in `/app/logs/` when using Docker or in the `/logs` folder next to 'Tdarr_Updater' if not using Docker."
     validations:
       required: true
-  - type: upload
-    id: screenshots
-    attributes:
-      label: Screenshots
-      description: "If applicable, add screenshots for additional context."
-    validations:
-      required: false
   - type: checkboxes
     id: agreements
     attributes:
