@@ -39,13 +39,6 @@ body:
       placeholder: 
     validations:
       required: false
-  - type: upload
-    id: screenshots
-    attributes:
-      label: Screenshots
-      description: "If applicable, add screenshots for additional context."
-    validations:
-      required: false
   - type: checkboxes
     id: agreements
     attributes:
