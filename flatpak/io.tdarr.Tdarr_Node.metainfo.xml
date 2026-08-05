@@ -25,6 +25,7 @@
   </screenshots>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="2.86.01" date="2026-08-05" />
     <release version="2.85.01" date="2026-07-24" />
     <release version="2.84.01" date="2026-07-18" />
     <release version="2.83.01" date="2026-07-12" />
