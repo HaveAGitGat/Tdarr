@@ -24,7 +24,7 @@ RUN apt-get update &&  \
     # usermod -G users Tdarr && \
 
     apt-get update && \
-    apt-get install -y curl unzip wget comskip \
+    apt-get install -y curl unzip wget comskip socat \
         # for apprise
         python3-pip && \
         pip3 install apprise && \

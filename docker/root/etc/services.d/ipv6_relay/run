@@ -1,0 +1,23 @@
+#!/usr/bin/with-contenv bash
+
+# Tdarr_Server and Tdarr_Node bind their listeners on 0.0.0.0 (IPv4-only),
+# so on IPv6-enabled docker networks the published ports are unreachable over
+# IPv6 (the container's IPv6 address has no listener). socat relays each port
+# from an IPv6-only socket to the app's IPv4 listener: ipv6only=1 makes the
+# relay socket v6-only, which coexists with the app's 0.0.0.0 bind on the
+# same port instead of colliding with it.
+
+RELAY_PORTS=""
+
+if [ -d "/etc/services.d/tdarr_server" ]; then
+    RELAY_PORTS="${WEB_UI_PORT} ${SERVER_PORT}"
+else
+    RELAY_PORTS="${NODE_PORT}"
+fi
+
+for PORT in $RELAY_PORTS; do
+    socat TCP-LISTEN:"${PORT}",bind=[::],ipv6only=1,fork,reuseaddr TCP4:127.0.0.1:"${PORT}" &
+done
+
+# s6 requires the run script to stay in the foreground; wait for the relays
+wait
