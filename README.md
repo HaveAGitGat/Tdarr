@@ -1,8 +1,8 @@
-# Tdarr V2: Distributed Transcoding System
+# Tdarr V3: Distributed Transcoding System
 Audio/Video Library Analytics & Transcode/Remux Automation
 
 <p align="center">
-  <img src="https://storage.tdarr.io/data/tdarr-io/home/banner-min.jpg"/>
+  <img width="3508" height="2481" alt="Tdarr V3 Banner" src="https://github.com/user-attachments/assets/eff74b7b-ef10-49fb-aed1-a48fd9e524c9" />
 </p>
 
 
@@ -25,7 +25,7 @@ More information can be found on the following websites:
 
 [Builds](https://docs.tdarr.io/docs/releases/changing-version#all-images)
 
-Tdarr V2 is a cross-platform conditional based transcoding application for automating media library transcode/remux management in order to process your media files as required. For example, you can set rules for the required codecs, containers, languages etc that your media should have which helps keeps things organized and can increase compatability with your devices. A common use for Tdarr is to simply convert video files from h264 to h265 (hevc), saving 40%-50% in size.
+Tdarr V3 is a cross-platform conditional based transcoding application for automating media library transcode/remux management in order to process your media files as required. For example, you can set rules for the required codecs, containers, languages etc that your media should have which helps keeps things organized and can increase compatability with your devices. A common use for Tdarr is to simply convert video files from h264 to h265 (hevc), saving 40%-50% in size.
 
 The application is in the form of a click-to-run web-app, comprised of the following 2 components:
 
