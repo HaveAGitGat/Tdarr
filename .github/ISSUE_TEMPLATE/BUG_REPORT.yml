@@ -1,0 +1,76 @@
+name: Bug Report
+description: Report a bug
+title: "[Bug] - "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please place plugin bug reports in: https://github.com/HaveAGitGat/Tdarr_Plugins
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      description: "A clear and concise description of what the bug is."
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: To reproduce
+      description: "Steps to reproduce the behavior"
+      placeholder: |
+        1. Go to...
+        2. Click on...
+        3. Observe error...
+    validations:
+      required: true
+  - type: input
+    id: error
+    attributes:
+      label: Worker error
+      description: "Can be found on the 'Tdarr' tab by pressing the 'i' button on a failed item in the staged file section or in the transcode error section at the bottom."
+    validations:
+      required: false
+  - type: textarea
+    id: info
+    attributes:
+      label: System info
+      description: "Steps to reproduce the behavior"
+      placeholder: |
+        1. OS: Linux (64-bit), Ubuntu Server v24.0.03 LTS, Docker v29.6.1
+        2. Browser: Firefox v152.0.4 (64-bit)
+        3. Tdarr: v2.82.02
+    validations:
+      required: true
+  - type: upload
+    id: config-files
+    attributes:
+      label: Config files
+      description: "Tdarr config files. Can be found in `/app/configs/` when using Docker or in the `/configs` folder next to 'Tdarr_Updater' if not using Docker."
+    validations:
+      required: true
+  - type: upload
+    id: job-reports
+    attributes:
+      label: Job reports
+      description: "Tdarr job reports. https://docs.tdarr.io/docs/other/job-reports"
+    validations:
+      required: true
+  - type: upload
+    id: log-files
+    attributes:
+      label: Log files
+      description: "Tdarr log files. Can be found in `/app/logs/` when using Docker or in the `/logs` folder next to 'Tdarr_Updater' if not using Docker."
+    validations:
+      required: true
+  - type: checkboxes
+    id: agreements
+    attributes:
+      label: "I have verified the following:"
+      description: I have verified that this bug report has not been reported before, and this bug report is not a plugin bug report.
+      options:
+        - label: This bug report has not been reported before
+          required: true
+        - label: This bug report is not a plugin bug report
+          required: true
