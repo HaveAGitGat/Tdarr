@@ -1,0 +1,56 @@
+name: Create GitHub Release
+
+# Runs when a Flatpak metadata PR is merged. The automation/flatpak-<version> branch name
+# comes from FLATPAK_RELEASE_BRANCH in the automation that opens the PR.
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [master]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release, e.g. 3.09.00'
+        required: true
+        type: string
+
+permissions: {}
+
+jobs:
+  create-release:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.pull_request.merged == true &&
+       github.event.pull_request.head.repo.full_name == github.repository &&
+       startsWith(github.event.pull_request.head.ref, 'automation/flatpak-'))
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          INPUT_VERSION: ${{ inputs.version }}
+          TARGET: ${{ github.event.pull_request.merge_commit_sha || github.sha }}
+          # Links only, so release info and package links stay in one place
+          NOTES: |
+            Release notes: https://tdarr.io/download/#release-notes
+
+            Package links: https://storage.tdarr.io/versions.json
+
+            It's recommended to install and update Tdarr by following https://docs.tdarr.io/docs/installation/windows-linux-macos/ rather than downloading packages directly.
+        run: |
+          version="${INPUT_VERSION:-${HEAD_REF#automation/flatpak-}}"
+          if ! [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Version must match N.N.N, got '$version'."
+            exit 1
+          fi
+
+          if gh release view "$version" >/dev/null 2>&1; then
+            echo "Release $version already exists, skipping."
+            exit 0
+          fi
+
+          gh release create "$version" --target "$TARGET" --title "$version" --notes "$NOTES"

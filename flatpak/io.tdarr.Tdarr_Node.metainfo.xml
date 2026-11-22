@@ -25,6 +25,30 @@
   </screenshots>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="3.09.00" date="2026-11-22" />
+    <release version="3.08.00" date="2026-11-13" />
+    <release version="3.07.00" date="2026-11-09" />
+    <release version="3.06.00" date="2026-11-03" />
+    <release version="3.05.00" date="2026-11-02" />
+    <release version="3.04.00" date="2026-10-27" />
+    <release version="3.03.00" date="2026-10-26" />
+    <release version="3.02.00" date="2026-10-25" />
+    <release version="3.01.00" date="2026-10-15" />
+    <release version="3.00.00" date="2026-10-10" />
+    <release version="2.96.01" date="2026-10-10" />
+    <release version="2.95.01" date="2026-10-08" />
+    <release version="2.94.03" date="2026-10-06" />
+    <release version="2.94.02" date="2026-10-03" />
+    <release version="2.94.01" date="2026-10-03" />
+    <release version="2.93.01" date="2026-10-01" />
+    <release version="2.92.01" date="2026-09-29" />
+    <release version="2.91.01" date="2026-09-26" />
+    <release version="2.90.01" date="2026-09-23" />
+    <release version="2.89.01" date="2026-09-19" />
+    <release version="2.88.01" date="2026-09-18" />
+    <release version="2.87.01" date="2026-09-10" />
+    <release version="2.86.01" date="2026-08-05" />
+    <release version="2.85.01" date="2026-07-24" />
     <release version="2.84.01" date="2026-07-18" />
     <release version="2.83.01" date="2026-07-12" />
     <release version="2.82.02" date="2026-07-05" />
