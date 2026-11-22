@@ -1,0 +1,96 @@
+name: Bug Report
+description: Report a bug
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please place plugin bug reports in: https://github.com/HaveAGitGat/Tdarr_Plugins
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      description: "A clear and concise description of what the bug is."
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: To reproduce
+      description: "Steps to reproduce the behavior"
+      placeholder: |
+        1. Go to...
+        2. Click on...
+        3. Observe error...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: "A clear and concise description of what you expected to happen."
+    validations:
+      required: false
+  - type: textarea
+    id: error
+    attributes:
+      label: Worker error
+      description: "Can be found on the 'Tdarr' tab by pressing the 'i' button on a failed item in the staged file section or in the transcode error section at the bottom."
+      render: shell
+    validations:
+      required: false
+  - type: textarea
+    id: info
+    attributes:
+      label: System info
+      description: "Your OS, browser and Tdarr version."
+      placeholder: |
+        1. OS: Linux (64-bit), Ubuntu Server 24.04.3 LTS, Docker v29.6.1
+        2. Browser: Firefox v152.0.4 (64-bit)
+        3. Tdarr: v3.09.00
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: |
+        Please attach the files below whenever they exist, as reports without them are much harder to diagnose.
+
+        **Issues are public.** Before attaching, remove anything you don't want to share, such as the values of `authSecretKey`, `seededApiKey` and `apiKey` in the config files, and IP addresses or paths in the logs.
+  - type: upload
+    id: config-files
+    attributes:
+      label: Config files
+      description: "Tdarr config files. Can be found in `/app/configs/` when using Docker or in the `/configs` folder next to 'Tdarr_Updater' if not using Docker. Remove the values of `authSecretKey`, `seededApiKey` and `apiKey` first."
+    validations:
+      required: false
+  - type: upload
+    id: job-reports
+    attributes:
+      label: Job reports
+      description: "Tdarr job reports, if the bug involves a transcode or health check job. https://docs.tdarr.io/docs/other/job-reports"
+    validations:
+      required: false
+  - type: upload
+    id: log-files
+    attributes:
+      label: Log files
+      description: "Tdarr log files. Can be found in `/app/logs/` when using Docker or in the `/logs` folder next to 'Tdarr_Updater' if not using Docker."
+    validations:
+      required: false
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+      description: "Add any other context about the problem here. Screenshots can be pasted or dragged into this box."
+    validations:
+      required: false
+  - type: checkboxes
+    id: agreements
+    attributes:
+      label: "I have verified the following:"
+      description: I have verified that this bug report has not been reported before, and this bug report is not a plugin bug report.
+      options:
+        - label: This bug report has not been reported before
+          required: true
+        - label: This bug report is not a plugin bug report
+          required: true
